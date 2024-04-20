@@ -1,18 +1,28 @@
 import { PageHeader } from "@/app/admin/_components/PageHeader";
-import { GoalForm } from "@/app/admin/goals/_components/GoalForm";
+import { GoalForm } from "@/app/_components/GoalForm";
 import db from "@/db/db";
+import { cache } from "@/lib/cache";
+
+const getCategories = cache(() => {
+  return db.goalCategory.findMany({
+    orderBy: { name: "asc" },
+  });
+}, ["/goals/edit", "getCategories"]);
 
 export default async function EditGoalPage({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const goal = await db.goal.findUnique({ where: { id } });
+  const [goal, categories] = await Promise.all([
+    db.goal.findUnique({ where: { id } }),
+    await getCategories(),
+  ]);
 
   return (
     <>
       <PageHeader>Edit Goal</PageHeader>
-      <GoalForm goal={goal} />
+      <GoalForm goal={goal} categories={categories} />
     </>
   );
 }

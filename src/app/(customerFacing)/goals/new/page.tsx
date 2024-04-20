@@ -1,5 +1,5 @@
 import { PageHeader } from "@/app/admin/_components/PageHeader";
-import { GoalForm } from "@/app/admin/goals/_components/GoalForm";
+import { GoalForm } from "@/app/_components/GoalForm";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
 

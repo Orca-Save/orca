@@ -14,40 +14,47 @@ datasource db {
 }
 
 model Goal {
-  id             String       @id @default(uuid())
-  userId         String
-  name           String
-  note           String
-  balanceInCents Int          @default(0)
-  targetInCents  Int
-  imagePath      String
-  description    String
-  dueAt          DateTime
-  categoryId     String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  savings        Saving[]
-  category       GoalCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  id            String         @id @default(uuid())
+  userId        String
+  name          String
+  note          String
+  targetInCents Int
+  imagePath     String
+  description   String
+  dueAt         DateTime
+  categoryId    String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  goalTransfers GoalTransfer[]
+  category      GoalCategory   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 }
 
 model GoalCategory {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Goal      Goal[]
+  id           String         @id @default(uuid())
+  name         String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Goal         Goal[]
+  GoalTransfer GoalTransfer[]
 }
 
-model Saving {
-  id               String   @id @default(uuid())
-  pricePaidInCents Int
-  link             String
-  merchantName     String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  categoryId       String
+model GoalTransfer {
+  id            String @id @default(uuid())
+  link          String
+  note          String
+  itemName      String
+  imagePath     String
+  merchantName  String
+  amountInCents Int
+  rating        Int
 
-  userId String
-  goalId String
-  goal   Goal   @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  transactedAt DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  categoryId String
+  userId     String
+  goalId     String
+  category   GoalCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  goal       Goal         @relation(fields: [goalId], references: [id], onDelete: Restrict)
 }

@@ -2,18 +2,17 @@ import db from "@/db/db";
 import { cache } from "@/lib/cache";
 import { Goal } from "@prisma/client";
 import { Button, Card, Skeleton } from "antd";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
 const getMostPopularGoals = cache(
   () => {
     return db.goal.findMany({
-      orderBy: { savings: { _count: "desc" } },
+      orderBy: { goalTransfers: { _count: "desc" } },
       take: 6,
     });
   },
-  ["/", "getMostPopulargoals"],
+  ["/", "getMostPopularGoals"],
   { revalidate: 60 * 60 * 24 }
 );
 
@@ -22,7 +21,7 @@ const getNewestGoals = cache(() => {
     orderBy: { createdAt: "desc" },
     take: 6,
   });
-}, ["/", "getNewestgoals"]);
+}, ["/", "getNewestGoals"]);
 
 export default function HomePage() {
   return (

@@ -6,7 +6,7 @@ import { Goal, GoalCategory } from "@prisma/client";
 import { Button, DatePicker, Form, Input, Select } from "antd";
 import { useRouter } from "next/navigation";
 
-import { addGoal, updateGoal } from "../../_actions/goals";
+import { addGoal, updateGoal } from "../_actions/goals";
 import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import CurrencyInput from "./CurrencyInput";
@@ -15,8 +15,8 @@ type GoalFormValues = {
   name: string;
   description: string;
   note?: string;
-  balanceInCents: number;
-  targetInCents: number;
+  balance: number;
+  targetAmount: number;
   dueAt: Dayjs | null;
   categoryId: string;
   file: {
@@ -47,11 +47,12 @@ export function GoalForm({
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return;
     const formData = new FormData();
+    console.log(values.targetAmount, String(values.targetAmount * 100));
     formData.append("name", values.name);
     formData.append("description", values.description);
-    formData.append("balanceInCents", String(values.balanceInCents)); // Convert number to string
+    formData.append("balanceInCents", String(values.balance * 100));
+    formData.append("targetInCents", String(values.targetAmount * 100));
     formData.append("note", values.note || "");
-    formData.append("targetInCents", String(values.targetInCents));
 
     if (values.categoryId) {
       formData.append("categoryId", values.categoryId);
@@ -65,10 +66,10 @@ export function GoalForm({
       const action = goal
         ? updateGoal.bind(null, goal.id, session.user.id)
         : addGoal.bind(null, session.user.id);
-      const results = await action(undefined, formData);
+      const result = await action(undefined, formData);
 
-      if (isGoalFieldErrors(results)) {
-        Object.entries(results.fieldErrors).forEach(([field, errors]) => {
+      if (isGoalFieldErrors(result)) {
+        Object.entries(result.fieldErrors).forEach(([field, errors]) => {
           errors.forEach((error) => {
             form.setFields([
               {
@@ -84,6 +85,7 @@ export function GoalForm({
     }
   };
 
+  const targetAmount = goal?.targetInCents ? goal.targetInCents / 100 : 0;
   return (
     <Form
       form={form}
@@ -91,11 +93,10 @@ export function GoalForm({
       onFinish={onFinish}
       initialValues={{
         name: goal?.name,
-        description: goal?.description,
-        balanceInCents: goal?.balanceInCents,
+        description: goal?.description ?? "",
+        targetAmount,
         dueAt: goal?.dueAt ? dayjs(goal.dueAt) : dayjs(),
-        note: goal?.note,
-        targetInCents: goal?.targetInCents,
+        note: goal?.note ?? "",
         categoryId: goal?.categoryId,
       }}
     >
@@ -114,14 +115,14 @@ export function GoalForm({
         <TextArea placeholder="Description" />
       </Form.Item>
       <Form.Item
-        name="balanceInCents"
-        label="Balance (in cents)"
+        name="balance"
+        label="Balance"
         rules={[{ required: true, message: "Please input the balance!" }]}
       >
-        <CurrencyInput placeholder="Balance In Cents" />
+        <CurrencyInput placeholder="Current Balance" />
       </Form.Item>
       <Form.Item
-        name="targetInCents"
+        name="targetAmount"
         label="Target Balance"
         rules={[
           { required: true, message: "Please input the target balance!" },

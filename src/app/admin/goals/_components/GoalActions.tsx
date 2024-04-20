@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { deleteGoal } from "../../_actions/goals";
+import { deleteGoal } from "../../../_actions/goals";
 import { useRouter } from "next/navigation";
 
 export function DeleteDropdownItem({

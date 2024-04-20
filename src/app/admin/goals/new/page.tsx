@@ -1,5 +1,5 @@
+import { GoalForm } from "@/app/_components/GoalForm";
 import { PageHeader } from "../../_components/PageHeader";
-import { GoalForm } from "../_components/GoalForm";
 
 export default function NewGoalPage() {
   return (

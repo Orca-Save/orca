@@ -2,8 +2,7 @@
 
 import db from "@/db/db";
 import { z } from "zod";
-import fs from "fs/promises";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Goal } from "@prisma/client";
 
@@ -50,14 +49,6 @@ export async function addGoal(
   }
 
   const data = result.data;
-
-  // await fs.mkdir("public/goals", { recursive: true });
-  // const imagePath = `/goals/${crypto.randomUUID()}-${data.image.name}`;
-  // await fs.writeFile(
-  //   `public${imagePath}`,
-  //   Buffer.from(await data.image.arrayBuffer())
-  // );
-
   let goal = await db.goal.create({
     data: {
       userId,
@@ -72,8 +63,8 @@ export async function addGoal(
     },
   });
 
-  // revalidatePath("/");
-  // revalidatePath("/goals");
+  revalidatePath("/");
+  revalidatePath("/goals");
   return goal;
 }
 
@@ -99,24 +90,24 @@ export async function updateGoal(
   if (goal == null) return notFound();
 
   let imagePath = goal.imagePath;
-  if (data.image != null && data.image.size > 0) {
-    await fs.unlink(`public${goal.imagePath}`);
-    imagePath = `/goals/${crypto.randomUUID()}-${data.image.name}`;
-    await fs.writeFile(
-      `public${imagePath}`,
-      Buffer.from(await data.image.arrayBuffer())
-    );
-  }
 
   let updatedGoal = await db.goal.update({
     where: { id },
     data: {
+      userId,
       name: data.name,
+      note: data.note,
       description: data.description,
       balanceInCents: data.balanceInCents,
+      targetInCents: data.targetInCents,
+      categoryId: data.categoryId,
+      dueAt: data.dueAt,
       imagePath,
     },
   });
+
+  revalidatePath("/");
+  revalidatePath("/goals");
   return updatedGoal;
 }
 
@@ -125,8 +116,7 @@ export async function deleteGoal(id: string) {
 
   if (goal == null) return notFound();
 
-  await fs.unlink(`public${goal.imagePath}`);
-
   revalidatePath("/");
   revalidatePath("/goals");
+  return goal;
 }

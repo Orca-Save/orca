@@ -1,4 +1,4 @@
-import { GoalFieldErrors } from "@/app/admin/_actions/goals";
+import { GoalFieldErrors } from "@/app/_actions/goals";
 import { Goal } from "@prisma/client";
 
 export function isGoalFieldErrors(
