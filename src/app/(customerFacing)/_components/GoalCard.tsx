@@ -40,7 +40,6 @@ export default function GoalCard({
           type={UserPinType.Goal}
           userHasPinnedGoal={userHasPinnedGoal}
           userId={goal.userId}
-          revalidatePath={revalidatePath}
         />,
         <ShareAltOutlined key="share" />,
       ]}

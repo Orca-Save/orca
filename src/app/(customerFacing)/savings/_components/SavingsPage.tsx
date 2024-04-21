@@ -128,7 +128,6 @@ async function SavingsList({
               userPinId={goalTransfer.userPinId}
               typeId={goalTransfer.id}
               type={UserPinType.GoalTransfer}
-              revalidatePath="/savings"
               userId={session.user.id}
             />,
           ]}

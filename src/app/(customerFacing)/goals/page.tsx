@@ -2,20 +2,15 @@ import { Suspense } from "react";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
-import { Card, Progress, ProgressProps, Skeleton } from "antd";
-import { PlusOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { Card, Skeleton } from "antd";
 import { getServerSession } from "next-auth/next";
 import { signIn } from "next-auth/react";
 
 import { isExtendedSession } from "@/lib/session";
-import PopconfirmDelete from "./_components/PopconfirmDelete";
-import EditAction from "../_components/EditAction";
 import IconRoute from "./_components/IconButtonRoute";
-import GoalProgress from "./_components/GoalProgress";
-import Meta from "antd/es/card/Meta";
 import { UserPinType, sortPins } from "@/lib/users";
-import PinSavingButton from "@/app/_components/PinSavingButton";
 import GoalCard from "../_components/GoalCard";
+import { PlusOutlined } from "@ant-design/icons";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({

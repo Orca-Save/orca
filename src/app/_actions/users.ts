@@ -1,14 +1,13 @@
 "use server";
 
 import db from "@/db/db";
-import { revalidatePath as revalPath } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 
 export async function createUserPin(
   userId: string,
   typeId: string,
-  type: string,
-  revalidatePath: string
+  type: string
 ) {
   const userPin = await db.userPin.create({
     data: {
@@ -18,11 +17,13 @@ export async function createUserPin(
     },
   });
 
-  revalPath(revalidatePath);
+  revalidatePath("/");
+  revalidatePath("/savings");
+  revalidatePath("/goals");
   return userPin;
 }
 
-export async function deleteUserPin(id: string, revalidatePath: string) {
+export async function deleteUserPin(id: string) {
   const userPin = await db.userPin.delete({
     where: { id },
   });
@@ -31,7 +32,8 @@ export async function deleteUserPin(id: string, revalidatePath: string) {
     notFound();
     return;
   }
-
-  revalPath(revalidatePath);
+  revalidatePath("/");
+  revalidatePath("/savings");
+  revalidatePath("/goals");
   return userPin;
 }

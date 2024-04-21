@@ -37,6 +37,35 @@ export type GoalTransferFieldErrors = {
   };
 };
 
+export async function addQuickSave(
+  goalId: string,
+  transfer: GoalTransfer
+): Promise<GoalTransfer> {
+  const goalTransfer = await db.goalTransfer.create({
+    data: {
+      goalId,
+      transactedAt: new Date(),
+      updatedAt: new Date(),
+
+      userId: transfer.userId,
+      rating: transfer.rating,
+      categoryId: transfer.categoryId,
+      note: transfer.note,
+      link: transfer.link,
+      imagePath: transfer.imagePath,
+      itemName: transfer.itemName,
+      merchantName: transfer.merchantName,
+      amountInCents: transfer.amountInCents,
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/savings");
+  revalidatePath("/goals");
+
+  return goalTransfer;
+}
+
 export async function addGoalTransfer(
   userId: string,
   formData: FormData

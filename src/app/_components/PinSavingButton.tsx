@@ -10,7 +10,6 @@ type PinSavingButtonProps = {
   typeId?: string;
   type?: string;
   userHasPinnedGoal?: boolean;
-  revalidatePath: string;
 };
 
 export default function PinSavingButton({
@@ -18,16 +17,11 @@ export default function PinSavingButton({
   userId,
   typeId,
   type,
-  revalidatePath,
   userHasPinnedGoal,
 }: PinSavingButtonProps) {
-  const deletePinAction = () =>
-    userPinId && deleteUserPin(userPinId, revalidatePath);
+  const deletePinAction = () => userPinId && deleteUserPin(userPinId);
   const createPinAction = () =>
-    userId &&
-    typeId &&
-    type &&
-    createUserPin(userId, typeId, type, revalidatePath);
+    userId && typeId && type && createUserPin(userId, typeId, type);
 
   const onClick = () => (userPinId ? deletePinAction() : createPinAction());
 

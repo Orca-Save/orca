@@ -42,9 +42,7 @@ export async function addGoal(
   userId: string,
   prevState: unknown,
   formData: FormData
-): Promise<
-  GoalFieldErrors | { goal: Goal; goalTransfer: GoalTransfer | undefined }
-> {
+): Promise<GoalFieldErrors | Goal> {
   const result = addSchema.safeParse(Object.fromEntries(formData.entries()));
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
@@ -65,9 +63,8 @@ export async function addGoal(
     },
   });
 
-  let goalTransfer: GoalTransfer | undefined;
   if (data.initialAmountInCents && data.initialAmountInCents > 0) {
-    goalTransfer = await db.goalTransfer.create({
+    await db.goalTransfer.create({
       data: {
         userId,
         goalId: goal.id,
@@ -87,7 +84,7 @@ export async function addGoal(
 
   revalidatePath("/");
   revalidatePath("/goals");
-  return { goal, goalTransfer };
+  return goal;
 }
 
 const editSchema = addSchema.extend({

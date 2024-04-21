@@ -1,7 +1,6 @@
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
-import { Goal } from "@prisma/client";
-import { Button, Card, Grid, Skeleton, Space } from "antd";
+import { Button, Skeleton, Space } from "antd";
 import Link from "next/link";
 import { Suspense } from "react";
 import GoalCard from "./_components/GoalCard";
@@ -11,30 +10,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { UserPinType } from "@/lib/users";
 import { PlusOutlined } from "@ant-design/icons";
-import { formatCurrency } from "@/lib/formatters";
-
-const getPinnedUserGoal = async (userId: string) => {
-  const userPin = await db.userPin.findFirst({
-    where: {
-      userId: userId,
-      type: UserPinType.Goal,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  if (userPin) {
-    const pinnedGoal = await db.goal.findUnique({
-      where: {
-        id: userPin.typeId,
-      },
-    });
-    return pinnedGoal;
-  }
-
-  return null;
-};
+import { QuickSaveButton } from "./_components/QuickSaveButton";
+import { getPinnedUserGoal, getPinnedUserGoalId } from "./_actions/data";
 
 const getPinnedGoalTransfers = async (userId: string) => {
   const userPins = await db.userPin.findMany({
@@ -150,24 +127,26 @@ export default async function HomePage() {
 }
 
 async function QuickSaveButtons({ userId }: { userId: string }) {
-  const quickTransfers = await getPinnedGoalTransfers(userId);
+  const [quickTransfers, goalId] = await Promise.all([
+    getPinnedGoalTransfers(userId),
+    getPinnedUserGoalId(userId),
+  ]);
 
   if (!quickTransfers) return <div>No Pinned Goal Transfers.</div>;
 
   return (
-    <Space wrap>
-      {quickTransfers.map((transfer) => (
-        <Button
-          key={transfer.id}
-          size="large"
-          style={{ height: "auto", width: "auto" }}
-        >
-          <p>{transfer.itemName}</p>
-          <p>{formatCurrency(transfer.amountInCents / 100)}</p>
-          <p>{transfer.category.name}</p>
-        </Button>
-      ))}
-    </Space>
+    <>
+      {!goalId && <div>No Pinned Goal.</div>}
+      <Space wrap>
+        {quickTransfers.map((transfer) => (
+          <QuickSaveButton
+            key={transfer.id}
+            transfer={transfer}
+            goalId={goalId}
+          />
+        ))}
+      </Space>
+    </>
   );
 }
 
