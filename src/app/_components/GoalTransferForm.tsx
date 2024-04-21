@@ -10,7 +10,10 @@ import CurrencyInput from "./CurrencyInput";
 import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
 import { isExtendedSession } from "@/lib/session";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
-import { isGoalTransferFieldErrors } from "@/lib/goalTransfers";
+import {
+  externalAccountId,
+  isGoalTransferFieldErrors,
+} from "@/lib/goalTransfers";
 
 type GoalTransferFormValues = {
   goalId: string;
@@ -108,7 +111,6 @@ export function GoalTransferForm({
     ? goalTransfer.amountInCents / 100
     : 0;
 
-  const externalAccountId = "faed4327-3a9c-4837-a337-c54e9704d60f";
   let isExternalAccount =
     filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
   const initialCategoryId = isExternalAccount ? externalAccountId : "";

@@ -15,7 +15,7 @@ type GoalFormValues = {
   name: string;
   description: string;
   note?: string;
-  balance: number;
+  initialAmount: number;
   targetAmount: number;
   dueAt: Dayjs | null;
   categoryId: string;
@@ -50,7 +50,7 @@ export function GoalForm({
     console.log(values.targetAmount, String(values.targetAmount * 100));
     formData.append("name", values.name);
     formData.append("description", values.description);
-    formData.append("balanceInCents", String(values.balance * 100));
+    formData.append("initialAmountInCents", String(values.initialAmount * 100));
     formData.append("targetInCents", String(values.targetAmount * 100));
     formData.append("note", values.note || "");
 
@@ -108,29 +108,6 @@ export function GoalForm({
         <Input placeholder="Name" />
       </Form.Item>
       <Form.Item
-        name="description"
-        label="Description"
-        // rules={[{ required: true, message: "Please input a description!" }]}
-      >
-        <TextArea placeholder="Description" />
-      </Form.Item>
-      <Form.Item
-        name="balance"
-        label="Already Saved"
-        rules={[{ required: true, message: "Please input the balance!" }]}
-      >
-        <CurrencyInput placeholder="Current Balance" />
-      </Form.Item>
-      <Form.Item
-        name="targetAmount"
-        label="Target Balance"
-        rules={[
-          { required: true, message: "Please input the target balance!" },
-        ]}
-      >
-        <CurrencyInput placeholder="Target Balance" />
-      </Form.Item>
-      <Form.Item
         name="categoryId"
         label="Category"
         rules={[{ required: true, message: "Please select a category!" }]}
@@ -149,6 +126,23 @@ export function GoalForm({
         rules={[{ required: true, message: "Please select the due date!" }]}
       >
         <DatePicker minDate={dayjs()} style={{ width: "100%" }} />
+      </Form.Item>
+      <Form.Item
+        name="targetAmount"
+        label="Target Balance"
+        rules={[
+          { required: true, message: "Please input the target balance!" },
+        ]}
+      >
+        <CurrencyInput placeholder="Target Balance" />
+      </Form.Item>
+      {!goal && (
+        <Form.Item name="initialAmount" label="Initial Saved Amount">
+          <CurrencyInput placeholder="Initial Balance" />
+        </Form.Item>
+      )}
+      <Form.Item name="description" label="Description">
+        <TextArea placeholder="Description" />
       </Form.Item>
 
       <Form.Item

@@ -4,7 +4,8 @@ import db from "@/db/db";
 import { z } from "zod";
 import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { Goal } from "@prisma/client";
+import { Goal, GoalTransfer } from "@prisma/client";
+import { externalAccountId } from "@/lib/goalTransfers";
 
 const fileSchema = z.instanceof(File, { message: "Required" });
 const imageSchema = fileSchema.refine(
@@ -30,7 +31,7 @@ const dueAtSchema = z
 const addSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
-  balanceInCents: z.coerce.number().int().min(0),
+  initialAmountInCents: z.coerce.number().int().min(0).optional(),
   targetInCents: z.coerce.number().int().min(1),
   categoryId: z.string().uuid(),
   note: z.string(),
@@ -41,7 +42,9 @@ export async function addGoal(
   userId: string,
   prevState: unknown,
   formData: FormData
-): Promise<GoalFieldErrors | Goal> {
+): Promise<
+  GoalFieldErrors | { goal: Goal; goalTransfer: GoalTransfer | undefined }
+> {
   const result = addSchema.safeParse(Object.fromEntries(formData.entries()));
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
@@ -62,9 +65,29 @@ export async function addGoal(
     },
   });
 
+  let goalTransfer: GoalTransfer | undefined;
+  if (data.initialAmountInCents && data.initialAmountInCents > 0) {
+    goalTransfer = await db.goalTransfer.create({
+      data: {
+        userId,
+        goalId: goal.id,
+        rating: 5,
+        categoryId: externalAccountId,
+        note: "",
+        link: "",
+        imagePath: "",
+        updatedAt: new Date(),
+        itemName: `${data.name} Initial Deposit`,
+        merchantName: "",
+        amountInCents: data.initialAmountInCents,
+        transactedAt: new Date(),
+      },
+    });
+  }
+
   revalidatePath("/");
   revalidatePath("/goals");
-  return goal;
+  return { goal, goalTransfer };
 }
 
 const editSchema = addSchema.extend({

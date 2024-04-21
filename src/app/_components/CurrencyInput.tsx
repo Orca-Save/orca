@@ -37,7 +37,7 @@ function CurrencyInput({
       parser={currencyParser}
       precision={2}
       prefix={"$"}
-      addonAfter={selectAfter}
+      // addonAfter={selectAfter}
       placeholder={placeholder}
       value={value}
       onChange={onChange}

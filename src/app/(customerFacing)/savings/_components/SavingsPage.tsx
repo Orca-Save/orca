@@ -15,11 +15,11 @@ import EditAction from "../../_components/EditAction";
 import { Suspense } from "react";
 import IconRoute from "../../goals/_components/IconButtonRoute";
 import { PlusOutlined } from "@ant-design/icons";
+import { externalAccountId } from "@/lib/goalTransfers";
 
 type Filter = "templates" | "accounts";
 const getGoalTransfers = cache(
   (userId: string, filter?: Filter) => {
-    const externalAccountId = "faed4327-3a9c-4837-a337-c54e9704d60f";
     const where: {
       userId: string;
       goalId: null | { not: null };
