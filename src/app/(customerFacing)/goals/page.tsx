@@ -97,6 +97,9 @@ async function GoalsSuspense() {
         { amountInCents: item._sum.amountInCents, count: item._count.goalId },
       ])
     );
+    const userHasPinnedGoal = userPins.some(
+      (pin) => pin.userId === session.user.id
+    );
     const goalsWithPins = goals
       .map((goal) => ({
         ...goal,
@@ -121,6 +124,7 @@ async function GoalsSuspense() {
               userPinId={goal.userPinId}
               typeId={goal.id}
               type={UserPinType.Goal}
+              userHasPinnedGoal={userHasPinnedGoal}
               userId={session.user.id}
               revalidatePath="/goals"
             />,

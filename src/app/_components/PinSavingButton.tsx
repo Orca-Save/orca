@@ -2,12 +2,14 @@
 
 import { PushpinFilled, PushpinOutlined } from "@ant-design/icons";
 import { createUserPin, deleteUserPin } from "../_actions/users";
+import { Button } from "antd";
 
 type PinSavingButtonProps = {
   userPinId?: string;
   userId?: string;
   typeId?: string;
   type?: string;
+  userHasPinnedGoal?: boolean;
   revalidatePath: string;
 };
 
@@ -17,6 +19,7 @@ export default function PinSavingButton({
   typeId,
   type,
   revalidatePath,
+  userHasPinnedGoal,
 }: PinSavingButtonProps) {
   const deletePinAction = () =>
     userPinId && deleteUserPin(userPinId, revalidatePath);
@@ -29,5 +32,13 @@ export default function PinSavingButton({
   const onClick = () => (userPinId ? deletePinAction() : createPinAction());
 
   if (userPinId) return <PushpinFilled onClick={onClick} />;
-  return <PushpinOutlined onClick={onClick} />;
+  return (
+    <Button
+      icon={<PushpinOutlined />}
+      type="text"
+      style={{ color: "inherit" }}
+      disabled={userHasPinnedGoal}
+      onClick={onClick}
+    />
+  );
 }
