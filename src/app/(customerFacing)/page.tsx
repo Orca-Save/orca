@@ -75,9 +75,7 @@ export default async function HomePage() {
   }
   if (isExtendedSession(session)) {
     return (
-      <main
-      // className="space-y-12"
-      >
+      <>
         <Space direction="vertical" style={{ width: "100%" }}>
           <Suspense
             fallback={
@@ -121,7 +119,7 @@ export default async function HomePage() {
             <QuickSaveButtons userId={session.user.id} />
           </Suspense>
         </Space>
-      </main>
+      </>
     );
   }
 }
