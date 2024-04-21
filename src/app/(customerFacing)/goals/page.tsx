@@ -11,9 +11,10 @@ import { isExtendedSession } from "@/lib/session";
 import PopconfirmDelete from "./_components/PopconfirmDelete";
 import EditAction from "../_components/EditAction";
 import IconRoute from "./_components/NewGoalButton";
-import { currencyFormatter } from "@/lib/utils";
 import GoalProgress from "./_components/GoalProgress";
 import Meta from "antd/es/card/Meta";
+import { UserPinType, sortPins } from "@/lib/users";
+import PinSavingButton from "@/app/_components/PinSavingButton";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({
@@ -37,6 +38,15 @@ const getGoalTransfersSum = (userId: string) => {
     },
   });
 };
+
+const getUserPins = cache(
+  (userId: string) => {
+    return db.userPin.findMany({
+      where: { type: UserPinType.Goal, userId },
+    });
+  },
+  ["/goals", "getUserPins"]
+);
 
 export default async function GoalsPage() {
   return (
@@ -76,9 +86,10 @@ async function GoalsSuspense() {
   }
 
   if (isExtendedSession(session)) {
-    let [goals, sums] = await Promise.all([
+    let [goals, sums, userPins] = await Promise.all([
       getGoals(session.user.id),
       getGoalTransfersSum(session.user.id),
+      getUserPins(session.user.id),
     ]);
     const goalSumMap = new Map(
       sums.map((item) => [
@@ -86,8 +97,13 @@ async function GoalsSuspense() {
         { amountInCents: item._sum.amountInCents, count: item._count.goalId },
       ])
     );
-
-    return goals.map((goal) => {
+    const goalsWithPins = goals
+      .map((goal) => ({
+        ...goal,
+        userPinId: userPins.find((pin) => pin.typeId === goal.id)?.id,
+      }))
+      .sort(sortPins);
+    return goalsWithPins.map((goal) => {
       const currentBalanceInCents = goalSumMap.get(goal.id)?.amountInCents || 0;
       const savedItemCount = goalSumMap.get(goal.id)?.count || 0;
       return (
@@ -101,6 +117,13 @@ async function GoalsSuspense() {
               description="Are you sure to delete this goal?"
             />,
             <EditAction route={`/goals/${goal.id}/edit`} key="edit" />,
+            <PinSavingButton
+              userPinId={goal.userPinId}
+              typeId={goal.id}
+              type={UserPinType.Goal}
+              userId={session.user.id}
+              revalidatePath="/goals"
+            />,
             <ShareAltOutlined key="share" />,
           ]}
         >

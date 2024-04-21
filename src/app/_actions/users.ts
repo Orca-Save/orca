@@ -1,14 +1,37 @@
-"use server"
+"use server";
 
-import db from "@/db/db"
-import { notFound } from "next/navigation"
+import db from "@/db/db";
+import { revalidatePath as revalPath } from "next/cache";
+import { notFound } from "next/navigation";
 
-export async function deleteUser(id: string) {
-  const user = await db.user.delete({
+export async function createUserPin(
+  userId: string,
+  typeId: string,
+  type: string,
+  revalidatePath: string
+) {
+  const userPin = await db.userPin.create({
+    data: {
+      userId,
+      typeId: typeId,
+      type,
+    },
+  });
+
+  revalPath(revalidatePath);
+  return userPin;
+}
+
+export async function deleteUserPin(id: string, revalidatePath: string) {
+  const userPin = await db.userPin.delete({
     where: { id },
-  })
+  });
 
-  if (user == null) return notFound()
+  if (userPin == null) {
+    notFound();
+    return;
+  }
 
-  return user
+  revalPath(revalidatePath);
+  return userPin;
 }

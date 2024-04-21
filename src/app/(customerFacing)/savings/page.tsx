@@ -12,6 +12,9 @@ import Meta from "antd/es/card/Meta";
 import IconRoute from "../goals/_components/NewGoalButton";
 import { currencyFormatter } from "@/lib/utils";
 import PopconfirmDelete from "./_components/PopconfirmDelete";
+import PinSavingButton from "@/app/_components/PinSavingButton";
+import { UserPinType, sortPins } from "@/lib/users";
+import { Dayjs } from "dayjs";
 const getGoalTransfers = cache(
   (userId: string) => {
     return db.goalTransfer.findMany({
@@ -21,6 +24,14 @@ const getGoalTransfers = cache(
     });
   },
   ["/savings", "getGoalTransfers"]
+);
+const getUserPins = cache(
+  (userId: string) => {
+    return db.userPin.findMany({
+      where: { type: UserPinType.GoalTransfer, userId },
+    });
+  },
+  ["/savings", "getUserPins"]
 );
 export default function MySavingsPage() {
   return (
@@ -61,9 +72,18 @@ async function GoalTransferSuspense() {
     return;
   }
   if (isExtendedSession(session)) {
-    const goalTransfer = await getGoalTransfers(session.user.id);
-    return goalTransfer.map((goalTransfer) => {
-      console.log(goalTransfer);
+    const [goalTransfers, userPins] = await Promise.all([
+      getGoalTransfers(session.user.id),
+      getUserPins(session.user.id),
+    ]);
+
+    const goalTransfersWithPins = goalTransfers
+      .map((goalTransfer) => ({
+        ...goalTransfer,
+        userPinId: userPins.find((pin) => pin.typeId === goalTransfer.id)?.id,
+      }))
+      .sort(sortPins);
+    return goalTransfersWithPins.map((goalTransfer) => {
       return (
         <Card
           key={goalTransfer.id}
@@ -78,7 +98,13 @@ async function GoalTransferSuspense() {
               key="edit"
               route={`/savings/${goalTransfer.id}/edit`}
             />,
-            <PushpinOutlined key="pin" />,
+            <PinSavingButton
+              userPinId={goalTransfer.userPinId}
+              typeId={goalTransfer.id}
+              type={UserPinType.GoalTransfer}
+              revalidatePath="/savings"
+              userId={session.user.id}
+            />,
           ]}
         >
           <Meta

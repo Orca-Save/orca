@@ -14,7 +14,6 @@ export type GoalFieldErrors = {
   fieldErrors: {
     name?: string[];
     description?: string[];
-    balanceInCents?: string[];
     targetInCents?: string[];
     categoryId?: string[];
     note?: string[];
@@ -55,7 +54,7 @@ export async function addGoal(
       name: data.name,
       note: data.note,
       description: data.description,
-      balanceInCents: data.balanceInCents,
+      updatedAt: new Date(),
       targetInCents: data.targetInCents,
       categoryId: data.categoryId,
       dueAt: data.dueAt,
@@ -98,7 +97,7 @@ export async function updateGoal(
       name: data.name,
       note: data.note,
       description: data.description,
-      balanceInCents: data.balanceInCents,
+      updatedAt: new Date(),
       targetInCents: data.targetInCents,
       categoryId: data.categoryId,
       dueAt: data.dueAt,
