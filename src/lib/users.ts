@@ -16,10 +16,9 @@ export function sortPins(a: UserPin, b: UserPin) {
   }
 
   if (a.updatedAt < b.updatedAt) {
-    return -1;
-  } else if (a.updatedAt > b.updatedAt) {
     return 1;
+  } else if (a.updatedAt > b.updatedAt) {
+    return -1;
   }
-  // a must be equal to b
   return 0;
 }

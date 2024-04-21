@@ -7,7 +7,7 @@ const getCategories = cache(() => {
   return db.goalCategory.findMany({
     orderBy: { name: "asc" },
   });
-}, ["/goals/edit", "getCategories"]);
+}, ["/", "getCategories"]);
 
 export default async function EditGoalPage({
   params: { id },

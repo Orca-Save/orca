@@ -116,7 +116,7 @@ export function GoalForm({
       </Form.Item>
       <Form.Item
         name="balance"
-        label="Balance"
+        label="Already Saved"
         rules={[{ required: true, message: "Please input the balance!" }]}
       >
         <CurrencyInput placeholder="Current Balance" />

@@ -11,7 +11,7 @@ const transferSchema = z.object({
   note: z.string(),
   itemName: z.string(),
   merchantName: z.string(),
-  amountInCents: z.coerce.number().int().nonnegative(),
+  amountInCents: z.coerce.number().int(),
   rating: z.coerce.number().int().min(1).max(5),
   transactedAt: z
     .string()
@@ -19,7 +19,7 @@ const transferSchema = z.object({
       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
       "Invalid ISO 8601 datetime format"
     ),
-  goalId: z.string().uuid(),
+  goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid(),
 });
 

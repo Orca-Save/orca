@@ -12,7 +12,7 @@ const getCategories = cache(() => {
   return db.goalCategory.findMany({
     orderBy: { name: "asc" },
   });
-}, ["/savings/new", "getCategories"]);
+}, ["/savings", "getCategories"]);
 
 const getGoals = cache(
   (userId: string) => {
@@ -21,7 +21,7 @@ const getGoals = cache(
       orderBy: { name: "asc" },
     });
   },
-  ["/savings/new", "getGoals"]
+  ["/savings", "getGoals"]
 );
 
 export default async function NewGoalTransferPage() {

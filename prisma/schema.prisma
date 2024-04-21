@@ -47,7 +47,7 @@ model UserPin {
 }
 
 model GoalTransfer {
-  id            String @id @default(uuid())
+  id            String  @id @default(uuid())
   link          String
   note          String
   itemName      String
@@ -55,6 +55,7 @@ model GoalTransfer {
   merchantName  String
   amountInCents Int
   rating        Int
+  isTemplate    Boolean @default(false)
 
   transactedAt DateTime
   createdAt    DateTime @default(now())
@@ -62,7 +63,7 @@ model GoalTransfer {
 
   categoryId String
   userId     String
-  goalId     String
+  goalId     String?
   category   GoalCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  goal       Goal         @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  goal       Goal?        @relation(fields: [goalId], references: [id], onDelete: Restrict)
 }

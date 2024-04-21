@@ -4,7 +4,7 @@ import { useSession, signIn } from "next-auth/react";
 import dayjs, { Dayjs } from "dayjs";
 import { GoalTransfer, Goal, GoalCategory } from "@prisma/client";
 import { Button, DatePicker, Form, Input, Select, Rate } from "antd";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import CurrencyInput from "./CurrencyInput";
 import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
@@ -43,12 +43,22 @@ export function GoalTransferForm({
 }) {
   const [form] = Form.useForm();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       signIn("azure-ad-b2c");
     },
   });
+
+  const filterParam = searchParams.get("filter");
+  let isTemplate = false;
+  if (
+    filterParam === "templates" ||
+    (goalTransfer && goalTransfer.goalId === null)
+  ) {
+    isTemplate = true;
+  }
 
   const onFinish = async (values: GoalTransferFormValues) => {
     if (!session) return;
@@ -71,7 +81,7 @@ export function GoalTransferForm({
       formData.append("transactedAt", "");
     }
 
-    formData.append("goalId", values.goalId);
+    if (values.goalId) formData.append("goalId", values.goalId);
     formData.append("categoryId", values.categoryId);
 
     const action = goalTransfer
@@ -97,6 +107,11 @@ export function GoalTransferForm({
   const amountInCents = goalTransfer?.amountInCents
     ? goalTransfer.amountInCents / 100
     : 0;
+
+  const externalAccountId = "faed4327-3a9c-4837-a337-c54e9704d60f";
+  let isExternalAccount =
+    filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
+  const initialCategoryId = isExternalAccount ? externalAccountId : "";
   return (
     <Form
       form={form}
@@ -112,8 +127,8 @@ export function GoalTransferForm({
         link: goalTransfer?.link ?? "",
         itemName: goalTransfer?.itemName ?? "",
         merchantName: goalTransfer?.merchantName ?? "",
-        goalId: goalTransfer?.goalId ?? "",
-        categoryId: goalTransfer?.categoryId ?? "",
+        goalId: goalTransfer?.goalId ?? null,
+        categoryId: goalTransfer?.categoryId ?? initialCategoryId,
       }}
     >
       <Form.Item
@@ -160,19 +175,22 @@ export function GoalTransferForm({
       >
         <DatePicker style={{ width: "100%" }} />
       </Form.Item>
-      <Form.Item
-        name="goalId"
-        label="Goal"
-        rules={[{ required: true, message: "Please select a goal!" }]}
-      >
-        <Select
-          placeholder="Select a goal"
-          options={goals.map((goal: Goal) => ({
-            label: `${goal.name} (${goal.description})`,
-            value: goal.id,
-          }))}
-        />
-      </Form.Item>
+
+      {!isTemplate ? (
+        <Form.Item
+          name="goalId"
+          label="Goal"
+          rules={[{ required: true, message: "Please select a goal!" }]}
+        >
+          <Select
+            placeholder="Select a goal"
+            options={goals.map((goal: Goal) => ({
+              label: `${goal.name} (${goal.description})`,
+              value: goal.id,
+            }))}
+          />
+        </Form.Item>
+      ) : null}
       <Form.Item
         name="categoryId"
         label="Category"
@@ -180,6 +198,7 @@ export function GoalTransferForm({
       >
         <Select
           placeholder="Select a category"
+          disabled={isExternalAccount}
           options={categories.map((category: GoalCategory) => ({
             label: category.name,
             value: category.id,

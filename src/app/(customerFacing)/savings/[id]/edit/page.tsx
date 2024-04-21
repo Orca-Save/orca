@@ -12,7 +12,7 @@ const getCategories = cache(() => {
   return db.goalCategory.findMany({
     orderBy: { name: "asc" },
   });
-}, ["/savings", "getCategories"]);
+}, ["/", "getCategories"]);
 
 const getGoals = cache(
   (userId: string) => {

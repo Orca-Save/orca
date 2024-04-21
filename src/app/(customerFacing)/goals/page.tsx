@@ -10,11 +10,12 @@ import { signIn } from "next-auth/react";
 import { isExtendedSession } from "@/lib/session";
 import PopconfirmDelete from "./_components/PopconfirmDelete";
 import EditAction from "../_components/EditAction";
-import IconRoute from "./_components/NewGoalButton";
+import IconRoute from "./_components/IconButtonRoute";
 import GoalProgress from "./_components/GoalProgress";
 import Meta from "antd/es/card/Meta";
 import { UserPinType, sortPins } from "@/lib/users";
 import PinSavingButton from "@/app/_components/PinSavingButton";
+import GoalCard from "../_components/GoalCard";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({
@@ -24,7 +25,7 @@ const getGoals = (userId: string) => {
 };
 const getGoalTransfersSum = (userId: string) => {
   return db.goalTransfer.groupBy({
-    by: ["goalId"], // Group by goalId
+    by: ["goalId"],
     _sum: {
       amountInCents: true,
     },
@@ -100,48 +101,21 @@ async function GoalsSuspense() {
     const userHasPinnedGoal = userPins.some(
       (pin) => pin.userId === session.user.id
     );
-    const goalsWithPins = goals
+    const goalsWithDetails = goals
       .map((goal) => ({
         ...goal,
         userPinId: userPins.find((pin) => pin.typeId === goal.id)?.id,
+        currentBalanceInCents: goalSumMap.get(goal.id)?.amountInCents || 0,
+        savedItemCount: goalSumMap.get(goal.id)?.count || 0,
       }))
       .sort(sortPins);
-    return goalsWithPins.map((goal) => {
-      const currentBalanceInCents = goalSumMap.get(goal.id)?.amountInCents || 0;
-      const savedItemCount = goalSumMap.get(goal.id)?.count || 0;
+    return goalsWithDetails.map((goal) => {
       return (
-        <Card
-          key={goal.id}
-          actions={[
-            <PopconfirmDelete
-              goalId={goal.id}
-              key="delete"
-              title="Delete the goal"
-              description="Are you sure to delete this goal?"
-            />,
-            <EditAction route={`/goals/${goal.id}/edit`} key="edit" />,
-            <PinSavingButton
-              userPinId={goal.userPinId}
-              typeId={goal.id}
-              type={UserPinType.Goal}
-              userHasPinnedGoal={userHasPinnedGoal}
-              userId={session.user.id}
-              revalidatePath="/goals"
-            />,
-            <ShareAltOutlined key="share" />,
-          ]}
-        >
-          <Meta
-            title={goal.name}
-            description={"by " + goal.dueAt.toLocaleDateString()}
-          />
-          <p>Saved {savedItemCount} times!</p>
-          <GoalProgress
-            currentBalanceInCents={currentBalanceInCents}
-            targetInCents={goal.targetInCents}
-          />
-          <p>{goal.description}</p>
-        </Card>
+        <GoalCard
+          revalidatePath="/goals"
+          userHasPinnedGoal={userHasPinnedGoal}
+          goal={goal}
+        />
       );
     });
   }

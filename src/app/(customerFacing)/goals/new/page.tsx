@@ -7,7 +7,7 @@ const getCategories = cache(() => {
   return db.goalCategory.findMany({
     orderBy: { name: "asc" },
   });
-}, ["/goals/new", "getCategories"]);
+}, ["/", "getCategories"]);
 
 export default async function NewGoalPage() {
   const categories = await getCategories();

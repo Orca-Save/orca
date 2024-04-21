@@ -8,7 +8,7 @@ type IconRouteProps = {
   route: string;
   text: string;
 };
-export default function IconRoute({ icon, route, text }: IconRouteProps) {
+export default function IconButtonRoute({ icon, route, text }: IconRouteProps) {
   const router = useRouter();
   return (
     <Button
