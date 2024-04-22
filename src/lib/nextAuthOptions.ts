@@ -69,14 +69,14 @@ const authOptions: AuthOptions = {
       if (session.user === undefined) session.user = {};
       //@ts-ignore
       if (token.user?.id) session.user.id = token.user.id;
-      // //@ts-ignore
-      // session.user.emails = token.profile?.emails;
-      // //@ts-ignore
-      // session.user.givenName = token.profile?.given_name;
-      // //@ts-ignore
-      // session.user.familyName = token.profile?.family_name;
-      // //@ts-ignore
-      // session.user.extended = true;
+      //@ts-ignore
+      session.user.emails = token.profile?.emails;
+      //@ts-ignore
+      session.user.givenName = token.profile?.given_name;
+      //@ts-ignore
+      session.user.familyName = token.profile?.family_name;
+      //@ts-ignore
+      session.user.extended = true;
       return session;
     },
   },

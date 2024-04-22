@@ -14,9 +14,11 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.6",
+    "@opentelemetry/exporter-jaeger": "^1.23.0",
     "@prisma/client": "^5.10.2",
     "@react-email/components": "^0.0.15",
     "antd": "^5.16.1",
+    "applicationinsights": "^3.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
