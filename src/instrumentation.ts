@@ -2,6 +2,9 @@ import { AzureMonitorTraceExporter } from "@azure/monitor-opentelemetry-exporter
 import { registerOTel } from "@vercel/otel";
 
 export async function register() {
+  if (process.env.NODE_ENV !== "production") {
+    return;
+  }
   registerOTel({
     serviceName: "your-project-name",
     traceExporter: new AzureMonitorTraceExporter({
