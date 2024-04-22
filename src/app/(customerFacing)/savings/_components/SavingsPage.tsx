@@ -1,4 +1,3 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
 import { isExtendedSession } from "@/lib/session";
@@ -16,6 +15,7 @@ import { Suspense } from "react";
 import IconRoute from "../../goals/_components/IconButtonRoute";
 import { PlusOutlined } from "@ant-design/icons";
 import { externalAccountId } from "@/lib/goalTransfers";
+import authOptions from "@/lib/nextAuthOptions";
 
 type Filter = "templates" | "accounts";
 const getGoalTransfers = cache(
@@ -125,6 +125,7 @@ async function SavingsList({
               route={`/savings/${goalTransfer.id}/edit` + routeParams}
             />,
             <PinSavingButton
+              key="pin"
               userPinId={goalTransfer.userPinId}
               typeId={goalTransfer.id}
               type={UserPinType.GoalTransfer}

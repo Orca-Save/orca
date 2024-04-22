@@ -17,7 +17,7 @@ const transferSchema = z.object({
     .string()
     .regex(
       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
-      "Invalid ISO 8601 datetime format"
+      "Invalid ISO 8601 date time format"
     ),
   goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid(),
@@ -127,8 +127,10 @@ export async function updateGoalTransfer(
       note: data.note,
       itemName: data.itemName,
       merchantName: data.merchantName,
+      goalId: data.goalId,
       updatedAt: new Date(),
       amountInCents: data.amountInCents,
+      categoryId: data.categoryId,
       rating: data.rating,
       transactedAt: new Date(data.transactedAt),
     },

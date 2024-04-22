@@ -10,7 +10,7 @@ export default function CustomerLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ minHeight: "100vh", height: "100%" }}>
       <Nav>
         <NavLink href="/">Home</NavLink>
         <NavLink href="/goals">Goals</NavLink>

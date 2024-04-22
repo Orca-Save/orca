@@ -3,10 +3,10 @@ import { signIn } from "next-auth/react";
 
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { isExtendedSession } from "@/lib/session";
 import { PageHeader } from "@/app/admin/_components/PageHeader";
 import { GoalTransferForm } from "@/app/_components/GoalTransferForm";
+import authOptions from "@/lib/nextAuthOptions";
 
 const getCategories = cache(() => {
   return db.goalCategory.findMany({

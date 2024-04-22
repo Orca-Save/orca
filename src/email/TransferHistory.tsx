@@ -64,7 +64,7 @@ export default function TransferHistoryEmail({
             <Heading>Saving History</Heading>
             {savings.map((saving, index) => (
               <React.Fragment key={saving.id}>
-                <TransferInformation saving={saving} goal={saving.goal} />
+                {/* <TransferInformation saving={saving} goal={saving.goal} /> */}
                 {index < savings.length - 1 && <Hr />}
               </React.Fragment>
             ))}

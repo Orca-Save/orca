@@ -35,6 +35,7 @@ export default function GoalCard({
         />,
         <EditAction route={`/goals/${goal.id}/edit`} key="edit" />,
         <PinSavingButton
+          key="pin"
           userPinId={goal.userPinId}
           typeId={goal.id}
           type={UserPinType.Goal}

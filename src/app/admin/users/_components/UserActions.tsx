@@ -1,7 +1,6 @@
 "use client";
 
 import { useTransition } from "react";
-import { deleteUser } from "../../../_actions/users";
 import { useRouter } from "next/navigation";
 
 export function DeleteDropDownItem({ id }: { id: string }) {

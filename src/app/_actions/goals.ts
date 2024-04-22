@@ -26,7 +26,7 @@ const dueAtSchema = z
   .string()
   .regex(
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
-    "Invalid ISO 8601 datetime format"
+    "Invalid ISO 8601 date time format"
   );
 const addSchema = z.object({
   name: z.string().min(1),
@@ -80,6 +80,7 @@ export async function addGoal(
         transactedAt: new Date(),
       },
     });
+    revalidatePath("/savings");
   }
 
   revalidatePath("/");

@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
 import { Card, Skeleton } from "antd";
@@ -11,6 +10,7 @@ import IconRoute from "./_components/IconButtonRoute";
 import { UserPinType, sortPins } from "@/lib/users";
 import GoalCard from "../_components/GoalCard";
 import { PlusOutlined } from "@ant-design/icons";
+import authOptions from "@/lib/nextAuthOptions";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({
@@ -107,6 +107,7 @@ async function GoalsSuspense() {
     return goalsWithDetails.map((goal) => {
       return (
         <GoalCard
+          key={goal.id}
           revalidatePath="/goals"
           userHasPinnedGoal={userHasPinnedGoal}
           goal={goal}

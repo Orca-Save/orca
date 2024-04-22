@@ -5,7 +5,7 @@ export default function NewGoalPage() {
   return (
     <>
       <PageHeader>Add Goal</PageHeader>
-      <GoalForm />
+      {/* <GoalForm /> */}
     </>
   );
 }

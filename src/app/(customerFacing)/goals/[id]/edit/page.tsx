@@ -16,7 +16,7 @@ export default async function EditGoalPage({
 }) {
   const [goal, categories] = await Promise.all([
     db.goal.findUnique({ where: { id } }),
-    await getCategories(),
+    getCategories(),
   ]);
 
   return (

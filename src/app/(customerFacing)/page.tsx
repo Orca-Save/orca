@@ -7,11 +7,12 @@ import GoalCard from "./_components/GoalCard";
 import { isExtendedSession } from "@/lib/session";
 import { signIn } from "next-auth/react";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 import { UserPinType } from "@/lib/users";
 import { PlusOutlined } from "@ant-design/icons";
 import { QuickSaveButton } from "./_components/QuickSaveButton";
 import { getPinnedUserGoal, getPinnedUserGoalId } from "./_actions/data";
+import { Title } from "../_components/Title";
+import authOptions from "@/lib/nextAuthOptions";
 
 const getPinnedGoalTransfers = async (userId: string) => {
   const userPins = await db.userPin.findMany({
@@ -107,7 +108,7 @@ export default async function HomePage() {
             </Button>
           </Link>
 
-          <p>One-tap Impulse Saves</p>
+          <Title level={4}>One-tap Impulse Saves</Title>
 
           <Suspense
             fallback={
@@ -134,7 +135,7 @@ async function QuickSaveButtons({ userId }: { userId: string }) {
 
   return (
     <>
-      {!goalId && <div>No Pinned Goal.</div>}
+      {!goalId && <Title level={4}>No Pinned Goal.</Title>}
       <Space wrap>
         {quickTransfers.map((transfer) => (
           <QuickSaveButton
@@ -154,7 +155,7 @@ async function GoalSuspense({ userId }: { userId: string }) {
     getGoalTransfersSum(userId),
     getUserPins(userId),
   ]);
-  if (!goal) return <div>No Pinned Goal.</div>;
+  if (!goal) return <Title>No Pinned Goal.</Title>;
 
   const goalSumMap = new Map(
     sums.map((item) => [

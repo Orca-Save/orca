@@ -12,7 +12,7 @@ export default async function EditGoalPage({
   return (
     <>
       <PageHeader>Edit Goal</PageHeader>
-      <GoalForm goal={goal} />
+      {/* <GoalForm goal={goal}  /> */}
     </>
   );
 }
