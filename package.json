@@ -9,6 +9,9 @@
     "lint": "next lint",
     "email": "cp .env ./node_modules/react-email && email dev --dir src/email --port 3001"
   },
+  "engines": {
+    "node": ">=20.10.0"
+  },
   "dependencies": {
     "@ant-design/icons": "^5.3.6",
     "@prisma/client": "^5.10.2",
