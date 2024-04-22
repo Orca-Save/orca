@@ -10,7 +10,7 @@
     "email": "cp .env ./node_modules/react-email && email dev --dir src/email --port 3001"
   },
   "engines": {
-    "node": ">=20.10.0"
+    "node": ">=18.20.2"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.6",
