@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import { PlusOutlined } from "@ant-design/icons";
 import { Title } from "../_components/Title";
 import authOptions from "@/lib/nextAuthOptions";
+import { baseURL } from "@/lib/utils";
 
 const DynamicPinnedGoal = dynamic(() => import("./_components/DashGoalCard"), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
@@ -19,7 +20,7 @@ export default async function HomePage() {
   const session = await getServerSession(authOptions);
   if (!session) {
     signIn("azure-ad-b2c", {
-      callbackUrl: window.location.origin + "/savings",
+      callbackUrl: baseURL + "/savings",
     });
     return;
   }

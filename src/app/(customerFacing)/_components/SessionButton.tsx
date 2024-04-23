@@ -1,5 +1,6 @@
 "use client";
 import { NavLink } from "@/components/Nav";
+import { baseURL } from "@/lib/utils";
 import { useSession, signIn } from "next-auth/react";
 
 export default function SessionButton() {
@@ -9,9 +10,7 @@ export default function SessionButton() {
   }
   return (
     <button
-      onClick={() =>
-        signIn("azure-ad-b2c", { callbackUrl: window.location.origin + "/" })
-      }
+      onClick={() => signIn("azure-ad-b2c", { callbackUrl: baseURL + "/" })}
     >
       Sign In
     </button>

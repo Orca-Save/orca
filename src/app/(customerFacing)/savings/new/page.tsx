@@ -7,6 +7,7 @@ import { isExtendedSession } from "@/lib/session";
 import { PageHeader } from "@/app/admin/_components/PageHeader";
 import { GoalTransferForm } from "@/app/_components/GoalTransferForm";
 import authOptions from "@/lib/nextAuthOptions";
+import { baseURL } from "@/lib/utils";
 
 const getCategories = cache(() => {
   return db.goalCategory.findMany({
@@ -27,7 +28,7 @@ const getGoals = cache(
 export default async function NewGoalTransferPage() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    signIn("azure-ad-b2c", { callbackUrl: window.location.origin + "/goals" });
+    signIn("azure-ad-b2c", { callbackUrl: baseURL + "/goals" });
     return;
   }
   if (!isExtendedSession(session)) return;

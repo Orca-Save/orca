@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import GoalCard from "../../_components/GoalCard";
 import { Title } from "@/app/_components/Title";
+import { baseURL } from "@/lib/utils";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({
@@ -43,7 +44,7 @@ const getUserPins = cache(
 export default async function GoalsSuspense() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    signIn("azure-ad-b2c", { callbackUrl: window.location.origin + "/goals" });
+    signIn("azure-ad-b2c", { callbackUrl: baseURL + "/goals" });
     return;
   }
 

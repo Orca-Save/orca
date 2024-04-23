@@ -10,7 +10,7 @@ import PopconfirmDelete from "./PopconfirmDelete";
 import EditAction from "../../_components/EditAction";
 import PinSavingButton from "@/app/_components/PinSavingButton";
 import Meta from "antd/es/card/Meta";
-import { currencyFormatter } from "@/lib/utils";
+import { baseURL, currencyFormatter } from "@/lib/utils";
 import { externalAccountId } from "@/lib/goalTransfers";
 
 export type GoalTransferFilter = "templates" | "accounts";
@@ -50,7 +50,7 @@ export default async function SavingsList({
   const session = await getServerSession(authOptions);
   if (!session) {
     signIn("azure-ad-b2c", {
-      callbackUrl: window.location.origin + "/savings",
+      callbackUrl: baseURL + "/savings",
     });
     return;
   }

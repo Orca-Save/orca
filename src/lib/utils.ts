@@ -10,3 +10,7 @@ export const currencyFormatter = (
   includeDollar?: boolean
 ) =>
   `${includeDollar ? "" : "$"}${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+export const baseURL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : process.env.PRODUCTION_URL;
