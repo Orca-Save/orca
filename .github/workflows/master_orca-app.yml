@@ -52,7 +52,6 @@ jobs:
       - name: Unzip artifact for deployment
         run: |
           unzip release.zip
-          npm start
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
