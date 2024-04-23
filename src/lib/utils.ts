@@ -13,4 +13,4 @@ export const currencyFormatter = (
 export const baseURL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
-    : process.env.PRODUCTION_URL;
+    : "https://orca-next.azurewebsites.net";
