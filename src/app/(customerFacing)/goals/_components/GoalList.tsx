@@ -6,6 +6,7 @@ import { UserPinType, sortPins } from "@/lib/users";
 import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import GoalCard from "../../_components/GoalCard";
+import { Title } from "@/app/_components/Title";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({
@@ -80,4 +81,5 @@ export default async function GoalsSuspense() {
       );
     });
   }
+  return <Title> Sign in required</Title>;
 }
