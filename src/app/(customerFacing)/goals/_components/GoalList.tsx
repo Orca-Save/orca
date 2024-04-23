@@ -43,7 +43,7 @@ const getUserPins = cache(
 export default async function GoalsSuspense() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    signIn("azure-ad-b2c", { callbackUrl: "/goals" });
+    signIn("azure-ad-b2c", { callbackUrl: window.location.origin + "/goals" });
     return;
   }
 

@@ -8,7 +8,11 @@ export default function SessionButton() {
     return <NavLink href="/api/auth/signout">Sign Out</NavLink>;
   }
   return (
-    <button onClick={() => signIn("azure-ad-b2c", { callbackUrl: "/" })}>
+    <button
+      onClick={() =>
+        signIn("azure-ad-b2c", { callbackUrl: window.location.origin + "/" })
+      }
+    >
       Sign In
     </button>
   );
