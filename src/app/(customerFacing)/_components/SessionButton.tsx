@@ -10,7 +10,9 @@ export default function SessionButton() {
   }
   return (
     <button
-      onClick={() => signIn("azure-ad-b2c", { callbackUrl: baseURL + "/" })}
+      onClick={() =>
+        signIn("azure-ad-b2c", { callbackUrl: window.location.origin + "/" })
+      }
     >
       Sign In
     </button>
