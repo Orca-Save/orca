@@ -69,7 +69,7 @@ export function GoalTransferForm({
     if (!isExtendedSession(session)) return;
 
     const formData = new FormData();
-    formData.append("link", values.link);
+    if (values.link) formData.append("link", values.link);
     formData.append("note", values.note || "");
     formData.append("itemName", values.itemName);
     formData.append("merchantName", values.merchantName);
@@ -127,7 +127,7 @@ export function GoalTransferForm({
           : dayjs(),
         rating: goalTransfer?.rating ?? 3,
         note: goalTransfer?.note ?? "",
-        link: goalTransfer?.link ?? "",
+        link: goalTransfer?.link,
         itemName: goalTransfer?.itemName ?? "",
         merchantName: goalTransfer?.merchantName ?? "",
         goalId: goalTransfer?.goalId ?? null,

@@ -81,8 +81,7 @@ export default async function SavingsList({
     );
     const pinnedTitle =
       filter === "templates" ? "Pinned One-tap Impulse Saves" : "Pinned Saves";
-    const otherTitle =
-      filter === "templates" ? "One-tap Impulse Saves" : "Savings";
+    const otherTitle = filter === "templates" ? "" : "Savings";
     return (
       <>
         {pinnedGoalTransfers.length ? (
