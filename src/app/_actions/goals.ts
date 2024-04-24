@@ -15,7 +15,8 @@ export type GoalFieldErrors = {
   fieldErrors: {
     name?: string[];
     description?: string[];
-    targetInCents?: string[];
+    targetAmount?: string[];
+    initialAmount?: string[];
     categoryId?: string[];
     note?: string[];
     dueAt?: string[];
@@ -30,9 +31,9 @@ const dueAtSchema = z
   );
 const addSchema = z.object({
   name: z.string().min(1),
-  description: z.string().min(1),
-  initialAmountInCents: z.coerce.number().int().min(0).optional(),
-  targetInCents: z.coerce.number().int().min(1),
+  description: z.string(),
+  initialAmount: z.coerce.number().int().min(0).optional(),
+  targetAmount: z.coerce.number().int().min(1),
   categoryId: z.string().uuid(),
   note: z.string(),
   dueAt: dueAtSchema,
@@ -56,14 +57,14 @@ export async function addGoal(
       note: data.note,
       description: data.description,
       updatedAt: new Date(),
-      targetInCents: data.targetInCents,
+      targetInCents: data.targetAmount * 100,
       categoryId: data.categoryId,
       dueAt: data.dueAt,
       imagePath: "",
     },
   });
 
-  if (data.initialAmountInCents && data.initialAmountInCents > 0) {
+  if (data.initialAmount && data.initialAmount > 0) {
     await db.goalTransfer.create({
       data: {
         userId,
@@ -76,7 +77,7 @@ export async function addGoal(
         updatedAt: new Date(),
         itemName: `${data.name} Initial Deposit`,
         merchantName: "",
-        amountInCents: data.initialAmountInCents,
+        amountInCents: data.initialAmount * 100,
         transactedAt: new Date(),
       },
     });
@@ -119,7 +120,7 @@ export async function updateGoal(
       note: data.note,
       description: data.description,
       updatedAt: new Date(),
-      targetInCents: data.targetInCents,
+      targetInCents: data.targetAmount * 100,
       categoryId: data.categoryId,
       dueAt: data.dueAt,
       imagePath,

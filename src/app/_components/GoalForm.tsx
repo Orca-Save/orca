@@ -45,13 +45,12 @@ export function GoalForm({
   });
 
   const onFinish = async (values: GoalFormValues) => {
-    if (!session) return;
+    if (!session) return null;
     const formData = new FormData();
-    console.log(values.targetAmount, String(values.targetAmount * 100));
     formData.append("name", values.name);
     formData.append("description", values.description);
-    formData.append("initialAmountInCents", String(values.initialAmount * 100));
-    formData.append("targetInCents", String(values.targetAmount * 100));
+
+    formData.append("targetAmount", String(values.targetAmount));
     formData.append("note", values.note || "");
 
     if (values.categoryId) {
@@ -59,9 +58,11 @@ export function GoalForm({
     }
     if (values.dueAt) {
       formData.append("dueAt", values.dueAt.format()); // Assuming moment.js for date formatting
-    } else {
-      formData.append("dueAt", ""); // Append an empty string or handle as required
     }
+    if (values.initialAmount) {
+      formData.append("initialAmount", String(values.initialAmount * 100));
+    }
+
     if (isExtendedSession(session)) {
       const action = goal
         ? updateGoal.bind(null, goal.id, session.user.id)

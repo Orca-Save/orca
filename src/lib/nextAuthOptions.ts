@@ -57,18 +57,22 @@ const authOptions: AuthOptions = {
       }
 
       Object.assign(token, additions);
-      return { token };
+      return token;
     },
     async session({
       session,
       token,
+      ...others
     }: { session: Session; token: JWT; user: AdapterUser } & {
       newSession: any;
       trigger: "update";
     }) {
       if (session.user === undefined) session.user = {};
       //@ts-ignore
-      if (token.user?.id) session.user.id = token.user.id;
+      if (token.user?.id) {
+        //@ts-ignore
+        session.user.id = token.user.id;
+      }
       //@ts-ignore
       session.user.emails = token.profile?.emails;
       //@ts-ignore

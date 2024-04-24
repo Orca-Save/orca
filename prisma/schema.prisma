@@ -20,7 +20,7 @@ model Goal {
   note          String
   targetInCents Int
   imagePath     String
-  description   String
+  description   String?
   dueAt         DateTime
   categoryId    String
   createdAt     DateTime       @default(now())

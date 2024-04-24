@@ -19,10 +19,7 @@ const DynamicQuickSave = dynamic(() => import("./_components/DashQuickSave"), {
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    signIn("azure-ad-b2c", {
-      callbackUrl: baseURL + "/savings",
-    });
-    return;
+    return <Title>Please login to continue.</Title>;
   }
   if (isExtendedSession(session)) {
     return (
