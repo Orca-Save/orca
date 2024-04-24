@@ -3,11 +3,11 @@ import { GoalForm } from "@/app/_components/GoalForm";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
 
-const getCategories = cache(() => {
+const getCategories = () => {
   return db.goalCategory.findMany({
     orderBy: { name: "asc" },
   });
-}, ["/", "getCategories"]);
+};
 
 export default async function NewGoalPage() {
   const categories = await getCategories();
