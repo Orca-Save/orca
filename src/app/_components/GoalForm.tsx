@@ -60,7 +60,7 @@ export function GoalForm({
       formData.append("dueAt", values.dueAt.format()); // Assuming moment.js for date formatting
     }
     if (values.initialAmount) {
-      formData.append("initialAmount", String(values.initialAmount * 100));
+      formData.append("initialAmount", String(values.initialAmount));
     }
 
     if (isExtendedSession(session)) {

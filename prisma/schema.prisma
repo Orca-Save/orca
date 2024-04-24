@@ -47,8 +47,8 @@ model UserPin {
 }
 
 model GoalTransfer {
-  id            String @id @default(uuid())
-  link          String
+  id            String  @id @default(uuid())
+  link          String?
   note          String
   itemName      String
   imagePath     String

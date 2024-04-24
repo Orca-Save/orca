@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { GoalTransfer } from "@prisma/client";
 
 const transferSchema = z.object({
-  link: z.string().url(),
+  link: z.string().url().optional(),
   note: z.string(),
   itemName: z.string(),
   merchantName: z.string(),

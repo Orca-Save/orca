@@ -135,13 +135,6 @@ export function GoalTransferForm({
       }}
     >
       <Form.Item
-        name="link"
-        label="Link"
-        rules={[{ required: true, message: "Please input the link!" }]}
-      >
-        <Input placeholder="Link to transaction" />
-      </Form.Item>
-      <Form.Item
         name="itemName"
         label="Item Name"
         rules={[{ required: true, message: "Please input the item name!" }]}
@@ -207,6 +200,9 @@ export function GoalTransferForm({
             value: category.id,
           }))}
         />
+      </Form.Item>
+      <Form.Item name="link" label="Link">
+        <Input placeholder="Link to item" />
       </Form.Item>
       <Form.Item name="note" label="Additional Note">
         <TextArea placeholder="Additional notes about the transfer" />

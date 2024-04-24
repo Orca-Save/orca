@@ -72,7 +72,6 @@ export default async function GoalsSuspense() {
       }))
       .sort(sortPins);
     const pinnedGoals = goalsWithDetails.filter((x) => x.userPinId);
-
     return (
       <>
         <Title level={4}>
