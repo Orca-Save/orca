@@ -14,6 +14,7 @@ import {
   externalAccountId,
   isGoalTransferFieldErrors,
 } from "@/lib/goalTransfers";
+import { GoalTransferFilter } from "../(customerFacing)/savings/_components/SavingsList";
 
 type GoalTransferFormValues = {
   goalId: string;
@@ -212,7 +213,8 @@ export function GoalTransferForm({
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          {goalTransfer ? "Save" : "Add"} Transfer
+          {goalTransfer ? "Save" : "Add"}{" "}
+          {filterParam === "templates" ? "One-tap Save" : "Transfer"}
         </Button>
       </Form.Item>
     </Form>

@@ -1,7 +1,6 @@
-import { PageHeader } from "@/app/admin/_components/PageHeader";
 import { GoalForm } from "@/app/_components/GoalForm";
+import { Title } from "@/app/_components/Title";
 import db from "@/db/db";
-import { cache } from "@/lib/cache";
 
 const getCategories = () => {
   return db.goalCategory.findMany({
@@ -13,7 +12,7 @@ export default async function NewGoalPage() {
   const categories = await getCategories();
   return (
     <>
-      <PageHeader>Add Goal</PageHeader>
+      <Title>Add Goal</Title>
       <GoalForm categories={categories} />
     </>
   );

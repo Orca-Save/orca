@@ -1,5 +1,5 @@
-import { PageHeader } from "@/app/admin/_components/PageHeader";
 import { GoalForm } from "@/app/_components/GoalForm";
+import { Title } from "@/app/_components/Title";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
 
@@ -21,7 +21,7 @@ export default async function EditGoalPage({
 
   return (
     <>
-      <PageHeader>Edit Goal</PageHeader>
+      <Title>Edit Goal</Title>
       <GoalForm goal={goal} categories={categories} />
     </>
   );

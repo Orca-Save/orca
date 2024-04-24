@@ -1,6 +1,5 @@
 import db from "@/db/db";
-import { PageHeader } from "../../../_components/PageHeader";
-import { GoalForm } from "../../../../_components/GoalForm";
+import { Title } from "@/app/_components/Title";
 
 export default async function EditGoalPage({
   params: { id },
@@ -11,7 +10,7 @@ export default async function EditGoalPage({
 
   return (
     <>
-      <PageHeader>Edit Goal</PageHeader>
+      <Title>Edit Goal</Title>
       {/* <GoalForm goal={goal}  /> */}
     </>
   );

@@ -12,7 +12,17 @@ import PinSavingButton from "@/app/_components/PinSavingButton";
 import Meta from "antd/es/card/Meta";
 import { baseURL, currencyFormatter } from "@/lib/utils";
 import { externalAccountId } from "@/lib/goalTransfers";
+import {
+  Goal,
+  GoalCategory,
+  GoalTransfer as PrismaGoalTransfer,
+} from "@prisma/client";
+import { Title } from "@/app/_components/Title";
 
+type GoalTransfer = PrismaGoalTransfer & {
+  category: GoalCategory;
+  userPinId?: string;
+};
 export type GoalTransferFilter = "templates" | "accounts";
 const getGoalTransfers = cache(
   (userId: string, filter?: GoalTransferFilter) => {
@@ -25,7 +35,7 @@ const getGoalTransfers = cache(
     if (filter === "accounts") where.categoryId = externalAccountId;
     return db.goalTransfer.findMany({
       where,
-      include: { goal: true, category: true },
+      include: { category: true },
       orderBy: { transactedAt: "desc" },
     });
   },
@@ -66,42 +76,86 @@ export default async function SavingsList({
         userPinId: userPins.find((pin) => pin.typeId === goalTransfer.id)?.id,
       }))
       .sort(sortPins);
-    return goalTransfersWithPins.map((goalTransfer) => {
-      return (
-        <Card
-          key={goalTransfer.id}
-          actions={[
-            <PopconfirmDelete
-              goalTransferId={goalTransfer.id}
-              key="delete"
-              title="Delete the goal"
-              description="Are you sure to delete this goal?"
-            />,
-            <EditAction
-              key="edit"
-              route={`/savings/${goalTransfer.id}/edit` + routeParams}
-            />,
-            <PinSavingButton
-              key="pin"
-              userPinId={goalTransfer.userPinId}
-              typeId={goalTransfer.id}
-              type={UserPinType.GoalTransfer}
+    const pinnedGoalTransfers = goalTransfersWithPins.filter(
+      (x) => x.userPinId
+    );
+    const pinnedTitle =
+      filter === "templates" ? "Pinned One-tap Impulse Saves" : "Pinned Saves";
+    const otherTitle =
+      filter === "templates" ? "One-tap Impulse Saves" : "Savings";
+    return (
+      <>
+        {pinnedGoalTransfers.length ? (
+          <Title level={4}>{pinnedTitle}</Title>
+        ) : null}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pinnedGoalTransfers.map((goalTransfer) => (
+            <GoalTransferCard
+              key={goalTransfer.id}
+              routeParams={routeParams}
+              goalTransfer={goalTransfer}
               userId={session.user.id}
-            />,
-          ]}
-        >
-          <Meta
-            avatar={
-              <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
-            }
-            title={goalTransfer.itemName}
-            description={goalTransfer.category.name}
-          />
-          <p>
-            {currencyFormatter((goalTransfer.amountInCents / 100).toString())}
-          </p>
-        </Card>
-      );
-    });
+            />
+          ))}
+        </div>
+        <Title level={4}>{otherTitle}</Title>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {goalTransfersWithPins
+            .filter((x) => !x.userPinId)
+            .map((goalTransfer) => (
+              <GoalTransferCard
+                key={goalTransfer.id}
+                routeParams={routeParams}
+                goalTransfer={goalTransfer}
+                userId={session.user.id}
+              />
+            ))}
+        </div>
+      </>
+    );
   }
+}
+
+function GoalTransferCard({
+  goalTransfer,
+  userId,
+  routeParams,
+}: {
+  goalTransfer: GoalTransfer;
+  userId: string;
+  routeParams: string;
+}) {
+  return (
+    <Card
+      key={goalTransfer.id}
+      actions={[
+        <PopconfirmDelete
+          goalTransferId={goalTransfer.id}
+          key="delete"
+          title="Delete the goal"
+          description="Are you sure to delete this goal?"
+        />,
+        <EditAction
+          key="edit"
+          route={`/savings/${goalTransfer.id}/edit` + routeParams}
+        />,
+        <PinSavingButton
+          key="pin"
+          userPinId={goalTransfer.userPinId}
+          typeId={goalTransfer.id}
+          type={UserPinType.GoalTransfer}
+          userId={userId}
+        />,
+      ]}
+    >
+      <Meta
+        avatar={
+          <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
+        }
+        title={goalTransfer.itemName}
+        description={goalTransfer.category.name}
+      />
+      <p>{currencyFormatter((goalTransfer.amountInCents / 100).toString())}</p>
+    </Card>
+  );
 }

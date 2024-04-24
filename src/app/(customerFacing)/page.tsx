@@ -19,12 +19,13 @@ const DynamicQuickSave = dynamic(() => import("./_components/DashQuickSave"), {
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return <Title>Please login to continue.</Title>;
+    return <Title>Please sign in to continue.</Title>;
   }
   if (isExtendedSession(session)) {
     return (
       <>
         <Space direction="vertical" style={{ width: "100%" }}>
+          <Title level={4}>Focus Goal</Title>
           <DynamicPinnedGoal userId={session.user.id} />
           <Link href="/savings/new">
             <Button

@@ -1,4 +1,4 @@
-import { Card } from "antd";
+import { Card, Col, Row } from "antd";
 import PopconfirmDelete from "../goals/_components/PopconfirmDelete";
 import EditAction from "./EditAction";
 import PinSavingButton from "@/app/_components/PinSavingButton";
@@ -34,22 +34,30 @@ export default function GoalCard({
           description="Are you sure to delete this goal?"
         />,
         <EditAction route={`/goals/${goal.id}/edit`} key="edit" />,
-        <PinSavingButton
-          key="pin"
-          userPinId={goal.userPinId}
-          typeId={goal.id}
-          type={UserPinType.Goal}
-          userHasPinnedGoal={userHasPinnedGoal}
-          userId={goal.userId}
-        />,
+        ...(revalidatePath !== "/"
+          ? [
+              <PinSavingButton
+                key="pin"
+                userPinId={goal.userPinId}
+                typeId={goal.id}
+                type={UserPinType.Goal}
+                userHasPinnedGoal={userHasPinnedGoal}
+                userId={goal.userId}
+              />,
+            ]
+          : []),
         <ShareAltOutlined key="share" />,
       ]}
     >
-      <Meta
-        title={goal.name}
-        description={"by " + goal.dueAt.toLocaleDateString()}
-      />
-      <p>Saved {goal.savedItemCount} times!</p>
+      <Meta title={goal.name} />
+      <Row justify="space-between">
+        <Col span={12}>
+          <p>{goal.savedItemCount} Saves!</p>
+        </Col>
+        <Col span={12} style={{ textAlign: "right" }}>
+          {"by " + goal.dueAt.toLocaleDateString()}
+        </Col>
+      </Row>
       <GoalProgress
         currentBalanceInCents={goal.currentBalanceInCents}
         targetInCents={goal.targetInCents}

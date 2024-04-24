@@ -4,10 +4,10 @@ import { signIn } from "next-auth/react";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
 import { isExtendedSession } from "@/lib/session";
-import { PageHeader } from "@/app/admin/_components/PageHeader";
 import { GoalTransferForm } from "@/app/_components/GoalTransferForm";
 import authOptions from "@/lib/nextAuthOptions";
 import { baseURL } from "@/lib/utils";
+import { Title } from "@/app/_components/Title";
 
 const getCategories = cache(() => {
   return db.goalCategory.findMany({
@@ -53,7 +53,7 @@ export default async function NewGoalTransferPage({
 
   return (
     <>
-      <PageHeader>Add Saving</PageHeader>
+      <Title>Add Saving</Title>
       <GoalTransferForm
         categories={categories}
         goals={goals}

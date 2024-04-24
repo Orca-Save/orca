@@ -1,14 +1,9 @@
-import db from "@/db/db";
-import { formatCurrency, formatNumber } from "@/lib/formatters";
-import { PageHeader } from "../_components/PageHeader";
-import { MoreVertical } from "lucide-react";
-import { DeleteDropDownItem } from "./_components/UserActions";
-import { Table } from "antd";
+import { Title } from "@/app/_components/Title";
 
 export default function UsersPage() {
   return (
     <>
-      <PageHeader>Customers</PageHeader>
+      <Title>Customers</Title>
     </>
   );
 }

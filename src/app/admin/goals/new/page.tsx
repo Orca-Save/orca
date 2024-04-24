@@ -1,10 +1,10 @@
 import { GoalForm } from "@/app/_components/GoalForm";
-import { PageHeader } from "../../_components/PageHeader";
+import { Title } from "@/app/_components/Title";
 
 export default function NewGoalPage() {
   return (
     <>
-      <PageHeader>Add Goal</PageHeader>
+      <Title>Add Goal</Title>
       {/* <GoalForm /> */}
     </>
   );

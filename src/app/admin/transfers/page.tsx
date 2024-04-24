@@ -1,11 +1,11 @@
+import { Title } from "@/app/_components/Title";
 import db from "@/db/db";
 import { formatCurrency } from "@/lib/formatters";
-import { PageHeader } from "../_components/PageHeader";
 import { Table } from "antd";
 export default function SavingsPage() {
   return (
     <>
-      <PageHeader>Savings</PageHeader>
+      <Title>Savings</Title>
     </>
   );
 }

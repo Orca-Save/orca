@@ -27,9 +27,7 @@ export default async function GoalsPage() {
         icon={<PlusOutlined />}
         text={"New Goal"}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <DynamicGoalList />
-      </div>
+      <DynamicGoalList />
     </>
   );
 }

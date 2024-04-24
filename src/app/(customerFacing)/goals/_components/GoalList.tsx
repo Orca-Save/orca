@@ -71,16 +71,36 @@ export default async function GoalsSuspense() {
         savedItemCount: goalSumMap.get(goal.id)?.count || 0,
       }))
       .sort(sortPins);
-    return goalsWithDetails.map((goal) => {
-      return (
-        <GoalCard
-          key={goal.id}
-          revalidatePath="/goals"
-          userHasPinnedGoal={userHasPinnedGoal}
-          goal={goal}
-        />
-      );
-    });
+    const pinnedGoals = goalsWithDetails.filter((x) => x.userPinId);
+
+    return (
+      <>
+        <Title level={4}>
+          {pinnedGoals.length ? "Focus Goal" : "No Focus Goal"}
+        </Title>
+        {pinnedGoals.map((goal) => (
+          <GoalCard
+            key={goal.id}
+            revalidatePath="/goals"
+            userHasPinnedGoal={userHasPinnedGoal}
+            goal={goal}
+          />
+        ))}
+        <Title level={4}>
+          {goalsWithDetails.length ? "Goals" : "No Goals"}
+        </Title>
+        {goalsWithDetails
+          .filter((x) => !x.userPinId)
+          .map((goal) => (
+            <GoalCard
+              key={goal.id}
+              revalidatePath="/goals"
+              userHasPinnedGoal={userHasPinnedGoal}
+              goal={goal}
+            />
+          ))}
+      </>
+    );
   }
   return <Title> Sign in required</Title>;
 }
