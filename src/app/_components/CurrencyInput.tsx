@@ -3,13 +3,6 @@ import { InputNumber, Select } from "antd";
 import { currencyFormatter } from "@/lib/utils";
 
 const { Option } = Select;
-
-const selectBefore = (
-  <Select defaultValue="add" style={{ width: 60 }}>
-    <Option value="add">+</Option>
-    <Option value="minus">-</Option>
-  </Select>
-);
 const selectAfter = (
   <Select defaultValue="USD" style={{ width: 60 }}>
     <Option value="USD">$</Option>
@@ -29,7 +22,7 @@ function CurrencyInput({
   onChange?: (value: string | null) => void;
 }) {
   const currencyParser = (value?: string) =>
-    value?.replace?.(/\$\s?|(,*)/g, "") ?? "";
+    value?.replace?.(/\$\s?|,|-/g, "") ?? "";
 
   return (
     <InputNumber
@@ -37,7 +30,6 @@ function CurrencyInput({
       parser={currencyParser}
       precision={2}
       prefix={"$"}
-      // addonAfter={selectAfter}
       placeholder={placeholder}
       value={value}
       onChange={onChange}

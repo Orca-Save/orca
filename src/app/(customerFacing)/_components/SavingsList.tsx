@@ -1,55 +1,46 @@
 import db from "@/db/db";
-import { cache } from "@/lib/cache";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
 import { UserPinType, sortPins } from "@/lib/users";
-import { Avatar, Card } from "antd";
+import { Avatar, Card, Space } from "antd";
 import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import PopconfirmDelete from "./PopconfirmDelete";
-import EditAction from "../../_components/EditAction";
+import EditAction from "./EditAction";
 import PinSavingButton from "@/app/_components/PinSavingButton";
 import Meta from "antd/es/card/Meta";
 import { baseURL, currencyFormatter } from "@/lib/utils";
 import { externalAccountId } from "@/lib/goalTransfers";
 import {
-  Goal,
   GoalCategory,
   GoalTransfer as PrismaGoalTransfer,
 } from "@prisma/client";
-import { Title } from "@/app/_components/Title";
+import { Title, Text } from "@/app/_components/Typography";
 
 type GoalTransfer = PrismaGoalTransfer & {
   category: GoalCategory;
   userPinId?: string;
 };
 export type GoalTransferFilter = "templates" | "accounts";
-const getGoalTransfers = cache(
-  (userId: string, filter?: GoalTransferFilter) => {
-    const where: {
-      userId: string;
-      goalId: null | { not: null };
-      categoryId?: string;
-    } = { userId, goalId: { not: null } };
-    if (filter === "templates") where.goalId = null;
-    if (filter === "accounts") where.categoryId = externalAccountId;
-    return db.goalTransfer.findMany({
-      where,
-      include: { category: true },
-      orderBy: { transactedAt: "desc" },
-    });
-  },
-  ["/savings", "getGoalTransfers"]
-);
-const getUserPins = cache(
-  (userId: string) => {
-    return db.userPin.findMany({
-      where: { type: UserPinType.GoalTransfer, userId },
-    });
-  },
-  ["/savings", "getUserPins"]
-);
-
+const getGoalTransfers = (userId: string, filter?: GoalTransferFilter) => {
+  const where: {
+    userId: string;
+    goalId: null | { not: null };
+    categoryId?: string;
+  } = { userId, goalId: { not: null } };
+  if (filter === "templates") where.goalId = null;
+  if (filter === "accounts") where.categoryId = externalAccountId;
+  return db.goalTransfer.findMany({
+    where,
+    include: { category: true },
+    orderBy: { transactedAt: "desc" },
+  });
+};
+const getUserPins = (userId: string) => {
+  return db.userPin.findMany({
+    where: { type: UserPinType.GoalTransfer, userId },
+  });
+};
 export default async function SavingsList({
   filter,
   routeParams,
@@ -83,9 +74,11 @@ export default async function SavingsList({
       filter === "templates" ? "Pinned One-tap Impulse Saves" : "Pinned Saves";
     const otherTitle = filter === "templates" ? "" : "Savings";
     return (
-      <>
+      <Space direction="vertical" style={{ width: "100%" }}>
         {pinnedGoalTransfers.length ? (
-          <Title level={4}>{pinnedTitle}</Title>
+          <Space className="center-space">
+            <Title level={4}>{pinnedTitle}</Title>
+          </Space>
         ) : null}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {pinnedGoalTransfers.map((goalTransfer) => (
@@ -97,7 +90,9 @@ export default async function SavingsList({
             />
           ))}
         </div>
-        <Title level={4}>{otherTitle}</Title>
+        <Space className="center-space">
+          <Title level={4}>{otherTitle}</Title>
+        </Space>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {goalTransfersWithPins
             .filter((x) => !x.userPinId)
@@ -110,7 +105,7 @@ export default async function SavingsList({
               />
             ))}
         </div>
-      </>
+      </Space>
     );
   }
 }
@@ -154,7 +149,9 @@ function GoalTransferCard({
         title={goalTransfer.itemName}
         description={goalTransfer.category.name}
       />
-      <p>{currencyFormatter((goalTransfer.amountInCents / 100).toString())}</p>
+      <Text type={goalTransfer.amountInCents < 0 ? "danger" : undefined}>
+        {currencyFormatter((goalTransfer.amountInCents / 100).toString())}
+      </Text>
     </Card>
   );
 }

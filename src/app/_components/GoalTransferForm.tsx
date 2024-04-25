@@ -14,7 +14,6 @@ import {
   externalAccountId,
   isGoalTransferFieldErrors,
 } from "@/lib/goalTransfers";
-import { GoalTransferFilter } from "../(customerFacing)/savings/_components/SavingsList";
 import Link from "next/link";
 
 type GoalTransferFormValues = {
@@ -41,9 +40,11 @@ export function GoalTransferForm({
   categories,
   goals,
   goalTransfer,
+  isSavings,
 }: {
   categories: GoalCategory[];
   goals: Goal[];
+  isSavings: boolean;
   goalTransfer?: GoalTransfer;
 }) {
   const [form] = Form.useForm();
@@ -74,11 +75,15 @@ export function GoalTransferForm({
     formData.append("note", values.note || "");
     formData.append("itemName", values.itemName);
     formData.append("merchantName", values.merchantName);
+    formData.append("rating", String(values.rating));
+
+    const adjustedAmountInCents = isSavings
+      ? values.amountInCents
+      : -values.amountInCents;
     formData.append(
       "amountInCents",
-      String(Math.round(values.amountInCents * 100))
+      String(Math.round(adjustedAmountInCents * 100))
     );
-    formData.append("rating", String(values.rating));
 
     if (values.transactedAt) {
       formData.append("transactedAt", values.transactedAt.format());
@@ -182,7 +187,9 @@ export function GoalTransferForm({
           <Select
             placeholder="Select a goal"
             options={goals.map((goal: Goal) => ({
-              label: `${goal.name} (${goal.description})`,
+              label: `${goal.name} ${
+                goal.description ? `(${goal.description})` : ""
+              }`,
               value: goal.id,
             }))}
           />

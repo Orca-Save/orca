@@ -2,7 +2,7 @@ import Link from "next/link";
 import db from "@/db/db";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { Button, Table } from "antd";
-import { Title } from "@/app/_components/Title";
+import { Title } from "@/app/_components/Typography";
 
 export default function AdminGoalsPage() {
   return (

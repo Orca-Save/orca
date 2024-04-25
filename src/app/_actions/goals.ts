@@ -4,7 +4,7 @@ import db from "@/db/db";
 import { z } from "zod";
 import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { Goal, GoalTransfer } from "@prisma/client";
+import { Goal } from "@prisma/client";
 import { externalAccountId } from "@/lib/goalTransfers";
 
 const fileSchema = z.instanceof(File, { message: "Required" });

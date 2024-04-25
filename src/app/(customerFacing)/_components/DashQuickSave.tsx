@@ -1,7 +1,7 @@
 import db from "@/db/db";
 import { UserPinType } from "@/lib/users";
 import { getPinnedUserGoalId } from "../_actions/data";
-import { Title } from "@/app/_components/Title";
+import { Text, Title } from "@/app/_components/Typography";
 import { Space } from "antd";
 import { QuickSaveButton } from "./QuickSaveButton";
 
@@ -38,7 +38,7 @@ export default async function QuickSaveButtons({ userId }: { userId: string }) {
     getPinnedUserGoalId(userId),
   ]);
 
-  if (!quickTransfers) return <div>No Pinned Goal Transfers.</div>;
+  if (!quickTransfers) return <Text>No Pinned Goal Transfers.</Text>;
 
   return (
     <>

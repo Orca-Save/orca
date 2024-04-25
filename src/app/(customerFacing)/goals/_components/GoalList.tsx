@@ -6,8 +6,9 @@ import { UserPinType, sortPins } from "@/lib/users";
 import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import GoalCard from "../../_components/GoalCard";
-import { Title } from "@/app/_components/Title";
+import { Title } from "@/app/_components/Typography";
 import { baseURL } from "@/lib/utils";
+import { Space } from "antd";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({
@@ -73,10 +74,12 @@ export default async function GoalsSuspense() {
       .sort(sortPins);
     const pinnedGoals = goalsWithDetails.filter((x) => x.userPinId);
     return (
-      <>
-        <Title level={4}>
-          {pinnedGoals.length ? "Focus Goal" : "No Focus Goal"}
-        </Title>
+      <Space direction="vertical" className="w-full">
+        <Space className="center-space">
+          <Title level={4}>
+            {pinnedGoals.length ? "Focus Goal" : "No Focus Goal"}
+          </Title>
+        </Space>
         {pinnedGoals.map((goal) => (
           <GoalCard
             key={goal.id}
@@ -85,20 +88,24 @@ export default async function GoalsSuspense() {
             goal={goal}
           />
         ))}
-        <Title level={4}>
-          {goalsWithDetails.length ? "Goals" : "No Goals"}
-        </Title>
-        {goalsWithDetails
-          .filter((x) => !x.userPinId)
-          .map((goal) => (
-            <GoalCard
-              key={goal.id}
-              revalidatePath="/goals"
-              userHasPinnedGoal={userHasPinnedGoal}
-              goal={goal}
-            />
-          ))}
-      </>
+        <Space className="center-space">
+          <Title level={4}>
+            {goalsWithDetails.length ? "Goals" : "No Goals"}
+          </Title>
+        </Space>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {goalsWithDetails
+            .filter((x) => !x.userPinId)
+            .map((goal) => (
+              <GoalCard
+                key={goal.id}
+                revalidatePath="/goals"
+                userHasPinnedGoal={userHasPinnedGoal}
+                goal={goal}
+              />
+            ))}
+        </div>
+      </Space>
     );
   }
   return <Title> Sign in required</Title>;

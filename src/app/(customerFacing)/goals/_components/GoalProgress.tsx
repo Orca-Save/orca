@@ -22,6 +22,7 @@ export default function GoalProgress({
       <Progress
         percent={(currentBalanceInCents / targetInCents) * 100}
         status="active"
+        style={{ marginRight: "1rem" }}
         strokeWidth={13}
         format={() => currencyFormatter(targetInCents / 100)}
         strokeColor={twoColors}

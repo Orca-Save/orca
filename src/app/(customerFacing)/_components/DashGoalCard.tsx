@@ -3,7 +3,7 @@ import GoalCard from "./GoalCard";
 import db from "@/db/db";
 import { UserPinType } from "@/lib/users";
 import { getPinnedUserGoal } from "../_actions/data";
-import { Title } from "@/app/_components/Title";
+import { Title } from "@/app/_components/Typography";
 
 const getGoalTransfersSum = (userId: string) => {
   return db.goalTransfer.groupBy({

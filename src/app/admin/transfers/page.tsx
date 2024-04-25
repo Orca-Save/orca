@@ -1,4 +1,4 @@
-import { Title } from "@/app/_components/Title";
+import { Title } from "@/app/_components/Typography";
 import db from "@/db/db";
 import { formatCurrency } from "@/lib/formatters";
 import { Table } from "antd";

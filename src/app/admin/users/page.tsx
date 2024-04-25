@@ -1,4 +1,4 @@
-import { Title } from "@/app/_components/Title";
+import { Title } from "@/app/_components/Typography";
 
 export default function UsersPage() {
   return (

@@ -11,6 +11,7 @@ import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import CurrencyInput from "./CurrencyInput";
 import Link from "next/link";
+// import { navigateBack } from "@/lib/utils";
 
 type GoalFormValues = {
   name: string;
@@ -44,7 +45,6 @@ export function GoalForm({
       signIn("azure-ad-b2c");
     },
   });
-
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
     const formData = new FormData();

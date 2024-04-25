@@ -1,5 +1,5 @@
 import { GoalForm } from "@/app/_components/GoalForm";
-import { Title } from "@/app/_components/Title";
+import { Title } from "@/app/_components/Typography";
 import db from "@/db/db";
 import { cache } from "@/lib/cache";
 

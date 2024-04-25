@@ -74,3 +74,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .center-space {
+    @apply w-full justify-center;
+  }
+}

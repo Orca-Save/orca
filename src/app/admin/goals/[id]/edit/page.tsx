@@ -1,5 +1,5 @@
 import db from "@/db/db";
-import { Title } from "@/app/_components/Title";
+import { Title } from "@/app/_components/Typography";
 
 export default async function EditGoalPage({
   params: { id },

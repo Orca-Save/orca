@@ -3,12 +3,10 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 
 import { isExtendedSession } from "@/lib/session";
-import { signIn } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { PlusOutlined } from "@ant-design/icons";
 import authOptions from "@/lib/nextAuthOptions";
-import { baseURL } from "@/lib/utils";
-import { Title } from "../_components/Title";
+import { Title } from "../_components/Typography";
 
 const DynamicPinnedGoal = dynamic(() => import("./_components/DashGoalCard"), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
@@ -37,7 +35,7 @@ export default async function HomePage() {
               Impulse Save
             </Button>
           </Link>
-          <Link href="/savings/new">
+          <Link href="/purchases/new">
             <Button
               icon={<PlusOutlined />}
               size="large"

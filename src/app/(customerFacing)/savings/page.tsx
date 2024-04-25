@@ -1,27 +1,29 @@
 import { Tabs, TabsProps } from "antd";
-import SavingsPage from "./_components/SavingsPage";
+import SavingsPage from "../_components/SavingsPage";
 
 const items: TabsProps["items"] = [
   {
     key: "1",
     label: "One-tap",
     children: (
-      <SavingsPage
-        newButtonText="Add One-tap Impulse Save"
-        filter="templates"
-      />
+      <SavingsPage newSaveText="Add One-tap Impulse Save" filter="templates" />
     ),
   },
   {
     key: "2",
     label: "Log",
-    children: <SavingsPage newButtonText="Impulse Save or Buy" />,
+    children: (
+      <SavingsPage
+        newSaveText="Impulse Save"
+        newPurchaseText="Impulse Purchase"
+      />
+    ),
   },
   {
     key: "3",
     label: "External",
     children: (
-      <SavingsPage newButtonText="New External Account" filter="accounts" />
+      <SavingsPage newSaveText="New External Account" filter="accounts" />
     ),
   },
 ];
