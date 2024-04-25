@@ -13,10 +13,7 @@ const items: TabsProps["items"] = [
     key: "2",
     label: "Log",
     children: (
-      <SavingsPage
-        newSaveText="Impulse Save"
-        newPurchaseText="Impulse Purchase"
-      />
+      <SavingsPage newSaveText="Impulse Save" newPurchaseText="Impulse Buy" />
     ),
   },
   {

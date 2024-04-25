@@ -44,7 +44,7 @@ export default async function SavingsPage({
           </Button>
         </Link>
         {filter === undefined && (
-          <Link href={"/savings/new?filter=templates"}>
+          <Link href={"/purchases/new"}>
             <Button icon={<PlusOutlined />}>{newPurchaseText}</Button>
           </Link>
         )}

@@ -7,6 +7,7 @@ import { GoalTransferForm } from "@/app/_components/GoalTransferForm";
 import authOptions from "@/lib/nextAuthOptions";
 import { baseURL } from "@/lib/utils";
 import { Title } from "@/app/_components/Typography";
+import { Goal, GoalCategory, GoalTransfer } from "@prisma/client";
 
 const getCategories = () => {
   return db.goalCategory.findMany({
@@ -19,13 +20,19 @@ const getGoals = (userId: string) => {
     orderBy: { name: "asc" },
   });
 };
-
+const getGoalTransfer = (goalTransferId: string) => {
+  return db.goalTransfer.findUnique({
+    where: { id: goalTransferId },
+  });
+};
 export default async function GoalTransferPage({
   title,
   isSavings,
+  goalTransferId,
 }: {
   title: string;
   isSavings: boolean;
+  goalTransferId?: string;
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -33,6 +40,9 @@ export default async function GoalTransferPage({
     return;
   }
   if (!isExtendedSession(session)) return;
+
+  let goalTransfer: any | undefined;
+  if (goalTransferId) goalTransfer = await getGoalTransfer(goalTransferId);
 
   const [categories, goals] = await Promise.all([
     getCategories(),
@@ -45,6 +55,7 @@ export default async function GoalTransferPage({
       <GoalTransferForm
         isSavings={isSavings}
         categories={categories}
+        goalTransfer={goalTransfer}
         goals={goals}
       />
     </>

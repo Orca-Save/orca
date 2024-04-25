@@ -1,5 +1,4 @@
 import db from "@/db/db";
-import { cache } from "@/lib/cache";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
 import { UserPinType, sortPins } from "@/lib/users";
@@ -33,14 +32,11 @@ const getGoalTransfersSum = (userId: string) => {
   });
 };
 
-const getUserPins = cache(
-  (userId: string) => {
-    return db.userPin.findMany({
-      where: { type: UserPinType.Goal, userId },
-    });
-  },
-  ["/goals", "getUserPins"]
-);
+const getUserPins = (userId: string) => {
+  return db.userPin.findMany({
+    where: { type: UserPinType.Goal, userId },
+  });
+};
 
 export default async function GoalsSuspense() {
   const session = await getServerSession(authOptions);

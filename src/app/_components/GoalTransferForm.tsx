@@ -117,7 +117,7 @@ export function GoalTransferForm({
   const amountInCents = goalTransfer?.amountInCents
     ? goalTransfer.amountInCents / 100
     : 0;
-
+  console.log(goalTransfer);
   let isExternalAccount =
     filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
   const initialCategoryId = isExternalAccount ? externalAccountId : "";

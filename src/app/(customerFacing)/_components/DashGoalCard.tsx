@@ -1,4 +1,3 @@
-import { cache } from "@/lib/cache";
 import GoalCard from "./GoalCard";
 import db from "@/db/db";
 import { UserPinType } from "@/lib/users";
@@ -22,14 +21,11 @@ const getGoalTransfersSum = (userId: string) => {
   });
 };
 
-const getUserPins = cache(
-  (userId: string) => {
-    return db.userPin.findMany({
-      where: { type: UserPinType.Goal, userId },
-    });
-  },
-  ["/", "getUserPins"]
-);
+const getUserPins = (userId: string) => {
+  return db.userPin.findMany({
+    where: { type: UserPinType.Goal, userId },
+  });
+};
 
 export default async function DashGoalCard({ userId }: { userId: string }) {
   const [goal, sums, userPins] = await Promise.all([

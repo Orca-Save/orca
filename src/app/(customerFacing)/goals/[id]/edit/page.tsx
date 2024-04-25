@@ -1,13 +1,12 @@
 import { GoalForm } from "@/app/_components/GoalForm";
 import { Title } from "@/app/_components/Typography";
 import db from "@/db/db";
-import { cache } from "@/lib/cache";
 
-const getCategories = cache(() => {
+const getCategories = () => {
   return db.goalCategory.findMany({
     orderBy: { name: "asc" },
   });
-}, ["/", "getCategories"]);
+};
 
 export default async function EditGoalPage({
   params: { id },
