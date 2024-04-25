@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - orca-next
+name: Deploy Node.js app to Azure Web App - orca-next
 
 on:
   push:
@@ -21,17 +21,16 @@ jobs:
         with:
           node-version: "20.x"
 
-      - name: npm install, build, and test
+      - name: Build and test
         run: |
-          npm install
           npm run build --if-present
           npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r --exclude=node_modules
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: release.zip
@@ -42,12 +41,10 @@ jobs:
     environment:
       name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: node-app
 
@@ -57,9 +54,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_96E0260C35964132B0C3056563B4F372 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_48A6B42DFFF54AEEAFA0EE4FA1553E77 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_41667D3BF1E94D2F8C18408C0B902005 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_345DC9428D42418795D0FFF1CB00A400 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_539F3D86A2214D26B563857E6F498E0A }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B890749192DF436FB2756378FAFB0C0A }}
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
