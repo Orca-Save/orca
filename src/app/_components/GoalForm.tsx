@@ -3,13 +3,14 @@
 import { signIn, useSession } from "next-auth/react";
 import dayjs, { Dayjs } from "dayjs";
 import { Goal, GoalCategory } from "@prisma/client";
-import { Button, DatePicker, Form, Input, Select } from "antd";
+import { Button, DatePicker, Form, Input, Select, Space } from "antd";
 import { useRouter } from "next/navigation";
 
 import { addGoal, updateGoal } from "../_actions/goals";
 import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import CurrencyInput from "./CurrencyInput";
+import Link from "next/link";
 
 type GoalFormValues = {
   name: string;
@@ -153,11 +154,15 @@ export function GoalForm({
       >
         <TextArea placeholder="Additional notes about the goal" />
       </Form.Item>
-      <Form.Item>
+      <Space direction="horizontal">
         <Button type="primary" htmlType="submit">
-          {goal ? "Update Goal" : "Add Goal"}
+          Save
         </Button>
-      </Form.Item>
+
+        <Link href="/goals">
+          <Button>Cancel</Button>
+        </Link>
+      </Space>
     </Form>
   );
 }

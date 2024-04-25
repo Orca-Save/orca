@@ -14,7 +14,7 @@ export default function CustomerLayout({
       <Nav>
         <NavLink href="/">Home</NavLink>
         <NavLink href="/goals">Goals</NavLink>
-        <NavLink href="/savings">My Savings</NavLink>
+        <NavLink href="/savings">Savings</NavLink>
         <SessionButton />
       </Nav>
       <div className="container my-6">{children}</div>

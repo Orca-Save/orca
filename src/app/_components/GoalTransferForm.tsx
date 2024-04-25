@@ -3,7 +3,7 @@
 import { useSession, signIn } from "next-auth/react";
 import dayjs, { Dayjs } from "dayjs";
 import { GoalTransfer, Goal, GoalCategory } from "@prisma/client";
-import { Button, DatePicker, Form, Input, Select, Rate } from "antd";
+import { Button, DatePicker, Form, Input, Select, Rate, Space } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import CurrencyInput from "./CurrencyInput";
@@ -15,6 +15,7 @@ import {
   isGoalTransferFieldErrors,
 } from "@/lib/goalTransfers";
 import { GoalTransferFilter } from "../(customerFacing)/savings/_components/SavingsList";
+import Link from "next/link";
 
 type GoalTransferFormValues = {
   goalId: string;
@@ -207,12 +208,14 @@ export function GoalTransferForm({
       <Form.Item name="note" label="Additional Note">
         <TextArea placeholder="Additional notes about the transfer" />
       </Form.Item>
-      <Form.Item>
+      <Space direction="horizontal">
         <Button type="primary" htmlType="submit">
-          {goalTransfer ? "Save" : "Add"}{" "}
-          {filterParam === "templates" ? "One-tap Save" : "Transfer"}
+          Save
         </Button>
-      </Form.Item>
+        <Link href="/savings">
+          <Button>Cancel</Button>
+        </Link>
+      </Space>
     </Form>
   );
 }
