@@ -1,11 +1,11 @@
 "use server";
 
 import db from "@/db/db";
-import { z } from "zod";
-import { notFound } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { Goal } from "@prisma/client";
 import { externalAccountId } from "@/lib/goalTransfers";
+import { Goal } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
+import { z } from "zod";
 
 const fileSchema = z.instanceof(File, { message: "Required" });
 const imageSchema = fileSchema.refine(
@@ -57,7 +57,7 @@ export async function addGoal(
       note: data.note,
       description: data.description,
       updatedAt: new Date(),
-      targetInCents: data.targetAmount * 100,
+      targetAmount: data.targetAmount,
       categoryId: data.categoryId,
       dueAt: data.dueAt,
       imagePath: "",
@@ -77,7 +77,7 @@ export async function addGoal(
         updatedAt: new Date(),
         itemName: `${data.name} Initial Deposit`,
         merchantName: "",
-        amountInCents: data.initialAmount * 100,
+        amount: data.initialAmount,
         transactedAt: new Date(),
       },
     });
@@ -120,7 +120,7 @@ export async function updateGoal(
       note: data.note,
       description: data.description,
       updatedAt: new Date(),
-      targetInCents: data.targetAmount * 100,
+      targetAmount: data.targetAmount,
       categoryId: data.categoryId,
       dueAt: data.dueAt,
       imagePath,

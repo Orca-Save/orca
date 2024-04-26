@@ -1,13 +1,13 @@
+import { Title } from "@/app/_components/Typography";
 import db from "@/db/db";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
 import { UserPinType, sortPins } from "@/lib/users";
+import { baseURL } from "@/lib/utils";
+import { Space } from "antd";
 import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import GoalCard from "../../_components/GoalCard";
-import { Title } from "@/app/_components/Typography";
-import { baseURL } from "@/lib/utils";
-import { Space } from "antd";
 
 const getGoals = (userId: string) => {
   return db.goal.findMany({
@@ -19,7 +19,7 @@ const getGoalTransfersSum = (userId: string) => {
   return db.goalTransfer.groupBy({
     by: ["goalId"],
     _sum: {
-      amountInCents: true,
+      amount: true,
     },
     _count: {
       goalId: true,
@@ -54,7 +54,7 @@ export default async function GoalsSuspense() {
     const goalSumMap = new Map(
       sums.map((item) => [
         item.goalId,
-        { amountInCents: item._sum.amountInCents, count: item._count.goalId },
+        { amount: item._sum.amount, count: item._count.goalId },
       ])
     );
     const userHasPinnedGoal = userPins.some(
@@ -64,7 +64,7 @@ export default async function GoalsSuspense() {
       .map((goal) => ({
         ...goal,
         userPinId: userPins.find((pin) => pin.typeId === goal.id)?.id,
-        currentBalanceInCents: goalSumMap.get(goal.id)?.amountInCents || 0,
+        currentBalance: goalSumMap.get(goal.id)?.amount?.toNumber() || 0,
         savedItemCount: goalSumMap.get(goal.id)?.count || 0,
       }))
       .sort(sortPins);

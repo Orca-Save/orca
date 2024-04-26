@@ -1,24 +1,24 @@
+import PinSavingButton from "@/app/_components/PinSavingButton";
+import { Text, Title } from "@/app/_components/Typography";
 import db from "@/db/db";
+import { externalAccountId } from "@/lib/goalTransfers";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
 import { UserPinType, sortPins } from "@/lib/users";
-import { Avatar, Card, Space } from "antd";
-import { getServerSession } from "next-auth";
-import { signIn } from "next-auth/react";
-import PopconfirmDelete from "./PopconfirmDelete";
-import EditAction from "./EditAction";
-import PinSavingButton from "@/app/_components/PinSavingButton";
-import Meta from "antd/es/card/Meta";
 import { baseURL, currencyFormatter } from "@/lib/utils";
-import { externalAccountId } from "@/lib/goalTransfers";
 import {
   GoalCategory,
   GoalTransfer as PrismaGoalTransfer,
 } from "@prisma/client";
-import { Title, Text } from "@/app/_components/Typography";
+import { Avatar, Card, Space } from "antd";
+import Meta from "antd/es/card/Meta";
+import { getServerSession } from "next-auth";
+import { signIn } from "next-auth/react";
+import EditAction from "./EditAction";
+import PopconfirmDelete from "./PopconfirmDelete";
 
 type GoalTransfer = PrismaGoalTransfer & {
-  category: GoalCategory;
+  category: GoalCategory | null;
   userPinId?: string;
 };
 export type GoalTransferFilter = "templates" | "accounts";
@@ -119,6 +119,7 @@ function GoalTransferCard({
   userId: string;
   routeParams: string;
 }) {
+  const amount = goalTransfer.amount.toNumber();
   return (
     <Card
       key={goalTransfer.id}
@@ -147,10 +148,10 @@ function GoalTransferCard({
           <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
         }
         title={goalTransfer.itemName}
-        description={goalTransfer.category.name}
+        description={goalTransfer.category?.name}
       />
-      <Text type={goalTransfer.amountInCents < 0 ? "danger" : undefined}>
-        {currencyFormatter((goalTransfer.amountInCents / 100).toString())}
+      <Text type={amount < 0 ? "danger" : undefined}>
+        {currencyFormatter(amount)}
       </Text>
     </Card>
   );

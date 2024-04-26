@@ -18,7 +18,7 @@ model Goal {
   userId        String
   name          String
   note          String
-  targetInCents Int
+  targetAmount  Decimal        @db.Decimal(65, 2)
   imagePath     String
   description   String?
   dueAt         DateTime
@@ -47,22 +47,23 @@ model UserPin {
 }
 
 model GoalTransfer {
-  id            String  @id @default(uuid())
-  link          String?
-  note          String
-  itemName      String
-  imagePath     String
-  merchantName  String
-  amountInCents Int
-  rating        Int
+  id       String  @id @default(uuid())
+  userId   String
+  itemName String
+  amount   Decimal @db.Decimal(65, 2)
 
   transactedAt DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  categoryId String
-  userId     String
+  link         String?
+  note         String?
+  imagePath    String?
+  merchantName String?
+  rating       Int?
+
+  categoryId String?
   goalId     String?
-  category   GoalCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  goal       Goal?        @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  category   GoalCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  goal       Goal?         @relation(fields: [goalId], references: [id], onDelete: Restrict)
 }

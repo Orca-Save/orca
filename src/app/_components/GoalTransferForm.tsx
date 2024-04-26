@@ -1,20 +1,20 @@
 "use client";
 
-import { useSession, signIn } from "next-auth/react";
+import { Goal, GoalCategory, GoalTransfer } from "@prisma/client";
+import { Button, DatePicker, Form, Input, Rate, Select, Space } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import { GoalTransfer, Goal, GoalCategory } from "@prisma/client";
-import { Button, DatePicker, Form, Input, Select, Rate, Space } from "antd";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import CurrencyInput from "./CurrencyInput";
-import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
-import { isExtendedSession } from "@/lib/session";
-import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import {
   externalAccountId,
   isGoalTransferFieldErrors,
 } from "@/lib/goalTransfers";
+import { isExtendedSession } from "@/lib/session";
+import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
+import CurrencyInput from "./CurrencyInput";
 
 type GoalTransferFormValues = {
   goalId: string;
@@ -23,7 +23,7 @@ type GoalTransferFormValues = {
   note?: string;
   itemName: string;
   merchantName: string;
-  amountInCents: number;
+  amount: number;
   rating: number;
   transactedAt: Dayjs | null;
 };
@@ -45,7 +45,7 @@ export function GoalTransferForm({
   categories: GoalCategory[];
   goals: Goal[];
   isSavings: boolean;
-  goalTransfer?: GoalTransfer;
+  goalTransfer?: GoalTransfer | null;
 }) {
   const [form] = Form.useForm();
   const router = useRouter();
@@ -77,13 +77,8 @@ export function GoalTransferForm({
     formData.append("merchantName", values.merchantName);
     formData.append("rating", String(values.rating));
 
-    const adjustedAmountInCents = isSavings
-      ? values.amountInCents
-      : -values.amountInCents;
-    formData.append(
-      "amountInCents",
-      String(Math.round(adjustedAmountInCents * 100))
-    );
+    const adjustedAmount = isSavings ? values.amount : -values.amount;
+    formData.append("amount", String(adjustedAmount));
 
     if (values.transactedAt) {
       formData.append("transactedAt", values.transactedAt.format());
@@ -95,7 +90,7 @@ export function GoalTransferForm({
     formData.append("categoryId", values.categoryId);
 
     const action = goalTransfer
-      ? updateGoalTransfer.bind(null, goalTransfer.id, session.user.id)
+      ? updateGoalTransfer.bind(null, goalTransfer.id)
       : addGoalTransfer.bind(null, session.user.id);
     const result = await action(formData);
 
@@ -114,10 +109,7 @@ export function GoalTransferForm({
       router.push("/savings");
     }
   };
-  const amountInCents = goalTransfer?.amountInCents
-    ? goalTransfer.amountInCents / 100
-    : 0;
-  console.log(goalTransfer);
+  const amount = goalTransfer?.amount ?? 0;
   let isExternalAccount =
     filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
   const initialCategoryId = isExternalAccount ? externalAccountId : "";
@@ -127,7 +119,7 @@ export function GoalTransferForm({
       layout="vertical"
       onFinish={onFinish}
       initialValues={{
-        amountInCents,
+        amount,
         transactedAt: goalTransfer?.transactedAt
           ? dayjs(goalTransfer.transactedAt)
           : dayjs(),
@@ -155,7 +147,7 @@ export function GoalTransferForm({
         <Input placeholder="Merchant Name" />
       </Form.Item>
       <Form.Item
-        name="amountInCents"
+        name="amount"
         label="Amount"
         rules={[{ required: true, message: "Please input the amount!" }]}
       >
@@ -216,11 +208,11 @@ export function GoalTransferForm({
         <TextArea placeholder="Additional notes about the transfer" />
       </Form.Item>
       <Space direction="horizontal">
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" size="large" htmlType="submit">
           Save
         </Button>
         <Link href="/savings">
-          <Button>Cancel</Button>
+          <Button size="large">Cancel</Button>
         </Link>
       </Space>
     </Form>

@@ -1,10 +1,8 @@
-import { Button, Card, Skeleton, Space } from "antd";
-import { Suspense } from "react";
-import IconRoute from "../goals/_components/IconButtonRoute";
 import { PlusOutlined } from "@ant-design/icons";
-import { GoalTransferFilter } from "./SavingsList";
+import { Button, Card, Skeleton, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { GoalTransferFilter } from "./SavingsList";
 const DynamicSavingsList = dynamic(() => import("./SavingsList"), {
   loading: () => (
     <>
@@ -38,13 +36,13 @@ export default async function SavingsPage({
         direction="horizontal"
         style={{ justifyContent: "center", width: "100%" }}
       >
-        <Link href={"/savings/new"}>
+        <Link href={"/impulseSave/new" + routeParams}>
           <Button type="primary" icon={<PlusOutlined />}>
             {newSaveText}
           </Button>
         </Link>
         {filter === undefined && (
-          <Link href={"/purchases/new"}>
+          <Link href={"/impulseBuy/new"}>
             <Button icon={<PlusOutlined />}>{newPurchaseText}</Button>
           </Link>
         )}

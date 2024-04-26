@@ -1,16 +1,16 @@
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
-import dayjs, { Dayjs } from "dayjs";
 import { Goal, GoalCategory } from "@prisma/client";
 import { Button, DatePicker, Form, Input, Select, Space } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-import { addGoal, updateGoal } from "../_actions/goals";
 import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
-import CurrencyInput from "./CurrencyInput";
 import Link from "next/link";
+import { addGoal, updateGoal } from "../_actions/goals";
+import CurrencyInput from "./CurrencyInput";
 // import { navigateBack } from "@/lib/utils";
 
 type GoalFormValues = {
@@ -87,7 +87,7 @@ export function GoalForm({
     }
   };
 
-  const targetAmount = goal?.targetInCents ? goal.targetInCents / 100 : 0;
+  const targetAmount = goal?.targetAmount ? goal.targetAmount : 0;
   return (
     <Form
       form={form}
@@ -155,12 +155,12 @@ export function GoalForm({
         <TextArea placeholder="Additional notes about the goal" />
       </Form.Item>
       <Space direction="horizontal">
-        <Button type="primary" htmlType="submit">
+        <Button size="large" type="primary" htmlType="submit">
           Save
         </Button>
 
         <Link href="/goals">
-          <Button>Cancel</Button>
+          <Button size="large">Cancel</Button>
         </Link>
       </Space>
     </Form>

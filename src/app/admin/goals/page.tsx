@@ -1,8 +1,6 @@
-import Link from "next/link";
-import db from "@/db/db";
-import { formatCurrency, formatNumber } from "@/lib/formatters";
-import { Button, Table } from "antd";
 import { Title } from "@/app/_components/Typography";
+import { Button } from "antd";
+import Link from "next/link";
 
 export default function AdminGoalsPage() {
   return (

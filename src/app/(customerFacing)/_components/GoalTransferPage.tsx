@@ -20,7 +20,8 @@ const getGoals = (userId: string) => {
     orderBy: { name: "asc" },
   });
 };
-const getGoalTransfer = (goalTransferId: string) => {
+const getGoalTransfer = (goalTransferId?: string) => {
+  if (!goalTransferId) return null;
   return db.goalTransfer.findUnique({
     where: { id: goalTransferId },
   });
@@ -41,12 +42,10 @@ export default async function GoalTransferPage({
   }
   if (!isExtendedSession(session)) return;
 
-  let goalTransfer: any | undefined;
-  if (goalTransferId) goalTransfer = await getGoalTransfer(goalTransferId);
-
-  const [categories, goals] = await Promise.all([
+  const [categories, goals, goalTransfer] = await Promise.all([
     getCategories(),
     getGoals(session.user.id),
+    getGoalTransfer(goalTransferId),
   ]);
 
   return (

@@ -3,8 +3,8 @@ import { currencyFormatter } from "@/lib/utils";
 import { Flex, Progress, ProgressProps } from "antd";
 
 type GoalProgressProps = {
-  targetInCents: number;
-  currentBalanceInCents: number;
+  target: number;
+  currentBalance: number;
 };
 
 const twoColors: ProgressProps["strokeColor"] = {
@@ -13,18 +13,19 @@ const twoColors: ProgressProps["strokeColor"] = {
 };
 
 export default function GoalProgress({
-  targetInCents,
-  currentBalanceInCents,
+  target,
+  currentBalance,
 }: GoalProgressProps) {
+  const percent = (currentBalance / target) * 100;
   return (
     <Flex gap="small">
-      {currencyFormatter(currentBalanceInCents / 100)}
+      {currencyFormatter(currentBalance)}
       <Progress
-        percent={(currentBalanceInCents / targetInCents) * 100}
+        percent={percent}
         status="active"
         style={{ marginRight: "1rem" }}
         strokeWidth={13}
-        format={() => currencyFormatter(targetInCents / 100)}
+        format={() => currencyFormatter(target)}
         strokeColor={twoColors}
       />
     </Flex>

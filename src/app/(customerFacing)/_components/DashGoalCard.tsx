@@ -1,14 +1,14 @@
-import GoalCard from "./GoalCard";
+import { Title } from "@/app/_components/Typography";
 import db from "@/db/db";
 import { UserPinType } from "@/lib/users";
 import { getPinnedUserGoal } from "../_actions/data";
-import { Title } from "@/app/_components/Typography";
+import GoalCard from "./GoalCard";
 
 const getGoalTransfersSum = (userId: string) => {
   return db.goalTransfer.groupBy({
     by: ["goalId"],
     _sum: {
-      amountInCents: true,
+      amount: true,
     },
     _count: {
       goalId: true,
@@ -38,13 +38,13 @@ export default async function DashGoalCard({ userId }: { userId: string }) {
   const goalSumMap = new Map(
     sums.map((item) => [
       item.goalId,
-      { amountInCents: item._sum.amountInCents, count: item._count.goalId },
+      { amount: item._sum.amount, count: item._count.goalId },
     ])
   );
   const userHasPinnedGoal = userPins.some((pin) => pin.userId === userId);
   let goalDetail = Object.assign(goal, {
     userPinId: userPins.find((pin) => pin.typeId === goal.id)?.id,
-    currentBalanceInCents: goalSumMap.get(goal.id)?.amountInCents || 0,
+    currentBalance: goalSumMap.get(goal.id)?.amount?.toNumber() || 0,
     savedItemCount: goalSumMap.get(goal.id)?.count || 0,
   });
   return (

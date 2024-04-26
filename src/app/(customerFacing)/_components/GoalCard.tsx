@@ -1,17 +1,17 @@
-import { Card, Col, Row } from "antd";
-import PopconfirmDelete from "../goals/_components/PopconfirmDelete";
-import EditAction from "./EditAction";
 import PinSavingButton from "@/app/_components/PinSavingButton";
+import { UserPinType } from "@/lib/users";
 import { ShareAltOutlined } from "@ant-design/icons";
+import { Goal as PrismaGoal } from "@prisma/client";
+import { Card, Col, Row } from "antd";
 import Meta from "antd/es/card/Meta";
 import GoalProgress from "../goals/_components/GoalProgress";
-import { Goal as PrismaGoal } from "@prisma/client";
-import { UserPinType } from "@/lib/users";
+import PopconfirmDelete from "../goals/_components/PopconfirmDelete";
+import EditAction from "./EditAction";
 
 type Goal = PrismaGoal & {
   userPinId?: string;
   savedItemCount: number;
-  currentBalanceInCents: number;
+  currentBalance: number;
 };
 
 export default function GoalCard({
@@ -59,8 +59,8 @@ export default function GoalCard({
         </Col>
       </Row>
       <GoalProgress
-        currentBalanceInCents={goal.currentBalanceInCents}
-        targetInCents={goal.targetInCents}
+        currentBalance={goal.currentBalance}
+        target={goal.targetAmount.toNumber()}
       />
       <p>{goal.description}</p>
     </Card>

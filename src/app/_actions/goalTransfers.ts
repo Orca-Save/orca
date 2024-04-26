@@ -1,17 +1,30 @@
 "use server";
 
 import db from "@/db/db";
-import { z } from "zod";
-import { notFound } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { externalAccountId, isGoalTransferFilter } from "@/lib/goalTransfers";
+import { UserPinType } from "@/lib/users";
 import { GoalTransfer } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
+import { z } from "zod";
 
 const transferSchema = z.object({
-  link: z.string().url().optional(),
-  note: z.string(),
   itemName: z.string(),
-  merchantName: z.string(),
-  amountInCents: z.coerce.number().int(),
+  amount: z.coerce.number(),
+  link: z.string().url().optional(),
+  note: z.string().optional(),
+  merchantName: z.string().optional(),
+  rating: z.coerce.number().int().min(1).max(5).optional(),
+  goalId: z.string().uuid().optional(),
+  categoryId: z.string().uuid().optional(),
+});
+
+const updateTransferSchema = z.object({
+  link: z.string().url().optional(),
+  note: z.string().optional(),
+  itemName: z.string(),
+  merchantName: z.string().optional(),
+  amount: z.coerce.number(),
   rating: z.coerce.number().int().min(1).max(5),
   transactedAt: z
     .string()
@@ -20,7 +33,7 @@ const transferSchema = z.object({
       "Invalid ISO 8601 date time format"
     ),
   goalId: z.string().uuid().optional(),
-  categoryId: z.string().uuid(),
+  categoryId: z.string().uuid().optional(),
 });
 
 export type GoalTransferFieldErrors = {
@@ -29,7 +42,7 @@ export type GoalTransferFieldErrors = {
     note?: string[];
     itemName?: string[];
     merchantName?: string[];
-    amountInCents?: string[];
+    amount?: string[];
     rating?: string[];
     transactedAt?: string[];
     categoryId?: string[];
@@ -55,7 +68,7 @@ export async function addQuickSave(
       imagePath: transfer.imagePath,
       itemName: transfer.itemName,
       merchantName: transfer.merchantName,
-      amountInCents: transfer.amountInCents,
+      amount: transfer.amount,
     },
   });
 
@@ -90,8 +103,58 @@ export async function addGoalTransfer(
       updatedAt: new Date(),
       itemName: data.itemName,
       merchantName: data.merchantName,
-      amountInCents: data.amountInCents,
-      transactedAt: new Date(data.transactedAt),
+      amount: data.amount,
+      transactedAt: new Date(),
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/savings");
+  return goalTransfer;
+}
+
+export async function addQuickGoalTransfer(
+  userId: string,
+  goalTransferType: string | null | undefined,
+  formData: FormData
+): Promise<GoalTransfer | GoalTransferFieldErrors | { noPinnedGoal: boolean }> {
+  const result = transferSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
+  if (!result.success) {
+    return { fieldErrors: result.error.formErrors.fieldErrors };
+  }
+
+  let categoryId = undefined;
+  let userPinGoalId = undefined;
+  if (isGoalTransferFilter(goalTransferType)) {
+    if (goalTransferType === "accounts") {
+      categoryId = externalAccountId;
+    }
+
+    if (goalTransferType !== "templates") {
+      userPinGoalId = (
+        await db.userPin.findFirst({
+          where: { userId: userId, type: UserPinType.Goal },
+        })
+      )?.typeId;
+
+      if (!userPinGoalId) return { noPinnedGoal: true };
+    }
+  }
+
+  const data = result.data;
+  const goalTransfer = await db.goalTransfer.create({
+    data: {
+      userId: userId,
+      goalId: userPinGoalId,
+
+      rating: data.rating,
+      itemName: data.itemName,
+      amount: data.amount,
+
+      updatedAt: new Date(),
+      transactedAt: new Date(),
     },
   });
 
@@ -102,10 +165,9 @@ export async function addGoalTransfer(
 
 export async function updateGoalTransfer(
   id: string,
-  userId: string,
   formData: FormData
 ): Promise<GoalTransfer | GoalTransferFieldErrors> {
-  const result = transferSchema.safeParse(
+  const result = updateTransferSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
 
@@ -129,7 +191,7 @@ export async function updateGoalTransfer(
       merchantName: data.merchantName,
       goalId: data.goalId,
       updatedAt: new Date(),
-      amountInCents: data.amountInCents,
+      amount: data.amount,
       categoryId: data.categoryId,
       rating: data.rating,
       transactedAt: new Date(data.transactedAt),

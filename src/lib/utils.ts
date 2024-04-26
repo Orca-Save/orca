@@ -1,4 +1,5 @@
-import { type ClassValue, clsx } from "clsx";
+import { Decimal } from "@prisma/client/runtime/index-browser.js";
+import { clsx, type ClassValue } from "clsx";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { twMerge } from "tailwind-merge";
 
@@ -7,14 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const currencyFormatter = (
-  value?: string | number,
+  value?: string | number | Decimal,
   includeDollar?: boolean
 ): string => {
   if (value === undefined) {
     return "";
   }
 
-  const numericValue = typeof value === "string" ? parseFloat(value) : value;
+  let numericValue = typeof value === "string" ? parseFloat(value) : value;
+  numericValue =
+    numericValue instanceof Decimal ? numericValue.toNumber() : numericValue;
   if (isNaN(numericValue)) {
     return "";
   }

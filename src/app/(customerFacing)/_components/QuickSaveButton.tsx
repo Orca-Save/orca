@@ -6,10 +6,12 @@ import {
   GoalCategory,
   GoalTransfer as PrismaGoalTransfer,
 } from "@prisma/client";
-import { Button } from "antd";
+import { Button, Typography } from "antd";
+
+const { Text } = Typography;
 
 type GoalTransfer = PrismaGoalTransfer & {
-  category: GoalCategory;
+  category: GoalCategory | null;
 };
 export function QuickSaveButton({
   transfer,
@@ -30,9 +32,9 @@ export function QuickSaveButton({
       style={{ height: "auto", width: "auto" }}
       onClick={onClick}
     >
-      <p>{transfer.itemName}</p>
-      <p>{formatCurrency(transfer.amountInCents / 100)}</p>
-      <p>{transfer.category.name}</p>
+      <Text>{transfer.itemName}</Text>
+      <Text>{formatCurrency(transfer.amount.toNumber())}</Text>
+      <Text>{transfer.category?.name}</Text>
     </Button>
   );
 }
