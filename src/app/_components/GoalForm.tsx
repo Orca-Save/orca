@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
+import { getPrevPageHref } from "@/lib/utils";
 import Link from "next/link";
 import { addGoal, updateGoal } from "../_actions/goals";
 import CurrencyInput from "./CurrencyInput";
@@ -33,9 +34,11 @@ const { TextArea } = Input;
 export function GoalForm({
   goal,
   categories,
+  referer,
 }: {
   goal?: Goal | null;
   categories: GoalCategory[];
+  referer: string;
 }) {
   const [form] = Form.useForm();
   const router = useRouter();
@@ -159,7 +162,7 @@ export function GoalForm({
           Save
         </Button>
 
-        <Link href="/goals">
+        <Link href={getPrevPageHref(referer)}>
           <Button size="large">Cancel</Button>
         </Link>
       </Space>

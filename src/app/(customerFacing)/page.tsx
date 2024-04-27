@@ -1,11 +1,11 @@
 import { Button, Skeleton, Space } from "antd";
-import Link from "next/link";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
-import { isExtendedSession } from "@/lib/session";
-import { getServerSession } from "next-auth";
-import { PlusOutlined } from "@ant-design/icons";
 import authOptions from "@/lib/nextAuthOptions";
+import { isExtendedSession } from "@/lib/session";
+import { PlusOutlined } from "@ant-design/icons";
+import { getServerSession } from "next-auth";
 import { Title } from "../_components/Typography";
 
 const DynamicPinnedGoal = dynamic(() => import("./_components/DashGoalCard"), {
@@ -25,7 +25,7 @@ export default async function HomePage() {
         <Space direction="vertical" style={{ width: "100%" }}>
           <Title level={4}>Focus Goal</Title>
           <DynamicPinnedGoal userId={session.user.id} />
-          <Link href="/savings/new">
+          <Link href="/savings/impulseSave">
             <Button
               icon={<PlusOutlined />}
               size="large"
@@ -35,7 +35,7 @@ export default async function HomePage() {
               Impulse Save
             </Button>
           </Link>
-          <Link href="/purchases/new">
+          <Link href="/purchases/impulseBuy">
             <Button
               icon={<PlusOutlined />}
               size="large"

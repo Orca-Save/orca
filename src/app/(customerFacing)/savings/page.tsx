@@ -4,16 +4,16 @@ import SavingsPage from "../_components/SavingsPage";
 const items: TabsProps["items"] = [
   {
     key: "1",
-    label: "One-tap",
+    label: "Log",
     children: (
-      <SavingsPage newSaveText="Add One-tap Impulse Save" filter="templates" />
+      <SavingsPage newSaveText="Impulse Save" newPurchaseText="Impulse Buy" />
     ),
   },
   {
     key: "2",
-    label: "Log",
+    label: "One-tap",
     children: (
-      <SavingsPage newSaveText="Impulse Save" newPurchaseText="Impulse Buy" />
+      <SavingsPage newSaveText="Add One-tap Impulse Save" filter="templates" />
     ),
   },
   {

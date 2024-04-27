@@ -9,13 +9,13 @@ import {
   isPinnedGoalError,
 } from "@/lib/goalTransfers";
 import { isExtendedSession } from "@/lib/session";
+import { getPrevPageHref } from "@/lib/utils";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { addQuickGoalTransfer } from "../_actions/goalTransfers";
 import CurrencyInput from "./CurrencyInput";
 
 type GoalTransferFormValues = {
-  goalId: string;
   itemName: string;
   amount: number;
   rating: number;
@@ -28,7 +28,13 @@ const customIcons: Record<number, React.ReactNode> = {
   5: <SmileOutlined />,
 };
 
-export default function QuickSaveForm({ isSavings }: { isSavings: boolean }) {
+export default function QuickSaveForm({
+  isSavings,
+  referer,
+}: {
+  referer: string;
+  isSavings: boolean;
+}) {
   const [form] = Form.useForm();
   const router = useRouter();
   const { data: session } = useSession({
@@ -48,8 +54,6 @@ export default function QuickSaveForm({ isSavings }: { isSavings: boolean }) {
     if (values.rating) formData.append("rating", String(values.rating));
     const adjustedAmount = isSavings ? values.amount : -values.amount;
     formData.append("amount", String(adjustedAmount));
-
-    if (values.goalId) formData.append("goalId", values.goalId);
 
     const action = addQuickGoalTransfer.bind(
       null,
@@ -101,7 +105,6 @@ export default function QuickSaveForm({ isSavings }: { isSavings: boolean }) {
           <Form.Item
             name="rating"
             label="How did you feel about this purchase?"
-            rules={[{ required: true, message: "Please rate the purchase!" }]}
           >
             <Rate character={({ index = 0 }) => customIcons[index + 1]} />
           </Form.Item>
@@ -110,7 +113,7 @@ export default function QuickSaveForm({ isSavings }: { isSavings: boolean }) {
           <Button type="primary" size="large" htmlType="submit">
             Save
           </Button>
-          <Link href="/savings">
+          <Link href={getPrevPageHref(referer)}>
             <Button size="large">Cancel</Button>
           </Link>
         </Space>

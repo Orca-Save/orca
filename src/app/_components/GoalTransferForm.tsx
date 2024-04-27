@@ -11,6 +11,7 @@ import {
   isGoalTransferFieldErrors,
 } from "@/lib/goalTransfers";
 import { isExtendedSession } from "@/lib/session";
+import { getPrevPageHref } from "@/lib/utils";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
@@ -39,12 +40,14 @@ const customIcons: Record<number, React.ReactNode> = {
 export function GoalTransferForm({
   categories,
   goals,
+  referer,
   goalTransfer,
   isSavings,
 }: {
   categories: GoalCategory[];
   goals: Goal[];
   isSavings: boolean;
+  referer: string;
   goalTransfer?: GoalTransfer | null;
 }) {
   const [form] = Form.useForm();
@@ -211,7 +214,7 @@ export function GoalTransferForm({
         <Button type="primary" size="large" htmlType="submit">
           Save
         </Button>
-        <Link href="/savings">
+        <Link href={getPrevPageHref(referer)}>
           <Button size="large">Cancel</Button>
         </Link>
       </Space>

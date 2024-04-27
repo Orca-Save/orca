@@ -36,13 +36,13 @@ export default async function SavingsPage({
         direction="horizontal"
         style={{ justifyContent: "center", width: "100%" }}
       >
-        <Link href={"/impulseSave/new" + routeParams}>
+        <Link href={"/savings/impulseSave" + routeParams}>
           <Button type="primary" icon={<PlusOutlined />}>
             {newSaveText}
           </Button>
         </Link>
         {filter === undefined && (
-          <Link href={"/impulseBuy/new"}>
+          <Link href={"/purchases/impulseBuy"}>
             <Button icon={<PlusOutlined />}>{newPurchaseText}</Button>
           </Link>
         )}

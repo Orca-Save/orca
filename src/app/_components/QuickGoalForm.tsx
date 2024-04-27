@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
+import { getPrevPageHref } from "@/lib/utils";
 import Link from "next/link";
 import { addQuickGoal } from "../_actions/goals";
 import CurrencyInput from "./CurrencyInput";
@@ -28,7 +29,7 @@ type GoalFormValues = {
 };
 const { TextArea } = Input;
 
-export default function QuickGoalForm() {
+export default function QuickGoalForm({ referer }: { referer: string }) {
   const [form] = Form.useForm();
   const router = useRouter();
   const { data: session } = useSession({
@@ -37,6 +38,7 @@ export default function QuickGoalForm() {
       signIn("azure-ad-b2c");
     },
   });
+
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
     const formData = new FormData();
@@ -110,7 +112,7 @@ export default function QuickGoalForm() {
         <Button size="large" type="primary" htmlType="submit">
           Save
         </Button>
-        <Link href="/goals">
+        <Link href={getPrevPageHref(referer)}>
           <Button size="large">Cancel</Button>
         </Link>
       </Space>
