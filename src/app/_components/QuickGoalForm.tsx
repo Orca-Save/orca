@@ -112,7 +112,7 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
         <Button size="large" type="primary" htmlType="submit">
           Save
         </Button>
-        <Link href={getPrevPageHref(referer)}>
+        <Link href={getPrevPageHref(referer, window)}>
           <Button size="large">Cancel</Button>
         </Link>
       </Space>

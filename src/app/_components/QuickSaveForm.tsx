@@ -113,7 +113,7 @@ export default function QuickSaveForm({
           <Button type="primary" size="large" htmlType="submit">
             Save
           </Button>
-          <Link href={getPrevPageHref(referer)}>
+          <Link href={getPrevPageHref(referer, window)}>
             <Button size="large">Cancel</Button>
           </Link>
         </Space>
