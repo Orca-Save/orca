@@ -14,19 +14,21 @@ datasource db {
 }
 
 model Goal {
-  id            String         @id @default(uuid())
-  userId        String
-  name          String
-  note          String
-  targetAmount  Decimal        @db.Decimal(65, 2)
-  imagePath     String
-  description   String?
-  dueAt         DateTime
-  categoryId    String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id           String   @id @default(uuid())
+  userId       String
+  name         String
+  dueAt        DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  targetAmount Decimal  @db.Decimal(65, 2)
+
+  note        String?
+  imagePath   String?
+  description String?
+  categoryId  String?
+
   goalTransfers GoalTransfer[]
-  category      GoalCategory   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  category      GoalCategory?  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 }
 
 model GoalCategory {

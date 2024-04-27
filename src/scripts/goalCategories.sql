@@ -1,0 +1,14 @@
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Bills and Utilities/Housing', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Bills and Utilities/Subscriptions', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Bills and Utilities/Utilities', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Auto and Transport', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Groceries/Home', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Groceries/Pets', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Medical', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Health and Wellness/Personal Care', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Health and Wellness/Family Care', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Loan Payment', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Dining and Drinks', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Recreation and Entertainment/Shopping', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values (gen_random_uuid (), 'Recreation and Entertainment/Travel and Vacation', now(), now());
+insert into public."GoalCategory"(id, name, "createdAt", "updatedAt") values ('faed4327-3a9c-4837-a337-c54e9704d60f', 'External Account', now(), now());

@@ -1,8 +1,8 @@
 import { Card, Skeleton, Space } from "antd";
 
-import IconRoute from "./_components/IconButtonRoute";
 import { PlusOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
+import IconRoute from "./_components/IconButtonRoute";
 
 const DynamicGoalList = dynamic(() => import("./_components/GoalList"), {
   loading: () => (
@@ -23,7 +23,7 @@ export default async function GoalsPage() {
   return (
     <Space direction="vertical" className="w-full">
       <IconRoute
-        route={"/goals/new"}
+        route={"/goals/quickGoal"}
         icon={<PlusOutlined />}
         text={"New Goal"}
       />

@@ -38,6 +38,55 @@ const addSchema = z.object({
   note: z.string(),
   dueAt: dueAtSchema,
 });
+const quickAddSchema = z.object({
+  name: z.string().min(1),
+  initialAmount: z.coerce.number().int().min(1).optional(),
+  targetAmount: z.coerce.number().int().min(1),
+  dueAt: dueAtSchema,
+});
+
+export async function addQuickGoal(
+  userId: string,
+  prevState: unknown,
+  formData: FormData
+): Promise<GoalFieldErrors | Goal> {
+  const result = quickAddSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
+  if (result.success === false) {
+    return { fieldErrors: result.error.formErrors.fieldErrors };
+  }
+
+  const data = result.data;
+  let goal = await db.goal.create({
+    data: {
+      userId,
+      name: data.name,
+      updatedAt: new Date(),
+      targetAmount: data.targetAmount,
+      dueAt: data.dueAt,
+    },
+  });
+
+  if (data.initialAmount && data.initialAmount > 0) {
+    await db.goalTransfer.create({
+      data: {
+        userId,
+        goalId: goal.id,
+        categoryId: externalAccountId,
+        updatedAt: new Date(),
+        itemName: `${data.name} Initial Deposit`,
+        amount: data.initialAmount,
+        transactedAt: new Date(),
+      },
+    });
+    revalidatePath("/savings");
+  }
+
+  revalidatePath("/");
+  revalidatePath("/goals");
+  return goal;
+}
 
 export async function addGoal(
   userId: string,
