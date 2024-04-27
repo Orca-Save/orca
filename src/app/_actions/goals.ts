@@ -32,16 +32,16 @@ const dueAtSchema = z
 const addSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
-  initialAmount: z.coerce.number().int().min(0).optional(),
-  targetAmount: z.coerce.number().int().min(1),
+  initialAmount: z.coerce.number().min(0).optional(),
+  targetAmount: z.coerce.number().min(1),
   categoryId: z.string().uuid(),
   note: z.string(),
   dueAt: dueAtSchema,
 });
 const quickAddSchema = z.object({
   name: z.string().min(1),
-  initialAmount: z.coerce.number().int().min(1).optional(),
-  targetAmount: z.coerce.number().int().min(1),
+  initialAmount: z.coerce.number().min(1).optional(),
+  targetAmount: z.coerce.number().min(1),
   dueAt: dueAtSchema,
 });
 

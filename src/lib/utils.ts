@@ -42,7 +42,5 @@ export const navigateBack = (router: AppRouterInstance) => {
 
 export function getPrevPageHref(referer: string, window: Window) {
   const prevURL = new URL(referer);
-  return prevURL.origin !== window.location.origin
-    ? "/goals"
-    : prevURL.pathname;
+  return prevURL.origin !== window.location.origin ? "/" : prevURL.pathname;
 }

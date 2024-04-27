@@ -45,6 +45,7 @@ export default function QuickSaveForm({
   });
   const [api, contextHolder] = notification.useNotification();
   const params = new URLSearchParams(window.location.search);
+  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalTransferFormValues) => {
     if (!session) return;
     if (!isExtendedSession(session)) return;
@@ -80,7 +81,7 @@ export default function QuickSaveForm({
         duration: 2,
       });
     } else {
-      router.push("/savings");
+      router.push(prevPageHref);
     }
   };
   return (
@@ -113,7 +114,7 @@ export default function QuickSaveForm({
           <Button type="primary" size="large" htmlType="submit">
             Save
           </Button>
-          <Link href={getPrevPageHref(referer, window)}>
+          <Link href={prevPageHref}>
             <Button size="large">Cancel</Button>
           </Link>
         </Space>

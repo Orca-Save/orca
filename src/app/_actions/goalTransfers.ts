@@ -131,16 +131,15 @@ export async function addQuickGoalTransfer(
     if (goalTransferType === "accounts") {
       categoryId = externalAccountId;
     }
+  }
+  if (goalTransferType !== "templates") {
+    userPinGoalId = (
+      await db.userPin.findFirst({
+        where: { userId: userId, type: UserPinType.Goal },
+      })
+    )?.typeId;
 
-    if (goalTransferType !== "templates") {
-      userPinGoalId = (
-        await db.userPin.findFirst({
-          where: { userId: userId, type: UserPinType.Goal },
-        })
-      )?.typeId;
-
-      if (!userPinGoalId) return { noPinnedGoal: true };
-    }
+    if (!userPinGoalId) return { noPinnedGoal: true };
   }
 
   const data = result.data;

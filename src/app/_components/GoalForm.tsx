@@ -48,8 +48,10 @@ export function GoalForm({
       signIn("azure-ad-b2c");
     },
   });
+  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
+    form.getFieldValue("name");
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("description", values.description);
@@ -85,7 +87,7 @@ export function GoalForm({
           });
         });
       } else {
-        router.push("/goals");
+        router.push(prevPageHref);
       }
     }
   };
@@ -162,7 +164,7 @@ export function GoalForm({
           Save
         </Button>
 
-        <Link href={getPrevPageHref(referer, window)}>
+        <Link href={prevPageHref}>
           <Button size="large">Cancel</Button>
         </Link>
       </Space>

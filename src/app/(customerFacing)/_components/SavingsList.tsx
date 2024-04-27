@@ -127,8 +127,8 @@ function GoalTransferCard({
         <PopconfirmDelete
           goalTransferId={goalTransfer.id}
           key="delete"
-          title="Delete the goal"
-          description="Are you sure to delete this goal?"
+          title="Delete the saving"
+          description="Are you sure to delete this saving?"
         />,
         <EditAction
           key="edit"

@@ -69,6 +69,7 @@ export function GoalTransferForm({
     isTemplate = true;
   }
 
+  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalTransferFormValues) => {
     if (!session) return;
     if (!isExtendedSession(session)) return;
@@ -109,13 +110,13 @@ export function GoalTransferForm({
         });
       });
     } else {
-      router.push("/savings");
+      router.push(prevPageHref);
     }
   };
   const amount = goalTransfer?.amount ?? 0;
   let isExternalAccount =
     filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
-  const initialCategoryId = isExternalAccount ? externalAccountId : "";
+  const initialCategoryId = isExternalAccount ? externalAccountId : undefined;
   return (
     <Form
       form={form}
@@ -126,12 +127,10 @@ export function GoalTransferForm({
         transactedAt: goalTransfer?.transactedAt
           ? dayjs(goalTransfer.transactedAt)
           : dayjs(),
-        rating: goalTransfer?.rating ?? 3,
-        note: goalTransfer?.note ?? "",
+        note: goalTransfer?.note,
         link: goalTransfer?.link,
-        itemName: goalTransfer?.itemName ?? "",
-        merchantName: goalTransfer?.merchantName ?? "",
-        goalId: goalTransfer?.goalId ?? null,
+        merchantName: goalTransfer?.merchantName,
+        goalId: goalTransfer?.goalId,
         categoryId: goalTransfer?.categoryId ?? initialCategoryId,
       }}
     >
@@ -143,11 +142,13 @@ export function GoalTransferForm({
         <Input placeholder="Item Name" />
       </Form.Item>
       <Form.Item
-        name="merchantName"
-        label="Merchant Name"
-        rules={[{ required: true, message: "Please input the merchant name!" }]}
+        name="transactedAt"
+        label="Transaction Date"
+        rules={[
+          { required: true, message: "Please select the transaction date!" },
+        ]}
       >
-        <Input placeholder="Merchant Name" />
+        <DatePicker style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         name="amount"
@@ -156,21 +157,8 @@ export function GoalTransferForm({
       >
         <CurrencyInput placeholder="Amount" />
       </Form.Item>
-      <Form.Item
-        name="rating"
-        label="Rating"
-        rules={[{ required: true, message: "Please rate the transaction!" }]}
-      >
+      <Form.Item name="rating" label="Rating">
         <Rate character={({ index = 0 }) => customIcons[index + 1]} />
-      </Form.Item>
-      <Form.Item
-        name="transactedAt"
-        label="Transaction Date"
-        rules={[
-          { required: true, message: "Please select the transaction date!" },
-        ]}
-      >
-        <DatePicker style={{ width: "100%" }} />
       </Form.Item>
 
       {!isTemplate ? (
@@ -190,11 +178,10 @@ export function GoalTransferForm({
           />
         </Form.Item>
       ) : null}
-      <Form.Item
-        name="categoryId"
-        label="Category"
-        rules={[{ required: true, message: "Please select a category!" }]}
-      >
+      <Form.Item name="merchantName" label="Merchant Name">
+        <Input placeholder="Merchant Name" />
+      </Form.Item>
+      <Form.Item name="categoryId" label="Category">
         <Select
           placeholder="Select a category"
           disabled={isExternalAccount}
@@ -214,7 +201,7 @@ export function GoalTransferForm({
         <Button type="primary" size="large" htmlType="submit">
           Save
         </Button>
-        <Link href={getPrevPageHref(referer, window)}>
+        <Link href={prevPageHref}>
           <Button size="large">Cancel</Button>
         </Link>
       </Space>

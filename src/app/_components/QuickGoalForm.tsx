@@ -39,6 +39,7 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
     },
   });
 
+  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
     const formData = new FormData();
@@ -68,7 +69,7 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
           });
         });
       } else {
-        router.push("/goals");
+        router.push(prevPageHref);
       }
     }
   };
@@ -112,7 +113,7 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
         <Button size="large" type="primary" htmlType="submit">
           Save
         </Button>
-        <Link href={getPrevPageHref(referer, window)}>
+        <Link href={prevPageHref}>
           <Button size="large">Cancel</Button>
         </Link>
       </Space>
