@@ -29,20 +29,22 @@ const dueAtSchema = z
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
     "Invalid ISO 8601 date time format"
   );
-const addSchema = z.object({
-  name: z.string().min(1),
-  description: z.string(),
-  initialAmount: z.coerce.number().min(0).optional(),
-  targetAmount: z.coerce.number().min(1),
-  categoryId: z.string().uuid(),
-  note: z.string(),
+const goalSchema = z.object({
   dueAt: dueAtSchema,
+  name: z.string().min(1),
+  targetAmount: z.number().min(1),
+
+  note: z.string().optional(),
+  description: z.string().optional(),
+  categoryId: z.string().uuid().optional(),
+  initialAmount: z.number().min(1).optional(),
 });
-const quickAddSchema = z.object({
-  name: z.string().min(1),
-  initialAmount: z.coerce.number().min(1).optional(),
-  targetAmount: z.coerce.number().min(1),
+const quickGoalSchema = z.object({
   dueAt: dueAtSchema,
+  name: z.string().min(1),
+  targetAmount: z.coerce.number().min(1),
+
+  initialAmount: z.coerce.number().min(1).optional(),
 });
 
 export async function addQuickGoal(
@@ -50,7 +52,7 @@ export async function addQuickGoal(
   prevState: unknown,
   formData: FormData
 ): Promise<GoalFieldErrors | Goal> {
-  const result = quickAddSchema.safeParse(
+  const result = quickGoalSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
   if (result.success === false) {
@@ -93,7 +95,7 @@ export async function addGoal(
   prevState: unknown,
   formData: FormData
 ): Promise<GoalFieldErrors | Goal> {
-  const result = addSchema.safeParse(Object.fromEntries(formData.entries()));
+  const result = goalSchema.safeParse(Object.fromEntries(formData.entries()));
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }
@@ -138,7 +140,7 @@ export async function addGoal(
   return goal;
 }
 
-const editSchema = addSchema.extend({
+const editSchema = goalSchema.extend({
   file: fileSchema.optional(),
   image: imageSchema.optional(),
 });

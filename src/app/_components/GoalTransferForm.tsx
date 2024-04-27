@@ -13,7 +13,6 @@ import {
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
-import Link from "next/link";
 import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
 import CurrencyInput from "./CurrencyInput";
 
@@ -69,7 +68,6 @@ export function GoalTransferForm({
     isTemplate = true;
   }
 
-  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalTransferFormValues) => {
     if (!session) return;
     if (!isExtendedSession(session)) return;
@@ -110,7 +108,7 @@ export function GoalTransferForm({
         });
       });
     } else {
-      router.push(prevPageHref);
+      router.push(getPrevPageHref(referer, window));
     }
   };
   const amount = goalTransfer?.amount ?? 0;
@@ -201,9 +199,13 @@ export function GoalTransferForm({
         <Button type="primary" size="large" htmlType="submit">
           Save
         </Button>
-        <Link href={prevPageHref}>
-          <Button size="large">Cancel</Button>
-        </Link>
+
+        <Button
+          size="large"
+          onClick={() => router.push(getPrevPageHref(referer, window))}
+        >
+          Cancel
+        </Button>
       </Space>
     </Form>
   );

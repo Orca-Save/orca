@@ -70,26 +70,28 @@ export default async function SavingsList({
     const pinnedGoalTransfers = goalTransfersWithPins.filter(
       (x) => x.userPinId
     );
-    const pinnedTitle =
-      filter === "templates" ? "Pinned One-tap Impulse Saves" : "Pinned Saves";
-    const otherTitle = filter === "templates" ? "" : "Savings";
+    const isTemplates = filter === "templates";
+    const pinnedTitle = isTemplates ? "Pinned One-tap Impulse Saves" : "";
+    const otherTitle = isTemplates ? "" : "Savings";
     return (
       <Space direction="vertical" style={{ width: "100%" }}>
-        {pinnedGoalTransfers.length ? (
-          <Space className="center-space">
-            <Title level={4}>{pinnedTitle}</Title>
-          </Space>
+        {isTemplates ? (
+          <>
+            <Space className="center-space">
+              <Title level={4}>{pinnedTitle}</Title>
+            </Space>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {pinnedGoalTransfers.map((goalTransfer) => (
+                <GoalTransferCard
+                  key={goalTransfer.id}
+                  routeParams={routeParams}
+                  goalTransfer={goalTransfer}
+                  userId={session.user.id}
+                />
+              ))}
+            </div>
+          </>
         ) : null}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pinnedGoalTransfers.map((goalTransfer) => (
-            <GoalTransferCard
-              key={goalTransfer.id}
-              routeParams={routeParams}
-              goalTransfer={goalTransfer}
-              userId={session.user.id}
-            />
-          ))}
-        </div>
         <Space className="center-space">
           <Title level={4}>{otherTitle}</Title>
         </Space>

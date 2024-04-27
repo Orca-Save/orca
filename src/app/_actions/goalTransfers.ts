@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/db/db";
-import { externalAccountId, isGoalTransferFilter } from "@/lib/goalTransfers";
+import { externalAccountId } from "@/lib/goalTransfers";
 import { UserPinType } from "@/lib/users";
 import { GoalTransfer } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -124,15 +124,14 @@ export async function addQuickGoalTransfer(
   if (!result.success) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }
+  const data = result.data;
 
   let categoryId = undefined;
   let userPinGoalId = undefined;
-  if (isGoalTransferFilter(goalTransferType)) {
-    if (goalTransferType === "accounts") {
-      categoryId = externalAccountId;
-    }
+  if (goalTransferType === "accounts") {
+    categoryId = externalAccountId;
   }
-  if (goalTransferType !== "templates") {
+  if (goalTransferType !== "templates" && data.amount > 0) {
     userPinGoalId = (
       await db.userPin.findFirst({
         where: { userId: userId, type: UserPinType.Goal },
@@ -142,7 +141,6 @@ export async function addQuickGoalTransfer(
     if (!userPinGoalId) return { noPinnedGoal: true };
   }
 
-  const data = result.data;
   const goalTransfer = await db.goalTransfer.create({
     data: {
       userId: userId,
@@ -156,6 +154,16 @@ export async function addQuickGoalTransfer(
       transactedAt: new Date(),
     },
   });
+
+  if (goalTransferType === "templates") {
+    await db.userPin.create({
+      data: {
+        userId: userId,
+        typeId: goalTransfer.id,
+        type: UserPinType.GoalTransfer,
+      },
+    });
+  }
 
   revalidatePath("/");
   revalidatePath("/savings");

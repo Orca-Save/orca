@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
-import Link from "next/link";
 import { addGoal, updateGoal } from "../_actions/goals";
 import CurrencyInput from "./CurrencyInput";
 // import { navigateBack } from "@/lib/utils";
@@ -48,17 +47,15 @@ export function GoalForm({
       signIn("azure-ad-b2c");
     },
   });
-  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
-    form.getFieldValue("name");
+
     const formData = new FormData();
     formData.append("name", values.name);
-    formData.append("description", values.description);
-
     formData.append("targetAmount", String(values.targetAmount));
-    formData.append("note", values.note || "");
 
+    if (values.description) formData.append("description", values.description);
+    if (values.note) formData.append("note", values.note);
     if (values.categoryId) {
       formData.append("categoryId", values.categoryId);
     }
@@ -86,9 +83,8 @@ export function GoalForm({
             ]);
           });
         });
-      } else {
-        router.push(prevPageHref);
       }
+      router.push(getPrevPageHref(referer, window));
     }
   };
 
@@ -115,19 +111,6 @@ export function GoalForm({
         <Input placeholder="Name" />
       </Form.Item>
       <Form.Item
-        name="categoryId"
-        label="Category"
-        rules={[{ required: true, message: "Please select a category!" }]}
-      >
-        <Select
-          placeholder="Select a category"
-          options={categories.map((category: GoalCategory) => ({
-            label: category.name,
-            value: category.id,
-          }))}
-        />
-      </Form.Item>
-      <Form.Item
         name="dueAt"
         label="Due Date"
         rules={[{ required: true, message: "Please select the due date!" }]}
@@ -148,6 +131,15 @@ export function GoalForm({
           <CurrencyInput placeholder="Initial Balance" />
         </Form.Item>
       )}
+      <Form.Item name="categoryId" label="Category">
+        <Select
+          placeholder="Select a category"
+          options={categories.map((category: GoalCategory) => ({
+            label: category.name,
+            value: category.id,
+          }))}
+        />
+      </Form.Item>
       <Form.Item name="description" label="Description">
         <TextArea placeholder="Description" />
       </Form.Item>
@@ -164,9 +156,12 @@ export function GoalForm({
           Save
         </Button>
 
-        <Link href={prevPageHref}>
-          <Button size="large">Cancel</Button>
-        </Link>
+        <Button
+          size="large"
+          onClick={() => router.push(getPrevPageHref(referer, window))}
+        >
+          Cancel
+        </Button>
       </Space>
     </Form>
   );

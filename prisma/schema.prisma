@@ -21,6 +21,7 @@ model Goal {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   targetAmount Decimal  @db.Decimal(65, 2)
+  pinned       Boolean?
 
   note        String?
   imagePath   String?
@@ -40,6 +41,17 @@ model GoalCategory {
   GoalTransfer GoalTransfer[]
 }
 
+model OnboardingProfile {
+  id        String   @id @default(uuid())
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstGoal       String
+  firstGoalAmount Decimal
+  firstGoalDueAt  DateTime
+}
+
 model UserPin {
   id        String   @id @default(uuid())
   userId    String
@@ -53,6 +65,7 @@ model GoalTransfer {
   userId   String
   itemName String
   amount   Decimal @db.Decimal(65, 2)
+  pinned   Boolean
 
   transactedAt DateTime
   createdAt    DateTime @default(now())

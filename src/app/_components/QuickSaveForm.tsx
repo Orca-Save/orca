@@ -11,7 +11,6 @@ import {
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
-import Link from "next/link";
 import { addQuickGoalTransfer } from "../_actions/goalTransfers";
 import CurrencyInput from "./CurrencyInput";
 
@@ -44,8 +43,6 @@ export default function QuickSaveForm({
     },
   });
   const [api, contextHolder] = notification.useNotification();
-  const params = new URLSearchParams(window.location.search);
-  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalTransferFormValues) => {
     if (!session) return;
     if (!isExtendedSession(session)) return;
@@ -56,6 +53,7 @@ export default function QuickSaveForm({
     const adjustedAmount = isSavings ? values.amount : -values.amount;
     formData.append("amount", String(adjustedAmount));
 
+    const params = new URLSearchParams(window.location.search);
     const action = addQuickGoalTransfer.bind(
       null,
       session.user.id,
@@ -80,9 +78,8 @@ export default function QuickSaveForm({
         placement: "top",
         duration: 2,
       });
-    } else {
-      router.push(prevPageHref);
     }
+    router.push(getPrevPageHref(referer, window));
   };
   return (
     <>
@@ -114,9 +111,12 @@ export default function QuickSaveForm({
           <Button type="primary" size="large" htmlType="submit">
             Save
           </Button>
-          <Link href={prevPageHref}>
-            <Button size="large">Cancel</Button>
-          </Link>
+          <Button
+            size="large"
+            onClick={() => router.push(getPrevPageHref(referer, window))}
+          >
+            Cancel
+          </Button>
         </Space>
       </Form>
     </>

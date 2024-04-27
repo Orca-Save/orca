@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { isGoalFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
-import Link from "next/link";
 import { addQuickGoal } from "../_actions/goals";
 import CurrencyInput from "./CurrencyInput";
 
@@ -39,7 +38,6 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
     },
   });
 
-  const prevPageHref = getPrevPageHref(referer, window);
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
     const formData = new FormData();
@@ -69,7 +67,7 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
           });
         });
       } else {
-        router.push(prevPageHref);
+        router.push(getPrevPageHref(referer, window));
       }
     }
   };
@@ -113,9 +111,13 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
         <Button size="large" type="primary" htmlType="submit">
           Save
         </Button>
-        <Link href={prevPageHref}>
-          <Button size="large">Cancel</Button>
-        </Link>
+
+        <Button
+          size="large"
+          onClick={() => router.push(getPrevPageHref(referer, window))}
+        >
+          Cancel
+        </Button>
       </Space>
     </Form>
   );
