@@ -13,7 +13,6 @@ export const currencyFormatter = (
 ) => {
   if (!value) return "";
   if (isNaN(Number(value))) return "";
-  console.log(value);
   const precision = String(Number(value)).split(".")?.[1]?.length;
   const currentPrecision = precision > 0 ? Math.min(precision, 2) : 0;
   const valueString = String(Number(value).toFixed(currentPrecision)).replace(
@@ -32,7 +31,6 @@ export const baseURL =
 
 export const navigateBack = (router: AppRouterInstance) => {
   const previousPath = sessionStorage.getItem("previousPath");
-  console.log("previousPath", previousPath);
   const currentPath = window.location.pathname;
 
   if (previousPath && previousPath !== currentPath) {

@@ -7,8 +7,10 @@ import {
   GoalTransfer as PrismaGoalTransfer,
 } from "@prisma/client";
 import { Button, Typography } from "antd";
+import { useState } from "react";
+import Confetti from "react-confetti";
 
-const { Text } = Typography;
+const { Paragraph } = Typography;
 
 type GoalTransfer = PrismaGoalTransfer & {
   category: GoalCategory | null;
@@ -20,21 +22,34 @@ export function QuickSaveButton({
   transfer: GoalTransfer;
   goalId?: string;
 }) {
+  const [confetti, setConfetti] = useState({ run: false, count: 0 });
+  if (confetti.run) {
+    setTimeout(() => {
+      setConfetti({ run: true, count: 0 });
+    }, 1500);
+  }
   const onClick = () => {
+    setConfetti({ run: true, count: 100 });
     if (goalId) addQuickSave(goalId, transfer);
   };
 
   return (
-    <Button
-      key={transfer.id}
-      disabled={!goalId}
-      size="large"
-      style={{ height: "auto", width: "auto" }}
-      onClick={onClick}
-    >
-      <Text>{transfer.itemName}</Text>
-      <Text>{formatCurrency(transfer.amount.toNumber())}</Text>
-      <Text>{transfer.category?.name}</Text>
-    </Button>
+    <>
+      {confetti.run ? (
+        <Confetti run={confetti.run} numberOfPieces={confetti.count} />
+      ) : null}
+      <Button
+        key={transfer.id}
+        disabled={!goalId}
+        size="large"
+        style={{ height: "auto", width: "auto" }}
+        onClick={onClick}
+      >
+        <Paragraph>{transfer.itemName}</Paragraph>
+        <Paragraph>
+          {formatCurrency(Number(transfer.amount.toString()))}
+        </Paragraph>
+      </Button>
+    </>
   );
 }

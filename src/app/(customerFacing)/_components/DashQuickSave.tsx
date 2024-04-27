@@ -1,8 +1,8 @@
+import { Text, Title } from "@/app/_components/Typography";
 import db from "@/db/db";
 import { UserPinType } from "@/lib/users";
-import { getPinnedUserGoalId } from "../_actions/data";
-import { Text, Title } from "@/app/_components/Typography";
 import { Space } from "antd";
+import { getPinnedUserGoalId } from "../_actions/data";
 import { QuickSaveButton } from "./QuickSaveButton";
 
 const getPinnedGoalTransfers = async (userId: string) => {
@@ -32,6 +32,7 @@ const getPinnedGoalTransfers = async (userId: string) => {
 
   return null;
 };
+
 export default async function QuickSaveButtons({ userId }: { userId: string }) {
   const [quickTransfers, goalId] = await Promise.all([
     getPinnedGoalTransfers(userId),
