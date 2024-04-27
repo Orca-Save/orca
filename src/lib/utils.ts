@@ -10,22 +10,19 @@ export function cn(...inputs: ClassValue[]) {
 export const currencyFormatter = (
   value?: string | number | Decimal,
   includeDollar?: boolean
-): string => {
-  if (value === undefined) {
-    return "";
-  }
-
-  let numericValue = typeof value === "string" ? parseFloat(value) : value;
-  numericValue =
-    numericValue instanceof Decimal ? numericValue.toNumber() : numericValue;
-  if (isNaN(numericValue)) {
-    return "";
-  }
-
-  const valueString = numericValue.toFixed(0).replace(/^-/, "");
+) => {
+  if (!value) return "";
+  if (isNaN(Number(value))) return "";
+  console.log(value);
+  const precision = String(Number(value)).split(".")?.[1]?.length;
+  const currentPrecision = precision > 0 ? Math.min(precision, 2) : 0;
+  const valueString = String(Number(value).toFixed(currentPrecision)).replace(
+    /^-/,
+    ""
+  );
   const formattedValue = valueString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const dollarSign = includeDollar ? "" : "$";
-  return `${numericValue < 0 ? "-" : ""}${dollarSign}${formattedValue}`;
+  return `${Number(value) < 0 ? "-" : ""}${dollarSign}${formattedValue}`;
 };
 
 export const baseURL =
@@ -45,7 +42,7 @@ export const navigateBack = (router: AppRouterInstance) => {
   }
 };
 
-export function getPrevPageHref(referer: string) {
+export function getPrevPageHref(referer: string, window: Window) {
   const prevURL = new URL(referer);
   return prevURL.origin !== window.location.origin
     ? "/goals"

@@ -1,6 +1,5 @@
-import React from "react";
-import { InputNumber, Select } from "antd";
 import { currencyFormatter } from "@/lib/utils";
+import { InputNumber, Select } from "antd";
 
 const { Option } = Select;
 const selectAfter = (
@@ -22,7 +21,8 @@ function CurrencyInput({
   onChange?: (value: string | null) => void;
 }) {
   const currencyParser = (value?: string) =>
-    value?.replace?.(/\$\s?|,|-/g, "") ?? "";
+    value?.replace?.(/[-,]/g, "") ?? "";
+  // value?.replace?.(/\$\s?|,|-/g, "") ?? "";
 
   return (
     <InputNumber
