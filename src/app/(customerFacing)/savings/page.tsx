@@ -11,10 +11,8 @@ const items: TabsProps["items"] = [
   },
   {
     key: "2",
-    label: "One-tap",
-    children: (
-      <SavingsPage newSaveText="Add One-tap Impulse Save" filter="templates" />
-    ),
+    label: "Quick Saves",
+    children: <SavingsPage newSaveText="Add Quick Saving" filter="templates" />,
   },
   {
     key: "3",

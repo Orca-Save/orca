@@ -45,7 +45,7 @@ export default async function HomePage() {
             </Button>
           </Link>
 
-          <Title level={4}>One-tap Impulse Saves</Title>
+          <Title level={4}>Quick Saves</Title>
 
           <DynamicQuickSave userId={session.user.id} />
         </Space>

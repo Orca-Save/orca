@@ -25,11 +25,12 @@ export type GoalTransferFilter = "templates" | "accounts";
 const getGoalTransfers = (userId: string, filter?: GoalTransferFilter) => {
   const where: {
     userId: string;
-    goalId: null | { not: null };
+    goalId?: null | { not: null };
     categoryId?: string;
-  } = { userId, goalId: { not: null } };
-  if (filter === "templates") where.goalId = null;
+  } = { userId };
   if (filter === "accounts") where.categoryId = externalAccountId;
+  else where.goalId = { not: null };
+
   return db.goalTransfer.findMany({
     where,
     include: { category: true },
@@ -61,18 +62,23 @@ export default async function SavingsList({
       getUserPins(session.user.id),
     ]);
 
+    const isTemplates = filter === "templates";
+    const pinnedTitle = isTemplates ? "Pinned Quick Impulse Saves" : "";
+    const otherTitle = isTemplates ? "Unpinned Quick savings" : "Savings";
+
     const goalTransfersWithPins = goalTransfers
       .map((goalTransfer) => ({
         ...goalTransfer,
         userPinId: userPins.find((pin) => pin.typeId === goalTransfer.id)?.id,
       }))
       .sort(sortPins);
+
+    const bottomGoalTransfers = isTemplates
+      ? goalTransfersWithPins.filter((x) => !x.userPinId)
+      : goalTransfersWithPins;
     const pinnedGoalTransfers = goalTransfersWithPins.filter(
       (x) => x.userPinId
     );
-    const isTemplates = filter === "templates";
-    const pinnedTitle = isTemplates ? "Pinned One-tap Impulse Saves" : "";
-    const otherTitle = isTemplates ? "" : "Savings";
     return (
       <Space direction="vertical" style={{ width: "100%" }}>
         {isTemplates ? (
@@ -96,16 +102,14 @@ export default async function SavingsList({
           <Title level={4}>{otherTitle}</Title>
         </Space>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {goalTransfersWithPins
-            .filter((x) => !x.userPinId)
-            .map((goalTransfer) => (
-              <GoalTransferCard
-                key={goalTransfer.id}
-                routeParams={routeParams}
-                goalTransfer={goalTransfer}
-                userId={session.user.id}
-              />
-            ))}
+          {bottomGoalTransfers.map((goalTransfer) => (
+            <GoalTransferCard
+              key={goalTransfer.id}
+              routeParams={routeParams}
+              goalTransfer={goalTransfer}
+              userId={session.user.id}
+            />
+          ))}
         </div>
       </Space>
     );
