@@ -1,27 +1,13 @@
 import db from "@/db/db";
 import { UserPinType } from "@/lib/users";
 
-export const getPinnedUserGoal = async (userId: string) => {
-  const userPin = await db.userPin.findFirst({
+export const getPinnedUserGoal = (userId: string) => {
+  return db.goal.findFirst({
     where: {
-      userId: userId,
-      type: UserPinType.Goal,
-    },
-    orderBy: {
-      createdAt: "desc",
+      userId,
+      pinned: true,
     },
   });
-
-  if (userPin) {
-    const pinnedGoal = await db.goal.findUnique({
-      where: {
-        id: userPin.typeId,
-      },
-    });
-    return pinnedGoal;
-  }
-
-  return null;
 };
 
 export const getPinnedUserGoalId = async (userId: string) => {

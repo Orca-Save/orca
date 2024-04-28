@@ -1,36 +1,19 @@
 import { Text, Title } from "@/app/_components/Typography";
 import db from "@/db/db";
-import { UserPinType } from "@/lib/users";
 import { Space } from "antd";
 import { getPinnedUserGoalId } from "../_actions/data";
 import { QuickSaveButton } from "./QuickSaveButton";
 
 const getPinnedGoalTransfers = async (userId: string) => {
-  const userPins = await db.userPin.findMany({
+  return db.goalTransfer.findMany({
     where: {
-      userId: userId,
-      type: UserPinType.GoalTransfer,
+      userId,
+      pinned: true,
     },
-    orderBy: {
-      createdAt: "desc",
+    include: {
+      category: true,
     },
   });
-
-  if (userPins) {
-    const pinnedGoalTransfers = await db.goalTransfer.findMany({
-      where: {
-        id: {
-          in: userPins.map((pin) => pin.typeId),
-        },
-      },
-      include: {
-        category: true,
-      },
-    });
-    return pinnedGoalTransfers;
-  }
-
-  return null;
 };
 
 export default async function QuickSaveButtons({ userId }: { userId: string }) {

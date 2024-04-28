@@ -8,7 +8,6 @@ import PopconfirmDelete from "../goals/_components/PopconfirmDelete";
 import EditAction from "./EditAction";
 
 type Goal = PrismaGoal & {
-  userPinId?: string;
   savedItemCount: number;
   currentBalance: number;
 };
@@ -37,7 +36,6 @@ export default function GoalCard({
           ? [
               <PinSavingButton
                 key="pin"
-                userPinId={goal.userPinId}
                 typeId={goal.id}
                 type={UserPinType.Goal}
                 userHasPinnedGoal={userHasPinnedGoal}

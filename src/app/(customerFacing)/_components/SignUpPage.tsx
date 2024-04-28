@@ -2,7 +2,7 @@
 import { Button, Space } from "antd";
 import { signIn } from "next-auth/react";
 
-export default async function SignUpPage() {
+export default function SignUpPage() {
   const onClick = () => signIn("azure-ad-b2c");
   return (
     <div className="bg-color-black mg-5 flex justify-center items-center h-screen">

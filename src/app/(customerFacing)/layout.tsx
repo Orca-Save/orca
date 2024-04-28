@@ -18,7 +18,7 @@ export default function CustomerLayout({
         <NavLink href="/savings">Savings</NavLink>
         <SessionButton />
       </Nav>
-      <Content style={{ margin: "12px 16px 0" }}>{children}</Content>
+      <Content style={{ margin: "12px 32px 0" }}>{children}</Content>
     </Layout>
   );
 }

@@ -18,17 +18,20 @@ model Goal {
   userId       String
   name         String
   dueAt        DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
   targetAmount Decimal  @db.Decimal(65, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   note        String?
   imagePath   String?
   description String?
   categoryId  String?
+  pinned      Boolean?
 
-  goalTransfers GoalTransfer[]
-  category      GoalCategory?  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  goalTransfers     GoalTransfer[]
+  category          GoalCategory?       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  OnboardingProfile OnboardingProfile[]
 }
 
 model GoalCategory {
@@ -46,9 +49,25 @@ model OnboardingProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  firstGoal       String
-  firstGoalAmount Decimal
-  firstGoalDueAt  DateTime
+  goalId     String
+  goalName   String
+  goalAmount Decimal  @db.Decimal(65, 2)
+  goalDueAt  DateTime
+  goal       Goal     @relation(fields: [goalId], references: [id], onDelete: Restrict)
+
+  actionTransferId String
+  action           String
+  actionAmount     Decimal      @db.Decimal(65, 2)
+  actionTransfer   GoalTransfer @relation("actionTransfer", fields: [actionTransferId], references: [id], onDelete: Restrict)
+
+  savingTransferId String
+  saving           String
+  savingAmount     Decimal      @db.Decimal(65, 2)
+  savingTransfer   GoalTransfer @relation("savingTransfer", fields: [savingTransferId], references: [id], onDelete: Restrict)
+
+  initialTransferId String?
+  initialAmount     Decimal?      @db.Decimal(65, 2)
+  initialTransfer   GoalTransfer? @relation("initialTransfer", fields: [initialTransferId], references: [id], onDelete: Restrict)
 }
 
 model UserPin {
@@ -64,11 +83,12 @@ model GoalTransfer {
   userId   String
   itemName String
   amount   Decimal @db.Decimal(65, 2)
+  pinned   Boolean @default(false)
 
-  transactedAt DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  transactedAt DateTime?
   link         String?
   note         String?
   imagePath    String?
@@ -79,4 +99,8 @@ model GoalTransfer {
   goalId     String?
   category   GoalCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   goal       Goal?         @relation(fields: [goalId], references: [id], onDelete: Restrict)
+
+  actionOnboardingProfile  OnboardingProfile[] @relation("actionTransfer")
+  savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
+  initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
 }

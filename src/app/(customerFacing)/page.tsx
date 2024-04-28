@@ -2,10 +2,12 @@ import { Button, Skeleton, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
+import db from "@/db/db";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
 import { PlusOutlined } from "@ant-design/icons";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { Title } from "../_components/Typography";
 import SignUpPage from "./_components/SignUpPage";
 
@@ -15,12 +17,27 @@ const DynamicPinnedGoal = dynamic(() => import("./_components/DashGoalCard"), {
 const DynamicQuickSave = dynamic(() => import("./_components/DashQuickSave"), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
 });
+
+const getOnboardingProfileCount = (userId: string) => {
+  return db.onboardingProfile.count({
+    where: {
+      userId: userId,
+    },
+  });
+};
+
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
+
   if (!session) {
     return <SignUpPage />;
   }
   if (isExtendedSession(session)) {
+    const onboardingProfileCount = await getOnboardingProfileCount(
+      session.user.id
+    );
+    if (session.isNewUser || onboardingProfileCount === 0)
+      redirect("/onboarding");
     return (
       <>
         <Space direction="vertical" style={{ width: "100%" }}>

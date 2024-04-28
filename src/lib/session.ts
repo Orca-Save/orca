@@ -13,6 +13,9 @@ export interface ExtendedUser extends User {
 // Extend the Session type to use the new ExtendedUser type
 export interface ExtendedSession extends Session {
   user: ExtendedUser;
+  account?: Account;
+  profile?: Profile;
+  isNewUser?: boolean;
 }
 export function isExtendedSession(
   session: Session | ExtendedSession

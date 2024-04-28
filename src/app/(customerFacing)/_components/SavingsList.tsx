@@ -156,7 +156,7 @@ function GoalTransferCard({
           <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
         }
         title={goalTransfer.itemName}
-        description={goalTransfer.transactedAt.toDateString()}
+        description={goalTransfer.transactedAt?.toDateString()}
       />
       <Text type={amount < 0 ? "danger" : undefined}>
         {currencyFormatter(amount)}
