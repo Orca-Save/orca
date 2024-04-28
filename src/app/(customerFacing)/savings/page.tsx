@@ -49,9 +49,12 @@ export default async function MySavingsPage() {
         <SavingsPage
           topGoalTransfers={goalTransfers.filter((transfer) => transfer.pinned)}
           bottomGoalTransfers={goalTransfers.filter(
-            (transfer) => !transfer.goalId && transfer.amount.toNumber() > 0
+            (transfer) =>
+              !transfer.goalId &&
+              !transfer.pinned &&
+              transfer.amount.toNumber() > 0
           )}
-          saveHref="/savings/oneTapSave/new?filter=templates"
+          saveHref="/savings/oneTapSave/new"
           buyHref="/purchases/impulseBuy/new"
           newSaveText="Add One-Tap Save"
           filter="templates"

@@ -18,6 +18,20 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     },
   });
 
+  let initialAmountTransfer;
+  if (onboardingProfileData.initialAmount) {
+    initialAmountTransfer = await db.goalTransfer.create({
+      data: {
+        userId: userId,
+        goalId: goal.id,
+        amount: onboardingProfileData.initialAmount,
+        transactedAt: new Date(),
+        itemName: onboardingProfileData.goalName + " Initial Amount",
+        categoryId: externalAccountId,
+      },
+    });
+  }
+
   const actionGoalTransfer = await db.goalTransfer.create({
     data: {
       userId: userId,
@@ -35,20 +49,6 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
       pinned: true,
     },
   });
-
-  let initialAmountTransfer;
-  if (onboardingProfileData.initialAmount) {
-    initialAmountTransfer = await db.goalTransfer.create({
-      data: {
-        userId: userId,
-        goalId: goal.id,
-        amount: onboardingProfileData.initialAmount,
-        transactedAt: new Date(),
-        itemName: onboardingProfileData.goalName + " Initial Amount",
-        categoryId: externalAccountId,
-      },
-    });
-  }
 
   await db.onboardingProfile.create({
     data: {

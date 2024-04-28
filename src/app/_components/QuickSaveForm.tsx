@@ -92,14 +92,14 @@ export default function QuickSaveForm({
         <Form.Item
           name="itemName"
           label={itemNameTitle}
-          rules={[{ required: true, message: "Please input the item name!" }]}
+          rules={[{ required: true, message: "Please input the item name" }]}
         >
           <Input placeholder={itemNamePlaceholder} />
         </Form.Item>
         <Form.Item
           name="amount"
           label="Amount"
-          rules={[{ required: true, message: "Please input the amount!" }]}
+          rules={[{ required: true, message: "Please input the amount" }]}
         >
           <CurrencyInput placeholder="Amount" />
         </Form.Item>
@@ -107,6 +107,7 @@ export default function QuickSaveForm({
           <Form.Item
             name="rating"
             label="How did you feel about this purchase?"
+            rules={[{ required: true, message: "Please rate this purchase" }]}
           >
             <Rate character={({ index = 0 }) => customIcons[index + 1]} />
           </Form.Item>
