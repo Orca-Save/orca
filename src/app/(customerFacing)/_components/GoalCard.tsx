@@ -1,6 +1,5 @@
 import PinSavingButton from "@/app/_components/PinSavingButton";
 import { UserPinType } from "@/lib/users";
-import { ShareAltOutlined } from "@ant-design/icons";
 import { Goal as PrismaGoal } from "@prisma/client";
 import { Card, Col, Row } from "antd";
 import Meta from "antd/es/card/Meta";
@@ -46,7 +45,7 @@ export default function GoalCard({
               />,
             ]
           : []),
-        <ShareAltOutlined key="share" />,
+        // <ShareAltOutlined key="share" />,
       ]}
     >
       <Meta title={goal.name} />

@@ -6,10 +6,6 @@ export default async function NewSavingsPage({
   params: { id: string };
 }) {
   return (
-    <GoalTransferPage
-      goalTransferId={id}
-      isSavings={true}
-      title="Edit Saving"
-    />
+    <GoalTransferPage goalTransferId={id} isSavings={true} title="Edit Save" />
   );
 }

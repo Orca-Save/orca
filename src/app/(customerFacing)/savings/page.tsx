@@ -6,19 +6,37 @@ const items: TabsProps["items"] = [
     key: "1",
     label: "Log",
     children: (
-      <SavingsPage newSaveText="Impulse Save" newPurchaseText="Impulse Buy" />
+      <SavingsPage
+        saveHref="/savings/impulseSave/new"
+        buyHref="/purchases/impulseBuy/new"
+        newSaveText="Impulse Save"
+        newPurchaseText="Impulse Buy"
+      />
     ),
   },
   {
     key: "2",
-    label: "Quick Saves",
-    children: <SavingsPage newSaveText="Add Quick Saving" filter="templates" />,
+    label: "One-Tap",
+    children: (
+      <SavingsPage
+        saveHref="/savings/oneTapSave/new?filter=templates"
+        buyHref="/purchases/impulseBuy/new"
+        newSaveText="Add One-Tap Save"
+        filter="templates"
+      />
+    ),
   },
   {
     key: "3",
     label: "External",
     children: (
-      <SavingsPage newSaveText="New External Account" filter="accounts" />
+      <SavingsPage
+        saveHref="/savings/oneTapSave/new?filter=templates"
+        buyHref="/purchases/impulseBuy"
+        newSaveText="New External Account"
+        filter="accounts"
+        hide={true}
+      />
     ),
   },
 ];

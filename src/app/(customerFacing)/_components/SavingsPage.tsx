@@ -22,10 +22,16 @@ export default async function SavingsPage({
   filter,
   newSaveText,
   newPurchaseText,
+  saveHref,
+  buyHref,
+  hide,
 }: {
   filter?: GoalTransferFilter;
   newPurchaseText?: string;
   newSaveText: string;
+  saveHref: string;
+  buyHref: string;
+  hide?: boolean;
 }) {
   let routeParams = "";
   if (filter === "accounts") routeParams = "?filter=accounts";
@@ -36,13 +42,15 @@ export default async function SavingsPage({
         direction="horizontal"
         style={{ justifyContent: "center", width: "100%" }}
       >
-        <Link href={"/savings/impulseSave" + routeParams}>
-          <Button type="primary" icon={<PlusOutlined />}>
-            {newSaveText}
-          </Button>
-        </Link>
+        {!hide ? (
+          <Link href={saveHref + routeParams}>
+            <Button type="primary" icon={<PlusOutlined />}>
+              {newSaveText}
+            </Button>
+          </Link>
+        ) : null}
         {filter === undefined && (
-          <Link href={"/purchases/impulseBuy"}>
+          <Link href={buyHref}>
             <Button icon={<PlusOutlined />}>{newPurchaseText}</Button>
           </Link>
         )}

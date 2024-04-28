@@ -63,9 +63,11 @@ export default async function SavingsList({
     ]);
 
     const isTemplates = filter === "templates";
-    const pinnedTitle = isTemplates ? "Pinned Quick Impulse Saves" : "";
-    const otherTitle = isTemplates ? "Unpinned Quick savings" : "Savings";
+    const pinnedTitle = isTemplates ? "Pinned" : "";
+    const otherTitle = isTemplates ? "One-Tap Saves" : "";
 
+    // impulse buy, there is no visual record, or not being created at all
+    // logs and quick saves are being duplicated
     const goalTransfersWithPins = goalTransfers
       .map((goalTransfer) => ({
         ...goalTransfer,
@@ -154,7 +156,7 @@ function GoalTransferCard({
           <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
         }
         title={goalTransfer.itemName}
-        description={goalTransfer.category?.name}
+        description={goalTransfer.transactedAt.toDateString()}
       />
       <Text type={amount < 0 ? "danger" : undefined}>
         {currencyFormatter(amount)}

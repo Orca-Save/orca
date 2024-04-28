@@ -26,7 +26,7 @@ export default async function HomePage() {
         <Space direction="vertical" style={{ width: "100%" }}>
           <Title level={4}>Focus Goal</Title>
           <DynamicPinnedGoal userId={session.user.id} />
-          <Link href="/savings/impulseSave">
+          <Link href="/savings/impulseSave/new">
             <Button
               icon={<PlusOutlined />}
               size="large"
@@ -36,7 +36,7 @@ export default async function HomePage() {
               Impulse Save
             </Button>
           </Link>
-          <Link href="/purchases/impulseBuy">
+          <Link href="/purchases/impulseBuy/new">
             <Button
               icon={<PlusOutlined />}
               size="large"
@@ -46,7 +46,7 @@ export default async function HomePage() {
             </Button>
           </Link>
 
-          <Title level={4}>Quick Saves</Title>
+          <Title level={4}>One-tap Saves</Title>
 
           <DynamicQuickSave userId={session.user.id} />
         </Space>

@@ -30,9 +30,13 @@ const customIcons: Record<number, React.ReactNode> = {
 export default function QuickSaveForm({
   isSavings,
   referer,
+  itemNameTitle,
+  itemNamePlaceholder,
 }: {
   referer: string;
   isSavings: boolean;
+  itemNameTitle: string;
+  itemNamePlaceholder: string;
 }) {
   const [form] = Form.useForm();
   const router = useRouter();
@@ -87,10 +91,10 @@ export default function QuickSaveForm({
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
           name="itemName"
-          label="Item Name"
+          label={itemNameTitle}
           rules={[{ required: true, message: "Please input the item name!" }]}
         >
-          <Input placeholder="ex: Starbucks Iced Latte" />
+          <Input placeholder={itemNamePlaceholder} />
         </Form.Item>
         <Form.Item
           name="amount"

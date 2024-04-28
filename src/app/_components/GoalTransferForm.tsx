@@ -127,6 +127,7 @@ export function GoalTransferForm({
           : dayjs(),
         note: goalTransfer?.note,
         link: goalTransfer?.link,
+        name: goalTransfer?.itemName,
         merchantName: goalTransfer?.merchantName,
         goalId: goalTransfer?.goalId,
         categoryId: goalTransfer?.categoryId ?? initialCategoryId,
@@ -134,10 +135,12 @@ export function GoalTransferForm({
     >
       <Form.Item
         name="itemName"
-        label="Item Name"
+        label="Item or Action"
         rules={[{ required: true, message: "Please input the item name!" }]}
       >
-        <Input placeholder="Item Name" />
+        <Input
+          placeholder={`ex: "Starbucks Iced Latte", "Made lunch at home"`}
+        />
       </Form.Item>
       <Form.Item
         name="transactedAt"
@@ -160,11 +163,7 @@ export function GoalTransferForm({
       </Form.Item>
 
       {!isTemplate ? (
-        <Form.Item
-          name="goalId"
-          label="Goal"
-          rules={[{ required: true, message: "Please select a goal!" }]}
-        >
+        <Form.Item name="goalId" label="Goal">
           <Select
             placeholder="Select a goal"
             options={goals.map((goal: Goal) => ({
