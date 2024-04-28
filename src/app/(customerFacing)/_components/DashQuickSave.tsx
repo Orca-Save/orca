@@ -1,7 +1,7 @@
-import { Text, Title } from "@/app/_components/Typography";
+import { Text } from "@/app/_components/Typography";
 import db from "@/db/db";
 import { Space } from "antd";
-import { getPinnedUserGoalId } from "../_actions/data";
+import { getPinnedUserGoal } from "../_actions/data";
 import { QuickSaveButton } from "./QuickSaveButton";
 
 const getPinnedGoalTransfers = async (userId: string) => {
@@ -17,22 +17,22 @@ const getPinnedGoalTransfers = async (userId: string) => {
 };
 
 export default async function QuickSaveButtons({ userId }: { userId: string }) {
-  const [quickTransfers, goalId] = await Promise.all([
+  const [quickTransfers, goal] = await Promise.all([
     getPinnedGoalTransfers(userId),
-    getPinnedUserGoalId(userId),
+    getPinnedUserGoal(userId),
   ]);
 
-  if (!quickTransfers) return <Text>No Pinned Goal Transfers.</Text>;
+  if (!quickTransfers) return <Text>No Pinned One-Tap Saves.</Text>;
+  if (!goal) return <Text>No Pinned Goal.</Text>;
 
   return (
     <>
-      {!goalId && <Title level={4}>No Pinned Goal.</Title>}
       <Space wrap>
         {quickTransfers.map((transfer) => (
           <QuickSaveButton
             key={transfer.id}
             transfer={transfer}
-            goalId={goalId}
+            goalId={goal.id}
           />
         ))}
       </Space>

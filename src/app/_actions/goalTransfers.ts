@@ -2,7 +2,6 @@
 
 import db from "@/db/db";
 import { externalAccountId } from "@/lib/goalTransfers";
-import { UserPinType } from "@/lib/users";
 import { GoalTransfer } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
@@ -133,37 +132,29 @@ export async function addQuickGoalTransfer(
   }
   if (goalTransferType !== "templates" && data.amount > 0) {
     userPinGoalId = (
-      await db.userPin.findFirst({
-        where: { userId: userId, type: UserPinType.Goal },
+      await db.goal.findFirst({
+        where: { userId: userId, pinned: true },
       })
-    )?.typeId;
+    )?.id;
 
     if (!userPinGoalId) return { noPinnedGoal: true };
   }
 
   const goalTransfer = await db.goalTransfer.create({
     data: {
-      userId: userId,
+      userId,
+      categoryId,
       goalId: userPinGoalId,
 
       rating: data.rating,
       itemName: data.itemName,
       amount: data.amount,
+      pinned: goalTransferType === "templates",
 
       updatedAt: new Date(),
       transactedAt: new Date(),
     },
   });
-
-  if (goalTransferType === "templates") {
-    await db.userPin.create({
-      data: {
-        userId: userId,
-        typeId: goalTransfer.id,
-        type: UserPinType.GoalTransfer,
-      },
-    });
-  }
 
   revalidatePath("/");
   revalidatePath("/savings");

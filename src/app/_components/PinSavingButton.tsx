@@ -1,31 +1,26 @@
 "use client";
 
 import { PushpinFilled, PushpinOutlined } from "@ant-design/icons";
-import { createUserPin, deleteUserPin } from "../_actions/users";
 import { Button } from "antd";
+import { setGoalPinned, setGoalTransferPinned } from "../_actions/users";
 
 type PinSavingButtonProps = {
-  userPinId?: string;
-  userId?: string;
-  typeId?: string;
-  type?: string;
+  pinned: boolean | null;
+  typeId: string;
+  type: "Goal" | "GoalTransfer";
   userHasPinnedGoal?: boolean;
 };
 
 export default function PinSavingButton({
-  userPinId,
-  userId,
+  pinned,
   typeId,
   type,
   userHasPinnedGoal,
 }: PinSavingButtonProps) {
-  const deletePinAction = () => userPinId && deleteUserPin(userPinId);
-  const createPinAction = () =>
-    userId && typeId && type && createUserPin(userId, typeId, type);
+  const setPinned = type === "Goal" ? setGoalPinned : setGoalTransferPinned;
+  const onClick = () => setPinned(typeId, !pinned);
 
-  const onClick = () => (userPinId ? deletePinAction() : createPinAction());
-
-  if (userPinId) return <PushpinFilled onClick={onClick} />;
+  if (pinned) return <PushpinFilled onClick={onClick} />;
   return (
     <Button
       icon={<PushpinOutlined />}

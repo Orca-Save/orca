@@ -1,5 +1,4 @@
 import PinSavingButton from "@/app/_components/PinSavingButton";
-import { UserPinType } from "@/lib/users";
 import { Goal as PrismaGoal } from "@prisma/client";
 import { Card, Col, Row } from "antd";
 import Meta from "antd/es/card/Meta";
@@ -36,10 +35,10 @@ export default function GoalCard({
           ? [
               <PinSavingButton
                 key="pin"
+                type="Goal"
                 typeId={goal.id}
-                type={UserPinType.Goal}
+                pinned={goal.pinned}
                 userHasPinnedGoal={userHasPinnedGoal}
-                userId={goal.userId}
               />,
             ]
           : []),

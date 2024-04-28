@@ -2,7 +2,7 @@ import { Title } from "@/app/_components/Typography";
 import db from "@/db/db";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
-import { UserPinType, sortPins } from "@/lib/users";
+import { sortPins } from "@/lib/users";
 import { baseURL } from "@/lib/utils";
 import { Space } from "antd";
 import { getServerSession } from "next-auth";
@@ -32,12 +32,6 @@ const getGoalTransfersSum = (userId: string) => {
   });
 };
 
-const getUserPins = (userId: string) => {
-  return db.userPin.findMany({
-    where: { type: UserPinType.Goal, userId },
-  });
-};
-
 export default async function GoalsSuspense() {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -46,10 +40,9 @@ export default async function GoalsSuspense() {
   }
 
   if (isExtendedSession(session)) {
-    let [goals, sums, userPins] = await Promise.all([
+    let [goals, sums] = await Promise.all([
       getGoals(session.user.id),
       getGoalTransfersSum(session.user.id),
-      getUserPins(session.user.id),
     ]);
     const goalSumMap = new Map(
       sums.map((item) => [
@@ -57,18 +50,15 @@ export default async function GoalsSuspense() {
         { amount: item._sum.amount, count: item._count.goalId },
       ])
     );
-    const userHasPinnedGoal = userPins.some(
-      (pin) => pin.userId === session.user.id
-    );
+    const userHasPinnedGoal = goals.some((goal) => goal.pinned);
     const goalsWithDetails = goals
       .map((goal) => ({
         ...goal,
-        userPinId: userPins.find((pin) => pin.typeId === goal.id)?.id,
         currentBalance: goalSumMap.get(goal.id)?.amount?.toNumber() || 0,
         savedItemCount: goalSumMap.get(goal.id)?.count || 0,
       }))
       .sort(sortPins);
-    const pinnedGoals = goalsWithDetails.filter((x) => x.userPinId);
+    const pinnedGoals = goalsWithDetails.filter((x) => x.pinned);
     return (
       <Space direction="vertical" className="w-full">
         <Space className="center-space">
@@ -91,7 +81,7 @@ export default async function GoalsSuspense() {
         </Space>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {goalsWithDetails
-            .filter((x) => !x.userPinId)
+            .filter((x) => !x.pinned)
             .map((goal) => (
               <GoalCard
                 key={goal.id}

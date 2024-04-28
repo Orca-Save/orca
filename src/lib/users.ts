@@ -1,17 +1,11 @@
-export enum UserPinType {
-  GoalTransfer = "GoalTransfer",
-  Goal = "Goal",
-}
+import { Goal, GoalTransfer } from "@prisma/client";
 
-type UserPin = {
-  userPinId?: string;
-  updatedAt: Date;
-};
-export function sortPins(a: UserPin, b: UserPin) {
-  if (a.userPinId && !b.userPinId) {
+type Item = Goal | GoalTransfer;
+export function sortPins(a: Item, b: Item) {
+  if (a.pinned && !b.pinned) {
     return -1;
   }
-  if (b.userPinId && !a.userPinId) {
+  if (b.pinned && !a.pinned) {
     return 1;
   }
 

@@ -1,4 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
+import { GoalTransfer } from "@prisma/client";
 import { Button, Card, Skeleton, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -25,12 +26,16 @@ export default async function SavingsPage({
   saveHref,
   buyHref,
   hide,
+  bottomGoalTransfers,
+  topGoalTransfers,
 }: {
   filter?: GoalTransferFilter;
   newPurchaseText?: string;
   newSaveText: string;
   saveHref: string;
   buyHref: string;
+  bottomGoalTransfers: GoalTransfer[];
+  topGoalTransfers?: GoalTransfer[];
   hide?: boolean;
 }) {
   let routeParams = "";
@@ -55,7 +60,12 @@ export default async function SavingsPage({
           </Link>
         )}
       </Space>
-      <DynamicSavingsList filter={filter} routeParams={routeParams} />
+      <DynamicSavingsList
+        bottomGoalTransfers={bottomGoalTransfers}
+        topGoalTransfers={topGoalTransfers}
+        filter={filter}
+        routeParams={routeParams}
+      />
     </>
   );
 }

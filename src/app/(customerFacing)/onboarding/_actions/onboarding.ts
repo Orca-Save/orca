@@ -30,8 +30,8 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
   const saveGoalTransfer = await db.goalTransfer.create({
     data: {
       userId: userId,
-      amount: onboardingProfileData.actionAmount,
-      itemName: onboardingProfileData.action,
+      amount: onboardingProfileData.savingAmount,
+      itemName: onboardingProfileData.saving,
       pinned: true,
     },
   });

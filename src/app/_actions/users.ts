@@ -2,38 +2,31 @@
 
 import db from "@/db/db";
 import { revalidatePath } from "next/cache";
-import { notFound } from "next/navigation";
 
-export async function createUserPin(
-  userId: string,
-  typeId: string,
-  type: string
-) {
-  const userPin = await db.userPin.create({
+export async function setGoalPinned(goalId: string, pinned: boolean) {
+  const goal = await db.goal.update({
+    where: { id: goalId },
     data: {
-      userId,
-      typeId: typeId,
-      type,
+      pinned,
     },
   });
 
   revalidatePath("/");
   revalidatePath("/savings");
   revalidatePath("/goals");
-  return userPin;
+  return goal;
 }
 
-export async function deleteUserPin(id: string) {
-  const userPin = await db.userPin.delete({
-    where: { id },
+export async function setGoalTransferPinned(goalId: string, pinned: boolean) {
+  const goalTransfer = await db.goalTransfer.update({
+    where: { id: goalId },
+    data: {
+      pinned,
+    },
   });
 
-  if (userPin == null) {
-    notFound();
-    return;
-  }
   revalidatePath("/");
   revalidatePath("/savings");
   revalidatePath("/goals");
-  return userPin;
+  return goalTransfer;
 }

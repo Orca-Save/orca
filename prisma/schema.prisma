@@ -70,14 +70,6 @@ model OnboardingProfile {
   initialTransfer   GoalTransfer? @relation("initialTransfer", fields: [initialTransferId], references: [id], onDelete: Restrict)
 }
 
-model UserPin {
-  id        String   @id @default(uuid())
-  userId    String
-  typeId    String   @unique
-  type      String
-  createdAt DateTime @default(now())
-}
-
 model GoalTransfer {
   id       String  @id @default(uuid())
   userId   String
