@@ -1,6 +1,7 @@
 import { Nav, NavLink } from "@/components/Nav";
-import SessionButton from "./_components/SessionButton";
 import { Layout } from "antd";
+import { Content } from "../_components/Layout";
+import SessionButton from "./_components/SessionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export default function CustomerLayout({
         <NavLink href="/savings">Savings</NavLink>
         <SessionButton />
       </Nav>
-      <div className="container my-6">{children}</div>
+      <Content style={{ margin: "12px 16px 0" }}>{children}</Content>
     </Layout>
   );
 }
