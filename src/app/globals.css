@@ -80,3 +80,11 @@
     @apply w-full justify-center;
   }
 }
+
+@layer utilities {
+  orca-gradient {
+    background: -webkit-linear-gradient(#00A3FF, #FF00E5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

@@ -7,6 +7,7 @@ import { isExtendedSession } from "@/lib/session";
 import { PlusOutlined } from "@ant-design/icons";
 import { getServerSession } from "next-auth";
 import { Title } from "../_components/Typography";
+import SignUpPage from "./_components/SignUpPage";
 
 const DynamicPinnedGoal = dynamic(() => import("./_components/DashGoalCard"), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
@@ -17,7 +18,7 @@ const DynamicQuickSave = dynamic(() => import("./_components/DashQuickSave"), {
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return <Title>Please sign in to continue.</Title>;
+    return <SignUpPage />;
   }
   if (isExtendedSession(session)) {
     return (
