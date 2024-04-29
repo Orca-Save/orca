@@ -1,9 +1,15 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
-import { SessionProvider } from "@/components/SessionProvider";
 import { ConfigProvider, darkAlgorithm } from "@/components/ConfigProvider";
+import { SessionProvider } from "@/components/SessionProvider";
+import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+import { Inter, Open_Sans } from "next/font/google";
 import "./globals.css";
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-opensans",
+});
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 

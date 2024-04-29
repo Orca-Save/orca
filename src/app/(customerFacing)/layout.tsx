@@ -1,7 +1,6 @@
-import { Nav, NavLink } from "@/components/Nav";
 import { Layout } from "antd";
 import { Content } from "../_components/Layout";
-import SessionButton from "./_components/SessionButton";
+import HeaderMenu from "./_components/HeaderMenu";
 
 export const dynamic = "force-dynamic";
 
@@ -12,12 +11,7 @@ export default function CustomerLayout({
 }>) {
   return (
     <Layout style={{ minHeight: "100vh", height: "100%" }}>
-      <Nav>
-        <NavLink href="/">Home</NavLink>
-        <NavLink href="/goals">Goals</NavLink>
-        <NavLink href="/savings">Savings</NavLink>
-        <SessionButton />
-      </Nav>
+      <HeaderMenu />
       <Content style={{ margin: "12px 32px 0" }}>{children}</Content>
     </Layout>
   );

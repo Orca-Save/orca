@@ -44,7 +44,6 @@ export default async function HomePage({
     );
     if (session.isNewUser || onboardingProfileCount === 0)
       redirect("/onboarding");
-
     return (
       <>
         <ConfettiComp run={searchParams?.confetti === "true"} path="/" />

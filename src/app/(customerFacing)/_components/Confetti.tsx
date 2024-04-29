@@ -17,12 +17,15 @@ export default function ConfettiComp({
     firstRun: true,
   });
   const router = useRouter();
+  console.log(run, confetti.firstRun);
   if (run && confetti.firstRun) {
-    router.replace(path, undefined);
     setConfetti({ run: true, count: 300, firstRun: false });
   }
 
   if (confetti.run && !confetti.firstRun) {
+    setTimeout(() => {
+      router.replace(path, undefined);
+    }, 500);
     setTimeout(() => {
       setConfetti({ run: true, count: 0, firstRun: true });
     }, 1500);
