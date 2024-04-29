@@ -1,13 +1,22 @@
 "use client";
 import { Button, Space } from "antd";
 import { signIn } from "next-auth/react";
+import { Open_Sans } from "next/font/google";
 
+const openSans = Open_Sans({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-opensans",
+});
 export default function SignUpPage() {
   const onClick = () => signIn("azure-ad-b2c");
   return (
     <div className="bg-color-black mg-5 flex justify-center items-center h-screen">
       <Space direction="vertical" size={50}>
-        <h1 className="text-center decoration-clone pb-3 text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold">
+        <h1
+          className={`${openSans.className} text-center decoration-clone pb-3 text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+        >
           Ready to save an extra $3,800 a year?
         </h1>
 

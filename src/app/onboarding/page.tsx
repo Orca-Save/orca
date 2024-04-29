@@ -16,7 +16,7 @@ import { isFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import { applyFormErrors } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import { Varela_Round } from "next/font/google";
+import { Open_Sans, Varela_Round } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Content } from "../_components/Layout";
@@ -29,6 +29,12 @@ const varelaRound = Varela_Round({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-varelaround",
+});
+const openSans = Open_Sans({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-opensans",
 });
 export default function OnboardingPage() {
   const [confetti, setConfetti] = useState({ run: false, count: 0 });
@@ -99,7 +105,9 @@ export default function OnboardingPage() {
 
                       children: (
                         <>
-                          <h3 className="text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold">
+                          <h3
+                            className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                          >
                             {"Let's set up your first goal."}
                           </h3>
                           <Form.Item
@@ -157,7 +165,9 @@ export default function OnboardingPage() {
                       children: (
                         <>
                           <div style={{ marginBottom: "20px" }}>
-                            <h3 className="text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold">
+                            <h3
+                              className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                            >
                               {"Let's set up a One-Tap save."}
                             </h3>
                             <Text>
