@@ -84,7 +84,7 @@ export function GoalForm({
           });
         });
       }
-      router.push(getPrevPageHref(referer, window));
+      router.push(getPrevPageHref(referer, window) + "?confetti=true");
     }
   };
 

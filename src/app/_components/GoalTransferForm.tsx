@@ -108,7 +108,7 @@ export function GoalTransferForm({
         });
       });
     } else {
-      router.push(getPrevPageHref(referer, window));
+      router.push(getPrevPageHref(referer, window) + "?confetti=true");
     }
   };
   const amount = goalTransfer?.amount ?? 0;

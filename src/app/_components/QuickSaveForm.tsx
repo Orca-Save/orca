@@ -83,7 +83,9 @@ export default function QuickSaveForm({
         duration: 2,
       });
     }
-    router.push(getPrevPageHref(referer, window));
+    let path = getPrevPageHref(referer, window);
+    if (isSavings) path += "?confetti=true";
+    router.push(path);
   };
   return (
     <>

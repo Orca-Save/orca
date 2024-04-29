@@ -9,6 +9,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Title } from "../_components/Typography";
+import ConfettiComp from "./_components/Confetti";
 import SignUpPage from "./_components/SignUpPage";
 
 const DynamicPinnedGoal = dynamic(() => import("./_components/DashGoalCard"), {
@@ -28,7 +29,6 @@ const getOnboardingProfileCount = (userId: string) => {
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
-
   if (!session) {
     return <SignUpPage />;
   }
@@ -38,8 +38,10 @@ export default async function HomePage() {
     );
     if (session.isNewUser || onboardingProfileCount === 0)
       redirect("/onboarding");
+
     return (
       <>
+        <ConfettiComp />
         <Space direction="vertical" style={{ width: "100%" }}>
           <Title level={4}>Focus Goal</Title>
           <DynamicPinnedGoal userId={session.user.id} />

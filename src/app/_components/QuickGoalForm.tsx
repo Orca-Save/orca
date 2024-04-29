@@ -58,7 +58,7 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
       if (isFieldErrors(result)) {
         applyFormErrors(form, result);
       } else {
-        router.push(getPrevPageHref(referer, window));
+        router.push(getPrevPageHref(referer, window) + "?confetti=true");
       }
     }
   };
