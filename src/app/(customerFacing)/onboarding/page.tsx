@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { onboardUser } from "./_actions/onboarding";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export default function OnboardingPage() {
   const [confetti, setConfetti] = useState({ run: false, count: 0 });
@@ -67,6 +67,7 @@ export default function OnboardingPage() {
               animated
               size="large"
               defaultActiveKey="1"
+              style={{ maxWidth: "500px" }}
               onChange={(key) => setPageState({ tabKey: key })}
               activeKey={pageState.tabKey}
               items={[
@@ -76,7 +77,9 @@ export default function OnboardingPage() {
 
                   children: (
                     <>
-                      <Title>{"Let's set up your first goal."}</Title>
+                      <h3 className="text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold">
+                        {"Let's set up your first goal."}
+                      </h3>
                       <Form.Item
                         required
                         name="goalName"
@@ -127,20 +130,27 @@ export default function OnboardingPage() {
                   ),
                 },
                 {
-                  label: "Action",
+                  label: "One-Tap",
                   key: "2",
                   children: (
                     <>
-                      <Title>{"Let's set up a One-Tap save."}</Title>
-                      <Form.Item
-                        name="saving"
-                        label="What's a repeatable action that could help you save?"
-                      >
+                      <div style={{ marginBottom: "20px" }}>
+                        <h3 className="text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold">
+                          {"Let's set up a One-Tap save."}
+                        </h3>
+                        <Text>
+                          These appear on the Home screen as buttons, where just
+                          a single tap will save the amount toward your goal.
+                          Set these up to quickly address common encounters
+                          where you know you could be saving instead.
+                        </Text>
+                      </div>
+                      <Form.Item name="saving" label="One-tap save name">
                         <Input placeholder="ex: Made dinner instead of DoorDashing" />
                       </Form.Item>
                       <Form.Item
                         name="savingAmount"
-                        label="About how much do you think it would save you each time?"
+                        label="How much will that save you each time?"
                       >
                         <CurrencyInput />
                       </Form.Item>

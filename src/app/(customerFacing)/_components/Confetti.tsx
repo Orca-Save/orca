@@ -19,7 +19,7 @@ export default function ConfettiComp({
   const router = useRouter();
   if (run && confetti.firstRun) {
     router.replace(path, undefined);
-    setConfetti({ run: true, count: 100, firstRun: false });
+    setConfetti({ run: true, count: 300, firstRun: false });
   }
 
   if (confetti.run && !confetti.firstRun) {

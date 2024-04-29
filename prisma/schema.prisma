@@ -53,16 +53,16 @@ model OnboardingProfile {
   goalName   String
   goalAmount Decimal  @db.Decimal(65, 2)
   goalDueAt  DateTime
-  goal       Goal     @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  goal       Goal     @relation(fields: [goalId], references: [id])
 
   savingTransferId String?
   saving           String?
   savingAmount     Decimal?      @db.Decimal(65, 2)
-  savingTransfer   GoalTransfer? @relation("savingTransfer", fields: [savingTransferId], references: [id], onDelete: Restrict)
+  savingTransfer   GoalTransfer? @relation("savingTransfer", fields: [savingTransferId], references: [id])
 
   initialTransferId String?
   initialAmount     Decimal?      @db.Decimal(65, 2)
-  initialTransfer   GoalTransfer? @relation("initialTransfer", fields: [initialTransferId], references: [id], onDelete: Restrict)
+  initialTransfer   GoalTransfer? @relation("initialTransfer", fields: [initialTransferId], references: [id])
 }
 
 model GoalTransfer {

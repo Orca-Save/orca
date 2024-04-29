@@ -45,8 +45,8 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     },
   ];
 
-  defaultGoalTransfers.forEach(({ itemName, amount }) => {
-    db.goalTransfer.create({
+  for (let { itemName, amount } of defaultGoalTransfers) {
+    await db.goalTransfer.create({
       data: {
         amount,
         itemName,
@@ -54,7 +54,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
         userId: userId,
       },
     });
-  });
+  }
 
   let saveGoalTransfer;
   if (onboardingProfileData.savingAmount && onboardingProfileData.saving) {

@@ -29,7 +29,7 @@ export function QuickSaveButton({
     }, 1500);
   }
   const onClick = () => {
-    setConfetti({ run: true, count: 100 });
+    setConfetti({ run: true, count: 300 });
     if (goalId) addQuickSave(goalId, transfer);
   };
 
