@@ -28,7 +28,7 @@ export default function GoalCard({
           goalId={goal.id}
           key="delete"
           title="Delete the goal"
-          description="Are you sure to delete this goal?"
+          description="Are you sure you want to delete this goal?"
         />,
         <EditAction route={`/goals/${goal.id}/edit`} key="edit" />,
         ...(revalidatePath !== "/"

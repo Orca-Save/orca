@@ -44,12 +44,7 @@ export default function HeaderMenu() {
         align="center"
         size={0}
       >
-        <Text
-          className={`${varelaRound.className} text-center decoration-clone pb-3 text-2xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
-        >
-          O
-        </Text>
-        <Text className={`${varelaRound.className}`}>rca</Text>
+        <Text className={`${varelaRound.className}`}>Orca</Text>
       </Space>
       <Space
         direction="horizontal"

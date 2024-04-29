@@ -163,7 +163,7 @@ export default function OnboardingPage() {
                       label: "One-Tap",
                       key: "2",
                       children: (
-                        <>
+                        <div style={{ margin: "15px" }}>
                           <div style={{ marginBottom: "20px" }}>
                             <h3
                               className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
@@ -178,7 +178,7 @@ export default function OnboardingPage() {
                               instead.
                             </Text>
                           </div>
-                          <Form.Item name="saving" label="One-tap save name">
+                          <Form.Item name="saving" label="One-Tap save name">
                             <Input placeholder="ex: Made dinner instead of DoorDashing" />
                           </Form.Item>
                           <Form.Item
@@ -187,12 +187,12 @@ export default function OnboardingPage() {
                           >
                             <CurrencyInput />
                           </Form.Item>
-                        </>
+                        </div>
                       ),
                     },
                   ]}
                 />
-                <Row justify="end">
+                <Row justify="end" style={{ marginRight: "15px" }}>
                   {currentTab === 2 ? (
                     <Form.Item>
                       <Space direction="horizontal" size="middle">

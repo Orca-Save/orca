@@ -70,7 +70,7 @@ export default async function HomePage({
             </Button>
           </Link>
 
-          <Title level={4}>One-tap Saves</Title>
+          <Title level={4}>One-Tap Saves</Title>
 
           <DynamicQuickSave userId={session.user.id} />
         </Space>

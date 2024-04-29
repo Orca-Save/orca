@@ -74,7 +74,7 @@ function GoalTransferCard({
           goalTransferId={goalTransfer.id}
           key="delete"
           title="Delete the saving"
-          description="Are you sure to delete this saving?"
+          description="Are you sure you want to delete this saving?"
         />,
         <EditAction
           key="edit"
