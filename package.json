@@ -31,7 +31,6 @@
     "react-dom": "^18",
     "react-email": "^2.1.0",
     "react-hook-form": "^7.51.3",
-    "react-hook-form-antd": "^1.1.0",
     "react-use": "^17.5.0",
     "resend": "^3.2.0",
     "tailwind-merge": "^2.2.1",

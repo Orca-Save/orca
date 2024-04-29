@@ -1,19 +1,26 @@
 "use client";
-import { Button, DatePicker, Form, Input, Row, Tabs } from "antd";
-import { useForm } from "react-hook-form";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Row,
+  Space,
+  Tabs,
+  Typography,
+} from "antd";
 
 import CurrencyInput from "@/app/_components/CurrencyInput";
+import { isFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
-import { zodResolver } from "@hookform/resolvers/zod";
-import dayjs from "dayjs";
+import { applyFormErrors } from "@/lib/utils";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FormItem } from "react-hook-form-antd";
 import { onboardUser } from "./_actions/onboarding";
-import { onboardingSchema } from "./_schemas/onboarding";
-
+const { Title } = Typography;
 export default function OnboardingPage() {
+  const [form] = Form.useForm();
   const [pageState, setPageState] = useState({ tabKey: "1" });
   const { data: session } = useSession({
     required: true,
@@ -22,19 +29,7 @@ export default function OnboardingPage() {
     },
   });
   const router = useRouter();
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      goalName: undefined,
-      goalAmount: undefined,
-      goalDueAt: dayjs(),
-      action: undefined,
-      actionAmount: undefined,
-      saving: undefined,
-      savingAmount: undefined,
-      initialAmount: undefined,
-    },
-    resolver: zodResolver(onboardingSchema),
-  });
+
   if (session && !isExtendedSession(session)) return null;
 
   const currentTab = Number(pageState.tabKey);
@@ -42,10 +37,19 @@ export default function OnboardingPage() {
     <Row justify="center" align="middle">
       <div className="w-100">
         <Form
+          form={form}
           layout="vertical"
+          onFinishFailed={(error) => setPageState({ tabKey: "1" })}
           onFinish={async (data) => {
-            if (session?.user?.id) await onboardUser(session.user.id, data);
-            router.push("/");
+            console.log("first");
+            if (session?.user?.id) {
+              const result = await onboardUser(session.user.id, data);
+              if (isFieldErrors(result)) {
+                applyFormErrors(form, result);
+              } else {
+                router.push("/");
+              }
+            }
           }}
         >
           <Tabs
@@ -62,27 +66,53 @@ export default function OnboardingPage() {
 
                 children: (
                   <>
-                    <FormItem
-                      control={control}
+                    <Title>{"Let's set up your first goal."}</Title>
+                    <Form.Item
+                      required
                       name="goalName"
-                      label="What's the first thing you want to save for?"
+                      label="What's the first thing you'll use Orca to help you save for?"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please give your goal a name",
+                        },
+                      ]}
                     >
-                      <Input />
-                    </FormItem>
-                    <FormItem
-                      control={control}
+                      <Input placeholder="ex: Vacation" />
+                    </Form.Item>
+                    <Form.Item
+                      required
                       name="goalAmount"
-                      label="How much is it?"
+                      label="How much do you need to save?"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input the target balance",
+                        },
+                      ]}
                     >
                       <CurrencyInput />
-                    </FormItem>
-                    <FormItem
-                      control={control}
+                    </Form.Item>
+                    <Form.Item
+                      required
                       name="goalDueAt"
                       label="By when?"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select the due date",
+                        },
+                      ]}
                     >
                       <DatePicker />
-                    </FormItem>
+                    </Form.Item>
+
+                    <Form.Item
+                      name="initialAmount"
+                      label="Have you saved anything toward this goal already?"
+                    >
+                      <CurrencyInput />
+                    </Form.Item>
                   </>
                 ),
               },
@@ -91,76 +121,44 @@ export default function OnboardingPage() {
                 key: "2",
                 children: (
                   <>
-                    <FormItem
-                      control={control}
-                      name="action"
+                    <Title>{"Let's set up a One-Tap save."}</Title>
+                    <Form.Item
+                      name="saving"
                       label="What's a repeatable action that could help you save?"
                     >
-                      <Input />
-                    </FormItem>
-                    <FormItem
-                      control={control}
-                      name="actionAmount"
+                      <Input placeholder="ex: Made dinner instead of DoorDashing" />
+                    </Form.Item>
+                    <Form.Item
+                      name="savingAmount"
                       label="About how much do you think it would save you each time?"
                     >
                       <CurrencyInput />
-                    </FormItem>
-                  </>
-                ),
-              },
-              {
-                label: "Saving",
-                key: "3",
-                children: (
-                  <>
-                    <FormItem
-                      control={control}
-                      name="saving"
-                      label="What's something you could repeatedly skip buying?"
-                    >
-                      <Input />
-                    </FormItem>
-                    <FormItem
-                      control={control}
-                      name="savingAmount"
-                      label="How much is it?"
-                    >
-                      <CurrencyInput />
-                    </FormItem>
-                  </>
-                ),
-              },
-              {
-                label: "Starting Point",
-                key: "4",
-                children: (
-                  <>
-                    <FormItem
-                      control={control}
-                      name="initialAmount"
-                      label="Have you already saved an initial amount?"
-                    >
-                      <CurrencyInput />
-                    </FormItem>
+                    </Form.Item>
                   </>
                 ),
               },
             ]}
           />
           <Row justify="end">
-            {currentTab === 4 ? (
+            {currentTab === 2 ? (
               <Form.Item>
-                <Button type="primary" size="large" htmlType="submit">
-                  Done
-                </Button>
+                <Space direction="horizontal" size="middle">
+                  <Button size="large" htmlType="submit">
+                    Skip
+                  </Button>
+                  <Button type="primary" size="large" htmlType="submit">
+                    Done
+                  </Button>
+                </Space>
               </Form.Item>
             ) : (
               <Button
                 type="primary"
                 htmlType="button"
+                size="large"
                 onClick={() => {
                   const nextTab = currentTab + 1;
-                  if (nextTab <= 4)
+                  if (nextTab <= 2)
                     setPageState({ tabKey: nextTab.toString() });
                 }}
               >

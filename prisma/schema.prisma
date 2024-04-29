@@ -55,15 +55,10 @@ model OnboardingProfile {
   goalDueAt  DateTime
   goal       Goal     @relation(fields: [goalId], references: [id], onDelete: Restrict)
 
-  actionTransferId String
-  action           String
-  actionAmount     Decimal      @db.Decimal(65, 2)
-  actionTransfer   GoalTransfer @relation("actionTransfer", fields: [actionTransferId], references: [id], onDelete: Restrict)
-
-  savingTransferId String
-  saving           String
-  savingAmount     Decimal      @db.Decimal(65, 2)
-  savingTransfer   GoalTransfer @relation("savingTransfer", fields: [savingTransferId], references: [id], onDelete: Restrict)
+  savingTransferId String?
+  saving           String?
+  savingAmount     Decimal?      @db.Decimal(65, 2)
+  savingTransfer   GoalTransfer? @relation("savingTransfer", fields: [savingTransferId], references: [id], onDelete: Restrict)
 
   initialTransferId String?
   initialAmount     Decimal?      @db.Decimal(65, 2)
@@ -92,7 +87,6 @@ model GoalTransfer {
   category   GoalCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   goal       Goal?         @relation(fields: [goalId], references: [id], onDelete: Restrict)
 
-  actionOnboardingProfile  OnboardingProfile[] @relation("actionTransfer")
   savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
   initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
 }

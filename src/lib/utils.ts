@@ -1,7 +1,9 @@
 import { Decimal } from "@prisma/client/runtime/index-browser.js";
+import { FormInstance } from "antd";
 import { clsx, type ClassValue } from "clsx";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { twMerge } from "tailwind-merge";
+import { FieldErrors } from "./goals";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -49,4 +51,17 @@ export function getPrevPageHref(referer: string | undefined, window: Window) {
     prevURL.pathname === window.location.pathname
     ? "/"
     : prevURL.pathname;
+}
+
+export function applyFormErrors(form: FormInstance, result: FieldErrors) {
+  Object.entries(result.fieldErrors).forEach(([field, errors]) => {
+    errors.forEach((error) => {
+      form.setFields([
+        {
+          name: field,
+          errors: [error],
+        },
+      ]);
+    });
+  });
 }

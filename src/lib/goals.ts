@@ -1,8 +1,6 @@
 import { GoalFieldErrors } from "@/app/_actions/goals";
-import { Goal } from "@prisma/client";
 
-export function isGoalFieldErrors(
-  value: GoalFieldErrors | Goal
-): value is GoalFieldErrors {
+export type FieldErrors = { fieldErrors: Record<string, string[]> };
+export function isFieldErrors(value: any): value is FieldErrors {
   return (value as GoalFieldErrors).fieldErrors != null;
 }

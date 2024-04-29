@@ -6,7 +6,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-import { isGoalFieldErrors } from "@/lib/goals";
+import { isFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
 import { addGoal, updateGoal } from "../_actions/goals";
@@ -72,7 +72,7 @@ export function GoalForm({
         : addGoal.bind(null, session.user.id);
       const result = await action(undefined, formData);
 
-      if (isGoalFieldErrors(result)) {
+      if (isFieldErrors(result)) {
         Object.entries(result.fieldErrors).forEach(([field, errors]) => {
           errors.forEach((error) => {
             form.setFields([

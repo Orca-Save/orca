@@ -5,9 +5,9 @@ import dayjs, { Dayjs } from "dayjs";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-import { isGoalFieldErrors } from "@/lib/goals";
+import { isFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
-import { getPrevPageHref } from "@/lib/utils";
+import { applyFormErrors, getPrevPageHref } from "@/lib/utils";
 import { addQuickGoal } from "../_actions/goals";
 import CurrencyInput from "./CurrencyInput";
 
@@ -55,17 +55,8 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
       const action = addQuickGoal.bind(null, session.user.id);
       const result = await action(undefined, formData);
 
-      if (isGoalFieldErrors(result)) {
-        Object.entries(result.fieldErrors).forEach(([field, errors]) => {
-          errors.forEach((error) => {
-            form.setFields([
-              {
-                name: field,
-                errors: [error],
-              },
-            ]);
-          });
-        });
+      if (isFieldErrors(result)) {
+        applyFormErrors(form, result);
       } else {
         router.push(getPrevPageHref(referer, window));
       }
