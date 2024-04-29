@@ -71,25 +71,23 @@ export function GoalTransferForm({
   const onFinish = async (values: GoalTransferFormValues) => {
     if (!session) return;
     if (!isExtendedSession(session)) return;
-
     const formData = new FormData();
-    if (values.link) formData.append("link", values.link);
-    formData.append("note", values.note || "");
-    formData.append("itemName", values.itemName);
-    formData.append("merchantName", values.merchantName);
-    formData.append("rating", String(values.rating));
 
     const adjustedAmount = isSavings ? values.amount : -values.amount;
     formData.append("amount", String(adjustedAmount));
+    formData.append("itemName", values.itemName);
 
+    if (values.merchantName)
+      formData.append("merchantName", values.merchantName);
     if (values.transactedAt) {
       formData.append("transactedAt", values.transactedAt.format());
-    } else {
-      formData.append("transactedAt", "");
     }
 
+    if (values.link) formData.append("link", values.link);
+    if (values.note) formData.append("note", values.note);
+    if (values.rating) formData.append("rating", String(values.rating));
     if (values.goalId) formData.append("goalId", values.goalId);
-    formData.append("categoryId", values.categoryId);
+    if (values.categoryId) formData.append("categoryId", values.categoryId);
 
     const action = goalTransfer
       ? updateGoalTransfer.bind(null, goalTransfer.id)
@@ -121,6 +119,7 @@ export function GoalTransferForm({
       layout="vertical"
       onFinish={onFinish}
       initialValues={{
+        itemName: goalTransfer?.itemName,
         amount,
         transactedAt: goalTransfer?.transactedAt
           ? dayjs(goalTransfer.transactedAt)
