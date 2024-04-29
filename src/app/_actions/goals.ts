@@ -32,12 +32,12 @@ const dueAtSchema = z
 const goalSchema = z.object({
   dueAt: dueAtSchema,
   name: z.string().min(1),
-  targetAmount: z.number().min(1),
+  targetAmount: z.coerce.number().min(1),
 
   note: z.string().optional(),
   description: z.string().optional(),
   categoryId: z.string().uuid().optional(),
-  initialAmount: z.number().min(1).optional(),
+  initialAmount: z.coerce.number().min(1).optional(),
 });
 const quickGoalSchema = z.object({
   dueAt: dueAtSchema,

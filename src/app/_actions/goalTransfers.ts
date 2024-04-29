@@ -30,7 +30,7 @@ const updateTransferSchema = z.object({
 
   goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
-  rating: z.number().int().min(1).max(5).optional(),
+  rating: z.coerce.number().int().min(1).max(5).optional(),
   link: z.string().url().optional(),
   note: z.string().optional(),
   merchantName: z.string().optional(),
