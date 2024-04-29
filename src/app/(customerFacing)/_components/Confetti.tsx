@@ -4,22 +4,27 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Confetti from "react-confetti";
 
-export default function ConfettiComp() {
+export default function ConfettiComp({
+  run,
+  path,
+}: {
+  run?: boolean;
+  path: string;
+}) {
   const [confetti, setConfetti] = useState({
-    run: false,
+    run,
     count: 0,
     firstRun: true,
   });
   const router = useRouter();
-  const searchParams = new URLSearchParams(window.location.search);
-  if (searchParams.has("confetti") && confetti.firstRun) {
-    router.replace(window.location.pathname, undefined);
+  if (run && confetti.firstRun) {
+    router.replace(path, undefined);
     setConfetti({ run: true, count: 100, firstRun: false });
   }
 
   if (confetti.run && !confetti.firstRun) {
     setTimeout(() => {
-      setConfetti({ run: false, count: 0, firstRun: true });
+      setConfetti({ run: true, count: 0, firstRun: true });
     }, 1500);
   }
   return <Confetti run={confetti.run} numberOfPieces={confetti.count} />;

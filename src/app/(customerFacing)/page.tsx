@@ -27,7 +27,13 @@ const getOnboardingProfileCount = (userId: string) => {
   });
 };
 
-export default async function HomePage() {
+export default async function HomePage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return <SignUpPage />;
@@ -41,7 +47,7 @@ export default async function HomePage() {
 
     return (
       <>
-        <ConfettiComp />
+        <ConfettiComp run={searchParams?.confetti === "true"} path="/" />
         <Space direction="vertical" style={{ width: "100%" }}>
           <Title level={4}>Focus Goal</Title>
           <DynamicPinnedGoal userId={session.user.id} />

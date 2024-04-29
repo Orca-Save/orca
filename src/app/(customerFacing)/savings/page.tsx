@@ -5,6 +5,7 @@ import { isExtendedSession } from "@/lib/session";
 import { Tabs, TabsProps } from "antd";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import ConfettiComp from "../_components/Confetti";
 import SavingsPage from "../_components/SavingsPage";
 
 const getGoalTransfers = (userId: string) => {
@@ -17,14 +18,17 @@ const getGoalTransfers = (userId: string) => {
   });
 };
 
-export default async function MySavingsPage() {
+export default async function MySavingsPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const session = await getServerSession(authOptions);
   if (!session || !isExtendedSession(session)) redirect("/");
 
-  const [goalTransfers] = await Promise.all([
-    getGoalTransfers(session.user.id),
-  ]);
-  const goals = await getGoalTransfers("userId");
+  const goalTransfers = await getGoalTransfers(session.user.id);
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -78,5 +82,10 @@ export default async function MySavingsPage() {
       ),
     },
   ];
-  return <Tabs centered defaultActiveKey="1" items={items} />;
+  return (
+    <>
+      <ConfettiComp run={searchParams?.confetti === "true"} path="/savings" />
+      <Tabs centered defaultActiveKey="1" items={items} />
+    </>
+  );
 }
