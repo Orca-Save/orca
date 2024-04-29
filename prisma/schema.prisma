@@ -49,11 +49,11 @@ model OnboardingProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  goalId     String
+  goalId     String?
   goalName   String
   goalAmount Decimal  @db.Decimal(65, 2)
   goalDueAt  DateTime
-  goal       Goal     @relation(fields: [goalId], references: [id])
+  goal       Goal?    @relation(fields: [goalId], references: [id])
 
   savingTransferId String?
   saving           String?
