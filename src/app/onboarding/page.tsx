@@ -37,7 +37,6 @@ const openSans = Open_Sans({
   variable: "--font-opensans",
 });
 export default function OnboardingPage() {
-  const [confetti, setConfetti] = useState({ run: false, count: 0 });
   const [form] = Form.useForm();
   const [pageState, setPageState] = useState({ tabKey: "1" });
   const { data: session } = useSession({
@@ -49,11 +48,7 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   if (session && !isExtendedSession(session)) return null;
-  if (confetti.run) {
-    setTimeout(() => {
-      setConfetti({ run: true, count: 0 });
-    }, 1500);
-  }
+
   const currentTab = Number(pageState.tabKey);
   return (
     <>
@@ -79,12 +74,18 @@ export default function OnboardingPage() {
                 layout="vertical"
                 onFinishFailed={(error) => setPageState({ tabKey: "1" })}
                 onFinish={async (data) => {
+                  console.log("data", data, session?.user?.id);
                   if (session?.user?.id) {
                     const result = await onboardUser(session.user.id, data);
+                    console.log("result", result);
                     if (isFieldErrors(result)) {
+                      console.log("errors", result);
                       applyFormErrors(form, result);
                     } else {
-                      setConfetti({ run: true, count: 100 });
+                      console.log(
+                        "successfully onboarded sending to home page"
+                      );
+
                       router.push("/?confetti=true");
                     }
                   }
@@ -104,7 +105,7 @@ export default function OnboardingPage() {
                       key: "1",
 
                       children: (
-                        <>
+                        <div style={{ margin: "15px" }}>
                           <h3
                             className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
                           >
@@ -156,7 +157,7 @@ export default function OnboardingPage() {
                           >
                             <CurrencyInput />
                           </Form.Item>
-                        </>
+                        </div>
                       ),
                     },
                     {
@@ -196,9 +197,6 @@ export default function OnboardingPage() {
                   {currentTab === 2 ? (
                     <Form.Item>
                       <Space direction="horizontal" size="middle">
-                        <Button size="large" htmlType="submit">
-                          Skip
-                        </Button>
                         <Button type="primary" size="large" htmlType="submit">
                           Done
                         </Button>
