@@ -74,18 +74,11 @@ export default function OnboardingPage() {
                 layout="vertical"
                 onFinishFailed={(error) => setPageState({ tabKey: "1" })}
                 onFinish={async (data) => {
-                  console.log("data", data, session, session?.user?.id);
                   if (session?.user?.id) {
                     const result = await onboardUser(session.user.id, data);
-                    console.log("result", result);
                     if (isFieldErrors(result)) {
-                      console.log("errors", result);
                       applyFormErrors(form, result);
                     } else {
-                      console.log(
-                        "successfully onboarded sending to home page"
-                      );
-
                       router.push("/?confetti=true");
                     }
                   }

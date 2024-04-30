@@ -12,6 +12,7 @@ export interface ExtendedUser extends User {
 
 // Extend the Session type to use the new ExtendedUser type
 export interface ExtendedSession extends Session {
+  id: string;
   user: ExtendedUser;
   account?: Account;
   profile?: Profile;
