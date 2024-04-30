@@ -74,7 +74,7 @@ export default function OnboardingPage() {
                 layout="vertical"
                 onFinishFailed={(error) => setPageState({ tabKey: "1" })}
                 onFinish={async (data) => {
-                  console.log("data", data, session?.user?.id);
+                  console.log("data", data, session, session?.user?.id);
                   if (session?.user?.id) {
                     const result = await onboardUser(session.user.id, data);
                     console.log("result", result);
