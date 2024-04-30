@@ -1,6 +1,7 @@
+import { greenThemeColors } from "@/lib/utils";
 import { PlusOutlined } from "@ant-design/icons";
 import { GoalTransfer } from "@prisma/client";
-import { Button, Card, Skeleton, Space } from "antd";
+import { Button, Card, ConfigProvider, Skeleton, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { GoalTransferFilter } from "./SavingsList";
@@ -49,9 +50,21 @@ export default async function SavingsPage({
       >
         {!hide ? (
           <Link href={saveHref + routeParams}>
-            <Button type="primary" icon={<PlusOutlined />}>
-              {newSaveText}
-            </Button>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Button: greenThemeColors,
+                },
+              }}
+            >
+              <Button
+                type="primary"
+                style={{ color: "black" }}
+                icon={<PlusOutlined />}
+              >
+                {newSaveText}
+              </Button>
+            </ConfigProvider>
           </Link>
         ) : null}
         {filter === undefined && (

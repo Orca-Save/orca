@@ -1,10 +1,11 @@
-import { Button, Skeleton, Space } from "antd";
+import { Button, ConfigProvider, Skeleton, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import db from "@/db/db";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
+import { greenThemeColors } from "@/lib/utils";
 import { PlusOutlined } from "@ant-design/icons";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -50,14 +51,22 @@ export default async function HomePage({
           <Title level={4}>Focus Goal</Title>
           <DynamicPinnedGoal userId={session.user.id} />
           <Link href="/savings/impulseSave/new">
-            <Button
-              icon={<PlusOutlined />}
-              size="large"
-              type="primary"
-              style={{ width: "100%", height: "90px" }}
+            <ConfigProvider
+              theme={{
+                components: {
+                  Button: greenThemeColors,
+                },
+              }}
             >
-              Impulse Save
-            </Button>
+              <Button
+                icon={<PlusOutlined />}
+                size="large"
+                type="primary"
+                style={{ width: "100%", height: "90px", color: "black" }}
+              >
+                Impulse Save
+              </Button>
+            </ConfigProvider>
           </Link>
           <Link href="/purchases/impulseBuy/new">
             <Button
