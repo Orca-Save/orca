@@ -6,14 +6,17 @@ import dayjs from "dayjs";
 import { onboardingSchema } from "../_schemas/onboarding";
 
 export async function onboardUser(userId: string, onboardingProfileInput: any) {
+  console.log("onboardingProfileInput", userId, onboardingProfileInput);
   onboardingProfileInput.goalDueAt = dayjs(onboardingProfileInput.goalDueAt);
   const result = onboardingSchema.safeParse(onboardingProfileInput);
 
+  console.log("onboardingResult", userId, result);
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }
 
   const onboardingProfileData = result.data;
+  console.log("onboardingProfileData", userId, onboardingProfileData);
   const goal = await db.goal.create({
     data: {
       userId: userId,
@@ -24,6 +27,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     },
   });
 
+  console.log("goal", userId, goal);
   let initialAmountTransfer;
   if (onboardingProfileData.initialAmount) {
     initialAmountTransfer = await db.goalTransfer.create({
