@@ -1,3 +1,4 @@
+import { completedUserGoalCount } from "@/app/_actions/users";
 import db from "@/db/db";
 import { externalAccountId } from "@/lib/goalTransfers";
 import authOptions from "@/lib/nextAuthOptions";
@@ -28,13 +29,18 @@ export default async function MySavingsPage({
   const session = await getServerSession(authOptions);
   if (!session || !isExtendedSession(session)) redirect("/");
 
-  const goalTransfers = await getGoalTransfers(session.user.id);
+  const [goalTransfers, completedCounts] = await Promise.all([
+    getGoalTransfers(session.user.id),
+    completedUserGoalCount(session.user.id),
+  ]);
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: "Log",
       children: (
         <SavingsPage
+          totalSaved={completedCounts.totalSaved}
+          goalsCompleted={completedCounts.goalsCompleted}
           bottomGoalTransfers={goalTransfers.filter(
             (transfer) =>
               transfer.goalId !== null || transfer.amount.toNumber() < 0
@@ -51,6 +57,8 @@ export default async function MySavingsPage({
       label: "One-Tap",
       children: (
         <SavingsPage
+          totalSaved={completedCounts.totalSaved}
+          goalsCompleted={completedCounts.goalsCompleted}
           topGoalTransfers={goalTransfers.filter((transfer) => transfer.pinned)}
           bottomGoalTransfers={goalTransfers.filter(
             (transfer) =>
@@ -70,6 +78,8 @@ export default async function MySavingsPage({
       label: "External",
       children: (
         <SavingsPage
+          totalSaved={completedCounts.totalSaved}
+          goalsCompleted={completedCounts.goalsCompleted}
           bottomGoalTransfers={goalTransfers.filter(
             (transfer) => transfer.categoryId === externalAccountId
           )}

@@ -1,6 +1,7 @@
-import { Title } from "@/app/_components/Typography";
+import { completedUserGoalCount } from "@/app/_actions/users";
 import db from "@/db/db";
 import { getPinnedUserGoal } from "../_actions/data";
+import CompletedCounts from "./CompletedCounts";
 import GoalCard from "./GoalCard";
 
 const getGoalTransfersSum = (userId: string) => {
@@ -21,11 +22,18 @@ const getGoalTransfersSum = (userId: string) => {
 };
 
 export default async function DashGoalCard({ userId }: { userId: string }) {
-  const [goal, sums] = await Promise.all([
+  const [goal, sums, completedCounts] = await Promise.all([
     getPinnedUserGoal(userId),
     getGoalTransfersSum(userId),
+    completedUserGoalCount(userId),
   ]);
-  if (!goal) return <Title>No Pinned Goal.</Title>;
+  if (!goal)
+    return (
+      <CompletedCounts
+        totalSaved={completedCounts.totalSaved}
+        goalsCompleted={completedCounts.goalsCompleted}
+      />
+    );
 
   const goalSumMap = new Map(
     sums.map((item) => [

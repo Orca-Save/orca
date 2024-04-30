@@ -4,7 +4,9 @@ import { GoalTransfer } from "@prisma/client";
 import { Button, Card, ConfigProvider, Skeleton, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import CompletedCounts from "./CompletedCounts";
 import { GoalTransferFilter } from "./SavingsList";
+
 const DynamicSavingsList = dynamic(() => import("./SavingsList"), {
   loading: () => (
     <>
@@ -29,10 +31,14 @@ export default async function SavingsPage({
   hide,
   bottomGoalTransfers,
   topGoalTransfers,
+  goalsCompleted,
+  totalSaved,
 }: {
   filter?: GoalTransferFilter;
   newPurchaseText?: string;
   newSaveText: string;
+  totalSaved: number;
+  goalsCompleted: number;
   saveHref: string;
   buyHref: string;
   bottomGoalTransfers: GoalTransfer[];
@@ -42,36 +48,45 @@ export default async function SavingsPage({
   let routeParams = "";
   if (filter === "accounts") routeParams = "?filter=accounts";
   if (filter === "templates") routeParams = "?filter=templates";
+
   return (
     <>
-      <Space
-        direction="horizontal"
-        style={{ justifyContent: "center", width: "100%" }}
-      >
-        {!hide ? (
-          <Link href={saveHref + routeParams}>
-            <ConfigProvider
-              theme={{
-                components: {
-                  Button: greenThemeColors,
-                },
-              }}
-            >
-              <Button
-                type="primary"
-                style={{ color: "black" }}
-                icon={<PlusOutlined />}
+      <Space direction="vertical" style={{ width: "100%" }}>
+        <div style={{ width: "100%" }}>
+          <CompletedCounts
+            totalSaved={totalSaved}
+            goalsCompleted={goalsCompleted}
+          />
+        </div>
+        <Space
+          direction="horizontal"
+          style={{ justifyContent: "center", width: "100%" }}
+        >
+          {!hide ? (
+            <Link href={saveHref + routeParams}>
+              <ConfigProvider
+                theme={{
+                  components: {
+                    Button: greenThemeColors,
+                  },
+                }}
               >
-                {newSaveText}
-              </Button>
-            </ConfigProvider>
-          </Link>
-        ) : null}
-        {filter === undefined && (
-          <Link href={buyHref}>
-            <Button icon={<PlusOutlined />}>{newPurchaseText}</Button>
-          </Link>
-        )}
+                <Button
+                  type="primary"
+                  style={{ color: "black" }}
+                  icon={<PlusOutlined />}
+                >
+                  {newSaveText}
+                </Button>
+              </ConfigProvider>
+            </Link>
+          ) : null}
+          {filter === undefined && (
+            <Link href={buyHref}>
+              <Button icon={<PlusOutlined />}>{newPurchaseText}</Button>
+            </Link>
+          )}
+        </Space>
       </Space>
       <DynamicSavingsList
         bottomGoalTransfers={bottomGoalTransfers}
