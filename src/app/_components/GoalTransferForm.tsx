@@ -109,10 +109,14 @@ export function GoalTransferForm({
       router.push(getPrevPageHref(referer, window) + "?confetti=true");
     }
   };
-  const amount = goalTransfer?.amount ?? 0;
+  let amount = (goalTransfer?.amount as number | undefined) ?? 0;
+  if (amount < 0) {
+    amount = -amount;
+  }
   let isExternalAccount =
     filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
   const initialCategoryId = isExternalAccount ? externalAccountId : undefined;
+  console.log(isSavings);
   return (
     <Form
       form={form}
@@ -127,6 +131,7 @@ export function GoalTransferForm({
         note: goalTransfer?.note,
         link: goalTransfer?.link,
         name: goalTransfer?.itemName,
+        rating: goalTransfer?.rating,
         merchantName: goalTransfer?.merchantName,
         goalId: goalTransfer?.goalId,
         categoryId: goalTransfer?.categoryId ?? initialCategoryId,
@@ -157,7 +162,15 @@ export function GoalTransferForm({
       >
         <CurrencyInput placeholder="Amount" />
       </Form.Item>
-      <Form.Item name="rating" label="Rating">
+      <Form.Item
+        name="rating"
+        label="Rating"
+        rules={
+          !isSavings
+            ? [{ required: true, message: "Please rate the item!" }]
+            : undefined
+        }
+      >
         <Rate character={({ index = 0 }) => customIcons[index + 1]} />
       </Form.Item>
 

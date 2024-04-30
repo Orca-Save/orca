@@ -78,7 +78,11 @@ function GoalTransferCard({
         />,
         <EditAction
           key="edit"
-          route={`/savings/${goalTransfer.id}/edit` + routeParams}
+          route={
+            `/${goalTransfer.amount.toNumber() > 0 ? "savings" : "purchases"}/${
+              goalTransfer.id
+            }/edit` + routeParams
+          }
         />,
         <PinSavingButton
           key="pin"
