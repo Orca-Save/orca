@@ -147,7 +147,7 @@ export function GoalForm({
       <Form.Item
         name="note"
         label="Additional Note"
-        rules={[{ message: "Please input additional notes!" }]} // Optional, remove 'required' if not needed
+        rules={[{ message: "Please input additional notes!" }]}
       >
         <TextArea placeholder="Additional notes about the goal" />
       </Form.Item>

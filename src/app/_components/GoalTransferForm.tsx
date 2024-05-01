@@ -204,7 +204,7 @@ export function GoalTransferForm({
         <Input placeholder="Link to item" />
       </Form.Item>
       <Form.Item name="note" label="Additional Note">
-        <TextArea placeholder="Additional notes about the transfer" />
+        <TextArea placeholder="Additional notes about the transaction" />
       </Form.Item>
       <Space direction="horizontal">
         <Button type="primary" size="large" htmlType="submit">
