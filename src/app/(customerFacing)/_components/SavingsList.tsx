@@ -47,7 +47,11 @@ export default async function SavingsList({
       <Space className="center-space">
         <Title level={4}>{otherTitle}</Title>
       </Space>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        className={`grid grid-cols-1 md:grid-cols-${
+          !filter ? 1 : 2
+        } lg:grid-cols-${!filter ? 1 : 3} gap-4`}
+      >
         {bottomGoalTransfers.map((goalTransfer) => (
           <GoalTransferCard
             key={goalTransfer.id}
