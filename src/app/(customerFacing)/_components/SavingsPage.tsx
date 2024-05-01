@@ -52,12 +52,6 @@ export default async function SavingsPage({
   return (
     <>
       <Space direction="vertical" style={{ width: "100%" }}>
-        <div style={{ width: "100%" }}>
-          <CompletedCounts
-            totalSaved={totalSaved}
-            goalsCompleted={goalsCompleted}
-          />
-        </div>
         <Space
           direction="horizontal"
           style={{ justifyContent: "center", width: "100%" }}
@@ -87,13 +81,19 @@ export default async function SavingsPage({
             </Link>
           )}
         </Space>
+        <div>
+          <CompletedCounts
+            totalSaved={totalSaved}
+            goalsCompleted={goalsCompleted}
+          />
+        </div>
+        <DynamicSavingsList
+          bottomGoalTransfers={bottomGoalTransfers}
+          topGoalTransfers={topGoalTransfers}
+          filter={filter}
+          routeParams={routeParams}
+        />
       </Space>
-      <DynamicSavingsList
-        bottomGoalTransfers={bottomGoalTransfers}
-        topGoalTransfers={topGoalTransfers}
-        filter={filter}
-        routeParams={routeParams}
-      />
     </>
   );
 }

@@ -25,7 +25,7 @@ export default async function SavingsList({
   const otherTitle = isTemplates ? "One-Tap Saves" : "";
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <>
       {isTemplates ? (
         <>
           <Space className="center-space">
@@ -54,7 +54,7 @@ export default async function SavingsList({
           />
         ))}
       </div>
-    </Space>
+    </>
   );
 }
 
