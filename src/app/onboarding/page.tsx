@@ -190,6 +190,9 @@ export default function OnboardingPage() {
                   {currentTab === 2 ? (
                     <Form.Item>
                       <Space direction="horizontal" size="middle">
+                        <Button size="large" htmlType="submit">
+                          Skip
+                        </Button>
                         <Button type="primary" size="large" htmlType="submit">
                           Done
                         </Button>
