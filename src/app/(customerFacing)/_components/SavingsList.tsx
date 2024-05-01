@@ -1,8 +1,10 @@
 import PinSavingButton from "@/app/_components/PinSavingButton";
 import { Text, Title } from "@/app/_components/Typography";
-import { currencyFormatter } from "@/lib/utils";
+import { currencyFormatter, greenThemeColors } from "@/lib/utils";
+import { red } from "@ant-design/colors";
+import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import { GoalTransfer } from "@prisma/client";
-import { Avatar, Card, Space } from "antd";
+import { Avatar, Card, Col, Row, Space } from "antd";
 import Meta from "antd/es/card/Meta";
 import EditAction from "./EditAction";
 import PopconfirmDelete from "./PopconfirmDelete";
@@ -66,6 +68,19 @@ function GoalTransferCard({
   routeParams: string;
 }) {
   const amount = goalTransfer.amount.toNumber();
+  const rating = goalTransfer.rating;
+  let ratingIcon = <MehOutlined />;
+  let ratingColor = undefined;
+  if (rating !== null) {
+    if (rating < 3) {
+      ratingIcon = <FrownOutlined />;
+      ratingColor = red[4];
+    }
+    if (rating > 3) {
+      ratingIcon = <SmileOutlined />;
+      ratingColor = greenThemeColors.colorPrimary;
+    }
+  }
   return (
     <Card
       key={goalTransfer.id}
@@ -100,9 +115,18 @@ function GoalTransferCard({
         title={goalTransfer.itemName}
         description={goalTransfer.transactedAt?.toDateString()}
       />
-      <Text type={amount < 0 ? "danger" : undefined}>
-        {currencyFormatter(amount)}
-      </Text>
+      <Row>
+        <Col span={12}>
+          <Text type={amount < 0 ? "danger" : undefined}>
+            {currencyFormatter(amount)}
+          </Text>
+        </Col>
+        <Col span={12} style={{ display: "flex", justifyContent: "flex-end" }}>
+          {amount < 0 ? (
+            <div style={{ color: ratingColor }}>{ratingIcon}</div>
+          ) : null}
+        </Col>
+      </Row>
     </Card>
   );
 }
