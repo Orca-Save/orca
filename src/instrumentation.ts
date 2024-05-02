@@ -6,11 +6,9 @@ export async function register() {
     return;
   }
   registerOTel({
-    serviceName: "your-project-name",
+    serviceName: "orca",
     traceExporter: new AzureMonitorTraceExporter({
-      connectionString: process.env.APP_INSIGHTS_CONNECTION_STRING,
-      // you can read from ENV if you prefer to
-      // connectionString: process.env.APP_INSIGHTS_CONNECTION_STRING,
+      connectionString: process.env.NEXT_PUBLIC_APP_INSIGHTS_CONNECTION_STRING,
     }),
   });
 }
