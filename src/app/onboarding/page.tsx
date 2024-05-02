@@ -165,11 +165,10 @@ export default function OnboardingPage() {
                               {"Let's set up a One-Tap save."}
                             </h3>
                             <Text>
-                              These appear on the Home screen as buttons, where
-                              just a single tap will save the amount toward your
-                              goal. Set these up to quickly address common
-                              encounters where you know you could be saving
-                              instead.
+                              Are there items that you frequently impulse
+                              purchase, like DoorDash meals or afternoon coffee?
+                              Create preset One-Tap buttons for your home page
+                              so you can save with… one tap.
                             </Text>
                           </div>
                           <Form.Item name="saving" label="One-Tap save name">
