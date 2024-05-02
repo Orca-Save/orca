@@ -1,7 +1,7 @@
 "use client";
 
 import { Goal, GoalCategory, GoalTransfer } from "@prisma/client";
-import { Button, DatePicker, Form, Input, Rate, Select, Space } from "antd";
+import { Button, Collapse, DatePicker, Form, Input, Rate, Select } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -174,50 +174,54 @@ export function GoalTransferForm({
         <Rate character={({ index = 0 }) => customIcons[index + 1]} />
       </Form.Item>
 
-      {!isTemplate ? (
-        <Form.Item name="goalId" label="Goal">
-          <Select
-            placeholder="Select a goal"
-            options={goals.map((goal: Goal) => ({
-              label: `${goal.name} ${
-                goal.description ? `(${goal.description})` : ""
-              }`,
-              value: goal.id,
-            }))}
-          />
-        </Form.Item>
-      ) : null}
-      <Form.Item name="merchantName" label="Merchant Name">
-        <Input placeholder="Merchant Name" />
-      </Form.Item>
-      <Form.Item name="categoryId" label="Category">
-        <Select
-          placeholder="Select a category"
-          disabled={isExternalAccount}
-          options={categories.map((category: GoalCategory) => ({
-            label: category.name,
-            value: category.id,
-          }))}
-        />
-      </Form.Item>
-      <Form.Item name="link" label="Link">
-        <Input placeholder="Link to item" />
-      </Form.Item>
-      <Form.Item name="note" label="Additional Note">
-        <TextArea placeholder="Additional notes about the transaction" />
-      </Form.Item>
-      <Space direction="horizontal">
-        <Button type="primary" size="large" htmlType="submit">
-          Save
-        </Button>
+      <Collapse style={{ width: "100%" }}>
+        <Collapse.Panel header="Optional Fields" key="1">
+          {!isTemplate ? (
+            <Form.Item name="goalId" label="Goal">
+              <Select
+                placeholder="Select a goal"
+                options={goals.map((goal: Goal) => ({
+                  label: `${goal.name} ${
+                    goal.description ? `(${goal.description})` : ""
+                  }`,
+                  value: goal.id,
+                }))}
+              />
+            </Form.Item>
+          ) : null}
+          <Form.Item name="merchantName" label="Merchant Name">
+            <Input placeholder="Merchant Name" />
+          </Form.Item>
+          <Form.Item name="categoryId" label="Category">
+            <Select
+              placeholder="Select a category"
+              disabled={isExternalAccount}
+              options={categories.map((category: GoalCategory) => ({
+                label: category.name,
+                value: category.id,
+              }))}
+            />
+          </Form.Item>
+          <Form.Item name="link" label="Link">
+            <Input placeholder="Link to item" />
+          </Form.Item>
+          <Form.Item name="note" label="Additional Note">
+            <TextArea placeholder="Additional notes about the transaction" />
+          </Form.Item>
+        </Collapse.Panel>
+      </Collapse>
 
+      <div className="flex justify-end mt-5 space-x-4">
         <Button
           size="large"
           onClick={() => router.push(getPrevPageHref(referer, window))}
         >
           Cancel
         </Button>
-      </Space>
+        <Button type="primary" size="large" htmlType="submit">
+          Save
+        </Button>
+      </div>
     </Form>
   );
 }

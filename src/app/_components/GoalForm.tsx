@@ -1,7 +1,7 @@
 "use client";
 
 import { Goal, GoalCategory } from "@prisma/client";
-import { Button, DatePicker, Form, Input, Select, Space } from "antd";
+import { Button, Collapse, DatePicker, Form, Input, Select } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { isFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
+import CollapsePanel from "antd/es/collapse/CollapsePanel";
 import { addGoal, updateGoal } from "../_actions/goals";
 import CurrencyInput from "./CurrencyInput";
 // import { navigateBack } from "@/lib/utils";
@@ -131,27 +132,32 @@ export function GoalForm({
           <CurrencyInput placeholder="Initial Balance" />
         </Form.Item>
       )}
-      <Form.Item name="categoryId" label="Category">
-        <Select
-          placeholder="Select a category"
-          options={categories.map((category: GoalCategory) => ({
-            label: category.name,
-            value: category.id,
-          }))}
-        />
-      </Form.Item>
-      <Form.Item name="description" label="Description">
-        <TextArea placeholder="Description" />
-      </Form.Item>
 
-      <Form.Item
-        name="note"
-        label="Additional Note"
-        rules={[{ message: "Please input additional notes!" }]}
-      >
-        <TextArea placeholder="Additional notes about the goal" />
-      </Form.Item>
-      <Space direction="horizontal">
+      <Collapse>
+        <CollapsePanel header="Optional Fields" key="1">
+          <Form.Item name="categoryId" label="Category">
+            <Select
+              placeholder="Select a category"
+              options={categories.map((category: GoalCategory) => ({
+                label: category.name,
+                value: category.id,
+              }))}
+            />
+          </Form.Item>
+          <Form.Item name="description" label="Description">
+            <TextArea placeholder="Description" />
+          </Form.Item>
+
+          <Form.Item
+            name="note"
+            label="Additional Note"
+            rules={[{ message: "Please input additional notes!" }]}
+          >
+            <TextArea placeholder="Additional notes about the goal" />
+          </Form.Item>
+        </CollapsePanel>
+      </Collapse>
+      <div className="flex justify-end mt-5 space-x-4">
         <Button size="large" type="primary" htmlType="submit">
           Save
         </Button>
@@ -162,7 +168,7 @@ export function GoalForm({
         >
           Cancel
         </Button>
-      </Space>
+      </div>
     </Form>
   );
 }

@@ -45,8 +45,8 @@ export default async function MySavingsPage({
             (transfer) =>
               transfer.goalId !== null || transfer.amount.toNumber() < 0
           )}
-          saveHref="/savings/impulseSave/new"
-          buyHref="/purchases/impulseBuy/new"
+          saveHref="/savings/new"
+          buyHref="/purchases/new"
           newSaveText="Impulse Save"
           newPurchaseText="Impulse Buy"
         />
@@ -67,7 +67,7 @@ export default async function MySavingsPage({
               transfer.amount.toNumber() > 0
           )}
           saveHref="/savings/oneTapSave/new"
-          buyHref="/purchases/impulseBuy/new"
+          buyHref="/purchases/new"
           newSaveText="Add One-Tap Save"
           filter="templates"
         />

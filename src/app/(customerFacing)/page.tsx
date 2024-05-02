@@ -50,7 +50,7 @@ export default async function HomePage({
         <Space direction="vertical" style={{ width: "100%" }}>
           <Title level={4}>Focus Goal</Title>
           <DynamicPinnedGoal userId={session.user.id} />
-          <Link href="/savings/impulseSave/new">
+          <Link href="/savings/new">
             <ConfigProvider
               theme={{
                 components: {
@@ -68,7 +68,7 @@ export default async function HomePage({
               </Button>
             </ConfigProvider>
           </Link>
-          <Link href="/purchases/impulseBuy/new">
+          <Link href="/purchases/new">
             <Button
               icon={<PlusOutlined />}
               size="large"
