@@ -35,7 +35,7 @@ export default async function GoalsPage() {
   return (
     <Space direction="vertical" className="w-full">
       <IconRoute
-        route={"/goals/quickGoal"}
+        route={"/goals/new"}
         icon={<PlusOutlined />}
         text={"New Goal"}
       />

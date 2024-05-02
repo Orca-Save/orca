@@ -1,4 +1,4 @@
-import QuickSaveForm from "@/app/_components/QuickSaveForm";
+import QuickGoalForm from "@/app/_components/QuickGoalForm";
 import { Title } from "@/app/_components/Typography";
 import { headers } from "next/headers";
 
@@ -8,12 +8,7 @@ export default async function ImpulseBuyPage() {
   return (
     <div>
       <Title level={2}>Add Impulse Buy</Title>
-      <QuickSaveForm
-        itemNameTitle="Item Name"
-        itemNamePlaceholder="ex: Starbucks Iced Latte"
-        referer={referer!}
-        isSavings={false}
-      />
+      <QuickGoalForm referer={referer!} />
     </div>
   );
 }
