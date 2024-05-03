@@ -91,7 +91,7 @@ export function GoalTransferForm({
 
     const action = goalTransfer
       ? updateGoalTransfer.bind(null, goalTransfer.id)
-      : addGoalTransfer.bind(null, session.user.id);
+      : addGoalTransfer.bind(null, session.user.id, isTemplate);
     const result = await action(formData);
 
     if (isGoalTransferFieldErrors(result)) {
@@ -106,7 +106,9 @@ export function GoalTransferForm({
         });
       });
     } else {
-      router.push(getPrevPageHref(referer, window) + "?confetti=true");
+      let newPath = getPrevPageHref(referer, window);
+      if (isSavings) newPath += "?confetti=true";
+      router.push(newPath);
     }
   };
   let amount = (goalTransfer?.amount as number | undefined) ?? 0;
@@ -166,8 +168,8 @@ export function GoalTransferForm({
       </Form.Item>
 
       <Collapse style={{ width: "100%" }}>
-        <Collapse.Panel header="Optional Fields" key="1">
-          {!isTemplate ? (
+        <Collapse.Panel header="Optional Fields" key="1" forceRender>
+          {!isTemplate && isSavings ? (
             <Form.Item name="goalId" label="Goal">
               <Select
                 placeholder="Select a goal"

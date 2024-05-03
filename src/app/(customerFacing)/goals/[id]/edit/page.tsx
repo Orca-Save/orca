@@ -21,10 +21,23 @@ export default async function EditGoalPage({
     getCategories(),
   ]);
 
+  let initialAmount: number | undefined = undefined;
+  if (goal?.initialTransferId)
+    initialAmount = (
+      await db.goalTransfer.findFirst({
+        where: { id: goal.initialTransferId },
+      })
+    )?.amount.toNumber();
+
   return (
     <>
       <Title>Edit Goal</Title>
-      <GoalForm goal={goal} referer={referer!} categories={categories} />
+      <GoalForm
+        goal={goal}
+        referer={referer!}
+        categories={categories}
+        initialAmount={initialAmount}
+      />
     </>
   );
 }

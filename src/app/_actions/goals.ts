@@ -116,7 +116,7 @@ export async function addGoal(
   });
 
   if (data.initialAmount && data.initialAmount > 0) {
-    await db.goalTransfer.create({
+    const initialTransfer = await db.goalTransfer.create({
       data: {
         userId,
         goalId: goal.id,
@@ -131,6 +131,11 @@ export async function addGoal(
         amount: data.initialAmount,
         transactedAt: new Date(),
       },
+    });
+
+    await db.goal.update({
+      data: { initialTransferId: initialTransfer.id },
+      where: { id: goal.id },
     });
     revalidatePath("/savings");
   }
@@ -158,6 +163,14 @@ export async function updateGoal(
 
   const data = result.data;
   const goal = await db.goal.findUnique({ where: { id } });
+  if (goal?.initialTransferId) {
+    await db.goalTransfer.update({
+      data: { amount: data.initialAmount },
+      where: { id: goal?.initialTransferId },
+    });
+
+    revalidatePath("/savings");
+  }
 
   if (goal == null) return notFound();
 
