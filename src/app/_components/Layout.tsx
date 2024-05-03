@@ -1,5 +1,5 @@
 "use client";
 
 import { Layout } from "antd";
-const { Header, Sider, Content } = Layout;
-export { Content, Header, Sider };
+const { Header, Sider, Content, Footer } = Layout;
+export { Content, Footer, Header, Sider };

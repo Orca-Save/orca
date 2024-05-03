@@ -35,6 +35,11 @@ export default function RootLayout({
           <ConfigProvider
             theme={{
               algorithm: darkAlgorithm,
+              components: {
+                Layout: {
+                  footerPadding: 0,
+                },
+              },
             }}
           >
             {children}

@@ -155,20 +155,23 @@ export function GoalTransferForm({
       >
         <CurrencyInput placeholder="Amount" />
       </Form.Item>
-      <Form.Item
-        name="rating"
-        label="Rating"
-        rules={
-          !isSavings
-            ? [{ required: true, message: "Please rate the item!" }]
-            : undefined
-        }
-      >
-        <Rate character={({ index = 0 }) => customIcons[index + 1]} />
-      </Form.Item>
+      {!isSavings ? (
+        <Form.Item
+          name="rating"
+          label="Rating"
+          rules={[{ required: true, message: "Please rate the item!" }]}
+        >
+          <Rate character={({ index = 0 }) => customIcons[index + 1]} />
+        </Form.Item>
+      ) : null}
 
       <Collapse style={{ width: "100%" }}>
         <Collapse.Panel header="Optional Fields" key="1" forceRender>
+          {isSavings ? (
+            <Form.Item name="rating" label="Rating">
+              <Rate character={({ index = 0 }) => customIcons[index + 1]} />
+            </Form.Item>
+          ) : null}
           {!isTemplate && isSavings ? (
             <Form.Item name="goalId" label="Goal">
               <Select

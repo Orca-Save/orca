@@ -1,6 +1,6 @@
 import { varelaRound } from "@/lib/fonts";
-import { Divider, Layout } from "antd";
-import { Content } from "../_components/Layout";
+import { Layout } from "antd";
+import { Content, Footer } from "../_components/Layout";
 import { Title } from "../_components/Typography";
 import HeaderMenu from "./_components/HeaderMenu";
 
@@ -24,9 +24,7 @@ export default function CustomerLayout({
         >
           Orca
         </Title>
-        <Divider />
       </div>
-
       <Content
         style={{
           margin: "12px 32px 0",
@@ -36,7 +34,9 @@ export default function CustomerLayout({
           <div className="w-full md:w-4/5 lg:w-3/5">{children}</div>
         </div>
       </Content>
-      <HeaderMenu className="sm:hidden" />
+      <Footer style={{ position: "sticky", bottom: 0 }}>
+        <HeaderMenu className="sm:hidden" />
+      </Footer>
     </Layout>
   );
 }

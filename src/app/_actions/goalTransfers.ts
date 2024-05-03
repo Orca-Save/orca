@@ -134,7 +134,7 @@ export async function addGoalTransfer(
       itemName: data.itemName,
       merchantName: data.merchantName,
       amount: data.amount,
-      transactedAt: new Date(),
+      transactedAt: data.transactedAt,
       pinned: isTemplate,
     },
   });
