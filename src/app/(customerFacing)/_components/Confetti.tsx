@@ -17,7 +17,6 @@ export default function ConfettiComp({
     firstRun: true,
   });
   const router = useRouter();
-  console.log(run, confetti.firstRun);
   if (run && confetti.firstRun) {
     setConfetti({ run: true, count: 300, firstRun: false });
   }

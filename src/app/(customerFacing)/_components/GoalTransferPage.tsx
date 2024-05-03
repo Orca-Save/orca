@@ -42,8 +42,6 @@ export default async function GoalTransferPage({
   }
   const headersList = headers();
   const referer = headersList.get("referer");
-  console.log("------------------------------");
-  console.log("referer", referer);
   if (!isExtendedSession(session)) return;
 
   const [categories, goals, goalTransfer] = await Promise.all([
