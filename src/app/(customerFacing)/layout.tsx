@@ -11,6 +11,8 @@ export default function CustomerLayout({
 }>) {
   return (
     <Layout style={{ minHeight: "100vh", height: "100%" }}>
+      <HeaderMenu className="hidden sm:flex" />
+
       <Content
         style={{
           margin: "12px 32px 0",
@@ -20,7 +22,7 @@ export default function CustomerLayout({
           <div className="w-full md:w-4/5 lg:w-3/5">{children}</div>
         </div>
       </Content>
-      <HeaderMenu />
+      <HeaderMenu className="sm:hidden" />
     </Layout>
   );
 }

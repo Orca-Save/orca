@@ -14,7 +14,7 @@ const varelaRound = Varela_Round({
   display: "swap",
   variable: "--font-varelaround",
 });
-export default function HeaderMenu() {
+export default function HeaderMenu({ className }: { className: string }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [current, setCurrent] = useState(pathname);
@@ -25,6 +25,7 @@ export default function HeaderMenu() {
 
   return (
     <Menu
+      className={className}
       mode="horizontal"
       selectedKeys={[current]}
       onSelect={({ key }) => {
