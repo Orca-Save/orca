@@ -91,7 +91,7 @@ export function GoalTransferForm({
 
     const action = goalTransfer
       ? updateGoalTransfer.bind(null, goalTransfer.id)
-      : addGoalTransfer.bind(null, session.user.id);
+      : addGoalTransfer.bind(null, session.user.id, isTemplate);
     const result = await action(formData);
 
     if (isGoalTransferFieldErrors(result)) {
@@ -106,7 +106,9 @@ export function GoalTransferForm({
         });
       });
     } else {
-      router.push(getPrevPageHref(referer, window) + "?confetti=true");
+      let newPath = getPrevPageHref(referer, window);
+      if (isSavings) newPath += "?confetti=true";
+      router.push(newPath);
     }
   };
   let amount = (goalTransfer?.amount as number | undefined) ?? 0;
@@ -116,7 +118,6 @@ export function GoalTransferForm({
   let isExternalAccount =
     filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
   const initialCategoryId = isExternalAccount ? externalAccountId : undefined;
-  console.log(isSavings);
   return (
     <Form
       form={form}
@@ -133,7 +134,7 @@ export function GoalTransferForm({
         name: goalTransfer?.itemName,
         rating: goalTransfer?.rating,
         merchantName: goalTransfer?.merchantName,
-        goalId: goalTransfer?.goalId,
+        goalId: goalTransfer?.goalId ?? goals.find((goal) => goal.pinned)?.id,
         categoryId: goalTransfer?.categoryId ?? initialCategoryId,
       }}
     >
@@ -146,15 +147,7 @@ export function GoalTransferForm({
           placeholder={`ex: "Starbucks Iced Latte", "Made lunch at home"`}
         />
       </Form.Item>
-      <Form.Item
-        name="transactedAt"
-        label="Transaction Date"
-        rules={[
-          { required: true, message: "Please select the transaction date!" },
-        ]}
-      >
-        <DatePicker style={{ width: "100%" }} />
-      </Form.Item>
+
       <Form.Item
         name="amount"
         label="Amount"
@@ -175,8 +168,8 @@ export function GoalTransferForm({
       </Form.Item>
 
       <Collapse style={{ width: "100%" }}>
-        <Collapse.Panel header="Optional Fields" key="1">
-          {!isTemplate ? (
+        <Collapse.Panel header="Optional Fields" key="1" forceRender>
+          {!isTemplate && isSavings ? (
             <Form.Item name="goalId" label="Goal">
               <Select
                 placeholder="Select a goal"
@@ -189,6 +182,9 @@ export function GoalTransferForm({
               />
             </Form.Item>
           ) : null}
+          <Form.Item name="transactedAt" label="Transaction Date">
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
           <Form.Item name="merchantName" label="Merchant Name">
             <Input placeholder="Merchant Name" />
           </Form.Item>

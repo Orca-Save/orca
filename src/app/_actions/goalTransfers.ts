@@ -7,33 +7,23 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
+const dateFormat = z
+  .string()
+  .regex(
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
+    "Invalid ISO 8601 date time format"
+  );
 const transferSchema = z.object({
   itemName: z.string(),
   amount: z.coerce.number(),
+  transactedAt: dateFormat,
+
   link: z.string().url().optional(),
   note: z.string().optional(),
   merchantName: z.string().optional(),
   rating: z.coerce.number().int().min(1).max(5).optional(),
   goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
-});
-
-const updateTransferSchema = z.object({
-  itemName: z.string(),
-  amount: z.coerce.number(),
-  transactedAt: z
-    .string()
-    .regex(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
-      "Invalid ISO 8601 date time format"
-    ),
-
-  goalId: z.string().uuid().optional(),
-  categoryId: z.string().uuid().optional(),
-  rating: z.coerce.number().int().min(1).max(5).optional(),
-  link: z.string().url().optional(),
-  note: z.string().optional(),
-  merchantName: z.string().optional(),
 });
 
 export type GoalTransferFieldErrors = {
@@ -79,8 +69,48 @@ export async function addQuickSave(
   return goalTransfer;
 }
 
+export async function updateGoalTransfer(
+  id: string,
+  formData: FormData
+): Promise<GoalTransfer | GoalTransferFieldErrors> {
+  const result = transferSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
+
+  if (!result.success) {
+    return { fieldErrors: result.error.formErrors.fieldErrors };
+  }
+
+  const existingTransfer = await db.goalTransfer.findUnique({
+    where: { id },
+  });
+
+  if (!existingTransfer) return notFound();
+
+  const data = result.data;
+  const updatedTransfer = await db.goalTransfer.update({
+    where: { id },
+    data: {
+      link: data.link,
+      note: data.note,
+      itemName: data.itemName,
+      merchantName: data.merchantName,
+      goalId: data.goalId,
+      updatedAt: new Date(),
+      amount: data.amount,
+      categoryId: data.categoryId,
+      rating: data.rating,
+      transactedAt: new Date(data.transactedAt),
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/savings");
+  return updatedTransfer;
+}
 export async function addGoalTransfer(
   userId: string,
+  isTemplate: boolean,
   formData: FormData
 ): Promise<GoalTransfer | GoalTransferFieldErrors> {
   const result = transferSchema.safeParse(
@@ -105,6 +135,7 @@ export async function addGoalTransfer(
       merchantName: data.merchantName,
       amount: data.amount,
       transactedAt: new Date(),
+      pinned: isTemplate,
     },
   });
 
@@ -160,46 +191,6 @@ export async function addQuickGoalTransfer(
   revalidatePath("/");
   revalidatePath("/savings");
   return goalTransfer;
-}
-
-export async function updateGoalTransfer(
-  id: string,
-  formData: FormData
-): Promise<GoalTransfer | GoalTransferFieldErrors> {
-  const result = updateTransferSchema.safeParse(
-    Object.fromEntries(formData.entries())
-  );
-
-  if (!result.success) {
-    return { fieldErrors: result.error.formErrors.fieldErrors };
-  }
-
-  const existingTransfer = await db.goalTransfer.findUnique({
-    where: { id },
-  });
-
-  if (!existingTransfer) return notFound();
-
-  const data = result.data;
-  const updatedTransfer = await db.goalTransfer.update({
-    where: { id },
-    data: {
-      link: data.link,
-      note: data.note,
-      itemName: data.itemName,
-      merchantName: data.merchantName,
-      goalId: data.goalId,
-      updatedAt: new Date(),
-      amount: data.amount,
-      categoryId: data.categoryId,
-      rating: data.rating,
-      transactedAt: new Date(data.transactedAt),
-    },
-  });
-
-  revalidatePath("/");
-  revalidatePath("/savings");
-  return updatedTransfer;
 }
 
 export async function deleteGoalTransfer(

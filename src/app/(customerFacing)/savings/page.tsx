@@ -66,7 +66,7 @@ export default async function MySavingsPage({
               !transfer.pinned &&
               transfer.amount.toNumber() > 0
           )}
-          saveHref="/savings/oneTapSave/new"
+          saveHref="/savings/new"
           buyHref="/purchases/new"
           newSaveText="Add One-Tap Save"
           filter="templates"
@@ -83,8 +83,8 @@ export default async function MySavingsPage({
           bottomGoalTransfers={goalTransfers.filter(
             (transfer) => transfer.categoryId === externalAccountId
           )}
-          saveHref="/savings/oneTapSave/new?filter=templates"
-          buyHref="/purchases/impulseBuy"
+          saveHref="/savings/new?filter=templates"
+          buyHref=""
           newSaveText="New External Account"
           filter="accounts"
           hide={true}

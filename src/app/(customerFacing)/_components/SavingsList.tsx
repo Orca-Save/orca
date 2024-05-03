@@ -23,7 +23,7 @@ export default async function SavingsList({
   bottomGoalTransfers: GoalTransfer[];
 }) {
   const isTemplates = filter === "templates";
-  const pinnedTitle = isTemplates ? "Pinned" : "";
+  const pinnedTitle = isTemplates ? "Pinned to Home" : "";
   const otherTitle = isTemplates ? "One-Tap Saves" : "";
 
   return (

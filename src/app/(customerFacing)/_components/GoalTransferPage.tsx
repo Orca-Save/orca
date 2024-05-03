@@ -37,11 +37,13 @@ export default async function GoalTransferPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    signIn("azure-ad-b2c", { callbackUrl: baseURL + "/goals" });
+    signIn("azure-ad-b2c", { callbackUrl: baseURL + "/savings" });
     return;
   }
   const headersList = headers();
   const referer = headersList.get("referer");
+  console.log("------------------------------");
+  console.log("referer", referer);
   if (!isExtendedSession(session)) return;
 
   const [categories, goals, goalTransfer] = await Promise.all([

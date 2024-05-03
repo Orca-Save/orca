@@ -35,9 +35,11 @@ export function GoalForm({
   goal,
   categories,
   referer,
+  initialAmount,
 }: {
   goal?: Goal | null;
   categories: GoalCategory[];
+  initialAmount?: number;
   referer: string;
 }) {
   const [form] = Form.useForm();
@@ -101,6 +103,7 @@ export function GoalForm({
         targetAmount,
         dueAt: goal?.dueAt ? dayjs(goal.dueAt) : dayjs(),
         note: goal?.note ?? "",
+        initialAmount: initialAmount,
         categoryId: goal?.categoryId,
       }}
     >
@@ -127,14 +130,12 @@ export function GoalForm({
       >
         <CurrencyInput placeholder="Target Balance" />
       </Form.Item>
-      {!goal && (
-        <Form.Item name="initialAmount" label="Initial Saved Amount">
-          <CurrencyInput placeholder="Initial Balance" />
-        </Form.Item>
-      )}
+      <Form.Item name="initialAmount" label="Initial Saved Amount">
+        <CurrencyInput placeholder="Initial Balance" />
+      </Form.Item>
 
       <Collapse>
-        <CollapsePanel header="Optional Fields" key="1">
+        <CollapsePanel header="Optional Fields" key="1" forceRender>
           <Form.Item name="categoryId" label="Category">
             <Select
               placeholder="Select a category"
