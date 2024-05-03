@@ -7,6 +7,12 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
+const dateFromat = z
+  .string()
+  .regex(
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
+    "Invalid ISO 8601 date time format"
+  );
 const transferSchema = z.object({
   itemName: z.string(),
   amount: z.coerce.number(),
@@ -16,17 +22,13 @@ const transferSchema = z.object({
   rating: z.coerce.number().int().min(1).max(5).optional(),
   goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
+  transactedAt: dateFromat,
 });
 
 const updateTransferSchema = z.object({
   itemName: z.string(),
   amount: z.coerce.number(),
-  transactedAt: z
-    .string()
-    .regex(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
-      "Invalid ISO 8601 date time format"
-    ),
+  transactedAt: dateFromat,
 
   goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),

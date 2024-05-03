@@ -45,7 +45,7 @@ export default async function HomePage({
     if (session.isNewUser || onboardingProfileCount === 0)
       redirect("/onboarding");
     return (
-      <>
+      <div className="flex justify-center">
         <ConfettiComp run={searchParams?.confetti === "true"} path="/" />
         <Space direction="vertical" style={{ width: "100%" }}>
           <Title level={4}>Focus Goal</Title>
@@ -82,7 +82,7 @@ export default async function HomePage({
 
           <DynamicQuickSave userId={session.user.id} />
         </Space>
-      </>
+      </div>
     );
   }
 }

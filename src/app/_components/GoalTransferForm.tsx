@@ -116,7 +116,6 @@ export function GoalTransferForm({
   let isExternalAccount =
     filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
   const initialCategoryId = isExternalAccount ? externalAccountId : undefined;
-  console.log(isSavings);
   return (
     <Form
       form={form}

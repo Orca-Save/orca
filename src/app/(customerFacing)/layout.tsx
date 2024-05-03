@@ -18,7 +18,7 @@ export default function CustomerLayout({
         }}
       >
         <div className="flex justify-center">
-          <div className=" w-100 md:w-4/5 lg:w-3/5">{children}</div>
+          <div className="w-full md:w-4/5 lg:w-3/5">{children}</div>
         </div>
       </Content>
     </Layout>
