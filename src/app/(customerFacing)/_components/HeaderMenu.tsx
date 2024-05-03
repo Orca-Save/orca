@@ -1,19 +1,14 @@
 "use client";
 
+import { varelaRound } from "@/lib/fonts";
 import { baseURL } from "@/lib/utils";
 import { Menu, Space, Typography } from "antd";
 import { signIn, useSession } from "next-auth/react";
-import { Varela_Round } from "next/font/google";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const { Text } = Typography;
-const varelaRound = Varela_Round({
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-varelaround",
-});
+
 export default function HeaderMenu({ className }: { className: string }) {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -44,6 +39,7 @@ export default function HeaderMenu({ className }: { className: string }) {
         style={{ width: "60px", marginLeft: "10px" }}
         align="center"
         size={0}
+        className="hidden md:inline"
       >
         <Text className={`${varelaRound.className}`}>Orca</Text>
       </Space>
