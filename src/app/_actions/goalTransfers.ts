@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
-const dateFromat = z
+const dateFormat = z
   .string()
   .regex(
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
@@ -22,13 +22,13 @@ const transferSchema = z.object({
   rating: z.coerce.number().int().min(1).max(5).optional(),
   goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
-  transactedAt: dateFromat,
+  transactedAt: dateFormat,
 });
 
 const updateTransferSchema = z.object({
   itemName: z.string(),
   amount: z.coerce.number(),
-  transactedAt: dateFromat,
+  transactedAt: dateFormat,
 
   goalId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),

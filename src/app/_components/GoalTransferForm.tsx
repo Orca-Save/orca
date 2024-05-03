@@ -132,7 +132,7 @@ export function GoalTransferForm({
         name: goalTransfer?.itemName,
         rating: goalTransfer?.rating,
         merchantName: goalTransfer?.merchantName,
-        goalId: goalTransfer?.goalId,
+        goalId: goalTransfer?.goalId ?? goals.find((goal) => goal.pinned)?.id,
         categoryId: goalTransfer?.categoryId ?? initialCategoryId,
       }}
     >
@@ -145,15 +145,7 @@ export function GoalTransferForm({
           placeholder={`ex: "Starbucks Iced Latte", "Made lunch at home"`}
         />
       </Form.Item>
-      <Form.Item
-        name="transactedAt"
-        label="Transaction Date"
-        rules={[
-          { required: true, message: "Please select the transaction date!" },
-        ]}
-      >
-        <DatePicker style={{ width: "100%" }} />
-      </Form.Item>
+
       <Form.Item
         name="amount"
         label="Amount"
@@ -188,6 +180,9 @@ export function GoalTransferForm({
               />
             </Form.Item>
           ) : null}
+          <Form.Item name="transactedAt" label="Transaction Date">
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
           <Form.Item name="merchantName" label="Merchant Name">
             <Input placeholder="Merchant Name" />
           </Form.Item>
