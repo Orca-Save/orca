@@ -6,6 +6,7 @@ import { Goal } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { uploadFile } from "./storage";
 
 const fileSchema = z.instanceof(File, { message: "Required" });
 const imageSchema = fileSchema.refine(
@@ -38,6 +39,7 @@ const goalSchema = z.object({
   description: z.string().optional(),
   categoryId: z.string().uuid().optional(),
   initialAmount: z.coerce.number().min(1).optional(),
+  image: imageSchema.optional(),
 });
 const quickGoalSchema = z.object({
   dueAt: dueAtSchema,
@@ -101,6 +103,13 @@ export async function addGoal(
   }
 
   const data = result.data;
+
+  let imagePath: string | undefined = undefined;
+  if (data.image) {
+    const { blockBlobClient } = await uploadFile(data.image);
+    imagePath = blockBlobClient.url;
+  }
+
   let goal = await db.goal.create({
     data: {
       userId,
@@ -111,7 +120,7 @@ export async function addGoal(
       targetAmount: data.targetAmount,
       categoryId: data.categoryId,
       dueAt: data.dueAt,
-      imagePath: "",
+      imagePath,
     },
   });
 
@@ -162,6 +171,7 @@ export async function updateGoal(
   }
 
   const data = result.data;
+
   const goal = await db.goal.findUnique({ where: { id } });
   if (goal?.initialTransferId) {
     await db.goalTransfer.update({
@@ -175,6 +185,10 @@ export async function updateGoal(
   if (goal == null) return notFound();
 
   let imagePath = goal.imagePath;
+  if (data.image) {
+    const { blockBlobClient } = await uploadFile(data.image);
+    imagePath = blockBlobClient.url;
+  }
 
   let updatedGoal = await db.goal.update({
     where: { id },

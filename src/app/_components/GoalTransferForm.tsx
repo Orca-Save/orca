@@ -158,7 +158,7 @@ export function GoalTransferForm({
       {!isSavings ? (
         <Form.Item
           name="rating"
-          label="Rating"
+          label="How did you feel about this purchase?"
           rules={[{ required: true, message: "Please rate the item!" }]}
         >
           <Rate character={({ index = 0 }) => customIcons[index + 1]} />
@@ -168,7 +168,10 @@ export function GoalTransferForm({
       <Collapse style={{ width: "100%" }}>
         <Collapse.Panel header="Optional Fields" key="1" forceRender>
           {isSavings ? (
-            <Form.Item name="rating" label="Rating">
+            <Form.Item
+              name="rating"
+              label="How did you feel about this purchase?"
+            >
               <Rate character={({ index = 0 }) => customIcons[index + 1]} />
             </Form.Item>
           ) : null}
