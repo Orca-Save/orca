@@ -4,6 +4,7 @@ const nextConfig = {
     instrumentationHook: process.env.NODE_ENV === "production",
   },
   webpack: (config, { isServer }) => {
+    config.optimization.minimize = false;
     if (isServer) {
       // required for @azure/monitor-opentelemetry-exporter to work
       config.resolve.fallback ??= {};

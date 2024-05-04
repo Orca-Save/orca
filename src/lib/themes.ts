@@ -21,6 +21,7 @@ export const mainThemeConfig: ThemeConfig = {
       defaultBg: "rgb(207, 207, 207)",
       defaultShadow: "0 2px 0 rgba(0, 0, 0, 0.2)",
       defaultBorderColor: "rgb(207, 207, 207)",
+      //   defaultHoverBorderColor: "rgb(160, 160, 160)",
     },
     Card: {
       colorBgContainer: "rgb(207, 207, 207)",
