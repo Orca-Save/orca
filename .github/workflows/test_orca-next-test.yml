@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Slack Notification
-        uses: actions/slack@v1
+        uses: act10ns/slack@v1
         with:
           status: starting
           channel: "#meetups"
@@ -48,7 +48,7 @@ jobs:
           path: release.zip
 
       - name: Slack Notification
-        uses: actions/slack@v1
+        uses: act10ns/slack@v1
         with:
           status: ${{ job.status }}
           channel: "#meetups"
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Slack Notification
-        uses: actions/slack@v1
+        uses: act10ns/slack@v1
         with:
           status: starting
           channel: "#meetups"
@@ -99,7 +99,7 @@ jobs:
           package: .
 
       - name: Slack Notification
-        uses: actions/slack@v1
+        uses: act10ns/slack@v1
         with:
           status: ${{ job.status }}
           channel: "#meetups"
