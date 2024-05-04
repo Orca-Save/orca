@@ -1,14 +1,13 @@
-import { Card, Skeleton, Space } from "antd";
+import { Button, Card, Col, Row, Skeleton, Space } from "antd";
 
 import { completedUserGoalCount } from "@/app/_actions/users";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
-import { PlusOutlined } from "@ant-design/icons";
 import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import CompletedCounts from "../_components/CompletedCounts";
-import IconRoute from "./_components/IconButtonRoute";
 
 const DynamicGoalList = dynamic(() => import("./_components/GoalList"), {
   loading: () => (
@@ -34,11 +33,15 @@ export default async function GoalsPage() {
   const completedCounts = await completedUserGoalCount(session.user.id);
   return (
     <Space direction="vertical" className="w-full">
-      <IconRoute
-        route={"/goals/new"}
-        icon={<PlusOutlined />}
-        text={"New Goal"}
-      />
+      <Row justify="center">
+        <Col>
+          <Link href="/goals/new">
+            <Button size="large" type="primary">
+              New Goal
+            </Button>
+          </Link>
+        </Col>
+      </Row>
       <div>
         <CompletedCounts
           goalsCompleted={completedCounts.goalsCompleted}

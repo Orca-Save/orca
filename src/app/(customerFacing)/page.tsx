@@ -1,12 +1,13 @@
 import { Button, ConfigProvider, Skeleton, Space } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import * as emoji from "node-emoji";
 
+import { HappyProvider } from "@/components/HappyProvider";
 import db from "@/db/db";
 import authOptions from "@/lib/nextAuthOptions";
 import { isExtendedSession } from "@/lib/session";
-import { greenThemeColors } from "@/lib/utils";
-import { PlusOutlined } from "@ant-design/icons";
+import { greenThemeColors } from "@/lib/themes";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Title } from "../_components/Typography";
@@ -58,23 +59,26 @@ export default async function HomePage({
                 },
               }}
             >
-              <Button
-                icon={<PlusOutlined />}
-                size="large"
-                type="primary"
-                style={{ width: "100%", height: "90px", color: "black" }}
-              >
-                Impulse Save
-              </Button>
+              <HappyProvider>
+                <Button
+                  size="large"
+                  type="primary"
+                  style={{
+                    width: "100%",
+                    height: "90px",
+                    color: "black",
+                  }}
+                >
+                  Impulse Save
+                  {emoji.find("money_mouth_face")?.emoji}
+                </Button>
+              </HappyProvider>
             </ConfigProvider>
           </Link>
           <Link href="/purchases/new">
-            <Button
-              icon={<PlusOutlined />}
-              size="large"
-              style={{ width: "100%", height: "90px" }}
-            >
+            <Button size="large" style={{ width: "100%", height: "50px" }}>
               Impulse Buy
+              {emoji.find("money_with_wings")?.emoji}
             </Button>
           </Link>
 

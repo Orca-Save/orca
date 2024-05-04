@@ -5,19 +5,6 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { twMerge } from "tailwind-merge";
 import { FieldErrors } from "./goals";
 
-export const greenThemeColors = {
-  colorPrimary: `#9EFF00`,
-  colorPrimaryBg: "#f9ffe6",
-  colorPrimaryBgHover: "#e8ffa3",
-  colorPrimaryBorder: "#d9ff7a",
-  colorPrimaryBorderHover: "#c8ff52",
-  colorPrimaryHover: "#b4ff29",
-  colorPrimaryActive: "#7ed900",
-  colorPrimaryTextHover: "#b4ff29",
-  colorPrimaryText: "#9eff00",
-  colorPrimaryTextActive: "#7ed900",
-};
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

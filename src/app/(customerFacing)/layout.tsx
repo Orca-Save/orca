@@ -34,7 +34,14 @@ export default function CustomerLayout({
           <div className="w-full md:w-4/5 lg:w-3/5">{children}</div>
         </div>
       </Content>
-      <Footer style={{ position: "sticky", bottom: 0 }}>
+      <Footer
+        style={{
+          position: "sticky",
+          bottom: 0,
+          borderTop: "2px solid #f0f0f0",
+        }}
+      >
+        {/* add thin grey border ontop of headermenu */}
         <HeaderMenu className="sm:hidden" />
       </Footer>
     </Layout>

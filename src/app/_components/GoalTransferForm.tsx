@@ -1,7 +1,16 @@
 "use client";
 
 import { Goal, GoalCategory, GoalTransfer } from "@prisma/client";
-import { Button, Collapse, DatePicker, Form, Input, Rate, Select } from "antd";
+import {
+  Button,
+  Collapse,
+  DatePicker,
+  Form,
+  Input,
+  Rate,
+  Select,
+  Tooltip,
+} from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,7 +21,12 @@ import {
 } from "@/lib/goalTransfers";
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
-import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
+import {
+  FrownOutlined,
+  InfoCircleOutlined,
+  MehOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
 import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
 import CurrencyInput from "./CurrencyInput";
 
@@ -158,7 +172,14 @@ export function GoalTransferForm({
       {!isSavings ? (
         <Form.Item
           name="rating"
-          label="How did you feel about this purchase?"
+          label={
+            <span>
+              How did you feel about this purchase?
+              <Tooltip title="Here's a tip">
+                <InfoCircleOutlined style={{ marginLeft: "5px" }} />
+              </Tooltip>
+            </span>
+          }
           rules={[{ required: true, message: "Please rate the item!" }]}
         >
           <Rate character={({ index = 0 }) => customIcons[index + 1]} />
@@ -167,14 +188,6 @@ export function GoalTransferForm({
 
       <Collapse style={{ width: "100%" }}>
         <Collapse.Panel header="Optional Fields" key="1" forceRender>
-          {isSavings ? (
-            <Form.Item
-              name="rating"
-              label="How did you feel about this purchase?"
-            >
-              <Rate character={({ index = 0 }) => customIcons[index + 1]} />
-            </Form.Item>
-          ) : null}
           {!isTemplate && isSavings ? (
             <Form.Item name="goalId" label="Goal">
               <Select

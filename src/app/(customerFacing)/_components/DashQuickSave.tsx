@@ -1,6 +1,8 @@
 import { Text } from "@/app/_components/Typography";
+import { HappyProvider } from "@/components/HappyProvider";
 import db from "@/db/db";
-import { Space } from "antd";
+import { greenThemeColors } from "@/lib/themes";
+import { ConfigProvider, Space } from "antd";
 import { getPinnedUserGoal } from "../_actions/data";
 import { QuickSaveButton } from "./QuickSaveButton";
 
@@ -26,16 +28,20 @@ export default async function QuickSaveButtons({ userId }: { userId: string }) {
   if (!goal) return <Text>No Pinned Goal.</Text>;
 
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: greenThemeColors.colorPrimary,
+        },
+      }}
+    >
       <Space wrap>
         {quickTransfers.map((transfer) => (
-          <QuickSaveButton
-            key={transfer.id}
-            transfer={transfer}
-            goalId={goal.id}
-          />
+          <HappyProvider key={transfer.id}>
+            <QuickSaveButton transfer={transfer} goalId={goal.id} />
+          </HappyProvider>
         ))}
       </Space>
-    </>
+    </ConfigProvider>
   );
 }

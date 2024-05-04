@@ -1,5 +1,6 @@
-import { ConfigProvider, darkAlgorithm } from "@/components/ConfigProvider";
+import { ConfigProvider } from "@/components/ConfigProvider";
 import { SessionProvider } from "@/components/SessionProvider";
+import { mainThemeConfig } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter, Open_Sans } from "next/font/google";
@@ -32,18 +33,7 @@ export default function RootLayout({
         )}
       >
         <SessionProvider>
-          <ConfigProvider
-            theme={{
-              algorithm: darkAlgorithm,
-              components: {
-                Layout: {
-                  footerPadding: 0,
-                },
-              },
-            }}
-          >
-            {children}
-          </ConfigProvider>
+          <ConfigProvider theme={mainThemeConfig}>{children}</ConfigProvider>
         </SessionProvider>
       </body>
     </html>

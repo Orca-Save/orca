@@ -1,6 +1,7 @@
 import PinSavingButton from "@/app/_components/PinSavingButton";
 import { Text, Title } from "@/app/_components/Typography";
-import { currencyFormatter, greenThemeColors } from "@/lib/utils";
+import { greenThemeColors } from "@/lib/themes";
+import { currencyFormatter } from "@/lib/utils";
 import { red } from "@ant-design/colors";
 import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
 import { GoalTransfer } from "@prisma/client";
@@ -39,6 +40,7 @@ export default async function SavingsList({
                 key={goalTransfer.id}
                 routeParams={routeParams}
                 goalTransfer={goalTransfer}
+                showPin={filter === "templates"}
               />
             ))}
           </div>
@@ -57,6 +59,7 @@ export default async function SavingsList({
             key={goalTransfer.id}
             routeParams={routeParams}
             goalTransfer={goalTransfer}
+            showPin={filter === "templates"}
           />
         ))}
       </div>
@@ -67,9 +70,11 @@ export default async function SavingsList({
 function GoalTransferCard({
   goalTransfer,
   routeParams,
+  showPin,
 }: {
   goalTransfer: GoalTransfer;
   routeParams: string;
+  showPin: boolean;
 }) {
   const amount = goalTransfer.amount.toNumber();
   const rating = goalTransfer.rating;
@@ -103,13 +108,17 @@ function GoalTransferCard({
             }/edit` + routeParams
           }
         />,
-        <PinSavingButton
-          key="pin"
-          type="GoalTransfer"
-          typeId={goalTransfer.id}
-          userHasPinnedGoal={false}
-          pinned={goalTransfer.pinned}
-        />,
+        ...(showPin
+          ? [
+              <PinSavingButton
+                key="pin"
+                type="GoalTransfer"
+                typeId={goalTransfer.id}
+                userHasPinnedGoal={false}
+                pinned={goalTransfer.pinned}
+              />,
+            ]
+          : []),
       ]}
     >
       <Meta

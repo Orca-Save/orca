@@ -172,7 +172,7 @@ export function GoalForm({
             </Form.Item>
 
             <Form.Item name="image">
-              <Upload showUploadList={false}>
+              <Upload>
                 <Button icon={<UploadOutlined />}>Upload Image</Button>
               </Upload>
             </Form.Item>
@@ -180,15 +180,14 @@ export function GoalForm({
         </Collapse>
 
         <div className="flex justify-end mt-5 space-x-4">
-          <Button size="large" type="primary" htmlType="submit">
-            Save
-          </Button>
-
           <Button
             size="large"
             onClick={() => router.push(getPrevPageHref(referer, window))}
           >
             Cancel
+          </Button>
+          <Button size="large" type="primary" htmlType="submit">
+            Save
           </Button>
         </div>
       </Form>

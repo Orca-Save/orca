@@ -1,4 +1,4 @@
-import { greenThemeColors } from "@/lib/utils";
+import { greenThemeColors } from "@/lib/themes";
 import { PlusOutlined } from "@ant-design/icons";
 import { GoalTransfer } from "@prisma/client";
 import { Button, Card, ConfigProvider, Skeleton, Space } from "antd";
@@ -67,6 +67,7 @@ export default async function SavingsPage({
               >
                 <Button
                   type="primary"
+                  size="large"
                   style={{ color: "black" }}
                   icon={<PlusOutlined />}
                 >
@@ -77,7 +78,9 @@ export default async function SavingsPage({
           ) : null}
           {filter === undefined && (
             <Link href={buyHref}>
-              <Button icon={<PlusOutlined />}>{newPurchaseText}</Button>
+              <Button size="large" icon={<PlusOutlined />}>
+                {newPurchaseText}
+              </Button>
             </Link>
           )}
         </Space>
