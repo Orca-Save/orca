@@ -18,37 +18,49 @@ export default function GoalCard({
   goal,
   userHasPinnedGoal,
   revalidatePath,
+  hideActions,
 }: {
   goal: Goal;
   userHasPinnedGoal: boolean;
   revalidatePath: string;
+  hideActions?: boolean;
 }) {
+  let marginTop = goal.pinned ? '-14px' : '-11px';
+  if (hideActions) marginTop = '-35px';
   return (
     <div>
       <Card
         key={goal.id}
         size='small'
-        actions={[
-          <PopconfirmDelete
-            goalId={goal.id}
-            key='delete'
-            title='Delete the goal'
-            description='Are you sure you want to delete this goal?'
-          />,
-          <EditAction route={`/goals/${goal.id}/edit`} key='edit' />,
-          ...(revalidatePath !== '/'
-            ? [
-                <PinSavingButton
-                  key='pin'
-                  type='Goal'
-                  typeId={goal.id}
-                  pinned={goal.pinned}
-                  userHasPinnedGoal={userHasPinnedGoal}
+        style={
+          !goal.pinned
+            ? undefined
+            : { paddingBottom: hideActions ? '28px' : '5px' }
+        }
+        actions={
+          hideActions
+            ? undefined
+            : [
+                <PopconfirmDelete
+                  goalId={goal.id}
+                  key='delete'
+                  title='Delete the goal'
+                  description='Are you sure you want to delete this goal?'
                 />,
+                <EditAction route={`/goals/${goal.id}/edit`} key='edit' />,
+                ...(revalidatePath !== '/'
+                  ? [
+                      <PinSavingButton
+                        key='pin'
+                        type='Goal'
+                        typeId={goal.id}
+                        pinned={goal.pinned}
+                        userHasPinnedGoal={userHasPinnedGoal}
+                      />,
+                    ]
+                  : []),
               ]
-            : []),
-          // <ShareAltOutlined key="share" />,
-        ]}>
+        }>
         <Row>
           <Col span={12}>
             <Text style={{ fontWeight: 'bold' }}>{goal.name}</Text>
@@ -74,7 +86,8 @@ export default function GoalCard({
             backgroundImage: goal.imagePath ? `url(${goal.imagePath})` : '',
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
-            marginTop: '-11px',
+            marginTop,
+            border: '1px solid #CFCFCF',
             borderRadius: '7px',
             zIndex: 1,
             position: 'relative',

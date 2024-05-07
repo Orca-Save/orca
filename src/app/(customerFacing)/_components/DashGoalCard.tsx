@@ -46,6 +46,11 @@ export default async function DashGoalCard({ userId }: { userId: string }) {
     savedItemCount: goalSumMap.get(goal.id)?.count || 0,
   });
   return (
-    <GoalCard revalidatePath='/' goal={goalDetail} userHasPinnedGoal={true} />
+    <GoalCard
+      revalidatePath='/'
+      goal={goalDetail}
+      hideActions={true}
+      userHasPinnedGoal={true}
+    />
   );
 }
