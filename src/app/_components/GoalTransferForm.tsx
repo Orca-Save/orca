@@ -172,7 +172,20 @@ export function GoalTransferForm({
           label={
             <span>
               How did you feel about this purchase?
-              <Tooltip title="Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip ">
+              <Tooltip
+                title={
+                  <>
+                    <p style={{ marginBottom: '0.5rem' }}>
+                      This rating is necessary to ensure the insights we deliver
+                      are truly personalized.
+                    </p>
+                    <p>
+                      For example, we don't want to suggest you cut back on
+                      “Yoga with friends” to meet your goal if this is something
+                      you truly value.
+                    </p>
+                  </>
+                }>
                 <InfoCircleOutlined style={{ marginLeft: '5px' }} />
               </Tooltip>
             </span>
