@@ -1,22 +1,22 @@
-import { Button, ConfigProvider, Skeleton, Space } from "antd";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import * as emoji from "node-emoji";
+import { Button, ConfigProvider, Skeleton, Space } from 'antd';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import * as emoji from 'node-emoji';
 
-import { HappyProvider } from "@/components/HappyProvider";
-import db from "@/db/db";
-import authOptions from "@/lib/nextAuthOptions";
-import { isExtendedSession } from "@/lib/session";
-import { greenThemeColors } from "@/lib/themes";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { Title } from "../_components/Typography";
-import ConfettiComp from "./_components/Confetti";
+import { HappyProvider } from '@/components/HappyProvider';
+import db from '@/db/db';
+import authOptions from '@/lib/nextAuthOptions';
+import { isExtendedSession } from '@/lib/session';
+import { greenThemeColors } from '@/lib/themes';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { Title } from '../_components/Typography';
+import ConfettiComp from './_components/Confetti';
 
-const DynamicPinnedGoal = dynamic(() => import("./_components/DashGoalCard"), {
+const DynamicPinnedGoal = dynamic(() => import('./_components/DashGoalCard'), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
 });
-const DynamicQuickSave = dynamic(() => import("./_components/DashQuickSave"), {
+const DynamicQuickSave = dynamic(() => import('./_components/DashQuickSave'), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
 });
 
@@ -37,52 +37,61 @@ export default async function HomePage({
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect("/signup");
+    redirect('/signup');
   }
   if (isExtendedSession(session)) {
     const onboardingProfileCount = await getOnboardingProfileCount(
       session.user.id
     );
     if (session.isNewUser || onboardingProfileCount === 0)
-      redirect("/onboarding");
+      redirect('/onboarding');
     return (
-      <div className="flex justify-center">
-        <ConfettiComp run={searchParams?.confetti === "true"} path="/" />
-        <Space direction="vertical" style={{ width: "100%" }}>
-          <Title level={4}>Focus Goal</Title>
+      <div className='flex justify-center'>
+        <ConfettiComp run={searchParams?.confetti === 'true'} path='/' />
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <Title level={4} style={{ margin: 0 }}>
+            Focus Goal
+          </Title>
           <DynamicPinnedGoal userId={session.user.id} />
-          <Link href="/savings/new">
+          <Link href='/savings/new'>
             <ConfigProvider
               theme={{
                 components: {
                   Button: greenThemeColors,
                 },
-              }}
-            >
+              }}>
               <HappyProvider>
                 <Button
-                  size="large"
-                  type="primary"
+                  size='large'
+                  type='primary'
                   style={{
-                    width: "100%",
-                    height: "90px",
-                    color: "black",
-                  }}
-                >
-                  Impulse Save
-                  {emoji.find("money_mouth_face")?.emoji}
+                    width: '100%',
+                    height: '90px',
+                    color: 'black',
+                    fontWeight: 'bold',
+                  }}>
+                  <span style={{ paddingRight: '1rem' }}>Impulse Save</span>
+                  {emoji.find('money_mouth_face')?.emoji}
                 </Button>
               </HappyProvider>
             </ConfigProvider>
           </Link>
-          <Link href="/purchases/new">
-            <Button size="large" style={{ width: "100%", height: "50px" }}>
-              Impulse Buy
-              {emoji.find("money_with_wings")?.emoji}
+          <Link href='/purchases/new'>
+            <Button
+              size='large'
+              style={{
+                width: '100%',
+                height: '50px',
+                fontWeight: 'bold',
+              }}>
+              <span style={{ paddingRight: '1rem' }}>Impulse Buy</span>
+              {emoji.find('money_with_wings')?.emoji}
             </Button>
           </Link>
 
-          <Title level={4}>One-Tap Saves</Title>
+          <Title level={4} style={{ margin: 0 }}>
+            One-Tap Impulse Saves
+          </Title>
 
           <DynamicQuickSave userId={session.user.id} />
         </Space>

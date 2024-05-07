@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Goal, GoalCategory, GoalTransfer } from "@prisma/client";
+import { Goal, GoalCategory, GoalTransfer } from '@prisma/client';
 import {
   Button,
   Collapse,
@@ -10,25 +10,25 @@ import {
   Rate,
   Select,
   Tooltip,
-} from "antd";
-import dayjs, { Dayjs } from "dayjs";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+} from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   externalAccountId,
   isGoalTransferFieldErrors,
-} from "@/lib/goalTransfers";
-import { isExtendedSession } from "@/lib/session";
-import { getPrevPageHref } from "@/lib/utils";
+} from '@/lib/goalTransfers';
+import { isExtendedSession } from '@/lib/session';
+import { getPrevPageHref } from '@/lib/utils';
 import {
   FrownOutlined,
   InfoCircleOutlined,
   MehOutlined,
   SmileOutlined,
-} from "@ant-design/icons";
-import { addGoalTransfer, updateGoalTransfer } from "../_actions/goalTransfers";
-import CurrencyInput from "./CurrencyInput";
+} from '@ant-design/icons';
+import { addGoalTransfer, updateGoalTransfer } from '../_actions/goalTransfers';
+import CurrencyInput from './CurrencyInput';
 
 type GoalTransferFormValues = {
   goalId: string;
@@ -69,14 +69,14 @@ export function GoalTransferForm({
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      signIn("azure-ad-b2c");
+      signIn('azure-ad-b2c');
     },
   });
 
-  const filterParam = searchParams.get("filter");
+  const filterParam = searchParams.get('filter');
   let isTemplate = false;
   if (
-    filterParam === "templates" ||
+    filterParam === 'templates' ||
     (goalTransfer && goalTransfer.goalId === null)
   ) {
     isTemplate = true;
@@ -88,20 +88,20 @@ export function GoalTransferForm({
     const formData = new FormData();
 
     const adjustedAmount = isSavings ? values.amount : -values.amount;
-    formData.append("amount", String(adjustedAmount));
-    formData.append("itemName", values.itemName);
+    formData.append('amount', String(adjustedAmount));
+    formData.append('itemName', values.itemName);
 
     if (values.merchantName)
-      formData.append("merchantName", values.merchantName);
+      formData.append('merchantName', values.merchantName);
     if (values.transactedAt) {
-      formData.append("transactedAt", values.transactedAt.format());
+      formData.append('transactedAt', values.transactedAt.format());
     }
 
-    if (values.link) formData.append("link", values.link);
-    if (values.note) formData.append("note", values.note);
-    if (values.rating) formData.append("rating", String(values.rating));
-    if (values.goalId) formData.append("goalId", values.goalId);
-    if (values.categoryId) formData.append("categoryId", values.categoryId);
+    if (values.link) formData.append('link', values.link);
+    if (values.note) formData.append('note', values.note);
+    if (values.rating) formData.append('rating', String(values.rating));
+    if (values.goalId) formData.append('goalId', values.goalId);
+    if (values.categoryId) formData.append('categoryId', values.categoryId);
 
     const action = goalTransfer
       ? updateGoalTransfer.bind(null, goalTransfer.id)
@@ -121,7 +121,7 @@ export function GoalTransferForm({
       });
     } else {
       let newPath = getPrevPageHref(referer, window);
-      if (isSavings) newPath += "?confetti=true";
+      if (isSavings) newPath += '?confetti=true';
       router.push(newPath);
     }
   };
@@ -130,12 +130,12 @@ export function GoalTransferForm({
     amount = -amount;
   }
   let isExternalAccount =
-    filterParam === "accounts" || goalTransfer?.goalId === externalAccountId;
+    filterParam === 'accounts' || goalTransfer?.goalId === externalAccountId;
   const initialCategoryId = isExternalAccount ? externalAccountId : undefined;
   return (
     <Form
       form={form}
-      layout="vertical"
+      layout='vertical'
       onFinish={onFinish}
       initialValues={{
         itemName: goalTransfer?.itemName,
@@ -150,66 +150,62 @@ export function GoalTransferForm({
         merchantName: goalTransfer?.merchantName,
         goalId: goalTransfer?.goalId ?? goals.find((goal) => goal.pinned)?.id,
         categoryId: goalTransfer?.categoryId ?? initialCategoryId,
-      }}
-    >
+      }}>
       <Form.Item
-        name="itemName"
-        label="Item or Action"
-        rules={[{ required: true, message: "Please input the item name!" }]}
-      >
+        name='itemName'
+        label='Item or Action'
+        rules={[{ required: true, message: 'Please input the item name!' }]}>
         <Input
           placeholder={`ex: "Starbucks Iced Latte", "Made lunch at home"`}
         />
       </Form.Item>
 
       <Form.Item
-        name="amount"
-        label="Amount"
-        rules={[{ required: true, message: "Please input the amount!" }]}
-      >
-        <CurrencyInput placeholder="Amount" />
+        name='amount'
+        label='Amount'
+        rules={[{ required: true, message: 'Please input the amount!' }]}>
+        <CurrencyInput placeholder='Amount' />
       </Form.Item>
       {!isSavings ? (
         <Form.Item
-          name="rating"
+          name='rating'
           label={
             <span>
               How did you feel about this purchase?
-              <Tooltip title="Here's a tip">
-                <InfoCircleOutlined style={{ marginLeft: "5px" }} />
+              <Tooltip title="Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip Here's a tip ">
+                <InfoCircleOutlined style={{ marginLeft: '5px' }} />
               </Tooltip>
             </span>
           }
-          rules={[{ required: true, message: "Please rate the item!" }]}
-        >
+          rules={[{ required: true, message: 'Please rate the item!' }]}>
           <Rate character={({ index = 0 }) => customIcons[index + 1]} />
         </Form.Item>
       ) : null}
 
-      <Collapse style={{ width: "100%" }}>
-        <Collapse.Panel header="Optional Fields" key="1" forceRender>
+      <Collapse style={{ width: '100%' }}>
+        <Collapse.Panel header='Optional Fields' key='1' forceRender>
           {!isTemplate && isSavings ? (
-            <Form.Item name="goalId" label="Goal">
+            <Form.Item name='goalId' label='Goal'>
               <Select
-                placeholder="Select a goal"
+                placeholder='Select a goal'
                 options={goals.map((goal: Goal) => ({
                   label: `${goal.name} ${
-                    goal.description ? `(${goal.description})` : ""
+                    goal.description ? `(${goal.description})` : ''
                   }`,
                   value: goal.id,
                 }))}
               />
             </Form.Item>
           ) : null}
-          <Form.Item name="transactedAt" label="Transaction Date">
-            <DatePicker style={{ width: "100%" }} />
+          <Form.Item name='transactedAt' label='Transaction Date'>
+            <DatePicker style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="merchantName" label="Merchant Name">
-            <Input placeholder="Merchant Name" />
+          <Form.Item name='merchantName' label='Merchant Name'>
+            <Input placeholder='Merchant Name' />
           </Form.Item>
-          <Form.Item name="categoryId" label="Category">
+          <Form.Item name='categoryId' label='Category'>
             <Select
-              placeholder="Select a category"
+              placeholder='Select a category'
               disabled={isExternalAccount}
               options={categories.map((category: GoalCategory) => ({
                 label: category.name,
@@ -217,23 +213,22 @@ export function GoalTransferForm({
               }))}
             />
           </Form.Item>
-          <Form.Item name="link" label="Link">
-            <Input placeholder="Link to item" />
+          <Form.Item name='link' label='Link'>
+            <Input placeholder='Link to item' />
           </Form.Item>
-          <Form.Item name="note" label="Additional Note">
-            <TextArea placeholder="Additional notes about the transaction" />
+          <Form.Item name='note' label='Additional Note'>
+            <TextArea placeholder='Additional notes about the transaction' />
           </Form.Item>
         </Collapse.Panel>
       </Collapse>
 
-      <div className="flex justify-end mt-5 space-x-4">
+      <div className='flex justify-end mt-5 space-x-4'>
         <Button
-          size="large"
-          onClick={() => router.push(getPrevPageHref(referer, window))}
-        >
+          size='large'
+          onClick={() => router.push(getPrevPageHref(referer, window))}>
           Cancel
         </Button>
-        <Button type="primary" size="large" htmlType="submit">
+        <Button type='primary' size='large' htmlType='submit'>
           Save
         </Button>
       </div>

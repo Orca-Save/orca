@@ -1,17 +1,17 @@
-"use server";
+'use server';
 
-import db from "@/db/db";
-import { externalAccountId } from "@/lib/goalTransfers";
-import { GoalTransfer } from "@prisma/client";
-import { revalidatePath } from "next/cache";
-import { notFound } from "next/navigation";
-import { z } from "zod";
+import db from '@/db/db';
+import { externalAccountId } from '@/lib/goalTransfers';
+import { GoalTransfer } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
+import { notFound } from 'next/navigation';
+import { z } from 'zod';
 
 const dateFormat = z
   .string()
   .regex(
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
-    "Invalid ISO 8601 date time format"
+    'Invalid ISO 8601 date time format'
   );
 const transferSchema = z.object({
   itemName: z.string(),
@@ -62,9 +62,9 @@ export async function addQuickSave(
     },
   });
 
-  revalidatePath("/");
-  revalidatePath("/savings");
-  revalidatePath("/goals");
+  revalidatePath('/');
+  revalidatePath('/savings');
+  revalidatePath('/goals');
 
   return goalTransfer;
 }
@@ -104,8 +104,8 @@ export async function updateGoalTransfer(
     },
   });
 
-  revalidatePath("/");
-  revalidatePath("/savings");
+  revalidatePath('/');
+  revalidatePath('/savings');
   return updatedTransfer;
 }
 export async function addGoalTransfer(
@@ -129,7 +129,7 @@ export async function addGoalTransfer(
       categoryId: data.categoryId,
       note: data.note,
       link: data.link,
-      imagePath: "",
+      imagePath: '',
       updatedAt: new Date(),
       itemName: data.itemName,
       merchantName: data.merchantName,
@@ -139,8 +139,8 @@ export async function addGoalTransfer(
     },
   });
 
-  revalidatePath("/");
-  revalidatePath("/savings");
+  revalidatePath('/');
+  revalidatePath('/savings');
   return goalTransfer;
 }
 
@@ -159,10 +159,11 @@ export async function addQuickGoalTransfer(
 
   let categoryId = undefined;
   let userPinGoalId = undefined;
-  if (goalTransferType === "accounts") {
-    categoryId = externalAccountId;
-  }
-  if (goalTransferType !== "templates" && data.amount > 0) {
+  let updatedAt = new Date();
+  let transactedAt: Date | undefined = updatedAt;
+  if (goalTransferType === 'accounts') categoryId = externalAccountId;
+  if (goalTransferType === 'templates') transactedAt = undefined;
+  if (goalTransferType !== 'templates' && data.amount > 0) {
     userPinGoalId = (
       await db.goal.findFirst({
         where: { userId: userId, pinned: true },
@@ -177,19 +178,18 @@ export async function addQuickGoalTransfer(
       userId,
       categoryId,
       goalId: userPinGoalId,
+      updatedAt,
+      transactedAt,
 
       rating: data.rating,
       itemName: data.itemName,
       amount: data.amount,
-      pinned: goalTransferType === "templates",
-
-      updatedAt: new Date(),
-      transactedAt: new Date(),
+      pinned: goalTransferType === 'templates',
     },
   });
 
-  revalidatePath("/");
-  revalidatePath("/savings");
+  revalidatePath('/');
+  revalidatePath('/savings');
   return goalTransfer;
 }
 
@@ -202,7 +202,7 @@ export async function deleteGoalTransfer(
 
   if (!deletedTransfer) return notFound();
 
-  revalidatePath("/");
-  revalidatePath("/savings");
+  revalidatePath('/');
+  revalidatePath('/savings');
   return deletedTransfer;
 }

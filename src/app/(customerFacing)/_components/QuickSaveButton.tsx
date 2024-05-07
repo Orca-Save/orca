@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
-import { addQuickSave } from "@/app/_actions/goalTransfers";
-import { formatCurrency } from "@/lib/formatters";
+import { addQuickSave } from '@/app/_actions/goalTransfers';
+import { Text } from '@/app/_components/Typography';
+import { formatCurrency } from '@/lib/formatters';
 import {
   GoalCategory,
   GoalTransfer as PrismaGoalTransfer,
-} from "@prisma/client";
-import { Button, Typography } from "antd";
-import { useState } from "react";
-import Confetti from "react-confetti";
+} from '@prisma/client';
+import { Button, Typography } from 'antd';
+import { useState } from 'react';
+import Confetti from 'react-confetti';
 
 const { Paragraph } = Typography;
 
@@ -41,14 +42,13 @@ export function QuickSaveButton({
       <Button
         key={transfer.id}
         disabled={!goalId}
-        size="large"
-        style={{ height: "auto", width: "auto" }}
-        onClick={onClick}
-      >
+        size='large'
+        type='primary'
+        style={{ height: 'auto', width: 'auto' }}
+        onClick={onClick}>
         <Paragraph>{transfer.itemName}</Paragraph>
-        <Paragraph>
-          {formatCurrency(Number(transfer.amount.toString()))}
-        </Paragraph>
+        <Text style={{ fontWeight: 'bold', marginRight: '0.5rem' }}>Save</Text>
+        <Text>{formatCurrency(Number(transfer.amount.toString()))}</Text>
       </Button>
     </>
   );

@@ -1,6 +1,6 @@
-"use client";
-import { currencyFormatter } from "@/lib/utils";
-import { Flex, Progress, ProgressProps } from "antd";
+'use client';
+import { currencyFormatter } from '@/lib/utils';
+import { Flex, Progress, ProgressProps } from 'antd';
 
 type GoalProgressProps = {
   target: number;
@@ -9,9 +9,9 @@ type GoalProgressProps = {
   style?: React.CSSProperties;
 };
 
-const twoColors: ProgressProps["strokeColor"] = {
-  "0%": "#108ee9",
-  "100%": "#87d068",
+const twoColors: ProgressProps['strokeColor'] = {
+  '0%': '#108ee9',
+  '100%': '#87d068',
 };
 
 export default function GoalProgress({
@@ -22,12 +22,17 @@ export default function GoalProgress({
 }: GoalProgressProps) {
   const percent = (currentBalance / target) * 100;
   return (
-    <Flex gap="small" style={style}>
-      {currencyFormatter(currentBalance)}
+    <Flex gap='small' align='center' justify='center' style={{ width: '100%' }}>
+      <span style={{ textAlign: 'center' }}>
+        {currencyFormatter(currentBalance)}
+      </span>
       <Progress
         percent={percent}
-        status="active"
-        style={{ marginRight: "1rem" }}
+        status='active'
+        style={{
+          marginRight: target > 999 ? '1rem' : undefined,
+          textAlign: 'center',
+        }}
         strokeWidth={strokeWidth ?? 13}
         format={() => currencyFormatter(target)}
         strokeColor={twoColors}

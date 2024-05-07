@@ -1,13 +1,12 @@
-import { greenThemeColors } from "@/lib/themes";
-import { PlusOutlined } from "@ant-design/icons";
-import { GoalTransfer } from "@prisma/client";
-import { Button, Card, ConfigProvider, Skeleton, Space } from "antd";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import CompletedCounts from "./CompletedCounts";
-import { GoalTransferFilter } from "./SavingsList";
+import { greenThemeColors } from '@/lib/themes';
+import { GoalTransfer } from '@prisma/client';
+import { Button, Card, ConfigProvider, Skeleton, Space } from 'antd';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import CompletedCounts from './CompletedCounts';
+import { GoalTransferFilter } from './SavingsList';
 
-const DynamicSavingsList = dynamic(() => import("./SavingsList"), {
+const DynamicSavingsList = dynamic(() => import('./SavingsList'), {
   loading: () => (
     <>
       <Card>
@@ -45,17 +44,16 @@ export default async function SavingsPage({
   topGoalTransfers?: GoalTransfer[];
   hide?: boolean;
 }) {
-  let routeParams = "";
-  if (filter === "accounts") routeParams = "?filter=accounts";
-  if (filter === "templates") routeParams = "?filter=templates";
+  let routeParams = '';
+  if (filter === 'accounts') routeParams = '?filter=accounts';
+  if (filter === 'templates') routeParams = '?filter=templates';
 
   return (
     <>
-      <Space direction="vertical" style={{ width: "100%" }}>
+      <Space direction='vertical' style={{ width: '100%' }}>
         <Space
-          direction="horizontal"
-          style={{ justifyContent: "center", width: "100%" }}
-        >
+          direction='horizontal'
+          style={{ justifyContent: 'center', width: '100%' }}>
           {!hide ? (
             <Link href={saveHref + routeParams}>
               <ConfigProvider
@@ -63,14 +61,8 @@ export default async function SavingsPage({
                   components: {
                     Button: greenThemeColors,
                   },
-                }}
-              >
-                <Button
-                  type="primary"
-                  size="large"
-                  style={{ color: "black" }}
-                  icon={<PlusOutlined />}
-                >
+                }}>
+                <Button type='primary' size='large' style={{ color: 'black' }}>
                   {newSaveText}
                 </Button>
               </ConfigProvider>
@@ -78,9 +70,7 @@ export default async function SavingsPage({
           ) : null}
           {filter === undefined && (
             <Link href={buyHref}>
-              <Button size="large" icon={<PlusOutlined />}>
-                {newPurchaseText}
-              </Button>
+              <Button size='large'>{newPurchaseText}</Button>
             </Link>
           )}
         </Space>

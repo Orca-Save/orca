@@ -1,9 +1,13 @@
-import PinSavingButton from "@/app/_components/PinSavingButton";
-import { Goal as PrismaGoal } from "@prisma/client";
-import { Card, Col, ConfigProvider, Row } from "antd";
-import GoalProgress from "../goals/_components/GoalProgress";
-import PopconfirmDelete from "../goals/_components/PopconfirmDelete";
-import EditAction from "./EditAction";
+import PinSavingButton from '@/app/_components/PinSavingButton';
+import { Goal as PrismaGoal } from '@prisma/client';
+import { Card, Col, Row, Space } from 'antd';
+import Meta from 'antd/es/card/Meta';
+import GoalProgress from '../goals/_components/GoalProgress';
+import PopconfirmDelete from '../goals/_components/PopconfirmDelete';
+import EditAction from './EditAction';
+import { Text } from '@/app/_components/Typography';
+import { ConfigProvider } from '@/components/ConfigProvider';
+import { cardThemeConfig } from '@/lib/themes';
 
 type Goal = PrismaGoal & {
   savedItemCount: number;
@@ -19,75 +23,65 @@ export default function GoalCard({
   userHasPinnedGoal: boolean;
   revalidatePath: string;
 }) {
-  const isDashboard = revalidatePath === "/";
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Card: {
-            actionsBg: "rgba(255, 255, 255, 0.5)",
-            colorText: goal.imagePath ? "white" : undefined,
-            extraColor: goal.imagePath ? "white" : undefined,
-            paddingLG: 10,
-            actionsLiMargin: goal.pinned ? undefined : "0",
-          },
-          Progress: {
-            colorText: goal.imagePath ? "white" : undefined,
-          },
-        },
-      }}
-    >
+    <div>
       <Card
         key={goal.id}
-        style={{
-          background: goal.imagePath ? `url(${goal.imagePath})` : "",
-          backgroundSize: "cover",
-          padding: 0,
-        }}
-        actions={
-          !isDashboard
+        size='small'
+        actions={[
+          <PopconfirmDelete
+            goalId={goal.id}
+            key='delete'
+            title='Delete the goal'
+            description='Are you sure you want to delete this goal?'
+          />,
+          <EditAction route={`/goals/${goal.id}/edit`} key='edit' />,
+          ...(revalidatePath !== '/'
             ? [
-                <PopconfirmDelete
-                  goalId={goal.id}
-                  key="delete"
-                  title="Delete the goal"
-                  description="Are you sure you want to delete this goal?"
-                />,
-                <EditAction route={`/goals/${goal.id}/edit`} key="edit" />,
                 <PinSavingButton
-                  key="pin"
-                  type="Goal"
+                  key='pin'
+                  type='Goal'
                   typeId={goal.id}
                   pinned={goal.pinned}
                   userHasPinnedGoal={userHasPinnedGoal}
                 />,
               ]
-            : undefined
-        }
-      >
-        <div>
-          <Row justify="space-between">
-            <Col span={12}>
-              <h1 className="font-bold">{goal.name}</h1>
-            </Col>
-            <Col span={12} style={{ textAlign: "right" }}>
-              {"by " + goal.dueAt.toLocaleDateString()}
-            </Col>
-          </Row>
-          {goal.savedItemCount
-            ? `${goal.savedItemCount}  Saves!`
-            : "Start saving!"}
-          {/* send div items to the bottom of this div */}
-          <div className="flex flex-col align-end h-full">
-            <div>
-              <GoalProgress
-                currentBalance={goal.currentBalance}
-                target={goal.targetAmount.toNumber()}
-              />
-            </div>
-          </div>
-        </div>
+            : []),
+          // <ShareAltOutlined key="share" />,
+        ]}>
+        <Row>
+          <Col span={12}>
+            <Text style={{ fontWeight: 'bold' }}>{goal.name}</Text>
+          </Col>
+          <Col span={12} style={{ textAlign: 'right' }}>
+            {'by ' + goal.dueAt.toLocaleDateString()}
+          </Col>
+        </Row>
+        <Row justify='space-between'>
+          <Col span={12}></Col>
+          <Col span={12} style={{ textAlign: 'right' }}>
+            <p>{goal.savedItemCount} Saves!</p>
+          </Col>
+        </Row>
+        <GoalProgress
+          currentBalance={goal.currentBalance ?? 0}
+          target={goal.targetAmount.toNumber()}
+        />
       </Card>
-    </ConfigProvider>
+      {goal.imagePath ? (
+        <div
+          style={{
+            backgroundImage: goal.imagePath ? `url(${goal.imagePath})` : '',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            marginTop: '-11px',
+            borderRadius: '7px',
+            zIndex: 1,
+            position: 'relative',
+            height: '150px',
+          }}
+        />
+      ) : null}
+    </div>
   );
 }
