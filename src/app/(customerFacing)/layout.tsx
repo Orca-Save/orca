@@ -18,6 +18,7 @@ export default function CustomerLayout({
       <div className='sm:hidden'>
         <Title
           className={`${varelaRound.className} text-center`}
+          level={3}
           style={{
             margin: '12px 32px 0',
           }}>
@@ -33,13 +34,14 @@ export default function CustomerLayout({
         </div>
       </Content>
       <Footer
+        className='sm:hidden'
         style={{
           position: 'sticky',
           bottom: 0,
+          zIndex: 100,
           borderTop: '2px solid #f0f0f0',
         }}>
-        {/* add thin grey border ontop of headermenu */}
-        <HeaderMenu className='z-2 sm:hidden' />
+        <HeaderMenu className='' />
       </Footer>
     </Layout>
   );
