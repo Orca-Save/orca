@@ -156,7 +156,9 @@ export function GoalTransferForm({
         label='Item or Action'
         rules={[{ required: true, message: 'Please input the item name!' }]}>
         <Input
-          placeholder={`ex: "Starbucks Iced Latte", "Made lunch at home"`}
+          placeholder={`ex: ${
+            isSavings ? 'Made lunch at home' : 'Starbucks Iced Latte'
+          }`}
         />
       </Form.Item>
 
