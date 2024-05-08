@@ -180,7 +180,7 @@ export function GoalTransferForm({
                       are truly personalized.
                     </p>
                     <p>
-                      For example, we don't want to suggest you cut back on
+                      For example, we don&apos;t want to suggest you cut back on
                       “Yoga with friends” to meet your goal if this is something
                       you truly value.
                     </p>
