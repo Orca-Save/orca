@@ -30,7 +30,7 @@ export default function GoalProgress({
         percent={percent}
         status='active'
         style={{
-          marginRight: String(Math.log10(target) * 0.5) + 'rem',
+          marginRight: String(Math.log10(target) * 0.4) + 'rem',
           textAlign: 'center',
         }}
         strokeWidth={strokeWidth ?? 13}
