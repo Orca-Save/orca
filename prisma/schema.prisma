@@ -91,3 +91,10 @@ model GoalTransfer {
   savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
   initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
 }
+
+model UserProfile {
+  id                   String @id @default(uuid())
+  userId               String
+  stripeCustomerId     String
+  stripeSubscriptionId String
+}
