@@ -17,7 +17,7 @@ async function StripePage() {
       <Elements
         stripe={stripePromise}
         options={{
-          mode: 'subscription',
+          mode: 'payment',
           amount: 300,
           currency: 'usd',
           setupFutureUsage: 'on_session',
