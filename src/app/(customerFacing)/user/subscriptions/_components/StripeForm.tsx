@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import CheckoutForm from './_components/CheckoutForm';
+
+import { loadStripe } from '@stripe/stripe-js';
+import SubscriptionForm from './SubscriptionForm';
 
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
   console.error('Stripe is not setup properly!');
@@ -11,9 +11,9 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-async function StripePage() {
+export default function StripeForm({ userId }: { userId: string }) {
   return (
-    <div>
+    <>
       <Elements
         stripe={stripePromise}
         options={{
@@ -22,10 +22,8 @@ async function StripePage() {
           currency: 'usd',
           setupFutureUsage: 'on_session',
         }}>
-        <CheckoutForm />
+        <SubscriptionForm userId={userId} />
       </Elements>
-    </div>
+    </>
   );
 }
-
-export default StripePage;

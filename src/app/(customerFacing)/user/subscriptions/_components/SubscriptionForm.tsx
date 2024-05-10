@@ -1,14 +1,17 @@
+'use client';
+
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { Button, Form, Input } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import { createSubscription } from '../_actions/subscriptions';
+import { Router, useRouter } from 'next/router';
 
-function CheckoutForm() {
+function SubscriptionForm({ userId }: { userId: string }) {
   const [form] = Form.useForm();
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
 
-  // main function
   const onFinish = async () => {
     try {
       const email = form.getFieldValue('email');
@@ -23,12 +26,11 @@ function CheckoutForm() {
         },
       });
 
-      console.log('paymentMethod', paymentMethod);
       if (paymentMethod?.paymentMethod === undefined) {
         console.error('failed to create payment method record');
         return;
       }
-      const response = await createSubscription({
+      const response = await createSubscription(userId, {
         email,
         name,
         paymentMethod: paymentMethod?.paymentMethod?.id,
@@ -42,6 +44,7 @@ function CheckoutForm() {
         alert(confirmPayment.error.message);
       } else {
         alert('Success! Check your email for the invoice.');
+        router.push('/user/subscriptions');
       }
     } catch (error) {
       console.log(error);
@@ -54,7 +57,6 @@ function CheckoutForm() {
       onFinish={onFinish}
       initialValues={{
         email: 'user@mail.com',
-        name: 'name of user',
       }}>
       <Form.Item
         name='name'
@@ -78,4 +80,4 @@ function CheckoutForm() {
   );
 }
 
-export default CheckoutForm;
+export default SubscriptionForm;
