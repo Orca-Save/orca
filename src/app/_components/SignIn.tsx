@@ -9,5 +9,5 @@ export default function SignIn() {
       signIn('azure-ad-b2c');
     },
   });
-  return null;
+  return <></>;
 }

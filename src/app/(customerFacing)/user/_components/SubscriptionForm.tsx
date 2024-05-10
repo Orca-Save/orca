@@ -1,16 +1,17 @@
 'use client';
 
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, notification } from 'antd';
 import React from 'react';
-import { createSubscription } from '../_actions/subscriptions';
-import { Router, useRouter } from 'next/router';
+import { createSubscription } from '../_actions/stripe';
+import { useRouter } from 'next/navigation';
 
 function SubscriptionForm({ userId }: { userId: string }) {
   const [form] = Form.useForm();
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
+  const [api, contextHolder] = notification.useNotification();
 
   const onFinish = async () => {
     try {
@@ -28,6 +29,11 @@ function SubscriptionForm({ userId }: { userId: string }) {
 
       if (paymentMethod?.paymentMethod === undefined) {
         console.error('failed to create payment method record');
+        api.error({
+          message: `Failed to create payment method record`,
+          placement: 'top',
+          duration: 2,
+        });
         return;
       }
       const response = await createSubscription(userId, {
@@ -41,13 +47,26 @@ function SubscriptionForm({ userId }: { userId: string }) {
       );
 
       if (confirmPayment?.error) {
-        alert(confirmPayment.error.message);
+        api.error({
+          message: confirmPayment.error.message,
+          placement: 'top',
+          duration: 3,
+        });
       } else {
-        alert('Success! Check your email for the invoice.');
-        router.push('/user/subscriptions');
+        api.success({
+          message: 'Success! Check your email for the invoice.',
+          placement: 'top',
+          duration: 3,
+        });
+        router.push('/user');
       }
     } catch (error) {
-      console.log(error);
+      api.error({
+        message: 'Something went wrong. Please try again later.',
+        placement: 'top',
+        duration: 3,
+      });
+      console.error(error);
     }
   };
 

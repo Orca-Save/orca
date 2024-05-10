@@ -3,6 +3,8 @@ import { Title } from '@/app/_components/Typography';
 import authOptions from '@/lib/nextAuthOptions';
 import { getServerSession } from 'next-auth/next';
 import Link from 'next/link';
+import Subscription from './_components/Subscription';
+import { Button, Space } from 'antd';
 
 export default async function UserPage() {
   const session = await getServerSession(authOptions);
@@ -10,9 +12,15 @@ export default async function UserPage() {
   return (
     <>
       <Title>User Profile</Title>
-      <div>
-        <Link href='/user/subscriptions'>Subscriptions</Link>
-      </div>
+      <Space direction='vertical' size='large'>
+        <div>
+          <Subscription />
+        </div>
+
+        <Link href='/api/auth/signout'>
+          <Button>Logout</Button>
+        </Link>
+      </Space>
     </>
   );
 }
