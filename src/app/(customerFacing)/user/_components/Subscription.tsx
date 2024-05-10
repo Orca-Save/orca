@@ -58,7 +58,7 @@ export default async function Subscription() {
           />
         </>
       ) : (
-        <StripeForm userId={session.user.id} />
+        <StripeForm userId={session.user.id} email={session.user.email ?? ''} />
       )}
     </div>
   );

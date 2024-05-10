@@ -11,7 +11,13 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-export default function StripeForm({ userId }: { userId: string }) {
+export default function StripeForm({
+  userId,
+  email,
+}: {
+  email: string;
+  userId: string;
+}) {
   return (
     <>
       <Elements
@@ -22,7 +28,7 @@ export default function StripeForm({ userId }: { userId: string }) {
           currency: 'usd',
           setupFutureUsage: 'on_session',
         }}>
-        <SubscriptionForm userId={userId} />
+        <SubscriptionForm userId={userId} email={email} />
       </Elements>
     </>
   );

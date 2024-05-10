@@ -1,12 +1,19 @@
 'use client';
 
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { Button, Form, Input, notification } from 'antd';
+import { Button, Form, Input, Space, notification } from 'antd';
 import React from 'react';
 import { createSubscription } from '../_actions/stripe';
 import { useRouter } from 'next/navigation';
+import { Title } from '@/app/_components/Typography';
 
-function SubscriptionForm({ userId }: { userId: string }) {
+function SubscriptionForm({
+  userId,
+  email,
+}: {
+  userId: string;
+  email: string;
+}) {
   const [form] = Form.useForm();
   const stripe = useStripe();
   const elements = useElements();
@@ -71,31 +78,29 @@ function SubscriptionForm({ userId }: { userId: string }) {
   };
 
   return (
-    <Form
-      form={form}
-      onFinish={onFinish}
-      initialValues={{
-        email: 'user@mail.com',
-      }}>
-      <Form.Item
-        name='name'
-        label='Name on card'
-        rules={[
-          { required: true, message: 'Please provide a name for the card' },
-        ]}>
-        <Input placeholder='Name' type='text' />
-      </Form.Item>
-      <Form.Item
-        name='email'
-        label='Email'
-        rules={[{ required: true, message: 'Please provide an email' }]}>
-        <Input />
-      </Form.Item>
-      <CardElement />
-      <Button htmlType='submit' disabled={!stripe}>
-        Subscribe
-      </Button>
-    </Form>
+    <Space align='start'>
+      <Form form={form} onFinish={onFinish} initialValues={{ email }}>
+        <Form.Item
+          name='name'
+          label='Name on card'
+          rules={[
+            { required: true, message: 'Please provide a name for the card' },
+          ]}>
+          <Input placeholder='Name' type='text' />
+        </Form.Item>
+        <Form.Item
+          name='email'
+          label='Email'
+          rules={[{ required: true, message: 'Please provide an email' }]}>
+          <Input />
+        </Form.Item>
+        <CardElement />
+        <Button htmlType='submit' disabled={!stripe}>
+          Subscribe
+        </Button>
+      </Form>
+      <Title level={3}>Subscribe for $3.00!</Title>
+    </Space>
   );
 }
 
