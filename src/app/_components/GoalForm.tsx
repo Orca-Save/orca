@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Goal, GoalCategory } from "@prisma/client";
+import { Goal, GoalCategory } from '@prisma/client';
 import {
   Button,
   Collapse,
@@ -9,18 +9,19 @@ import {
   Input,
   Select,
   Upload,
-} from "antd";
-import dayjs, { Dayjs } from "dayjs";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+} from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
-import { isFieldErrors } from "@/lib/goals";
-import { isExtendedSession } from "@/lib/session";
-import { getPrevPageHref } from "@/lib/utils";
-import { UploadOutlined } from "@ant-design/icons";
-import CollapsePanel from "antd/es/collapse/CollapsePanel";
-import { addGoal, updateGoal } from "../_actions/goals";
-import CurrencyInput from "./CurrencyInput";
+import { isFieldErrors } from '@/lib/goals';
+import { isExtendedSession } from '@/lib/session';
+import { getPrevPageHref } from '@/lib/utils';
+import { UploadOutlined } from '@ant-design/icons';
+import CollapsePanel from 'antd/es/collapse/CollapsePanel';
+import { addGoal, updateGoal } from '../_actions/goals';
+import CurrencyInput from './CurrencyInput';
+import UnsplashForm from './UnsplashForm';
 // import { navigateBack } from "@/lib/utils";
 
 type GoalFormValues = {
@@ -56,30 +57,30 @@ export function GoalForm({
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      signIn("azure-ad-b2c");
+      signIn('azure-ad-b2c');
     },
   });
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
 
     const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("targetAmount", String(values.targetAmount));
+    formData.append('name', values.name);
+    formData.append('targetAmount', String(values.targetAmount));
 
-    if (values.description) formData.append("description", values.description);
-    if (values.note) formData.append("note", values.note);
+    if (values.description) formData.append('description', values.description);
+    if (values.note) formData.append('note', values.note);
     if (values.categoryId) {
-      formData.append("categoryId", values.categoryId);
+      formData.append('categoryId', values.categoryId);
     }
     if (values.dueAt) {
-      formData.append("dueAt", values.dueAt.format()); // Assuming moment.js for date formatting
+      formData.append('dueAt', values.dueAt.format()); // Assuming moment.js for date formatting
     }
     if (values.initialAmount) {
-      formData.append("initialAmount", String(values.initialAmount));
+      formData.append('initialAmount', String(values.initialAmount));
     }
 
     if (values.image)
-      formData.append("image", form.getFieldValue("image").file.originFileObj);
+      formData.append('image', form.getFieldValue('image').file.originFileObj);
 
     if (isExtendedSession(session)) {
       const action = goal
@@ -99,7 +100,7 @@ export function GoalForm({
           });
         });
       } else {
-        router.push(getPrevPageHref(referer, window) + "?confetti=true");
+        router.push(getPrevPageHref(referer, window) + '?confetti=true');
       }
     }
   };
@@ -107,71 +108,67 @@ export function GoalForm({
   const targetAmount = goal?.targetAmount ? goal.targetAmount : 2;
   return (
     <>
+      <UnsplashForm />
       <Form
         form={form}
-        layout="vertical"
+        layout='vertical'
         onFinish={onFinish}
         initialValues={{
           name: goal?.name,
-          description: goal?.description ?? "",
+          description: goal?.description ?? '',
           targetAmount,
           dueAt: goal?.dueAt ? dayjs(goal.dueAt) : dayjs(),
-          note: goal?.note ?? "",
+          note: goal?.note ?? '',
           initialAmount: initialAmount,
           categoryId: goal?.categoryId,
-        }}
-      >
+        }}>
         <Form.Item
-          name="name"
-          label="Goal Name"
-          rules={[{ required: true, message: "Please input the name!" }]}
-        >
-          <Input placeholder="Name" />
+          name='name'
+          label='Goal Name'
+          rules={[{ required: true, message: 'Please input the name!' }]}>
+          <Input placeholder='Name' />
         </Form.Item>
         <Form.Item
-          name="dueAt"
-          label="Due Date"
-          rules={[{ required: true, message: "Please select the due date!" }]}
-        >
-          <DatePicker minDate={dayjs()} style={{ width: "100%" }} />
+          name='dueAt'
+          label='Due Date'
+          rules={[{ required: true, message: 'Please select the due date!' }]}>
+          <DatePicker minDate={dayjs()} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
-          name="targetAmount"
-          label="Target Balance"
+          name='targetAmount'
+          label='Target Balance'
           rules={[
-            { required: true, message: "Please input the target balance!" },
-          ]}
-        >
-          <CurrencyInput placeholder="Target Balance" />
+            { required: true, message: 'Please input the target balance!' },
+          ]}>
+          <CurrencyInput placeholder='Target Balance' />
         </Form.Item>
-        <Form.Item name="initialAmount" label="Initial Saved Amount">
-          <CurrencyInput placeholder="Initial Balance" />
+        <Form.Item name='initialAmount' label='Initial Saved Amount'>
+          <CurrencyInput placeholder='Initial Balance' />
         </Form.Item>
 
         <Collapse>
-          <CollapsePanel header="Optional Fields" key="1" forceRender>
-            <Form.Item name="categoryId" label="Category">
+          <CollapsePanel header='Optional Fields' key='1' forceRender>
+            <Form.Item name='categoryId' label='Category'>
               <Select
-                placeholder="Select a category"
+                placeholder='Select a category'
                 options={categories.map((category: GoalCategory) => ({
                   label: category.name,
                   value: category.id,
                 }))}
               />
             </Form.Item>
-            <Form.Item name="description" label="Description">
-              <TextArea placeholder="Description" />
+            <Form.Item name='description' label='Description'>
+              <TextArea placeholder='Description' />
             </Form.Item>
 
             <Form.Item
-              name="note"
-              label="Additional Note"
-              rules={[{ message: "Please input additional notes!" }]}
-            >
-              <TextArea placeholder="Additional notes about the goal" />
+              name='note'
+              label='Additional Note'
+              rules={[{ message: 'Please input additional notes!' }]}>
+              <TextArea placeholder='Additional notes about the goal' />
             </Form.Item>
 
-            <Form.Item name="image">
+            <Form.Item name='image'>
               <Upload>
                 <Button icon={<UploadOutlined />}>Upload Image</Button>
               </Upload>
@@ -179,14 +176,13 @@ export function GoalForm({
           </CollapsePanel>
         </Collapse>
 
-        <div className="flex justify-end mt-5 space-x-4">
+        <div className='flex justify-end mt-5 space-x-4'>
           <Button
-            size="large"
-            onClick={() => router.push(getPrevPageHref(referer, window))}
-          >
+            size='large'
+            onClick={() => router.push(getPrevPageHref(referer, window))}>
             Cancel
           </Button>
-          <Button size="large" type="primary" htmlType="submit">
+          <Button size='large' type='primary' htmlType='submit'>
             Save
           </Button>
         </div>
