@@ -50,6 +50,7 @@ model OnboardingProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  imagePath  String?
   goalId     String?
   goalName   String
   goalAmount Decimal  @db.Decimal(65, 2)

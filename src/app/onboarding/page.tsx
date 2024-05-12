@@ -20,6 +20,7 @@ import { Open_Sans, Varela_Round } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Content } from "../_components/Layout";
+import UnsplashForm from "../_components/UnsplashForm";
 import { onboardUser } from "./_actions/onboarding";
 
 const { Title, Text } = Typography;
@@ -142,6 +143,14 @@ export default function OnboardingPage() {
                             ]}
                           >
                             <DatePicker />
+                          </Form.Item>
+
+                          <Form.Item name="imagePath">
+                            <UnsplashForm
+                              onSelect={(url) =>
+                                form.setFieldsValue({ imagePath: url })
+                              }
+                            />
                           </Form.Item>
 
                           <Form.Item

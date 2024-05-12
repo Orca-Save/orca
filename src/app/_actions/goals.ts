@@ -157,6 +157,7 @@ export async function addGoal(
 const editSchema = goalSchema.extend({
   file: fileSchema.optional(),
   image: imageSchema.optional(),
+  imagePath: z.string().optional(),
 });
 
 export async function updateGoal(
@@ -184,7 +185,7 @@ export async function updateGoal(
 
   if (goal == null) return notFound();
 
-  let imagePath = goal.imagePath;
+  let imagePath = data.imagePath;
   if (data.image) {
     const { blockBlobClient } = await uploadFile(data.image);
     imagePath = blockBlobClient.url;

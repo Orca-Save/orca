@@ -21,6 +21,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
       targetAmount: onboardingProfileData.goalAmount,
       dueAt: onboardingProfileData.goalDueAt.format(),
       pinned: true,
+      imagePath: onboardingProfileData.imagePath,
     },
   });
 

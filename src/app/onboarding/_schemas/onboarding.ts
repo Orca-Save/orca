@@ -8,6 +8,7 @@ export const onboardingSchema = z.object({
   goalDueAt: zodDay,
 
   saving: z.string().min(1).optional(),
+  imagePath: z.string().optional(),
   savingAmount: z.coerce.number().min(0).optional(),
   initialAmount: z.coerce.number().min(0).optional(),
 });
