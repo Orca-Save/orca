@@ -29,6 +29,9 @@ export const cardThemeConfig = {
   colorBgContainer: "#EEEDED",
 };
 export const mainThemeConfig: ThemeConfig = {
+  token: {
+    fontSize: 16,
+  },
   components: {
     Button: {
       ...defaultButton,
