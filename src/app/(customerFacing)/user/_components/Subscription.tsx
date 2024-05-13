@@ -33,7 +33,7 @@ export default async function Subscription() {
           </Text>
         </div>
         <div>
-          <Text>Rate: $3/month</Text>
+          <Text>Rate: $4/month</Text>
         </div>
         <div>
           <Text>

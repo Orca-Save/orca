@@ -78,6 +78,7 @@ export async function addSubscriptionId(
       userId,
     },
   });
+  revalidatePath("/user");
 }
 
 export async function updateSubscription(
