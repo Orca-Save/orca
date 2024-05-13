@@ -26,11 +26,14 @@ export default async function SubscribePage() {
         </Text>
       </>
     );
+  if (!subResponse)
+    return <Text>Something went wrong. Please try again later.</Text>;
   return (
     <StripeForm
       userId={session.user.id}
       email={session.user.email ?? ""}
       clientSecret={subResponse?.clientSecret}
+      subscriptionId={subResponse?.subscriptionId}
     />
   );
 }

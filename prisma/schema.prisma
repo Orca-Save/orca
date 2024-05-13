@@ -94,10 +94,10 @@ model GoalTransfer {
 }
 
 model UserProfile {
-  id                   String @id @default(uuid())
-  userId               String @unique
+  id                   String  @id @default(uuid())
+  userId               String  @unique
   stripeCustomerId     String
-  stripeSubscriptionId String
+  stripeSubscriptionId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

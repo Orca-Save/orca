@@ -40,6 +40,8 @@ const goalSchema = z.object({
   categoryId: z.string().uuid().optional(),
   initialAmount: z.coerce.number().min(1).optional(),
   image: imageSchema.optional(),
+  imagePath: z.string().optional(),
+  file: fileSchema.optional(),
 });
 const quickGoalSchema = z.object({
   dueAt: dueAtSchema,
@@ -104,7 +106,7 @@ export async function addGoal(
 
   const data = result.data;
 
-  let imagePath: string | undefined = undefined;
+  let imagePath = data.imagePath;
   if (data.image) {
     const { blockBlobClient } = await uploadFile(data.image);
     imagePath = blockBlobClient.url;
@@ -154,19 +156,13 @@ export async function addGoal(
   return goal;
 }
 
-const editSchema = goalSchema.extend({
-  file: fileSchema.optional(),
-  image: imageSchema.optional(),
-  imagePath: z.string().optional(),
-});
-
 export async function updateGoal(
   id: string,
   userId: string,
   prevState: unknown,
   formData: FormData
 ): Promise<GoalFieldErrors | Goal> {
-  const result = editSchema.safeParse(Object.fromEntries(formData.entries()));
+  const result = goalSchema.safeParse(Object.fromEntries(formData.entries()));
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }

@@ -1,7 +1,15 @@
 "use client";
 
 import { Goal, GoalCategory } from "@prisma/client";
-import { Button, Collapse, DatePicker, Form, Input, Select } from "antd";
+import {
+  Button,
+  Collapse,
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  Upload,
+} from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -9,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { isFieldErrors } from "@/lib/goals";
 import { isExtendedSession } from "@/lib/session";
 import { getPrevPageHref } from "@/lib/utils";
+import { UploadOutlined } from "@ant-design/icons";
 import CollapsePanel from "antd/es/collapse/CollapsePanel";
 import { addGoal, updateGoal } from "../_actions/goals";
 import CurrencyInput from "./CurrencyInput";
@@ -138,10 +147,16 @@ export function GoalForm({
         >
           <CurrencyInput placeholder="Target Balance" />
         </Form.Item>
+
         <Form.Item name="initialAmount" label="Initial Saved Amount">
           <CurrencyInput placeholder="Initial Balance" />
         </Form.Item>
 
+        <Form.Item name="image">
+          <Upload>
+            <Button icon={<UploadOutlined />}>Upload Image</Button>
+          </Upload>
+        </Form.Item>
         <Form.Item name="imagePath">
           <UnsplashForm
             defaultValue={goal?.imagePath ?? undefined}
@@ -150,13 +165,7 @@ export function GoalForm({
         </Form.Item>
         <Collapse>
           {/* <CollapsePanel header="Image" key="1" forceRender>
-            <Form.Item name="image">
-              <Space>
-                <Upload>
-                  <Button icon={<UploadOutlined />}>Upload Image</Button>
-                </Upload>
-              </Space>
-            </Form.Item> 
+            
             
           </CollapsePanel> */}
 

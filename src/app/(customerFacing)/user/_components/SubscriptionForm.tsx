@@ -8,8 +8,17 @@ import {
 import { StripeError } from "@stripe/stripe-js";
 import { Button, Form, notification } from "antd";
 import { useRouter } from "next/navigation";
+import { addSubscriptionId } from "../_actions/stripe";
 
-function SubscriptionForm({ clientSecret }: { clientSecret: string }) {
+function SubscriptionForm({
+  clientSecret,
+  userId,
+  subscriptionId,
+}: {
+  clientSecret: string;
+  userId: string;
+  subscriptionId: string;
+}) {
   const [form] = Form.useForm();
   const stripe = useStripe();
   const elements = useElements();
@@ -19,7 +28,9 @@ function SubscriptionForm({ clientSecret }: { clientSecret: string }) {
   const onFinish = async () => {
     try {
       if (!stripe || !elements) return;
+
       const results = await elements.submit();
+      const addResponse = await addSubscriptionId(userId, subscriptionId);
       if (results.error) {
         return;
       }
@@ -67,33 +78,28 @@ function SubscriptionForm({ clientSecret }: { clientSecret: string }) {
 
   return (
     <Form form={form} onFinish={onFinish}>
-      <Form.Item>
-        <PaymentElement
-          options={{
-            wallets: {
-              applePay: "auto",
-              googlePay: "auto",
+      <PaymentElement
+        options={{
+          wallets: {
+            applePay: "auto",
+            googlePay: "auto",
+          },
+          fields: {
+            billingDetails: {
+              name: "auto",
+              email: "auto",
             },
-            fields: {
-              billingDetails: {
-                name: "auto",
-                email: "auto",
-              },
-            },
-          }}
-        />
-      </Form.Item>
-      <Form.Item>
-        <Button
-          type="primary"
-          size="large"
-          htmlType="submit"
-          style={{ width: "100%" }}
-          disabled={!stripe || !elements}
-        >
-          Subscribe for $3.00/month
-        </Button>
-      </Form.Item>
+          },
+        }}
+      />
+      <Button
+        type="primary"
+        size="large"
+        htmlType="submit"
+        disabled={!stripe || !elements}
+      >
+        Subscribe for $4.00/month
+      </Button>
     </Form>
   );
 }

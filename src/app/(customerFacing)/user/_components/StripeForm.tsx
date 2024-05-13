@@ -14,21 +14,22 @@ const stripePromise = loadStripe(
 export default function StripeForm({
   userId,
   email,
+  subscriptionId,
   clientSecret,
 }: {
   email: string;
   userId: string;
   clientSecret: string;
+  subscriptionId: string;
 }) {
   return (
     <>
-      <Elements
-        stripe={stripePromise}
-        options={{
-          clientSecret,
-        }}
-      >
-        <SubscriptionForm clientSecret={clientSecret} />
+      <Elements stripe={stripePromise} options={{ clientSecret }}>
+        <SubscriptionForm
+          clientSecret={clientSecret}
+          userId={userId}
+          subscriptionId={subscriptionId}
+        />
       </Elements>
     </>
   );

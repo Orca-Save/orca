@@ -41,22 +41,11 @@ export async function createSubscription(userId: string, email: string) {
     expand: ["latest_invoice.payment_intent"],
   });
 
-  if (userProfile) {
-    await db.userProfile.update({
-      data: {
-        stripeSubscriptionId: subscription.id,
-        updatedAt: new Date(),
-      },
-      where: {
-        id: userProfile.id,
-      },
-    });
-  } else {
+  if (!userProfile) {
     await db.userProfile.create({
       data: {
         userId,
         stripeCustomerId: customerId,
-        stripeSubscriptionId: subscription.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -71,6 +60,21 @@ export async function createSubscription(userId: string, email: string) {
       subscriptionId: subscription.id,
     };
   }
+}
+
+export async function addSubscriptionId(
+  userId: string,
+  subscriptionId: string
+) {
+  await db.userProfile.update({
+    data: {
+      stripeSubscriptionId: subscriptionId,
+      updatedAt: new Date(),
+    },
+    where: {
+      userId,
+    },
+  });
 }
 
 export async function updateSubscription(
