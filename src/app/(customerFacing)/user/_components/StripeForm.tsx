@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Elements } from '@stripe/react-stripe-js';
+import { Elements } from "@stripe/react-stripe-js";
 
-import { loadStripe } from '@stripe/stripe-js';
-import SubscriptionForm from './SubscriptionForm';
+import { loadStripe } from "@stripe/stripe-js";
+import SubscriptionForm from "./SubscriptionForm";
 
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-  console.error('Stripe is not setup properly!');
+  console.error("Stripe is not setup properly!");
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
@@ -14,21 +14,21 @@ const stripePromise = loadStripe(
 export default function StripeForm({
   userId,
   email,
+  clientSecret,
 }: {
   email: string;
   userId: string;
+  clientSecret: string;
 }) {
   return (
     <>
       <Elements
         stripe={stripePromise}
         options={{
-          mode: 'payment',
-          amount: 300,
-          currency: 'usd',
-          setupFutureUsage: 'on_session',
-        }}>
-        <SubscriptionForm userId={userId} email={email} />
+          clientSecret,
+        }}
+      >
+        <SubscriptionForm clientSecret={clientSecret} />
       </Elements>
     </>
   );
