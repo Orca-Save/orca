@@ -104,7 +104,6 @@ export function GoalForm({
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        onChange={(change) => console.log(change)}
         initialValues={{
           name: goal?.name,
           description: goal?.description ?? "",

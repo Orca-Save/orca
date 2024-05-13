@@ -48,7 +48,7 @@ export default function UnsplashForm({
       })
       .catch(() => {
         setLoading(false);
-        console.log("something went wrong!");
+        console.error("something went wrong!");
       });
   };
   if (previewMode) {
