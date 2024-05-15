@@ -88,6 +88,8 @@ export async function updateGoalTransfer(
   if (!existingTransfer) return notFound();
 
   const data = result.data;
+  let transactedAt: Date | undefined = undefined;
+  if (data.transactedAt) transactedAt = new Date(data.transactedAt);
   const updatedTransfer = await db.goalTransfer.update({
     where: { id },
     data: {
@@ -100,7 +102,7 @@ export async function updateGoalTransfer(
       amount: data.amount,
       categoryId: data.categoryId,
       rating: data.rating,
-      transactedAt: new Date(data.transactedAt),
+      transactedAt,
     },
   });
 

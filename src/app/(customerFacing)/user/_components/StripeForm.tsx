@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Elements } from "@stripe/react-stripe-js";
+import { Elements } from '@stripe/react-stripe-js';
 
-import { loadStripe } from "@stripe/stripe-js";
-import SubscriptionForm from "./SubscriptionForm";
+import { loadStripe } from '@stripe/stripe-js';
+import SubscriptionForm from './SubscriptionForm';
 
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-  console.error("Stripe is not setup properly!");
+  console.error('Stripe is not setup properly!');
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
