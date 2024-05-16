@@ -58,5 +58,5 @@ jobs:
         with:
           app-name: 'orca-staging'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_15EC7308EA4849C58A602C30ADE817FC }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7D08F210D40B454EBCF9092D30BF40EC }}
           package: .
