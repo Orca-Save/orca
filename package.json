@@ -6,8 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "email": "cp .env ./node_modules/react-email && email dev --dir src/email --port 3001"
+    "startAzure": "./node_modules/next/dist/bin/next start",
+    "lint": "next lint"
   },
   "engines": {
     "node": ">=18.19.1"
