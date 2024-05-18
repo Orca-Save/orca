@@ -102,3 +102,41 @@ model UserProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model PlaidItem {
+  id          String        @id @default(uuid())
+  userId      String
+  itemId      String
+  accessToken String
+  cursor      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id             String   @id @default(uuid())
+  transactionId  String   @unique
+  userId         String
+  accountId      String
+  amount         Decimal  @db.Decimal(65, 2)
+  date           DateTime
+  name           String
+  paymentChannel String
+  pending        Boolean
+  unread         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  isoCurrencyCode      String?
+  pendingTransactionId String?
+  merchantName         String?
+
+  logoIcon                    String?
+  personalFinanceCategoryIcon String?
+  personalFinanceCategory     Json?
+  location                    Json?
+  paymentMeta                 Json?
+  plaidItem                   PlaidItem? @relation(fields: [plaidItemId], references: [id])
+  plaidItemId                 String?
+}
