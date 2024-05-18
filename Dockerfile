@@ -10,7 +10,7 @@ COPY package*.json ./
 # COPY yarn.lock ./
 
 # Install dependencies
-RUN npm install --frozen-lockfile
+RUN npm install
 # For yarn, use the following command instead
 # RUN yarn install --frozen-lock
 
@@ -21,7 +21,7 @@ COPY . .
 RUN npm run build
 
 # Expose the port your app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Command to run your app
 CMD ["npm", "start"]
