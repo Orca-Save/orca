@@ -17,11 +17,11 @@ model Goal {
   id           String   @id @default(uuid())
   userId       String
   name         String
-  dueAt        DateTime
+  dueAt        DateTime @db.Timestamptz()
   targetAmount Decimal  @db.Decimal(65, 2)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
 
   note              String?
   imagePath         String?
@@ -38,8 +38,8 @@ model Goal {
 model GoalCategory {
   id           String         @id @default(uuid())
   name         String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime       @default(now()) @db.Timestamptz()
+  updatedAt    DateTime       @updatedAt @db.Timestamptz()
   Goal         Goal[]
   GoalTransfer GoalTransfer[]
 }
@@ -47,14 +47,14 @@ model GoalCategory {
 model OnboardingProfile {
   id        String   @id @default(uuid())
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
 
   imagePath  String?
   goalId     String?
   goalName   String
   goalAmount Decimal  @db.Decimal(65, 2)
-  goalDueAt  DateTime
+  goalDueAt  DateTime @db.Timestamptz()
   goal       Goal?    @relation(fields: [goalId], references: [id])
 
   savingTransferId String?
@@ -74,10 +74,10 @@ model GoalTransfer {
   amount   Decimal @db.Decimal(65, 2)
   pinned   Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
 
-  transactedAt DateTime?
+  transactedAt DateTime? @db.Timestamptz()
   link         String?
   note         String?
   imagePath    String?
@@ -99,6 +99,6 @@ model UserProfile {
   stripeCustomerId     String
   stripeSubscriptionId String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
 }
