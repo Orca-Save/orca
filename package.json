@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 8080",
+    "start": "node server.js",
+    "startOld": "next start",
     "startAzure": "./node_modules/next/dist/bin/next start",
     "lint": "next lint"
   },
