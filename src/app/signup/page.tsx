@@ -29,8 +29,8 @@ export default function SignUpPage() {
           </h2>
 
           <p className=' text-3xl px-4' style={{ textAlign: 'center' }}>
-            Stop buying what you don't need, so you can save for what you really
-            want.
+            Stop buying what you don&apos;t need, so you can save for what you
+            really want.
           </p>
 
           <div className='w-100 flex flex-col space-y-4'>
