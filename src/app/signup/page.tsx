@@ -1,8 +1,10 @@
 'use client';
+import { varelaRound } from '@/lib/fonts';
 import { baseURL } from '@/lib/utils';
 import { Button, Layout, Space } from 'antd';
 import { signIn } from 'next-auth/react';
 import { Open_Sans } from 'next/font/google';
+import { Title } from '../_components/Typography';
 
 const openSans = Open_Sans({
   weight: '400',
@@ -14,6 +16,18 @@ export default function SignUpPage() {
   const onClick = () => signIn('azure-ad-b2c', { callbackUrl: baseURL });
   return (
     <Layout>
+      <div>
+        <Title
+          className={`${varelaRound.className} text-center`}
+          level={3}
+          style={{
+            margin: '64px 32px 0',
+            fontWeight: 'normal',
+          }}
+        >
+          Orca
+        </Title>
+      </div>
       <div
         className='bg-color-black mg-5 flex justify-center items-center h-screen'
         style={{ margin: 15 }}
@@ -25,7 +39,7 @@ export default function SignUpPage() {
               fontWeight: 'bolder',
             }}
           >
-            Impulse Saving.
+            Impulse saving.
           </h2>
 
           <p className=' text-3xl px-4' style={{ textAlign: 'center' }}>
