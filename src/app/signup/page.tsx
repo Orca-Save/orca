@@ -16,21 +16,35 @@ export default function SignUpPage() {
     <Layout>
       <div
         className='bg-color-black mg-5 flex justify-center items-center h-screen'
-        style={{ margin: 15 }}>
+        style={{ margin: 15 }}
+      >
         <Space direction='vertical' size={50}>
-          <h1
-            className={`${openSans.className} text-center decoration-clone pb-3 text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}>
-            Ready to save an extra $3,800 a year?
-          </h1>
+          <h2
+            className={`${openSans.className} text-center decoration-clone pb-3 text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink`}
+            style={{
+              fontWeight: 'bolder',
+            }}
+          >
+            Impulse Saving.
+          </h2>
+
+          <p className=' text-3xl px-4' style={{ textAlign: 'center' }}>
+            Stop buying what you don't need, so you can save for what you really
+            want.
+          </p>
 
           <div className='w-100 flex flex-col space-y-4'>
             <Button
               type='primary'
               size='large'
-              className='w-full'
-              onClick={onClick}>
+              className='w-full text-2xl align-middle'
+              style={{
+                height: 80,
+              }}
+              onClick={onClick}
+            >
               {/* <a href="https://orcanext.b2clogin.com/orcanext.onmicrosoft.com/b2c_1_orca_signin/oauth2/v2.0/authorize?client_id=3dd4e88e-63c3-49b3-af56-f2770cf498a8&scope=offline_access%20openid&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fcallback%2Fazure-ad-b2c&state=AUwpUvWbqIRYKTlgIQ6LnrYpVQwob6tnGMSXe5RVHSI&option=signup"> */}
-              Sign Up / Login
+              Lets do this.
               {/* </a> */}
             </Button>
             {/* <Button size="large" className="w-full " onClick={onClick}>
