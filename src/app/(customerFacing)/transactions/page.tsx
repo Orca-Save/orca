@@ -12,7 +12,7 @@ export default async function TransactionsPage() {
 
   const [linkTokenData, transactions] = await Promise.all([
     createLinkToken(session.user.id),
-    getTransactions(session.user.id),
+    getTransactions(session.user.id, '2023-04-14', '2024-04-17'),
   ]);
   return (
     <>

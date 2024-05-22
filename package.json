@@ -36,7 +36,6 @@
     "plaid": "^23.0.0",
     "plaid-threads": "^14.5.0",
     "react": "^18",
-    "react-card-swiper": "^1.1.25",
     "react-confetti": "^6.1.0",
     "react-dom": "^18",
     "react-email": "^1.10.1",

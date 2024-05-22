@@ -7,9 +7,11 @@ import { revalidatePath } from 'next/cache';
 import {
   Configuration,
   CountryCode,
+  InstitutionsGetByIdRequest,
   PlaidApi,
   PlaidEnvironments,
   Products,
+  TransactionsGetRequest,
   TransactionsSyncRequest,
 } from 'plaid';
 
@@ -69,7 +71,11 @@ export async function exchangePublicToken(publicToken: string, userId: string) {
   });
 }
 
-export async function getTransactions(userId: string) {
+export async function getTransactions(
+  userId: string,
+  start_date: string,
+  end_date: string
+) {
   const plaidItem = await db.plaidItem.findFirst({
     where: {
       userId,
@@ -83,15 +89,98 @@ export async function getTransactions(userId: string) {
     return [];
   }
 
-  const transactionsResponse = await plaidClient.transactionsGet({
+  const request: TransactionsGetRequest = {
     access_token: plaidItem.accessToken,
-    start_date: '2023-04-14',
-    end_date: '2024-04-17',
+    start_date,
+    end_date,
+  };
+  try {
+    const response = await plaidClient.transactionsGet(request);
+    let transactions = response.data.transactions;
+    const total_transactions = response.data.total_transactions;
+    while (transactions.length < total_transactions) {
+      const paginatedRequest: TransactionsGetRequest = {
+        access_token: plaidItem.accessToken,
+        start_date,
+        end_date,
+        options: {
+          offset: transactions.length,
+        },
+      };
+      const paginatedResponse = await plaidClient.transactionsGet(
+        paginatedRequest
+      );
+      transactions = transactions.concat(paginatedResponse.data.transactions);
+    }
+
+    return transactions;
+  } catch (error) {
+    // console.error('Error fetching transactions:', error);
+    throw error;
+  }
+}
+export async function getInstitutionById(institutionId: string) {
+  const request: InstitutionsGetByIdRequest = {
+    institution_id: institutionId,
+    options: {
+      include_optional_metadata: true,
+    },
+    country_codes: [CountryCode.Us],
+  };
+
+  const response = await plaidClient.institutionsGetById(request);
+  return response.data.institution;
+}
+
+export async function getUnreadTransactionsAndAccounts(userId: string) {
+  const plaidItem = await db.plaidItem.findFirst({
+    where: {
+      userId,
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
   });
 
-  revalidatePath('/');
-  revalidatePath('/transactions');
-  return transactionsResponse.data.transactions;
+  if (!plaidItem) {
+    throw new Error('Plaid item not found');
+  }
+
+  const [unreadTransactions, accountsResponse, itemResponse] =
+    await Promise.all([
+      db.transaction.findMany({
+        where: {
+          userId,
+          unread: true,
+        },
+        orderBy: {
+          date: 'desc',
+        },
+      }),
+      plaidClient.accountsGet({
+        access_token: plaidItem.accessToken,
+      }),
+      plaidClient.itemGet({
+        access_token: plaidItem.accessToken,
+      }),
+    ]);
+
+  const institutionId = itemResponse.data.item.institution_id;
+  const institution = institutionId
+    ? await getInstitutionById(institutionId)
+    : null;
+
+  const formattedTransactions = unreadTransactions.map((transaction) => ({
+    ...transaction,
+    amount: parseFloat(transaction.amount.toFixed(2)),
+  }));
+
+  return {
+    unreadTransactions: formattedTransactions,
+    accounts: accountsResponse.data.accounts,
+    item: itemResponse.data.item,
+    institution,
+  };
 }
 
 export async function syncTransactions(userId: string) {
