@@ -4,9 +4,9 @@
 name: orca-next-test
 
 on:
-  push:
-    branches:
-      - test
+  # push:
+  #   branches:
+  #     - test
   workflow_dispatch:
 
 jobs:

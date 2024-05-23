@@ -1,10 +1,10 @@
-"use server";
-import db from "@/db/db";
-import { revalidatePath } from "next/cache";
-import Stripe from "stripe";
+'use server';
+import db from '@/db/db';
+import { revalidatePath } from 'next/cache';
+import Stripe from 'stripe';
 
 if (!process.env.STRIPE_SECRET_KEY)
-  console.error("MISSING STRIPE_SECRET_KEY!!!");
+  console.error('MISSING STRIPE_SECRET_KEY!!!');
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 type SubscriptionRequest = {
@@ -36,12 +36,12 @@ export async function createSubscription(userId: string, email: string) {
         price: priceId,
       },
     ],
-    payment_behavior: "default_incomplete",
+    payment_behavior: 'default_incomplete',
     payment_settings: {
-      save_default_payment_method: "on_subscription",
-      payment_method_types: ["card"],
+      save_default_payment_method: 'on_subscription',
+      payment_method_types: ['card'],
     },
-    expand: ["latest_invoice.payment_intent"],
+    expand: ['latest_invoice.payment_intent'],
   });
 
   if (!userProfile) {
@@ -78,7 +78,7 @@ export async function addSubscriptionId(
       userId,
     },
   });
-  revalidatePath("/user");
+  revalidatePath('/user');
 }
 
 export async function updateSubscription(
@@ -92,7 +92,7 @@ export async function updateSubscription(
   });
 
   if (!userProfile?.stripeSubscriptionId)
-    return { success: false, message: "Could not complete the cancellation." };
+    return { success: false, message: 'Could not complete the cancellation.' };
 
   const sub = await stripe.subscriptions.update(
     userProfile.stripeSubscriptionId,
@@ -100,9 +100,9 @@ export async function updateSubscription(
       cancel_at_period_end,
     }
   );
-  revalidatePath("/user");
+  revalidatePath('/user');
   return {
-    message: "Cancel success!",
+    message: 'Cancel success!',
   };
 }
 

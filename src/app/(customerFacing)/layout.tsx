@@ -21,15 +21,17 @@ export default function CustomerLayout({
           level={3}
           style={{
             margin: '12px 32px 0',
-          }}>
+          }}
+        >
           Orca
         </Title>
       </div>
       <Content
         style={{
           margin: '12px 32px 0',
-        }}>
-        <div className='flex justify-center'>
+        }}
+      >
+        <div className='flex justify-center h-full'>
           <div className='w-full md:w-4/5 lg:w-3/5'>{children}</div>
         </div>
       </Content>
@@ -40,7 +42,8 @@ export default function CustomerLayout({
           bottom: 0,
           zIndex: 100,
           borderTop: '2px solid #f0f0f0',
-        }}>
+        }}
+      >
         <HeaderMenu className='' />
       </Footer>
     </Layout>

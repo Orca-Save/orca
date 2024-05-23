@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "email": "cp .env ./node_modules/react-email && email dev --dir src/email --port 3001"
+    "start": "next start -p 8080",
+    "startAzure": "./node_modules/next/dist/bin/next start",
+    "lint": "next lint"
   },
   "engines": {
     "node": ">=18.19.1"
@@ -33,11 +33,14 @@
     "next": "^14.1.0",
     "next-auth": "^4.24.7",
     "node-emoji": "^2.1.3",
+    "plaid": "^23.0.0",
+    "plaid-threads": "^14.5.0",
     "react": "^18",
     "react-confetti": "^6.1.0",
     "react-dom": "^18",
     "react-email": "^1.10.1",
     "react-hook-form": "^7.51.3",
+    "react-plaid-link": "^3.5.1",
     "react-use": "^17.5.0",
     "resend": "^3.2.0",
     "stripe": "^15.5.0",
