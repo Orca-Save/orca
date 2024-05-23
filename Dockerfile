@@ -1,6 +1,9 @@
 FROM node:20-alpine
 
 RUN apk add --no-cache postgresql-client
+RUN apk add openssh 
+COPY sshd_config /etc/ssh/
+
 WORKDIR /usr/src/app
 
 COPY package*.json ./
@@ -14,6 +17,6 @@ RUN npx prisma generate
 RUN npm run build
 
 
-EXPOSE 8080
+EXPOSE 8080 2222
 
 CMD ["npm", "start"]
