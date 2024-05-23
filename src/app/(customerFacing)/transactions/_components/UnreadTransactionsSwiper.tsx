@@ -1,10 +1,14 @@
 'use client';
-import { CardData, CardSwiper } from '@/app/_components/CardSwiper';
-import { Title } from '@/app/_components/Typography';
 import {
-  AccountCard,
-  InstitutionCard,
-} from '@/app/review/_components/InstitutionCard';
+  CardData,
+  CardId,
+  CardMetaData,
+  CardSwiper,
+  SwipeAction,
+  SwipeOperation,
+} from '@/app/_components/CardSwiper';
+import { Title } from '@/app/_components/Typography';
+import { InstitutionCard } from '@/app/review/_components/InstitutionCard';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import {
   Avatar,
@@ -28,16 +32,12 @@ interface Transaction {
   name: string;
   amount: number;
   personalFinanceCategoryIcon: string | null;
-  isoCurrencyCode: string;
+  isoCurrencyCode: string | null;
   paymentChannel: string;
   merchantName: string | null;
   logoIcon: string | null;
   accountId: string;
   transactionId: string;
-  personalFinanceCategory: {
-    primary: string;
-    detailed: string;
-  };
   date: Date;
 }
 interface UnreadTransactionsSwiperProps {
@@ -46,7 +46,7 @@ interface UnreadTransactionsSwiperProps {
     unreadTransactions: Transaction[];
     accounts: AccountBase[];
     item: Item;
-    institution: Institution;
+    institution: Institution | null;
   };
 }
 
@@ -66,17 +66,26 @@ export default function UnreadTransactionsSwiper({
   const initialTransactions = plaidItem.unreadTransactions;
   const institution = plaidItem.institution;
   const [transactions, setTransactions] = useState(initialTransactions);
+  const [rating, setRating] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     setTransactions(initialTransactions);
-    // initialTransactions[0].
   }, [initialTransactions]);
 
-  const handleDismiss = async (cardData: HTMLDivElement, event: any) => {
-    const transactionId = cardData.id;
-    await markTransactionAsRead(transactionId);
+  const handleDismiss = async (
+    element: HTMLDivElement,
+    meta: CardMetaData,
+    id: CardId,
+    action: SwipeAction,
+    operation: SwipeOperation
+  ) => {
+    await markTransactionAsRead(
+      id as string,
+      action === SwipeAction.DISLIKE,
+      rating
+    );
     setTransactions((prev) =>
-      prev.filter((transaction) => transaction.id !== transactionId)
+      prev.filter((transaction) => transaction.id !== id)
     );
   };
 
@@ -87,7 +96,7 @@ export default function UnreadTransactionsSwiper({
     // const institutionLogo =
     //   institution.logo ?? institution.url + '/apple-touch-icon.png';
     const institutionLogo =
-      institution.logo ?? institution.url + '/favicon.ico';
+      institution?.logo ?? institution?.url + '/favicon.ico';
 
     return {
       id: transaction.id,
@@ -117,36 +126,59 @@ export default function UnreadTransactionsSwiper({
           >
             <Title level={3}>${transaction.amount.toFixed(2)}</Title>
           </div>
-          <InstitutionCard institution={plaidItem.institution} />
-          <AccountCard account={account} institution={plaidItem.institution} />
+          <InstitutionCard
+            institution={plaidItem.institution}
+            account={account}
+            categoryIcon={transaction.personalFinanceCategoryIcon ?? ''}
+          />
           <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
             <Col span={24}>
-              <div>
-                <Tooltip
-                  title={
-                    <>
-                      <p style={{ marginBottom: '0.5rem' }}>
-                        This rating is necessary to ensure the insights we
-                        deliver are truly personalized.
-                      </p>
-                      <p>
-                        For example, we don&apos;t want to suggest you cut back
-                        on “Yoga with friends” to meet your goal if this is
-                        something you truly value.
-                      </p>
-                    </>
-                  }
-                >
-                  <Text strong>
-                    How did you feel about this purchase?
-                    <InfoCircleOutlined style={{ marginLeft: '5px' }} />
-                  </Text>
-                </Tooltip>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <div>
+                    <Tooltip
+                      title={
+                        <>
+                          <p style={{ marginBottom: '0.5rem' }}>
+                            This rating is necessary to ensure the insights we
+                            deliver are truly personalized.
+                          </p>
+                          <p>
+                            For example, we don&apos;t want to suggest you cut
+                            back on “Yoga with friends” to meet your goal if
+                            this is something you truly value.
+                          </p>
+                        </>
+                      }
+                    >
+                      <Text strong>
+                        How did you feel about this purchase?
+                        <InfoCircleOutlined style={{ marginLeft: '5px' }} />
+                      </Text>
+                    </Tooltip>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Rate
+                      character={({ index = 0 }) => customIcons[index + 1]}
+                      style={{ marginTop: 8 }}
+                      value={rating}
+                      onChange={(value) => setRating(value)}
+                    />
+                  </div>
+                </div>
               </div>
-              <Rate
-                character={({ index = 0 }) => customIcons[index + 1]}
-                style={{ marginTop: 8 }}
-              />
             </Col>
           </Row>
         </Card>
@@ -165,8 +197,8 @@ export default function UnreadTransactionsSwiper({
           <CardSwiper
             data={transactionCards}
             onDismiss={handleDismiss}
-            dislikeButton={<div>Left</div>}
-            likeButton={<div>Right</div>}
+            dislikeButton={<div>Impulse</div>}
+            likeButton={<div>Read</div>}
             withActionButtons
             withRibbons
             likeRibbonText='READ'

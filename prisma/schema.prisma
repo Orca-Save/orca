@@ -131,6 +131,8 @@ model Transaction {
   isoCurrencyCode      String?
   pendingTransactionId String?
   merchantName         String?
+  rating               Int?
+  impulse              Boolean?
 
   logoIcon                    String?
   personalFinanceCategoryIcon String?

@@ -10,6 +10,7 @@ import {
   getUnreadTransactionsAndAccounts,
 } from '../(customerFacing)/transactions/_actions/plaid';
 import UnreadTransactionsSwiper from '../(customerFacing)/transactions/_components/UnreadTransactionsSwiper';
+import UnreadButton from './_components/UnreadButton';
 
 export default async function TransactionsPage() {
   const session = await getServerSession(authOptions);
@@ -38,6 +39,7 @@ export default async function TransactionsPage() {
           />
         </div>
       </div>
+      <UnreadButton userId={session.user.id} />
       <div style={{}}>
         <UnreadTransactionsSwiper
           userId={session.user.id}

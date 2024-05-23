@@ -103,7 +103,9 @@ export const CardSwiper = (props: CardSwiperProps) => {
       <div className='swipe-card__cards' id='swipe-card__cards'>
         {CardComponents}
         {emptyState && isFinish && (
-          <CardSwiperEmptyState children={emptyState} isFinish={isFinish} />
+          <CardSwiperEmptyState isFinish={isFinish}>
+            {emptyState}
+          </CardSwiperEmptyState>
         )}
       </div>
       {withActionButtons && (

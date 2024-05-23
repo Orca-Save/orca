@@ -1,7 +1,7 @@
 'use client';
 import { Avatar, List } from 'antd';
 
-export default async function TransactionsList({
+export default function TransactionsList({
   transactions,
 }: {
   transactions: any[];

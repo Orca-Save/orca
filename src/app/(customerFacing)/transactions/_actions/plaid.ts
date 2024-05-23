@@ -321,9 +321,27 @@ export async function getUnreadTransactions(userId: string) {
   }));
 }
 
-export async function markTransactionAsRead(transactionId: string) {
+export async function markAllTransactionsAsUnread(userId: string) {
+  await db.transaction.updateMany({
+    where: {
+      userId,
+      unread: false,
+    },
+    data: {
+      unread: true,
+      updatedAt: new Date(),
+    },
+  });
+  revalidatePath('/transactions/review');
+}
+
+export async function markTransactionAsRead(
+  id: string,
+  impulse: boolean,
+  rating?: number
+) {
   await db.transaction.update({
-    where: { id: transactionId },
-    data: { unread: false },
+    where: { id },
+    data: { unread: false, rating, impulse },
   });
 }
