@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-# RUN chmod +x generate-env-file.sh && ./generate-env-file.sh
+RUN chmod +x generate-env-file.sh && ./generate-env-file.sh
 
 RUN npx prisma generate
 RUN npm run build
