@@ -12,6 +12,7 @@ RUN npm install
 
 COPY . .
 RUN chmod +x generate-env-file.sh && ./generate-env-file.sh
+RUN if [ -s .env ]; then echo ".env file created and it has contents:" && cat .env; else echo ".env file is missing or empty"; fi
 
 RUN npx prisma generate
 RUN npm run build
