@@ -62,7 +62,6 @@ export default function UnreadTransactionsSwiper({
   plaidItem,
   userId,
 }: UnreadTransactionsSwiperProps) {
-  console.log('plaidItem', plaidItem);
   const initialTransactions = plaidItem.unreadTransactions;
   const institution = plaidItem.institution;
   const [transactions, setTransactions] = useState(initialTransactions);

@@ -26,8 +26,6 @@ export default async function TransactionsPage() {
     ),
   ]);
 
-  console.log('transactionsx', transactions.length);
-
   return (
     <div style={{ height: '100%' }}>
       {/* <Space direction='vertical' className='w-full h-full'> */}

@@ -14,7 +14,6 @@ const openSans = Open_Sans({
 });
 export default function SignUpPage() {
   const onClick = () => {
-    console.log(baseURL);
     signIn('azure-ad-b2c', { callbackUrl: baseURL });
   };
   return (

@@ -32,7 +32,6 @@ export default function UnsplashForm({
   defaultValue?: string;
   onSelect: (value: string) => void;
 }) {
-  console.log('unsplash', process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY);
   const [selectedPhoto, setSelectedPhoto] = useState<Basic | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [previewMode, setPreviewMode] = useState<boolean>(true);
