@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    instrumentationHook: process.env.NODE_ENV === "production",
+    instrumentationHook: true,
   },
   webpack: (config, { isServer }) => {
     config.optimization.minimize = false;

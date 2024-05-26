@@ -10,7 +10,7 @@ $dockerTag = "latest"
 $dockerfile = "Dockerfile"
 if ($dev) {
     $dockerfile = "Dockerfile.dev"
-    $dockerTag = "dev"
+    # $dockerTag = "dev"
 }
 
 if ($LASTEXITCODE -ne 0) {
@@ -21,7 +21,7 @@ if ($LASTEXITCODE -ne 0) {
 $startTime = Get-Date
 
 Write-Host "Building Docker image using $dockerfile..."
-docker build -f $dockerfile -t "$dockerHubUsername/${dockerHubRepository}:$dockerTag" .
+docker build -f $dockerfile -t "${dockerHubRepository}:$dockerTag" .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Docker image build failed."
@@ -29,14 +29,15 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Pushing Docker image to Docker Hub..."
-docker push "$dockerHubUsername/${dockerHubRepository}:$dockerTag"
+docker push "${dockerHubRepository}:$dockerTag"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Docker image push failed."
     exit $LASTEXITCODE
 }
+
 $endTime = Get-Date
 $totalTime = $endTime - $startTime
 
-Write-Host "Docker image pushed successfully."
+Write-Host "Docker image pushed and webhook triggered successfully."
 Write-Host "Total deploy time: $($totalTime.Hours) hours, $($totalTime.Minutes) minutes, $($totalTime.Seconds) seconds"
