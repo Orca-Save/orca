@@ -7,7 +7,7 @@ docker login
 $dockerHubRepository = "reharly20/orca"
 $dockerTag = "latest"
 
-$dockerfile = "Dockerfile"
+$dockerfile = "Dockerfile.dev"
 if ($dev) {
     $dockerfile = "Dockerfile.dev"
     # $dockerTag = "dev"

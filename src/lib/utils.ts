@@ -29,7 +29,7 @@ export const currencyFormatter = (
 export const baseURL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
-    : process.env.PRODUCTION_URL;
+    : process.env.BASE_URL;
 
 export const navigateBack = (router: AppRouterInstance) => {
   const previousPath = sessionStorage.getItem('previousPath');

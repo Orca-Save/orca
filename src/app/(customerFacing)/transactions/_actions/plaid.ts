@@ -45,11 +45,13 @@ export async function createLinkToken(userId: string) {
     client_name: 'Plaid Test App',
     products: [Products.Transactions],
     language: 'en',
-    webhook: 'https://webhook.example.com',
-    // redirect_uri: 'https://domainname.com/oauth-page.html',
+    webhook: process.env.BASE_URL + '/api/plaid/webhook',
     country_codes: [CountryCode.Us],
   };
   const createTokenResponse = await plaidClient.linkTokenCreate(request);
+  revalidatePath('/');
+  revalidatePath('/transactions');
+
   return createTokenResponse.data;
 }
 
@@ -182,7 +184,6 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
     institution,
   };
 }
-
 export async function syncTransactions(userId: string) {
   const plaidItem = await db.plaidItem.findFirst({
     where: {
@@ -208,7 +209,6 @@ export async function syncTransactions(userId: string) {
 
   const request: TransactionsSyncRequest = {
     access_token: plaidItem.accessToken,
-
     options: {
       include_personal_finance_category: true,
     },
@@ -238,10 +238,8 @@ export async function syncTransactions(userId: string) {
       paymentChannel: transaction.payment_channel,
       isoCurrencyCode: transaction.iso_currency_code,
       pendingTransactionId: transaction.pending_transaction_id,
-
       personalFinanceCategoryIcon:
         transaction.personal_finance_category_icon_url,
-
       location: transaction.location as unknown as Prisma.InputJsonObject,
       personalFinanceCategory:
         transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
@@ -268,7 +266,6 @@ export async function syncTransactions(userId: string) {
           merchantName: transaction.merchant_name,
           personalFinanceCategoryIcon:
             transaction.personal_finance_category_icon_url,
-
           location: transaction.location as unknown as Prisma.InputJsonObject,
           personalFinanceCategory:
             transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
@@ -301,7 +298,7 @@ export async function syncTransactions(userId: string) {
 
   revalidatePath('/');
   revalidatePath('/transactions');
-  revalidatePath('/transactions/review');
+  revalidatePath('/review');
 }
 
 export async function getUnreadTransactions(userId: string) {
