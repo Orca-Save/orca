@@ -3,7 +3,6 @@ export async function register() {
     return;
   }
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    console.log('initialize app insights');
     await import('./appInsights');
   }
   // registerOTel({

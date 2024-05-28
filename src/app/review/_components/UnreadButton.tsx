@@ -1,6 +1,6 @@
 'use client';
 
-import { markAllTransactionsAsUnread } from '@/app/(customerFacing)/transactions/_actions/plaid';
+import { markAllTransactionsAsUnread } from '@/app/_actions/plaid';
 import { Button } from 'antd';
 
 export default function UnreadButton({ userId }: { userId: string }) {

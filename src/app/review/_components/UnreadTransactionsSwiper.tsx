@@ -24,7 +24,7 @@ import {
 import 'antd/dist/reset.css'; // Import Ant Design styles by using 'reset.css'
 import { AccountBase, Institution, Item } from 'plaid';
 import { useEffect, useState } from 'react';
-import { markTransactionAsRead } from '../_actions/plaid';
+import { markTransactionAsRead } from '../../_actions/plaid';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
 interface Transaction {
@@ -197,10 +197,10 @@ export default function UnreadTransactionsSwiper({
             data={transactionCards}
             onDismiss={handleDismiss}
             dislikeButton={<div>Impulse</div>}
-            likeButton={<div>Read</div>}
+            likeButton={<div>Reviewed</div>}
             withActionButtons
             withRibbons
-            likeRibbonText='READ'
+            likeRibbonText='Reviewed'
             dislikeRibbonText='Impulse'
             ribbonColors={{
               bgLike: 'green',

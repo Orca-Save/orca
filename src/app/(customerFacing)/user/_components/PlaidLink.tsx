@@ -1,6 +1,7 @@
 'use client';
+import { Button } from 'antd';
 import { usePlaidLink } from 'react-plaid-link';
-import { exchangePublicToken } from '../_actions/plaid';
+import { exchangePublicToken } from '../../../_actions/plaid';
 
 interface LinkProps {
   linkToken: string | null;
@@ -16,9 +17,14 @@ const Link = (props: LinkProps) => {
   };
   const { open, ready } = usePlaidLink(config);
   return (
-    <button onClick={() => open()} disabled={!ready}>
+    <Button
+      type='primary'
+      size='large'
+      onClick={() => open()}
+      disabled={!ready}
+    >
       Link account
-    </button>
+    </Button>
   );
 };
 

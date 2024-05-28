@@ -2,8 +2,7 @@ import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { createLinkToken } from './_actions/plaid';
-import PlaidLink from './_components/PlaidLink';
+import { createLinkToken } from '../../_actions/plaid';
 
 export default async function TransactionsPage() {
   const session = await getServerSession(authOptions);
@@ -16,10 +15,10 @@ export default async function TransactionsPage() {
   return (
     <>
       Plaid
-      <PlaidLink
+      {/* <PlaidLink
         linkToken={linkTokenData.link_token}
         userId={session.user.id}
-      />
+      /> */}
       {/* <TransactionsList transactions={transactions} /> */}
     </>
   );

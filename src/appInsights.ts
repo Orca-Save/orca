@@ -11,7 +11,7 @@ appInsights
   .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
   .setSendLiveMetrics(true)
   .setUseDiskRetryCaching(true);
-appInsights.serviceName = 'orca-local';
+appInsights.serviceName = process.env.INSIGHTS_NAME;
 appInsights.start();
 export default appInsights;
 const client = appInsights.defaultClient;

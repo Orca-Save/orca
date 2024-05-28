@@ -20,8 +20,9 @@ model Goal {
   dueAt        DateTime @db.Timestamptz()
   targetAmount Decimal  @db.Decimal(65, 2)
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
 
   note              String?
   imagePath         String?
@@ -45,10 +46,11 @@ model GoalCategory {
 }
 
 model OnboardingProfile {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
 
   imagePath  String?
   goalId     String?
@@ -74,8 +76,9 @@ model GoalTransfer {
   amount   Decimal @db.Decimal(65, 2)
   pinned   Boolean @default(false)
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
 
   transactedAt DateTime? @db.Timestamptz()
   link         String?
@@ -98,9 +101,11 @@ model UserProfile {
   userId               String  @unique
   stripeCustomerId     String
   stripeSubscriptionId String?
+  termsAccepted        Boolean @default(false)
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
 }
 
 model PlaidItem {
@@ -109,24 +114,26 @@ model PlaidItem {
   itemId      String
   accessToken String
   cursor      String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  updatedAt   DateTime      @updatedAt @db.Timestamptz()
+  deletedAt   DateTime?     @db.Timestamptz()
   Transaction Transaction[]
 }
 
 model Transaction {
-  id             String   @id @default(uuid())
-  transactionId  String   @unique
+  id             String    @id @default(uuid())
+  transactionId  String    @unique
   userId         String
   accountId      String
-  amount         Decimal  @db.Decimal(65, 2)
+  amount         Decimal   @db.Decimal(65, 2)
   date           DateTime
   name           String
   paymentChannel String
   pending        Boolean
-  unread         Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  unread         Boolean   @default(true)
+  createdAt      DateTime  @default(now()) @db.Timestamptz()
+  updatedAt      DateTime  @updatedAt @db.Timestamptz()
+  deletedAt      DateTime? @db.Timestamptz()
 
   isoCurrencyCode      String?
   pendingTransactionId String?

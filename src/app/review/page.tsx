@@ -1,16 +1,18 @@
 import { completedUserGoalCount } from '@/app/_actions/users';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
+import { Button, Space } from 'antd';
 import dayjs from 'dayjs';
 import { getServerSession } from 'next-auth';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import CompletedCounts from '../(customerFacing)/_components/CompletedCounts';
 import {
   getTransactions,
   getUnreadTransactionsAndAccounts,
-} from '../(customerFacing)/transactions/_actions/plaid';
-import UnreadTransactionsSwiper from '../(customerFacing)/transactions/_components/UnreadTransactionsSwiper';
+} from '../_actions/plaid';
 import UnreadButton from './_components/UnreadButton';
+import UnreadTransactionsSwiper from './_components/UnreadTransactionsSwiper';
 
 export default async function TransactionsPage() {
   const session = await getServerSession(authOptions);
@@ -27,24 +29,34 @@ export default async function TransactionsPage() {
   ]);
 
   return (
-    <div style={{ height: '100%' }}>
-      {/* <Space direction='vertical' className='w-full h-full'> */}
-      <div style={{ height: '33%' }} className='flex justify-center'>
+    <div className='min-h-full max-h-full flex flex-col'>
+      <Space
+        className='flex justify-center'
+        direction='vertical'
+        size='large'
+        align='center'
+      >
         <div className='w-full md:w-4/5 lg:w-3/5'>
           <CompletedCounts
             goalsCompleted={completedCounts.goalsCompleted}
             totalSaved={completedCounts.totalSaved}
           />
         </div>
-      </div>
-      <UnreadButton userId={session.user.id} />
-      <div style={{}}>
+        <Space>
+          <UnreadButton userId={session.user.id} />
+          <Link href='/'>
+            <Button type='primary' size='large'>
+              Return home
+            </Button>
+          </Link>
+        </Space>
+      </Space>
+      <div className='mt-auto w-full'>
         <UnreadTransactionsSwiper
           userId={session.user.id}
           plaidItem={plaidItem}
         />
       </div>
-      {/* </Space> */}
     </div>
   );
 }
