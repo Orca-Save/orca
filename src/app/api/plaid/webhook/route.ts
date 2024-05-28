@@ -1,4 +1,4 @@
-import { syncTransactions } from '@/app/(customerFacing)/transactions/_actions/plaid';
+import { syncTransactions } from '@/app/_actions/plaid';
 import { client } from '@/appInsights';
 import db from '@/db/db';
 import { NextResponse } from 'next/server';
