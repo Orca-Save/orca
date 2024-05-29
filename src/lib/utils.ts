@@ -1,16 +1,29 @@
-import { Decimal } from '@prisma/client/runtime/index-browser.js';
 import { FormInstance } from 'antd';
 import { clsx, type ClassValue } from 'clsx';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { twMerge } from 'tailwind-merge';
 import { FieldErrors } from './goals';
 
+export function sendSlackMessage(message: string) {
+  if (!process.env.SLACK_WEBHOOK_URL)
+    return Promise.resolve(console.log('No Slack webhook URL found'));
+  const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+
+  return fetch(slackWebhookUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text: message }),
+  });
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const currencyFormatter = (
-  value?: string | number | Decimal,
+  value?: string | number,
   includeDollar?: boolean
 ) => {
   if (!value && value !== 0) return '';

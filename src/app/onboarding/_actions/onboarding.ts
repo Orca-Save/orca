@@ -1,9 +1,12 @@
-"use server";
+'use server';
 
-import db from "@/db/db";
-import { externalAccountId } from "@/lib/goalTransfers";
-import dayjs from "dayjs";
-import { onboardingSchema } from "../_schemas/onboarding";
+import db from '@/db/db';
+import { externalAccountId } from '@/lib/goalTransfers';
+import authOptions from '@/lib/nextAuthOptions';
+import { sendSlackMessage } from '@/lib/utils';
+import dayjs from 'dayjs';
+import { getServerSession } from 'next-auth';
+import { onboardingSchema } from '../_schemas/onboarding';
 
 export async function onboardUser(userId: string, onboardingProfileInput: any) {
   onboardingProfileInput.goalDueAt = dayjs(onboardingProfileInput.goalDueAt);
@@ -33,7 +36,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
         goalId: goal.id,
         amount: onboardingProfileData.initialAmount,
         transactedAt: new Date(),
-        itemName: onboardingProfileData.goalName + " Initial Amount",
+        itemName: onboardingProfileData.goalName + ' Initial Amount',
         categoryId: externalAccountId,
       },
     });
@@ -41,7 +44,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
 
   const defaultGoalTransfers = [
     {
-      itemName: "Skipped the coffee shop",
+      itemName: 'Skipped the coffee shop',
       amount: 6.5,
     },
   ];
@@ -80,5 +83,16 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     },
   });
 
+  const session = await getServerSession(authOptions);
+  await sendSlackMessage(
+    session?.user?.email +
+      ' has completed onboarding with the goal ' +
+      goal.name +
+      ' for $' +
+      goal.targetAmount.toFixed(2) +
+      ' by ' +
+      goal.dueAt.toLocaleDateString() +
+      '.'
+  );
   return { goal, onboardingProfile, saveGoalTransfer, initialAmountTransfer };
 }
