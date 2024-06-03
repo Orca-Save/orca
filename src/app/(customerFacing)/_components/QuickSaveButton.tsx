@@ -2,7 +2,7 @@
 
 import { addQuickSave } from '@/app/_actions/goalTransfers';
 import { Text } from '@/app/_components/Typography';
-import { formatCurrency } from '@/lib/formatters';
+import { currencyFormatter } from '@/lib/utils';
 import {
   GoalCategory,
   GoalTransfer as PrismaGoalTransfer,
@@ -15,6 +15,7 @@ const { Paragraph } = Typography;
 
 type GoalTransfer = PrismaGoalTransfer & {
   category: GoalCategory | null;
+  amount: number;
 };
 export function QuickSaveButton({
   transfer,
@@ -45,10 +46,11 @@ export function QuickSaveButton({
         size='large'
         type='primary'
         style={{ height: 'auto', width: 'auto' }}
-        onClick={onClick}>
+        onClick={onClick}
+      >
         <Paragraph>{transfer.itemName}</Paragraph>
         <Text style={{ fontWeight: 'bold', marginRight: '0.5rem' }}>Save</Text>
-        <Text>{formatCurrency(Number(transfer.amount.toString()))}</Text>
+        <Text>{currencyFormatter(transfer.amount)}</Text>
       </Button>
     </>
   );

@@ -1,6 +1,6 @@
-import { Text } from "@/app/_components/Typography";
-import { formatCurrency } from "@/lib/formatters";
-import { Card, Space } from "antd";
+import { Text } from '@/app/_components/Typography';
+import { currencyFormatter } from '@/lib/utils';
+import { Card, Space } from 'antd';
 
 export default async function CompletedCounts({
   totalSaved,
@@ -11,15 +11,15 @@ export default async function CompletedCounts({
 }) {
   return (
     <Space
-      direction="horizontal"
-      size="large"
+      direction='horizontal'
+      size='large'
       style={{
-        justifyContent: "center",
-        width: "100%",
+        justifyContent: 'center',
+        width: '100%',
       }}
     >
       <Card>
-        <Text>Total saved: {formatCurrency(totalSaved)}</Text>{" "}
+        <Text>Total saved: {currencyFormatter(totalSaved)}</Text>{' '}
         <Text>Goals completed: {goalsCompleted}</Text>
       </Card>
     </Space>

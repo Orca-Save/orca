@@ -1,4 +1,3 @@
-import { Decimal } from '@prisma/client/runtime/index-browser.js';
 import { FormInstance } from 'antd';
 import { clsx, type ClassValue } from 'clsx';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -9,21 +8,41 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const formatters: { [currency: string]: Intl.NumberFormat } = {
+  USD: new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }),
+};
+
 export const currencyFormatter = (
-  value?: string | number | Decimal,
-  includeDollar?: boolean
+  amount: number | string,
+  currencyCode?: string
 ) => {
-  if (!value && value !== 0) return '';
-  if (isNaN(Number(value))) return '';
-  const precision = String(Number(value)).split('.')?.[1]?.length;
-  const currentPrecision = precision > 0 ? Math.min(precision, 2) : 0;
-  const valueString = String(Number(value).toFixed(currentPrecision)).replace(
-    /^-/,
-    ''
-  );
-  const formattedValue = valueString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const dollarSign = includeDollar ? '' : '$';
-  return `${Number(value) < 0 ? '-' : ''}${dollarSign}${formattedValue}`;
+  try {
+    if (typeof amount === 'undefined' || amount === null) {
+      return '';
+    }
+
+    const numericAmount =
+      typeof amount === 'string' ? parseFloat(amount) : amount;
+
+    if (isNaN(numericAmount)) {
+      return '';
+    }
+
+    if (!formatters[currencyCode!]) {
+      formatters[currencyCode!] = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      });
+    }
+
+    return formatters[currencyCode!].format(numericAmount);
+  } catch (error) {
+    console.log(error);
+    return amount.toString();
+  }
 };
 
 export const baseURL =

@@ -1,21 +1,28 @@
-import { Text } from "@/app/_components/Typography";
-import { HappyProvider } from "@/components/HappyProvider";
-import db from "@/db/db";
-import { greenThemeColors } from "@/lib/themes";
-import { ConfigProvider, Space } from "antd";
-import { getPinnedUserGoal } from "../_actions/data";
-import { QuickSaveButton } from "./QuickSaveButton";
+import { Text } from '@/app/_components/Typography';
+import { HappyProvider } from '@/components/HappyProvider';
+import db from '@/db/db';
+import { greenThemeColors } from '@/lib/themes';
+import { ConfigProvider, Space } from 'antd';
+import { getPinnedUserGoal } from '../_actions/data';
+import { QuickSaveButton } from './QuickSaveButton';
 
 const getPinnedGoalTransfers = async (userId: string) => {
-  return db.goalTransfer.findMany({
-    where: {
-      userId,
-      pinned: true,
-    },
-    include: {
-      category: true,
-    },
-  });
+  return (
+    await db.goalTransfer.findMany({
+      where: {
+        userId,
+        pinned: true,
+      },
+      include: {
+        category: true,
+      },
+    })
+  ).map((transfer) =>
+    Object.assign(transfer, {
+      category: transfer.category?.name,
+      amount: transfer.amount.toNumber(),
+    })
+  );
 };
 
 export default async function QuickSaveButtons({ userId }: { userId: string }) {
