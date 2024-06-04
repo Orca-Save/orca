@@ -94,6 +94,7 @@ export async function syncItems(userId: string) {
       userId,
     },
   });
+  await getRecurringTransactions(userId);
   await Promise.all(plaidItems.map((plaidItem) => syncTransactions(plaidItem)));
 
   revalidatePath('/');
@@ -187,6 +188,7 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
     where: {
       userId,
       unread: true,
+      recurring: false,
     },
     orderBy: {
       date: 'desc',
@@ -348,6 +350,7 @@ export async function getUnreadTransactions(userId: string) {
     where: {
       userId,
       unread: true,
+      recurring: false,
     },
     orderBy: {
       date: 'desc',
@@ -426,4 +429,53 @@ export async function getAllLinkedItems(userId: string) {
   );
 
   return itemsData;
+}
+
+// get recurring transactions  by using the recurring/get endpoint of plaid,
+// and updating all the transactions that are recurring in the database
+export async function getRecurringTransactions(userId: string) {
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      userId,
+    },
+  });
+
+  if (!plaidItems) {
+    throw new Error('Plaid item not found');
+  }
+
+  const recurringStreams = await Promise.all(
+    plaidItems.map(async (plaidItem) => {
+      const request = {
+        access_token: plaidItem.accessToken,
+      };
+      const response = await plaidClient.transactionsRecurringGet(request);
+      return [
+        ...response.data.inflow_streams,
+        ...response.data.outflow_streams,
+      ];
+    })
+  );
+  const allRecurringTransactionsIds = recurringStreams
+    .flat()
+    .map((stream) => stream.transaction_ids)
+    .flat();
+
+  // update the db with the new recurring transactions
+  await Promise.all(
+    allRecurringTransactionsIds.map(async (transactionId) => {
+      await db.transaction.update({
+        where: {
+          transactionId: transactionId,
+        },
+        data: {
+          recurring: true,
+        },
+      });
+    })
+  );
+  revalidatePath('/');
+  revalidatePath('/transactions');
+  revalidatePath('/review');
+  return true;
 }

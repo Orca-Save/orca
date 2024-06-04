@@ -1,4 +1,7 @@
-import { syncTransactions } from '@/app/_actions/plaid';
+import {
+  getRecurringTransactions,
+  syncTransactions,
+} from '@/app/_actions/plaid';
 import { client } from '@/appInsights';
 import db from '@/db/db';
 import { NextResponse } from 'next/server';
@@ -20,6 +23,8 @@ async function plaidWebhookHandler(req: any) {
         await syncTransactions(plaidItem);
         break;
       case 'HISTORICAL_UPDATE':
+      case 'RECURRING_TRANSACTIONS_UPDATE':
+        await getRecurringTransactions(plaidItem.userId);
         break;
       default:
         console.log(`Unhandled webhook code: ${webhook_code}`);

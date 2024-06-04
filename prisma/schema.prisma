@@ -132,6 +132,7 @@ model Transaction {
   name           String
   paymentChannel String
   pending        Boolean
+  recurring      Boolean   @default(false)
   unread         Boolean   @default(true)
   createdAt      DateTime  @default(now()) @db.Timestamptz()
   updatedAt      DateTime  @updatedAt @db.Timestamptz()
