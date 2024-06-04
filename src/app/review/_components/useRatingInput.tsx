@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 
-const useKeyboardInput = () => {
-  const [input, setInput] = useState('');
+const useRatingInput = (setRating: (rating: number) => void): string => {
+  const [key, setKey] = useState<string>(Math.random().toString());
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      setInput((prevInput) => prevInput + event.key);
+      const { key } = event;
+      if (['1', '2', '3', '4', '5'].includes(key)) {
+        setRating(Number(key));
+        setKey(Math.random().toString());
+      }
     };
 
     // Attach the event listener to the document
@@ -15,9 +19,9 @@ const useKeyboardInput = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [setRating]);
 
-  return input;
+  return key;
 };
 
-export default useKeyboardInput;
+export default useRatingInput;

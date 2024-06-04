@@ -74,6 +74,7 @@ export const getUnreadTransactionCount = async (userId: string) => {
     where: {
       userId,
       unread: true,
+      recurring: false,
     },
   });
   const plaidItem = await db.plaidItem.findFirst({

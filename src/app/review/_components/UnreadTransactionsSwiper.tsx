@@ -27,7 +27,7 @@ import 'antd/dist/reset.css'; // Import Ant Design styles by using 'reset.css'
 import { AccountBase, Institution, Item } from 'plaid';
 import { useEffect, useState } from 'react';
 import { markTransactionAsRead, syncItems } from '../../_actions/plaid';
-import useKeyboardInput from './useKeyboardInput';
+import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
 type Transaction = TransactionPrisma & {
@@ -58,7 +58,8 @@ export default function UnreadTransactionsSwiper({
   const initialTransactions = plaidItem.unreadTransactions;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [rating, setRating] = useState<number | undefined>(undefined);
-  const input = useKeyboardInput();
+  const key = useRatingInput(setRating);
+
   useEffect(() => {
     setTransactions(initialTransactions);
   }, [initialTransactions]);
@@ -70,6 +71,9 @@ export default function UnreadTransactionsSwiper({
     action: SwipeAction,
     operation: SwipeOperation
   ) => {
+    await swipeOperation(id, action);
+  };
+  async function swipeOperation(id: CardId, action: SwipeAction) {
     await markTransactionAsRead(
       id as string,
       action === SwipeAction.DISLIKE,
@@ -78,7 +82,7 @@ export default function UnreadTransactionsSwiper({
     setTransactions((prev) =>
       prev.filter((transaction) => transaction.id !== id)
     );
-  };
+  }
 
   const transactionCards: CardData[] = transactions.map((transaction) => {
     const account = plaidItem.accounts.find(
@@ -189,10 +193,11 @@ export default function UnreadTransactionsSwiper({
       <div className='flex justify-center'>
         Transactions remaining:{' ' + transactions.length}
       </div>
-      <div className='flex justify-center'>Input:{input.split('').pop()}</div>
+      <div className='flex justify-center'>Input:{}</div>
       <div className='flex justify-center h-full'>
         <div style={{ height: '550px' }} className='w-full md:w-4/5 lg:w-3/5'>
           <CardSwiper
+            key={key}
             data={transactionCards}
             onDismiss={handleDismiss}
             dislikeButton={<div>Impulse</div>}

@@ -88,7 +88,6 @@ export async function exchangePublicToken(publicToken: string, userId: string) {
 }
 
 export async function syncItems(userId: string) {
-  // get all the plaid items for the user then call syncTransactions for each
   const plaidItems = await db.plaidItem.findMany({
     where: {
       userId,
@@ -175,9 +174,6 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
     where: {
       userId,
     },
-    orderBy: {
-      updatedAt: 'desc',
-    },
   });
 
   if (!plaidItems) {
@@ -191,7 +187,7 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
       recurring: false,
     },
     orderBy: {
-      date: 'desc',
+      date: 'asc',
     },
   });
 
@@ -431,8 +427,6 @@ export async function getAllLinkedItems(userId: string) {
   return itemsData;
 }
 
-// get recurring transactions  by using the recurring/get endpoint of plaid,
-// and updating all the transactions that are recurring in the database
 export async function getRecurringTransactions(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
@@ -461,7 +455,6 @@ export async function getRecurringTransactions(userId: string) {
     .map((stream) => stream.transaction_ids)
     .flat();
 
-  // update the db with the new recurring transactions
   await Promise.all(
     allRecurringTransactionsIds.map(async (transactionId) => {
       await db.transaction.update({
@@ -474,6 +467,7 @@ export async function getRecurringTransactions(userId: string) {
       });
     })
   );
+
   revalidatePath('/');
   revalidatePath('/transactions');
   revalidatePath('/review');
