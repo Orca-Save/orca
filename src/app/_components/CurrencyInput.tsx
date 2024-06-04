@@ -1,4 +1,4 @@
-import { currencyFormatter } from '@/lib/utils';
+import { currencyFormatter2 } from '@/lib/utils';
 import { InputNumber, Select } from 'antd';
 
 const { Option } = Select;
@@ -25,7 +25,7 @@ function CurrencyInput({
 
   return (
     <InputNumber
-      formatter={(value, info) => currencyFormatter(value ?? '', 'USD')}
+      formatter={(value, info) => currencyFormatter2(value)}
       parser={currencyParser}
       precision={2}
       prefix={'$'}

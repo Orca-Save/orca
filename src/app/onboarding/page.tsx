@@ -77,13 +77,17 @@ export default function OnboardingPage() {
                 onFinishFailed={(error) => setPageState({ tabKey: '1' })}
                 onFinish={async (data) => {
                   setLoading(true);
-                  if (session?.user?.id) {
-                    const result = await onboardUser(session.user.id, data);
-                    if (isFieldErrors(result)) {
-                      applyFormErrors(form, result);
-                    } else {
-                      router.push('/?confetti=true');
+                  try {
+                    if (session?.user?.id) {
+                      const result = await onboardUser(session.user.id, data);
+                      if (isFieldErrors(result)) {
+                        applyFormErrors(form, result);
+                      } else {
+                        router.push('/?confetti=true');
+                      }
                     }
+                  } catch (error) {
+                    console.error(error);
                   }
                   setLoading(false);
                 }}
@@ -100,7 +104,6 @@ export default function OnboardingPage() {
                     {
                       label: 'Goal',
                       key: '1',
-
                       children: (
                         <div style={{ margin: '15px' }}>
                           <h3
