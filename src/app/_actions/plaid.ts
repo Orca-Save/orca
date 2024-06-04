@@ -46,8 +46,8 @@ export async function createLinkToken(userId: string) {
     client_name: 'Plaid Test App',
     products: [Products.Transactions],
     language: 'en',
-    // webhook: process.env.BASE_URL + '/api/plaid/webhook',
-    webhook: 'https://webhook.site/7bad17f5-f541-4daf-8871-0ca9ff4b3649',
+    webhook: process.env.BASE_URL + '/api/plaid/webhook',
+    // webhook: 'https://webhook.site/7bad17f5-f541-4daf-8871-0ca9ff4b3649',
     country_codes: [CountryCode.Us],
   };
   const createTokenResponse = await plaidClient.linkTokenCreate(request);
