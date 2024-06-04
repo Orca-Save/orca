@@ -8,7 +8,7 @@ const { Text, Paragraph } = Typography;
 interface InstitutionCardProps {
   account: AccountBase | undefined;
   categoryIcon: string;
-  institution: Institution | null;
+  institution?: Institution;
 }
 
 export const InstitutionCard: React.FC<InstitutionCardProps> = ({

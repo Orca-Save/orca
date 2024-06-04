@@ -1,6 +1,7 @@
 'use client';
 
 import { removePlaidItem } from '@/app/_actions/plaid';
+import { currencyFormatter } from '@/lib/utils';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Card, Collapse, List } from 'antd';
 import { AccountBase, Institution } from 'plaid';
@@ -52,7 +53,7 @@ const InstitutionCollapse = ({ institution, accounts }: InstitutionProps) => {
                 <p>Subtype: {account.subtype}</p>
                 <p>Mask: {account.mask}</p>
                 <p>
-                  Balance: {account.balances.current}{' '}
+                  Balance: {currencyFormatter(account.balances.current ?? '')}{' '}
                   {account.balances.iso_currency_code}
                 </p>
               </Card>

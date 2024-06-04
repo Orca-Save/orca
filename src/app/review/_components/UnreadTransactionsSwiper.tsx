@@ -10,8 +10,10 @@ import {
 import { Title } from '@/app/_components/Typography';
 import { InstitutionCard } from '@/app/review/_components/InstitutionCard';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { Transaction as TransactionPrisma } from '@prisma/client';
 import {
   Avatar,
+  Button,
   Card,
   Col,
   Empty,
@@ -24,30 +26,20 @@ import {
 import 'antd/dist/reset.css'; // Import Ant Design styles by using 'reset.css'
 import { AccountBase, Institution, Item } from 'plaid';
 import { useEffect, useState } from 'react';
-import { markTransactionAsRead } from '../../_actions/plaid';
+import { markTransactionAsRead, syncItems } from '../../_actions/plaid';
 import useKeyboardInput from './useKeyboardInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
-interface Transaction {
-  id: string;
-  name: string;
+type Transaction = TransactionPrisma & {
   amount: number;
-  personalFinanceCategoryIcon: string | null;
-  isoCurrencyCode: string | null;
-  paymentChannel: string;
-  merchantName: string | null;
-  logoIcon: string | null;
-  accountId: string;
-  transactionId: string;
-  date: Date;
-}
+};
 interface UnreadTransactionsSwiperProps {
   userId: string;
   plaidItem: {
     unreadTransactions: Transaction[];
     accounts: AccountBase[];
-    item: Item;
-    institution: Institution | null;
+    items: Item[];
+    institutions: Institution[];
   };
 }
 
@@ -64,7 +56,6 @@ export default function UnreadTransactionsSwiper({
   userId,
 }: UnreadTransactionsSwiperProps) {
   const initialTransactions = plaidItem.unreadTransactions;
-  const institution = plaidItem.institution;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [rating, setRating] = useState<number | undefined>(undefined);
   const input = useKeyboardInput();
@@ -95,6 +86,9 @@ export default function UnreadTransactionsSwiper({
     );
     // const institutionLogo =
     //   institution.logo ?? institution.url + '/apple-touch-icon.png';
+    const institution = plaidItem.institutions.find(
+      (institution) => institution.institution_id === transaction.institutionId
+    );
     const institutionLogo =
       institution?.logo ?? institution?.url + '/favicon.ico';
 
@@ -127,7 +121,7 @@ export default function UnreadTransactionsSwiper({
             <Title level={3}>${transaction.amount.toFixed(2)}</Title>
           </div>
           <InstitutionCard
-            institution={plaidItem.institution}
+            institution={institution}
             account={account}
             categoryIcon={transaction.personalFinanceCategoryIcon ?? ''}
           />
@@ -188,9 +182,9 @@ export default function UnreadTransactionsSwiper({
 
   return (
     <>
-      {/* <Button onClick={() => syncTransactions(userId)}>
-        Sync Transactions
-      </Button> */}
+      <div className='flex justify-center'>
+        <Button onClick={() => syncItems(userId)}>Sync Transactions</Button>
+      </div>
 
       <div className='flex justify-center'>
         Transactions remaining:{' ' + transactions.length}

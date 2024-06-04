@@ -1,7 +1,7 @@
 'use server';
 
 import db from '@/db/db';
-import { Prisma } from '@prisma/client';
+import { PlaidItem, Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
 import {
@@ -46,7 +46,8 @@ export async function createLinkToken(userId: string) {
     client_name: 'Plaid Test App',
     products: [Products.Transactions],
     language: 'en',
-    webhook: process.env.BASE_URL + '/api/plaid/webhook',
+    // webhook: process.env.BASE_URL + '/api/plaid/webhook',
+    webhook: 'https://webhook.site/7bad17f5-f541-4daf-8871-0ca9ff4b3649',
     country_codes: [CountryCode.Us],
   };
   const createTokenResponse = await plaidClient.linkTokenCreate(request);
@@ -83,6 +84,21 @@ export async function exchangePublicToken(publicToken: string, userId: string) {
   revalidatePath('/user');
   revalidatePath('/review');
   revalidatePath('/transactions');
+  return true;
+}
+
+export async function syncItems(userId: string) {
+  // get all the plaid items for the user then call syncTransactions for each
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      userId,
+    },
+  });
+  await Promise.all(plaidItems.map((plaidItem) => syncTransactions(plaidItem)));
+
+  revalidatePath('/');
+  revalidatePath('/transactions');
+  revalidatePath('/review');
   return true;
 }
 
@@ -154,7 +170,7 @@ export async function getInstitutionById(institutionId: string) {
 }
 
 export async function getUnreadTransactionsAndAccounts(userId: string) {
-  const plaidItem = await db.plaidItem.findFirst({
+  const plaidItems = await db.plaidItem.findMany({
     where: {
       userId,
     },
@@ -163,56 +179,62 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
     },
   });
 
-  if (!plaidItem) {
+  if (!plaidItems) {
     throw new Error('Plaid item not found');
   }
 
-  const [unreadTransactions, accountsResponse, itemResponse] =
-    await Promise.all([
-      db.transaction.findMany({
-        where: {
-          userId,
-          unread: true,
-        },
-        orderBy: {
-          date: 'desc',
-        },
-      }),
-      plaidClient.accountsGet({
-        access_token: plaidItem.accessToken,
-      }),
-      plaidClient.itemGet({
-        access_token: plaidItem.accessToken,
-      }),
-    ]);
-
-  const institutionId = itemResponse.data.item.institution_id;
-  const institution = institutionId
-    ? await getInstitutionById(institutionId)
-    : null;
-
-  const formattedTransactions = unreadTransactions.map((transaction) => ({
-    ...transaction,
-    amount: parseFloat(transaction.amount.toFixed(2)),
-  }));
-
-  return {
-    unreadTransactions: formattedTransactions,
-    accounts: accountsResponse.data.accounts,
-    item: itemResponse.data.item,
-    institution,
-  };
-}
-export async function syncTransactions(userId: string) {
-  const plaidItem = await db.plaidItem.findFirst({
+  const unreadTransactions = await db.transaction.findMany({
     where: {
       userId,
+      unread: true,
     },
     orderBy: {
-      updatedAt: 'desc',
+      date: 'desc',
     },
   });
 
+  const groupedAccounts = await Promise.all(
+    plaidItems.map(
+      async (plaidItem) =>
+        (
+          await plaidClient.accountsGet({
+            access_token: plaidItem.accessToken,
+          })
+        ).data.accounts
+    )
+  );
+  const accounts = groupedAccounts.flat();
+
+  const items = await Promise.all(
+    plaidItems.map(
+      async (plaidItem) =>
+        (
+          await plaidClient.itemGet({
+            access_token: plaidItem.accessToken,
+          })
+        ).data.item
+    )
+  );
+  const institutions = await Promise.all(
+    items
+      .filter((item) => item.institution_id)
+      .map(async (item) => await getInstitutionById(item.institution_id!))
+  );
+
+  const formattedTransactions = unreadTransactions.map((transaction) =>
+    Object.assign(transaction, {
+      amount: parseFloat(transaction.amount.toFixed(2)),
+    })
+  );
+
+  return {
+    items,
+    accounts,
+    institutions,
+    unreadTransactions: formattedTransactions,
+  };
+}
+export async function syncTransactions(plaidItem: PlaidItem) {
   if (!plaidItem) {
     throw new Error('Plaid item not found');
   }
@@ -246,9 +268,10 @@ export async function syncTransactions(userId: string) {
 
   await db.transaction.createMany({
     data: addedTransactions.map((transaction) => ({
-      userId,
+      userId: plaidItem.userId,
       accountId: transaction.account_id,
       transactionId: transaction.transaction_id,
+      institutionId: plaidItem.institutionId,
       amount: transaction.amount,
       name: transaction.name,
       pending: transaction.pending,
@@ -331,10 +354,11 @@ export async function getUnreadTransactions(userId: string) {
     },
   });
 
-  return transactions.map((transaction) => ({
-    ...transaction,
-    amount: parseFloat(transaction.amount.toFixed(2)),
-  }));
+  return transactions.map((transaction) =>
+    Object.assign(transaction, {
+      amount: parseFloat(transaction.amount.toFixed(2)),
+    })
+  );
 }
 
 export async function markAllTransactionsAsUnread(userId: string) {

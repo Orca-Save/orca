@@ -126,6 +126,7 @@ model Transaction {
   transactionId  String    @unique
   userId         String
   accountId      String
+  institutionId  String
   amount         Decimal   @db.Decimal(65, 2)
   date           DateTime
   name           String

@@ -17,7 +17,7 @@ async function plaidWebhookHandler(req: any) {
     switch (webhook_code) {
       case 'INITIAL_UPDATE':
       case 'SYNC_UPDATES_AVAILABLE':
-        await syncTransactions(plaidItem.userId);
+        await syncTransactions(plaidItem);
         break;
       case 'HISTORICAL_UPDATE':
         break;
