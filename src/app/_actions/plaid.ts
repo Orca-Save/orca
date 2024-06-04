@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import {
   Configuration,
   CountryCode,
+  Institution,
   InstitutionsGetByIdRequest,
   PlaidApi,
   PlaidEnvironments,
@@ -62,15 +63,27 @@ export async function exchangePublicToken(publicToken: string, userId: string) {
 
   const accessToken = exchangeTokenResponse.data.access_token;
   const itemId = exchangeTokenResponse.data.item_id;
+  const itemResponse = await plaidClient.itemGet({
+    access_token: accessToken,
+  });
+  const institutionId = itemResponse.data.item.institution_id;
+  if (!institutionId) return false;
 
   await db.plaidItem.create({
     data: {
+      institutionId,
       accessToken,
       itemId,
       userId,
       updatedAt: new Date(),
     },
   });
+
+  revalidatePath('/');
+  revalidatePath('/user');
+  revalidatePath('/review');
+  revalidatePath('/transactions');
+  return true;
 }
 
 export async function getTransactions(
@@ -121,7 +134,12 @@ export async function getTransactions(
     throw error;
   }
 }
+const currentInstitutions = new Map<string, Institution>();
 export async function getInstitutionById(institutionId: string) {
+  if (currentInstitutions.has(institutionId)) {
+    return currentInstitutions.get(institutionId)!;
+  }
+
   const request: InstitutionsGetByIdRequest = {
     institution_id: institutionId,
     options: {
@@ -131,6 +149,7 @@ export async function getInstitutionById(institutionId: string) {
   };
 
   const response = await plaidClient.institutionsGetById(request);
+  currentInstitutions.set(institutionId, response.data.institution);
   return response.data.institution;
 }
 
@@ -341,4 +360,45 @@ export async function markTransactionAsRead(
     where: { id },
     data: { unread: false, rating, impulse },
   });
+}
+
+export async function removePlaidItem(id: string) {
+  await db.plaidItem.delete({
+    where: { institutionId: id },
+  });
+
+  revalidatePath('/');
+  revalidatePath('/user');
+  return true;
+}
+
+export async function getAllLinkedItems(userId: string) {
+  const itemsMeta = await db.plaidItem.findMany({
+    where: {
+      userId,
+    },
+  });
+  const items = await Promise.all(
+    itemsMeta.map(async (item) => {
+      const itemResponse = await plaidClient.itemGet({
+        access_token: item.accessToken,
+      });
+
+      return itemResponse.data.item;
+    })
+  );
+  const itemsData = await Promise.all(
+    itemsMeta.map(async (item) => {
+      const accountResponse = await plaidClient.accountsGet({
+        access_token: item.accessToken,
+      });
+      const plaidItem = items.find((x) => x.item_id === item.itemId);
+      let institution: Institution | undefined = undefined;
+      if (plaidItem)
+        institution = await getInstitutionById(plaidItem.institution_id!);
+      return { institution, accounts: accountResponse.data.accounts };
+    })
+  );
+
+  return itemsData;
 }

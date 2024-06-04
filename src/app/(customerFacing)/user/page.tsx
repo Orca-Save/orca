@@ -7,6 +7,7 @@ import { Button, Space } from 'antd';
 import { getServerSession } from 'next-auth/next';
 import Link from 'next/link';
 import ClearUserData from './_components/ClearUserData';
+import ListItems from './_components/ListItems';
 import PlaidLink from './_components/PlaidLink';
 import Subscription from './_components/Subscription';
 
@@ -30,6 +31,7 @@ export default async function UserPage() {
             linkToken={linkTokenData.link_token}
             userId={session.user.id}
           />
+          <ListItems userId={session.user.id} />
         </div>
         <Link href='/api/auth/signout'>
           <Button size='large'>Logout</Button>

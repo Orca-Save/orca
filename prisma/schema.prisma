@@ -109,15 +109,16 @@ model UserProfile {
 }
 
 model PlaidItem {
-  id          String        @id @default(uuid())
-  userId      String
-  itemId      String
-  accessToken String
-  cursor      String?
-  createdAt   DateTime      @default(now()) @db.Timestamptz()
-  updatedAt   DateTime      @updatedAt @db.Timestamptz()
-  deletedAt   DateTime?     @db.Timestamptz()
-  Transaction Transaction[]
+  id            String        @id @default(uuid())
+  userId        String
+  itemId        String        @unique
+  institutionId String        @unique
+  accessToken   String        @unique
+  cursor        String?
+  createdAt     DateTime      @default(now()) @db.Timestamptz()
+  updatedAt     DateTime      @updatedAt @db.Timestamptz()
+  deletedAt     DateTime?     @db.Timestamptz()
+  Transaction   Transaction[]
 }
 
 model Transaction {
