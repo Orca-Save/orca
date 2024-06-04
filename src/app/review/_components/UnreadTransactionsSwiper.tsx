@@ -25,6 +25,7 @@ import 'antd/dist/reset.css'; // Import Ant Design styles by using 'reset.css'
 import { AccountBase, Institution, Item } from 'plaid';
 import { useEffect, useState } from 'react';
 import { markTransactionAsRead } from '../../_actions/plaid';
+import useKeyboardInput from './useKeyboardInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
 interface Transaction {
@@ -66,7 +67,7 @@ export default function UnreadTransactionsSwiper({
   const institution = plaidItem.institution;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [rating, setRating] = useState<number | undefined>(undefined);
-
+  const input = useKeyboardInput();
   useEffect(() => {
     setTransactions(initialTransactions);
   }, [initialTransactions]);
@@ -194,6 +195,7 @@ export default function UnreadTransactionsSwiper({
       <div className='flex justify-center'>
         Transactions remaining:{' ' + transactions.length}
       </div>
+      <div className='flex justify-center'>Input:{input.split('').pop()}</div>
       <div className='flex justify-center h-full'>
         <div style={{ height: '550px' }} className='w-full md:w-4/5 lg:w-3/5'>
           <CardSwiper
