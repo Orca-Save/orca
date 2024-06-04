@@ -191,6 +191,9 @@ export default function UnreadTransactionsSwiper({
         Sync Transactions
       </Button> */}
 
+      <div className='flex justify-center'>
+        Transactions remaining:{' ' + transactions.length}
+      </div>
       <div className='flex justify-center h-full'>
         <div style={{ height: '550px' }} className='w-full md:w-4/5 lg:w-3/5'>
           <CardSwiper

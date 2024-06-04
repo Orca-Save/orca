@@ -360,6 +360,7 @@ export async function markTransactionAsRead(
     where: { id },
     data: { unread: false, rating, impulse },
   });
+  revalidatePath('/');
 }
 
 export async function removePlaidItem(id: string) {
