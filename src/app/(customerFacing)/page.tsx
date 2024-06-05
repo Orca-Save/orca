@@ -14,6 +14,7 @@ import { redirect } from 'next/navigation';
 import { getUnreadTransactionCount } from '../_actions/users';
 import { Title } from '../_components/Typography';
 import ConfettiComp from './_components/Confetti';
+import ConnectPlaidCard from './_components/ConnectPlaidCard';
 
 const DynamicPinnedGoal = dynamic(() => import('./_components/DashGoalCard'), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
@@ -29,7 +30,6 @@ const getOnboardingProfileCount = (userId: string) => {
     },
   });
 };
-
 export default async function HomePage({
   params,
   searchParams,
@@ -47,6 +47,7 @@ export default async function HomePage({
   ]);
   if (session.isNewUser || onboardingProfileCount === 0)
     redirect('/onboarding');
+
   return (
     <div className='flex justify-center'>
       <ConfettiComp run={searchParams?.confetti === 'true'} path='/' />
@@ -105,9 +106,7 @@ export default async function HomePage({
             </Card>
           </Link>
         ) : (
-          <Link href='/user'>
-            <Button type='link'>Connect your bank to see transactions</Button>
-          </Link>
+          <ConnectPlaidCard />
         )}
         <Title level={4} style={{ margin: 0 }}>
           One-Tap Impulse Saves
