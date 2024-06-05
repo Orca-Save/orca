@@ -14,7 +14,7 @@ import { redirect } from 'next/navigation';
 import { getUnreadTransactionCount } from '../_actions/users';
 import { Title } from '../_components/Typography';
 import ConfettiComp from './_components/Confetti';
-import ConnectPlaidCard from './_components/ConnectPlaidCard';
+import ConnectPlaid from './_components/ConnectPlaid';
 
 const DynamicPinnedGoal = dynamic(() => import('./_components/DashGoalCard'), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
@@ -87,7 +87,10 @@ export default async function HomePage({
             <Card
               title={
                 unreadObj.unreadCount ? (
-                  <span>Unread Transactions</span>
+                  <>
+                    <span>Unread Buys</span>
+                    {emoji.find('money_with_wings')?.emoji}
+                  </>
                 ) : (
                   <span>All transactions reviewed</span>
                 )
@@ -106,7 +109,7 @@ export default async function HomePage({
             </Card>
           </Link>
         ) : (
-          <ConnectPlaidCard />
+          <ConnectPlaid userId={session.user.id} />
         )}
         <Title level={4} style={{ margin: 0 }}>
           One-Tap Impulse Saves

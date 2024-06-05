@@ -15,7 +15,7 @@ export default async function UserPage() {
   const session = await getServerSession(authOptions);
   if (!session) return <SignIn />;
   if (!isExtendedSession(session)) return <SignIn />;
-  const [linkTokenData] = await Promise.all([createLinkToken(session.user.id)]);
+  const linkToken = await createLinkToken(session.user.id);
   return (
     <>
       <Title>User Profile</Title>
@@ -28,7 +28,7 @@ export default async function UserPage() {
         <div>
           <Title level={4}>Connect your banks with Plaid</Title>
           <PlaidLink
-            linkToken={linkTokenData.link_token}
+            linkToken={linkToken.link_token}
             userId={session.user.id}
           />
           <ListItems userId={session.user.id} />

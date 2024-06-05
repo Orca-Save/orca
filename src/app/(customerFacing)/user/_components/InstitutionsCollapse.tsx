@@ -1,6 +1,7 @@
 'use client';
 
 import { removePlaidItem } from '@/app/_actions/plaid';
+import { Title } from '@/app/_components/Typography';
 import { currencyFormatter } from '@/lib/utils';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Card, Collapse, List } from 'antd';
@@ -75,6 +76,9 @@ const InstitutionCollapses = ({
 }) => {
   return (
     <div>
+      {itemsData.length > 0 && (
+        <Title level={5}>Currently connected accounts</Title>
+      )}
       {itemsData.map(({ institution, accounts }) => (
         <InstitutionCollapse
           key={institution?.institution_id}
