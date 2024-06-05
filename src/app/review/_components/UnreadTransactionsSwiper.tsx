@@ -10,6 +10,7 @@ import {
 import { Title } from '@/app/_components/Typography';
 import { InstitutionCard } from '@/app/review/_components/InstitutionCard';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { Liquid } from '@ant-design/plots';
 import { Transaction as TransactionPrisma } from '@prisma/client';
 import {
   Avatar,
@@ -183,7 +184,7 @@ export default function UnreadTransactionsSwiper({
       ),
     };
   });
-
+  const config = liquidConfig(transactions.length, initialTransactions.length);
   return (
     <>
       <div className='flex justify-center'>
@@ -193,9 +194,10 @@ export default function UnreadTransactionsSwiper({
       <div className='flex justify-center'>
         Transactions remaining:{' ' + transactions.length}
       </div>
-      <div className='flex justify-center'>Input:{}</div>
+      <Liquid {...config} />
+
       <div className='flex justify-center h-full'>
-        <div style={{ height: '550px' }} className='w-full md:w-4/5 lg:w-3/5'>
+        <div style={{ height: '450px' }} className='w-full md:w-4/5 lg:w-3/5'>
           <CardSwiper
             key={key}
             data={transactionCards}
@@ -225,4 +227,34 @@ export default function UnreadTransactionsSwiper({
       </div>
     </>
   );
+}
+
+function liquidConfig(currentCount: number, totalCount: number) {
+  let binSize = 15;
+  if (totalCount > binSize) binSize = totalCount;
+  return {
+    percent: currentCount / binSize,
+    height: 200,
+    shape: 'square',
+    annotations: [
+      {
+        type: 'text',
+        style: {
+          text: `${currentCount}`,
+          x: '50%',
+          y: '50%',
+          textAlign: 'center',
+          fontSize: 16,
+          fontStyle: 'bold',
+        },
+      },
+    ],
+    tooltip: false,
+    style: {
+      outlineBorder: 4,
+      textFill: 'transparent',
+      outlineDistance: 4,
+      waveLength: 128,
+    },
+  };
 }
