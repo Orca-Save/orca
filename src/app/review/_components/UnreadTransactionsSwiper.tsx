@@ -185,6 +185,7 @@ export default function UnreadTransactionsSwiper({
     };
   });
   const config = liquidConfig(transactions.length, initialTransactions.length);
+  console.log('lengths', transactions.length, initialTransactions.length);
   return (
     <>
       <div className='flex justify-center'>
@@ -235,7 +236,7 @@ function liquidConfig(currentCount: number, totalCount: number) {
   return {
     percent: currentCount / binSize,
     height: 200,
-    shape: 'square',
+    shape: 'rect',
     annotations: [
       {
         type: 'text',
