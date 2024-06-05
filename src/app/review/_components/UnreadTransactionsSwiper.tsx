@@ -185,18 +185,13 @@ export default function UnreadTransactionsSwiper({
     };
   });
   const config = liquidConfig(transactions.length, initialTransactions.length);
-  console.log('lengths', transactions.length, initialTransactions.length);
   return (
     <>
       <div className='flex justify-center'>
         <Button onClick={() => syncItems(userId)}>Sync Transactions</Button>
       </div>
 
-      <div className='flex justify-center'>
-        Transactions remaining:{' ' + transactions.length}
-      </div>
       <Liquid {...config} />
-
       <div className='flex justify-center h-full'>
         <div style={{ height: '450px' }} className='w-full md:w-4/5 lg:w-3/5'>
           <CardSwiper
