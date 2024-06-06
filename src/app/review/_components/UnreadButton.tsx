@@ -1,12 +1,20 @@
 'use client';
 
-import { markAllTransactionsAsUnread } from '@/app/_actions/plaid';
+import {
+  getRecurringTransactions,
+  markAllTransactionsAsUnread,
+} from '@/app/_actions/plaid';
 import { Button } from 'antd';
 
 export default function UnreadButton({ userId }: { userId: string }) {
   return (
-    <Button onClick={() => markAllTransactionsAsUnread(userId)}>
-      Mark all unread
-    </Button>
+    <>
+      <Button onClick={() => markAllTransactionsAsUnread(userId)}>
+        Mark all unread
+      </Button>
+      <Button onClick={() => getRecurringTransactions(userId)}>
+        Get recurring
+      </Button>
+    </>
   );
 }

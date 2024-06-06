@@ -227,7 +227,8 @@ export default function UnreadTransactionsSwiper({
 
 function liquidConfig(currentCount: number, totalCount: number) {
   let binSize = 15;
-  if (totalCount > binSize) binSize = totalCount;
+  if (totalCount > binSize) binSize = 50;
+  if (totalCount > binSize) binSize = 100;
   return {
     percent: currentCount / binSize,
     height: 200,
