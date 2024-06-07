@@ -82,7 +82,6 @@ function SubscriptionForm({
 
   return (
     <Form form={form} onFinish={onFinish}>
-      <div>Here I am</div>
       <ExpressCheckoutElement
         options={{
           buttonType: {

@@ -99,7 +99,7 @@ model GoalTransfer {
 model UserProfile {
   id                   String  @id @default(uuid())
   userId               String  @unique
-  stripeCustomerId     String
+  stripeCustomerId     String?
   stripeSubscriptionId String?
   termsAccepted        Boolean @default(false)
 

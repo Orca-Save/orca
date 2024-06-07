@@ -1,5 +1,6 @@
 'use server';
 import db from '@/db/db';
+import { UserProfile } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import Stripe from 'stripe';
 
@@ -7,12 +8,14 @@ if (!process.env.STRIPE_SECRET_KEY)
   console.error('MISSING STRIPE_SECRET_KEY!!!');
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-type SubscriptionRequest = {
-  name: string;
-  email: string;
-  paymentMethod: string;
-};
-export async function createSubscription(userId: string, email: string) {
+export async function createSubscription(
+  userId: string,
+  email: string
+): Promise<{
+  userProfile: UserProfile | null;
+  clientSecret?: string;
+  subscriptionId?: string;
+}> {
   const userProfile = await db.userProfile.findFirst({
     where: {
       userId,
@@ -55,14 +58,18 @@ export async function createSubscription(userId: string, email: string) {
     });
   }
 
+  const response = {
+    userProfile,
+  };
   // @ts-ignore
   if (subscription.latest_invoice?.payment_intent?.client_secret) {
-    return {
+    Object.assign(response, {
       // @ts-ignore
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       subscriptionId: subscription.id,
-    };
+    });
   }
+  return response;
 }
 
 export async function addSubscriptionId(

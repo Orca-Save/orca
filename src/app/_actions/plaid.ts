@@ -52,8 +52,6 @@ export async function createLinkToken(userId: string) {
   };
   const createTokenResponse = await plaidClient.linkTokenCreate(request);
   revalidatePath('/');
-  revalidatePath('/transactions');
-
   return createTokenResponse.data;
 }
 
@@ -457,14 +455,18 @@ export async function getRecurringTransactions(userId: string) {
 
   await Promise.all(
     allRecurringTransactionsIds.map(async (transactionId) => {
-      await db.transaction.update({
-        where: {
-          transactionId: transactionId,
-        },
-        data: {
-          recurring: true,
-        },
-      });
+      try {
+        await db.transaction.update({
+          where: {
+            transactionId: transactionId,
+          },
+          data: {
+            recurring: true,
+          },
+        });
+      } catch (en) {
+        console.error(en);
+      }
     })
   );
 
