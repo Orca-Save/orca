@@ -47,7 +47,7 @@ model GoalCategory {
 
 model OnboardingProfile {
   id        String    @id @default(uuid())
-  userId    String
+  userId    String    @unique
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime  @updatedAt @db.Timestamptz()
   deletedAt DateTime? @db.Timestamptz()
@@ -97,11 +97,11 @@ model GoalTransfer {
 }
 
 model UserProfile {
-  id                   String  @id @default(uuid())
-  userId               String  @unique
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  termsAccepted        Boolean @default(false)
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  privacyPolicyAccepted Boolean @default(false)
 
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime  @updatedAt @db.Timestamptz()

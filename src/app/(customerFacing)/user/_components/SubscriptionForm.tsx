@@ -10,7 +10,7 @@ import {
   StripeError,
   StripeExpressCheckoutElementConfirmEvent,
 } from '@stripe/stripe-js';
-import { Button, Form, notification } from 'antd';
+import { Button, notification } from 'antd';
 import { useRouter } from 'next/navigation';
 import { addSubscriptionId } from '../_actions/stripe';
 
@@ -18,12 +18,13 @@ function SubscriptionForm({
   clientSecret,
   userId,
   subscriptionId,
+  redirect,
 }: {
+  redirect: boolean;
   clientSecret: string;
   userId: string;
   subscriptionId: string;
 }) {
-  const [form] = Form.useForm();
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -68,7 +69,7 @@ function SubscriptionForm({
           placement: 'top',
           duration: 3,
         });
-        router.push('/user');
+        if (redirect) router.push('/user');
       }
     } catch (error) {
       api.error({
@@ -81,7 +82,7 @@ function SubscriptionForm({
   };
 
   return (
-    <Form form={form} onFinish={onFinish}>
+    <>
       <ExpressCheckoutElement
         options={{
           buttonType: {
@@ -99,29 +100,32 @@ function SubscriptionForm({
           event: StripeExpressCheckoutElementConfirmEvent
         ) {}}
       />
-      <PaymentElement
-        options={{
-          wallets: {
-            applePay: 'auto',
-            googlePay: 'auto',
-          },
-          fields: {
-            billingDetails: {
-              name: 'auto',
-              email: 'auto',
+      <div style={{ height: 400 }}>
+        <PaymentElement
+          options={{
+            wallets: {
+              applePay: 'auto',
+              googlePay: 'auto',
             },
-          },
-        }}
-      />
+            fields: {
+              billingDetails: {
+                name: 'auto',
+                email: 'auto',
+              },
+            },
+          }}
+        />
+      </div>
       <Button
         type='primary'
         size='large'
-        htmlType='submit'
+        // htmlType='submit'
         disabled={!stripe || !elements}
+        onClick={onFinish}
       >
-        Subscribe for $4.00/month
+        Subscribe for $4.00/months
       </Button>
-    </Form>
+    </>
   );
 }
 

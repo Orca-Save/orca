@@ -11,21 +11,25 @@ import {
   Typography,
 } from 'antd';
 
+import InstitutionCollapses from '@/app/(customerFacing)/user/_components/InstitutionsCollapse';
 import PlaidLink from '@/app/(customerFacing)/user/_components/PlaidLink';
 import StripeForm from '@/app/(customerFacing)/user/_components/StripeForm';
+import { ItemData } from '@/app/_actions/plaid';
 import CurrencyInput from '@/app/_components/CurrencyInput';
 import { Paragraph } from '@/app/_components/Typography';
 import UnsplashForm from '@/app/_components/UnsplashForm';
 import { isFieldErrors } from '@/lib/goals';
 import { isExtendedSession } from '@/lib/session';
 import { applyFormErrors } from '@/lib/utils';
-import { UserProfile } from '@prisma/client';
+import { UserOutlined } from '@ant-design/icons';
+import { OnboardingProfile, UserProfile } from '@prisma/client';
+import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
 import { Open_Sans, Varela_Round } from 'next/font/google';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { onboardUser } from '../_actions/onboarding';
+import { onboardUser, saveOnboardingProfile } from '../_actions/onboarding';
 
 const { Title, Text } = Typography;
 
@@ -42,34 +46,46 @@ const openSans = Open_Sans({
   variable: '--font-opensans',
 });
 type OnboardingFormProps = {
-  subResponse: {
-    userProfile: UserProfile | null;
-    clientSecret?: string;
-    subscriptionId?: string;
-  };
+  userProfile: UserProfile | null;
   linkToken: string;
+  itemsData: ItemData[];
+  onboardingProfile: OnboardingProfile | null;
 };
 export default function OnboardingForm({
-  subResponse,
   linkToken,
+  userProfile,
+  itemsData,
+  onboardingProfile,
 }: OnboardingFormProps) {
   const [form] = Form.useForm();
-  const [pageState, setPageState] = useState({ tabKey: '0' });
+  const [pageState, setPageState] = useState(
+    initialPageState(onboardingProfile, userProfile)
+  );
   const [loading, setLoading] = useState(false);
+  const [privacyChecked, setPrivacyChecked] = useState(
+    userProfile?.privacyPolicyAccepted ?? false
+  );
+  const router = useRouter();
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       router.push('/');
     },
   });
-  const router = useRouter();
 
   if (!session) return null;
   if (!isExtendedSession(session)) return null;
-
   const currentTab = Number(pageState.tabKey);
-  console.log('currentTab', currentTab);
   const forceRender = true;
+  let disableNext = false;
+  console.log('here');
+  if (currentTab === 2 && !privacyChecked) disableNext = true;
+  if (currentTab === 3 && !userProfile?.stripeSubscriptionId)
+    disableNext = true;
+  if (currentTab === 3 && !privacyChecked && !userProfile?.stripeSubscriptionId)
+    disableNext = true;
+  if (currentTab === 4 && itemsData.length === 0) disableNext = true;
+
   return (
     <div>
       <Row justify='center'>
@@ -85,12 +101,27 @@ export default function OnboardingForm({
           form={form}
           layout='vertical'
           className='w-full md:w-4/5 lg:w-3/5'
+          initialValues={{
+            goalName: onboardingProfile?.goalName,
+            goalAmount: onboardingProfile?.goalAmount,
+            goalDueAt: onboardingProfile?.goalDueAt
+              ? dayjs(onboardingProfile.goalDueAt)
+              : undefined,
+            imagePath: onboardingProfile?.imagePath,
+            initialAmount: onboardingProfile?.initialAmount,
+            saving: onboardingProfile?.saving,
+            savingAmount: onboardingProfile?.savingAmount,
+          }}
           onFinishFailed={(error) => setPageState({ tabKey: '0' })}
           onFinish={async (data) => {
             setLoading(true);
             try {
               if (session?.user?.id) {
-                const result = await onboardUser(session.user.id, data);
+                const result = await onboardUser(session.user.id, {
+                  ...data,
+                  privacyAgreement: privacyChecked,
+                  goalDueAt: data.goalDueAt.format(),
+                });
                 if (isFieldErrors(result)) {
                   applyFormErrors(form, result);
                 } else {
@@ -167,10 +198,15 @@ export default function OnboardingForm({
                       <DatePicker />
                     </Form.Item>
 
-                    <Form.Item name='imagePath'>
+                    <Form.Item name='imagePath' required>
                       <UnsplashForm
                         onSelect={(url) =>
                           form.setFieldsValue({ imagePath: url })
+                        }
+                        defaultValue={
+                          onboardingProfile?.imagePath === null
+                            ? undefined
+                            : onboardingProfile?.imagePath
                         }
                       />
                     </Form.Item>
@@ -239,7 +275,11 @@ export default function OnboardingForm({
                       label='I have read and agree to the Privacy Policy'
                       required
                     >
-                      <Checkbox />
+                      <Checkbox
+                        value={privacyChecked}
+                        defaultChecked={privacyChecked}
+                        onChange={(e) => setPrivacyChecked(e.target.checked)}
+                      />
                     </Form.Item>
                   </div>
                 ),
@@ -247,7 +287,7 @@ export default function OnboardingForm({
               {
                 label: '4 Subscription',
                 key: '3',
-                forceRender,
+                disabled: !privacyChecked && !userProfile?.stripeSubscriptionId,
                 children: (
                   <div style={{ margin: '15px' }}>
                     <div style={{ marginBottom: '20px' }}>
@@ -263,25 +303,31 @@ export default function OnboardingForm({
                         designed to help you achieve your financial goals.
                         Subscribe now and take control of your financial future!
                       </Paragraph>
-                      <Paragraph>
-                        Sign up and cancel anytime at your{' '}
-                        <Link href='/user'>user profile</Link>.
-                      </Paragraph>
-                      {subResponse.userProfile?.stripeSubscriptionId ? (
+                      {userProfile?.stripeSubscriptionId ? (
                         <>
                           <Text>
-                            You are already subscribed.{' '}
+                            You are subscribed.{' '}
                             <Link href='/user'>View your subscription</Link>
                           </Text>
                         </>
                       ) : (
-                        <StripeForm
-                          userId={session?.user.id}
-                          email={session?.user.email ?? ''}
-                          clientSecret={subResponse?.clientSecret!}
-                          subscriptionId={subResponse?.subscriptionId!}
-                        />
+                        <Paragraph>
+                          Sign up and cancel anytime at your{' '}
+                          <Link href='/user'>
+                            <UserOutlined /> user profile
+                          </Link>
+                          .
+                        </Paragraph>
                       )}
+
+                      {currentTab === 3 &&
+                      !userProfile?.stripeSubscriptionId ? (
+                        <StripeForm
+                          email={session?.user.email ?? ''}
+                          userId={session?.user.id}
+                          redirect={false}
+                        />
+                      ) : null}
                     </div>
                   </div>
                 ),
@@ -289,6 +335,8 @@ export default function OnboardingForm({
               {
                 label: '5 Connect Accounts',
                 key: '4',
+                forceRender,
+                disabled: !privacyChecked || !userProfile?.stripeSubscriptionId,
                 children: (
                   <div style={{ margin: '15px' }}>
                     <div style={{ marginBottom: '20px' }}>
@@ -308,19 +356,24 @@ export default function OnboardingForm({
 
                       <Paragraph>
                         You can manage and add more linked accounts in your{' '}
-                        <Link href='/user'>user profile</Link>.
+                        <Link href='/user'>
+                          <UserOutlined />
+                          user profile
+                        </Link>
+                        .
                       </Paragraph>
                       <PlaidLink
                         userId={session.user.id}
                         linkToken={linkToken}
                       />
-                      {/* <Subscription /> */}
+                      <InstitutionCollapses itemsData={itemsData} />
                     </div>
                   </div>
                 ),
               },
             ]}
           />
+
           <Row
             justify='end'
             style={{
@@ -344,17 +397,40 @@ export default function OnboardingForm({
                 <Button
                   type='primary'
                   size='large'
-                  key={currentTab === 4 ? 'submit' : 'button'}
-                  id={currentTab === 4 ? 'submit' : 'button'}
-                  htmlType={currentTab === 4 ? 'submit' : 'button'}
-                  onClick={() => {
-                    if (currentTab === 4) return;
+                  disabled={disableNext}
+                  loading={loading}
+                  onClick={async () => {
+                    if (currentTab === 2 && !privacyChecked) return;
+                    if (currentTab === 3 && !userProfile?.stripeSubscriptionId)
+                      return;
+
+                    setLoading(true);
+                    const onboardingProfile = {
+                      ...form.getFieldsValue(),
+                      privacyAgreement: privacyChecked,
+                      goalDueAt: form.getFieldValue('goalDueAt').format(),
+                    };
+                    if (currentTab === 4) {
+                      await onboardUser(session.user.id, onboardingProfile);
+                      setLoading(false);
+                      router.push('/?confetti=true');
+                      return;
+                    }
+
                     const nextTab = currentTab + 1;
-                    if (nextTab <= 4)
+                    const result = await saveOnboardingProfile(
+                      session.user.id,
+                      onboardingProfile
+                    );
+                    setLoading(false);
+
+                    if (isFieldErrors(result)) {
+                      applyFormErrors(form, result);
+                    } else if (nextTab <= 4)
                       setPageState({ tabKey: nextTab.toString() });
                   }}
                 >
-                  Next
+                  {currentTab === 4 ? 'Done' : 'Next'}
                 </Button>
               </Form.Item>
             </Space>
@@ -363,4 +439,20 @@ export default function OnboardingForm({
       </Row>
     </div>
   );
+}
+
+function initialPageState(
+  onboardingProfile: OnboardingProfile | null,
+  userProfile: UserProfile | null
+) {
+  let tabKey = '0';
+  if (onboardingProfile) {
+    if (onboardingProfile.goalName) tabKey = '1';
+    if (onboardingProfile.saving) tabKey = '2';
+    if (userProfile?.privacyPolicyAccepted) tabKey = '3';
+    if (userProfile?.stripeSubscriptionId) tabKey = '4';
+  }
+  return {
+    tabKey,
+  };
 }

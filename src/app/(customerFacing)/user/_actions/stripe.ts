@@ -1,6 +1,5 @@
 'use server';
 import db from '@/db/db';
-import { UserProfile } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import Stripe from 'stripe';
 
@@ -11,17 +10,23 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 export async function createSubscription(
   userId: string,
   email: string
-): Promise<{
-  userProfile: UserProfile | null;
-  clientSecret?: string;
-  subscriptionId?: string;
-}> {
+): Promise<
+  | {
+      clientSecret?: string;
+      subscriptionId?: string;
+    }
+  | { message: string }
+> {
   const userProfile = await db.userProfile.findFirst({
     where: {
       userId,
     },
   });
 
+  if (userProfile === null)
+    return {
+      message: 'user not found',
+    };
   let customerId = userProfile?.stripeCustomerId;
   if (!customerId) {
     const customer = await stripe.customers.create({
@@ -48,28 +53,33 @@ export async function createSubscription(
   });
 
   if (!userProfile) {
-    await db.userProfile.create({
-      data: {
+    await db.userProfile.upsert({
+      where: {
+        userId,
+      },
+      create: {
         userId,
         stripeCustomerId: customerId,
-        createdAt: new Date(),
+      },
+      update: {
+        stripeCustomerId: customerId,
         updatedAt: new Date(),
       },
     });
   }
 
-  const response = {
-    userProfile,
-  };
   // @ts-ignore
   if (subscription.latest_invoice?.payment_intent?.client_secret) {
-    Object.assign(response, {
+    return {
       // @ts-ignore
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       subscriptionId: subscription.id,
-    });
+    };
   }
-  return response;
+
+  return {
+    message: 'Failed to create subscription',
+  };
 }
 
 export async function addSubscriptionId(

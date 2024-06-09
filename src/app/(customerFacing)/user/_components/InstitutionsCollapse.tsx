@@ -1,6 +1,6 @@
 'use client';
 
-import { removePlaidItem } from '@/app/_actions/plaid';
+import { ItemData, removePlaidItem } from '@/app/_actions/plaid';
 import { Title } from '@/app/_components/Typography';
 import { currencyFormatter } from '@/lib/utils';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -66,14 +66,7 @@ const InstitutionCollapse = ({ institution, accounts }: InstitutionProps) => {
   );
 };
 
-const InstitutionCollapses = ({
-  itemsData,
-}: {
-  itemsData: {
-    institution: Institution | undefined;
-    accounts: AccountBase[];
-  }[];
-}) => {
+const InstitutionCollapses = ({ itemsData }: { itemsData: ItemData[] }) => {
   return (
     <div>
       {itemsData.length > 0 && (

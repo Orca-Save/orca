@@ -5,6 +5,7 @@ import { PlaidItem, Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
 import {
+  AccountBase,
   Configuration,
   CountryCode,
   Institution,
@@ -262,6 +263,16 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   const removedTransactions = transactionsResponse.data.removed;
   const newCursor = transactionsResponse.data.next_cursor;
 
+  await db.plaidItem.update({
+    where: {
+      id: plaidItem.id,
+    },
+    data: {
+      cursor: newCursor,
+      updatedAt: new Date(),
+    },
+  });
+
   await db.transaction.createMany({
     data: addedTransactions.map((transaction) => ({
       userId: plaidItem.userId,
@@ -324,16 +335,6 @@ export async function syncTransactions(plaidItem: PlaidItem) {
     })
   );
 
-  await db.plaidItem.update({
-    where: {
-      id: plaidItem.id,
-    },
-    data: {
-      cursor: newCursor,
-      updatedAt: new Date(),
-    },
-  });
-
   revalidatePath('/');
   revalidatePath('/transactions');
   revalidatePath('/review');
@@ -394,7 +395,11 @@ export async function removePlaidItem(id: string) {
   return true;
 }
 
-export async function getAllLinkedItems(userId: string) {
+export type ItemData = {
+  institution?: Institution;
+  accounts: AccountBase[];
+};
+export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   const itemsMeta = await db.plaidItem.findMany({
     where: {
       userId,
