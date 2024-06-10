@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Button, Form, Input, Rate, Space, notification } from "antd";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { Button, Form, Input, Rate, Space, notification } from 'antd';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 import {
   isGoalTransferFieldErrors,
   isPinnedGoalError,
-} from "@/lib/goalTransfers";
-import { isExtendedSession } from "@/lib/session";
-import { getPrevPageHref } from "@/lib/utils";
-import { FrownOutlined, MehOutlined, SmileOutlined } from "@ant-design/icons";
-import { addQuickGoalTransfer } from "../_actions/goalTransfers";
-import CurrencyInput from "./CurrencyInput";
+} from '@/lib/goalTransfers';
+import { isExtendedSession } from '@/lib/session';
+import { getPrevPageHref } from '@/lib/utils';
+import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
+import { addQuickGoalTransfer } from '../_actions/goalTransfers';
+import CurrencyInput from './CurrencyInput';
 
 type GoalTransferFormValues = {
   itemName: string;
@@ -43,7 +43,7 @@ export default function QuickSaveForm({
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      signIn("azure-ad-b2c");
+      signIn('azure-ad-b2c');
     },
   });
   const [api, contextHolder] = notification.useNotification();
@@ -52,16 +52,16 @@ export default function QuickSaveForm({
     if (!isExtendedSession(session)) return;
 
     const formData = new FormData();
-    formData.append("itemName", values.itemName);
-    if (values.rating) formData.append("rating", String(values.rating));
+    formData.append('itemName', values.itemName);
+    if (values.rating) formData.append('rating', String(values.rating));
     const adjustedAmount = isSavings ? values.amount : -values.amount;
-    formData.append("amount", String(adjustedAmount));
+    formData.append('amount', String(adjustedAmount));
 
     const params = new URLSearchParams(window.location.search);
     const action = addQuickGoalTransfer.bind(
       null,
       session.user.id,
-      params.get("filter")
+      params.get('filter')
     );
     const result = await action(formData);
 
@@ -79,47 +79,53 @@ export default function QuickSaveForm({
     } else if (isPinnedGoalError(result) && result.noPinnedGoal) {
       api.error({
         message: `No pinned goal to save to`,
-        placement: "top",
+        placement: 'top',
         duration: 2,
       });
     }
     let path = getPrevPageHref(referer, window);
-    if (isSavings) path += "?confetti=true";
+    if (isSavings) path += '?confetti=true';
     router.push(path);
   };
   return (
     <>
       {contextHolder}
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Form form={form} layout='vertical' onFinish={onFinish}>
         <Form.Item
-          name="itemName"
+          name='itemName'
           label={itemNameTitle}
-          rules={[{ required: true, message: "Please input the item name" }]}
+          rules={[{ required: true, message: 'Please input the item name' }]}
         >
           <Input placeholder={itemNamePlaceholder} />
         </Form.Item>
         <Form.Item
-          name="amount"
-          label="Amount"
-          rules={[{ required: true, message: "Please input the amount" }]}
+          name='amount'
+          label='Amount'
+          rules={[{ required: true, message: 'Please input the amount' }]}
         >
-          <CurrencyInput placeholder="Amount" />
+          <CurrencyInput placeholder='Amount' />
         </Form.Item>
         {!isSavings ? (
           <Form.Item
-            name="rating"
-            label="How did you feel about this purchase?"
-            rules={[{ required: true, message: "Please rate this purchase" }]}
+            name='rating'
+            label='How did you feel about this purchase?'
+            rules={[{ required: true, message: 'Please rate this purchase' }]}
           >
             <Rate character={({ index = 0 }) => customIcons[index + 1]} />
           </Form.Item>
         ) : null}
-        <Space direction="horizontal">
-          <Button type="primary" size="large" htmlType="submit">
+        <Space direction='horizontal'>
+          <Button
+            data-id='goal-transfer-form-submit'
+            type='primary'
+            size='large'
+            htmlType='submit'
+          >
             Save
           </Button>
           <Button
-            size="large"
+            data-id='goal-transfer-form-cancel'
+            size='large'
             onClick={() => router.push(getPrevPageHref(referer, window))}
           >
             Cancel

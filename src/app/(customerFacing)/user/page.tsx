@@ -34,7 +34,9 @@ export default async function UserPage() {
           <ListItems userId={session.user.id} />
         </div>
         <Link href='/api/auth/signout'>
-          <Button size='large'>Logout</Button>
+          <Button data-id='sign-out-button' size='large'>
+            Logout
+          </Button>
         </Link>
       </Space>
     </>

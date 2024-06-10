@@ -45,7 +45,7 @@ export default async function TransactionsPage() {
         <Space>
           <UnreadButton userId={session.user.id} />
           <Link href='/'>
-            <Button type='primary' size='large'>
+            <Button data-id='return-home-button' type='primary' size='large'>
               Return home
             </Button>
           </Link>

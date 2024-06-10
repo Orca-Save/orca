@@ -383,6 +383,7 @@ export default function OnboardingForm({
             <Space>
               <Form.Item>
                 <Button
+                  data-id='onboarding-form-back'
                   size='large'
                   onClick={() => {
                     const prevTab = currentTab - 1;
@@ -396,6 +397,7 @@ export default function OnboardingForm({
               <Form.Item>
                 <Button
                   type='primary'
+                  data-id='onboarding-form-next'
                   size='large'
                   disabled={disableNext}
                   loading={loading}

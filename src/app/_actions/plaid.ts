@@ -13,6 +13,8 @@ import {
   PlaidApi,
   PlaidEnvironments,
   Products,
+  RemovedTransaction,
+  Transaction,
   TransactionsGetRequest,
   TransactionsSyncRequest,
 } from 'plaid';
@@ -231,6 +233,56 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
     unreadTransactions: formattedTransactions,
   };
 }
+
+async function fetchAllSyncData(
+  accessToken: string,
+  cursor: string | null,
+  retriesLeft = 3
+) {
+  let keepGoing = false;
+  const allData: {
+    added: Transaction[];
+    modified: Transaction[];
+    removed: RemovedTransaction[];
+    nextCursor: string | null;
+  } = {
+    added: [],
+    modified: [],
+    removed: [],
+    nextCursor: cursor,
+  };
+
+  try {
+    do {
+      const request: TransactionsSyncRequest = {
+        access_token: accessToken,
+        cursor: allData.nextCursor ?? undefined,
+        options: {
+          include_personal_finance_category: true,
+        },
+      };
+
+      const transactionsResponse = await plaidClient.transactionsSync(request);
+
+      allData.added = allData.added.concat(transactionsResponse.data.added);
+      allData.modified = allData.modified.concat(
+        transactionsResponse.data.modified
+      );
+      allData.removed = allData.removed.concat(
+        transactionsResponse.data.removed
+      );
+      allData.nextCursor = transactionsResponse.data.next_cursor;
+      keepGoing = transactionsResponse.data.has_more;
+    } while (keepGoing);
+
+    return allData;
+  } catch (e) {
+    await setTimeout(() => {}, 1000);
+    if (retriesLeft === 0) throw e;
+    return fetchAllSyncData(accessToken, cursor, retriesLeft - 1);
+  }
+}
+
 export async function syncTransactions(plaidItem: PlaidItem) {
   if (!plaidItem) {
     throw new Error('Plaid item not found');
@@ -256,19 +308,21 @@ export async function syncTransactions(plaidItem: PlaidItem) {
     request.cursor = plaidItem.cursor;
   }
 
-  const transactionsResponse = await plaidClient.transactionsSync(request);
+  const allData = await fetchAllSyncData(
+    plaidItem.accessToken,
+    plaidItem.cursor
+  );
 
-  const addedTransactions = transactionsResponse.data.added;
-  const modifiedTransactions = transactionsResponse.data.modified;
-  const removedTransactions = transactionsResponse.data.removed;
-  const newCursor = transactionsResponse.data.next_cursor;
+  const addedTransactions = allData.added;
+  const modifiedTransactions = allData.modified;
+  const removedTransactions = allData.removed;
 
   await db.plaidItem.update({
     where: {
       id: plaidItem.id,
     },
     data: {
-      cursor: newCursor,
+      cursor: allData.nextCursor,
       updatedAt: new Date(),
     },
   });
@@ -385,7 +439,45 @@ export async function markTransactionAsRead(
   revalidatePath('/');
 }
 
+export async function removeAllPlaidItems(userId: string) {
+  const plaidItems = await db.plaidItem.findMany({
+    where: { institutionId: userId },
+  });
+
+  if (!plaidItems || plaidItems.length === 0) {
+    return false;
+  }
+
+  await Promise.all(
+    plaidItems.map(async (item) => {
+      await plaidClient.itemRemove({
+        access_token: item.accessToken,
+      });
+    })
+  );
+
+  await db.plaidItem.deleteMany({
+    where: { institutionId: userId },
+  });
+
+  revalidatePath('/');
+  revalidatePath('/user');
+  revalidatePath('/onboarding');
+  return true;
+}
 export async function removePlaidItem(id: string) {
+  const plaidItem = await db.plaidItem.findFirst({
+    where: { institutionId: id },
+  });
+
+  if (!plaidItem) {
+    return false;
+  }
+
+  await plaidClient.itemRemove({
+    access_token: plaidItem.accessToken,
+  });
+
   await db.plaidItem.delete({
     where: { institutionId: id },
   });
@@ -403,6 +495,7 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   const itemsMeta = await db.plaidItem.findMany({
     where: {
       userId,
+      deletedAt: null,
     },
   });
   const items = await Promise.all(

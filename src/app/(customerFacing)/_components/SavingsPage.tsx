@@ -53,7 +53,8 @@ export default async function SavingsPage({
       <Space direction='vertical' style={{ width: '100%' }}>
         <Space
           direction='horizontal'
-          style={{ justifyContent: 'center', width: '100%' }}>
+          style={{ justifyContent: 'center', width: '100%' }}
+        >
           {!hide ? (
             <Link href={saveHref + routeParams}>
               <ConfigProvider
@@ -61,8 +62,14 @@ export default async function SavingsPage({
                   components: {
                     Button: greenThemeColors,
                   },
-                }}>
-                <Button type='primary' size='large' style={{ color: 'black' }}>
+                }}
+              >
+                <Button
+                  data-id='save-button'
+                  type='primary'
+                  size='large'
+                  style={{ color: 'black' }}
+                >
                   {newSaveText}
                 </Button>
               </ConfigProvider>
@@ -70,7 +77,9 @@ export default async function SavingsPage({
           ) : null}
           {filter === undefined && (
             <Link href={buyHref}>
-              <Button size='large'>{newPurchaseText}</Button>
+              <Button data-id='purchase-button' size='large'>
+                {newPurchaseText}
+              </Button>
             </Link>
           )}
         </Space>

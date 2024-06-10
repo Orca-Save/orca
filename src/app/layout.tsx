@@ -1,9 +1,11 @@
+import AppInsightsLayout from '@/components/AppInsightsLayout';
 import { ConfigProvider } from '@/components/ConfigProvider';
 import { SessionProvider } from '@/components/SessionProvider';
 import { mainThemeConfig } from '@/lib/themes';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { AppInsightService } from './_components/appInsightsClient';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -48,7 +50,10 @@ export default function RootLayout({
         )}
       >
         <SessionProvider>
-          <ConfigProvider theme={mainThemeConfig}>{children}</ConfigProvider>
+          <AppInsightsLayout>
+            <AppInsightService />
+            <ConfigProvider theme={mainThemeConfig}>{children}</ConfigProvider>
+          </AppInsightsLayout>
         </SessionProvider>
       </body>
     </html>

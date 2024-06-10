@@ -66,6 +66,7 @@ export default async function HomePage({
           >
             <HappyProvider>
               <Button
+                data-id='dash-impulse-save-nav'
                 size='large'
                 type='primary'
                 style={{

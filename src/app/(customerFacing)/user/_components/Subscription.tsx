@@ -67,7 +67,7 @@ export default async function Subscription() {
       </div>
 
       <Link href='/subscribe'>
-        <Button type='primary' size='large'>
+        <Button data-id='subscription-nav-button' type='primary' size='large'>
           Begin Subscription
         </Button>
       </Link>

@@ -249,12 +249,14 @@ export function GoalTransferForm({
 
       <div className='flex justify-end mt-5 space-x-4'>
         <Button
+          data-id='goal-transfer-form-cancel'
           size='large'
           onClick={() => router.push(getPrevPageHref(referer, window))}
         >
           Cancel
         </Button>
         <Button
+          data-id='goal-transfer-form-submit'
           type='primary'
           size='large'
           htmlType='submit'

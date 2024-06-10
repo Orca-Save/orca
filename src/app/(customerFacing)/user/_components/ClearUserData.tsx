@@ -19,7 +19,7 @@ export default function ClearUserData({ userId }: { userId: string }) {
         okText='Yes'
         cancelText='No'
       >
-        <Button type='primary' size='large' danger>
+        <Button data-id='clear-data-button' type='primary' size='large' danger>
           Clear Data
         </Button>
       </Popconfirm>

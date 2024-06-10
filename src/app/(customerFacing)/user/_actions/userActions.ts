@@ -1,33 +1,29 @@
 'use server';
 
+import { removeAllPlaidItems } from '@/app/_actions/plaid';
 import db from '@/db/db';
 
 // function clears all user data
 export async function clearUserData(userId: string) {
-  // clear user data
-  db.userProfile.updateMany({
+  await removeAllPlaidItems(userId);
+
+  db.userProfile.delete({
     where: { userId },
-    data: { deletedAt: new Date(), userId: '' },
   });
-  db.transaction.updateMany({
+  db.transaction.deleteMany({
     where: { userId },
-    data: { deletedAt: new Date(), userId: '' },
   });
-  db.plaidItem.updateMany({
+  db.plaidItem.deleteMany({
     where: { userId },
-    data: { deletedAt: new Date(), userId: '' },
   });
-  db.goal.updateMany({
+  db.goal.deleteMany({
     where: { userId },
-    data: { deletedAt: new Date(), userId: '' },
   });
-  db.onboardingProfile.updateMany({
+  db.onboardingProfile.delete({
     where: { userId },
-    data: { deletedAt: new Date(), userId: '' },
   });
-  db.goalTransfer.updateMany({
+  db.goalTransfer.deleteMany({
     where: { userId },
-    data: { deletedAt: new Date(), userId: '' },
   });
 
   return true;

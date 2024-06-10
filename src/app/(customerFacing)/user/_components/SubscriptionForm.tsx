@@ -119,7 +119,7 @@ function SubscriptionForm({
       <Button
         type='primary'
         size='large'
-        // htmlType='submit'
+        data-id='subscription-button'
         disabled={!stripe || !elements}
         onClick={onFinish}
       >

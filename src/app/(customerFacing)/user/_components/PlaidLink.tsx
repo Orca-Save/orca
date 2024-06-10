@@ -18,6 +18,7 @@ const Link = (props: LinkProps) => {
   const { open, ready } = usePlaidLink(config);
   return (
     <Button
+      data-id='plaid-link-button'
       type='primary'
       size='large'
       onClick={() => open()}

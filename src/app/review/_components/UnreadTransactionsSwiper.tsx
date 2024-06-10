@@ -188,7 +188,12 @@ export default function UnreadTransactionsSwiper({
   return (
     <>
       <div className='flex justify-center'>
-        <Button onClick={() => syncItems(userId)}>Sync Transactions</Button>
+        <Button
+          data-id='sync-transactions-button'
+          onClick={() => syncItems(userId)}
+        >
+          Sync Transactions
+        </Button>
       </div>
 
       <Liquid {...config} />

@@ -10,7 +10,8 @@ appInsights
   .setAutoDependencyCorrelation(true)
   .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
   .setSendLiveMetrics(true)
-  .setUseDiskRetryCaching(true);
+  .setUseDiskRetryCaching(true)
+  .enableWebInstrumentation(true);
 appInsights.serviceName = process.env.INSIGHTS_NAME;
 appInsights.start();
 export default appInsights;

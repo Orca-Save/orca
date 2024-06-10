@@ -30,6 +30,7 @@ const InstitutionCollapse = ({ institution, accounts }: InstitutionProps) => {
           >
             <span>{institution?.name}</span>
             <Button
+              data-id='remove-institution-button'
               type='primary'
               disabled={!institution?.institution_id}
               danger

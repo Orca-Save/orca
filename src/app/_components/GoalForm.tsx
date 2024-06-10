@@ -158,7 +158,9 @@ export function GoalForm({
 
         <Form.Item name='image'>
           <Upload>
-            <Button icon={<UploadOutlined />}>Upload Image</Button>
+            <Button data-id='goal-image-upload' icon={<UploadOutlined />}>
+              Upload Image
+            </Button>
           </Upload>
         </Form.Item>
         <Form.Item name='imagePath'>
@@ -199,12 +201,14 @@ export function GoalForm({
 
         <div className='flex justify-end mt-5 space-x-4'>
           <Button
+            data-id='goal-form-cancel'
             size='large'
             onClick={() => router.push(getPrevPageHref(referer, window))}
           >
             Cancel
           </Button>
           <Button
+            data-id='goal-form-submit'
             type='primary'
             size='large'
             htmlType='submit'

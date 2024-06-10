@@ -56,7 +56,9 @@ export default function UnsplashForm({
     if (!value?.includes('orcasavestorage')) src += '&h=150';
     return (
       <>
-        <Button onClick={() => setPreviewMode(false)}>Search Image</Button>
+        <Button data-id='search-image' onClick={() => setPreviewMode(false)}>
+          Search Image
+        </Button>
         {value ? (
           <img
             className='img'

@@ -51,6 +51,7 @@ export default function SignUpPage() {
 
           <div className='w-100 flex flex-col space-y-4'>
             <Button
+              data-id='signup-button'
               type='primary'
               size='large'
               className='w-full text-2xl align-middle'

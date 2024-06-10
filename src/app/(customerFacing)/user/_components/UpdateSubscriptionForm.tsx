@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "antd";
-import { useRouter } from "next/navigation";
-import { updateSubscription } from "../_actions/stripe";
+import { Button } from 'antd';
+import { useRouter } from 'next/navigation';
+import { updateSubscription } from '../_actions/stripe';
 
 export default function UpdateSubscriptionForm({
   userId,
@@ -17,9 +17,10 @@ export default function UpdateSubscriptionForm({
 
   return (
     <Button
+      data-id='update-subscription-button'
       onClick={async () => {
         await updateSubscription(userId, cancel);
-        router.push("/user");
+        router.push('/user');
       }}
     >
       {actionText}

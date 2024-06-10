@@ -41,6 +41,7 @@ export function QuickSaveButton({
         <Confetti run={confetti.run} numberOfPieces={confetti.count} />
       ) : null}
       <Button
+        data-id='quick-save-button'
         key={transfer.id}
         disabled={!goalId}
         size='large'
