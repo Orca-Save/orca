@@ -5,7 +5,7 @@ export default async function ListItems({ userId }: { userId: string }) {
   const itemsData = await getAllLinkedItems(userId);
   return (
     <div>
-      <InstitutionCollapses itemsData={itemsData} />
+      <InstitutionCollapses itemsData={itemsData} userId={userId} />
     </div>
   );
 }

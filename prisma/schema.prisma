@@ -109,16 +109,18 @@ model UserProfile {
 }
 
 model PlaidItem {
-  id            String        @id @default(uuid())
+  id            String  @id @default(uuid())
   userId        String
-  itemId        String        @unique
-  institutionId String        @unique
-  accessToken   String        @unique
-  cursor        String?
-  createdAt     DateTime      @default(now()) @db.Timestamptz()
-  updatedAt     DateTime      @updatedAt @db.Timestamptz()
-  deletedAt     DateTime?     @db.Timestamptz()
-  Transaction   Transaction[]
+  itemId        String  @unique
+  institutionId String
+  accessToken   String  @unique
+  loginRequired Boolean @default(false)
+
+  cursor      String?
+  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  updatedAt   DateTime      @updatedAt @db.Timestamptz()
+  deletedAt   DateTime?     @db.Timestamptz()
+  Transaction Transaction[]
 }
 
 model Transaction {
@@ -127,6 +129,7 @@ model Transaction {
   userId         String
   accountId      String
   institutionId  String
+  plaidItemId    String
   amount         Decimal   @db.Decimal(65, 2)
   date           DateTime
   name           String
@@ -150,5 +153,4 @@ model Transaction {
   location                    Json?
   paymentMeta                 Json?
   plaidItem                   PlaidItem? @relation(fields: [plaidItemId], references: [id])
-  plaidItemId                 String?
 }

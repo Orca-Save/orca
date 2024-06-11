@@ -12,6 +12,7 @@ import {
   InstitutionsGetByIdRequest,
   PlaidApi,
   PlaidEnvironments,
+  PlaidError,
   Products,
   RemovedTransaction,
   Transaction,
@@ -39,22 +40,55 @@ const configuration = new Configuration({
     },
   },
 });
+
 const plaidClient = new PlaidApi(configuration);
 
-export async function createLinkToken(userId: string) {
+export async function checkPlaidItemStatus(
+  plaidItem: PlaidItem
+): Promise<{ status: string; error: string | null }> {
+  try {
+    // Get item status from Plaid
+    const itemResponse = await plaidClient.itemGet({
+      access_token: plaidItem.accessToken,
+    });
+
+    // Check for ITEM_LOGIN_REQUIRED error
+    const statusError = itemResponse.data.item.error;
+    if (statusError) {
+      if (statusError.error_code === 'ITEM_LOGIN_REQUIRED') {
+        return {
+          status: statusError.error_code,
+          error: statusError.error_message,
+        };
+      }
+    }
+
+    // Check for PENDING_EXPIRATION webhook
+    if (itemResponse.data.item.webhook === 'PENDING_EXPIRATION') {
+      return { status: 'pending_expiration', error: null };
+    }
+
+    // If no specific error, return item status
+    return { status: 'active', error: null };
+  } catch (error) {
+    const plaidError = error as PlaidError;
+    return { status: 'error', error: plaidError.error_message };
+  }
+}
+
+export async function createLinkToken(userId: string, access_token?: string) {
   const request = {
     user: {
       client_user_id: userId,
     },
+    access_token,
     client_name: 'Plaid Test App',
     products: [Products.Transactions],
     language: 'en',
     webhook: process.env.BASE_URL + '/api/plaid/webhook',
-    // webhook: 'https://webhook.site/7bad17f5-f541-4daf-8871-0ca9ff4b3649',
     country_codes: [CountryCode.Us],
   };
   const createTokenResponse = await plaidClient.linkTokenCreate(request);
-  revalidatePath('/');
   return createTokenResponse.data;
 }
 
@@ -71,12 +105,20 @@ export async function exchangePublicToken(publicToken: string, userId: string) {
   const institutionId = itemResponse.data.item.institution_id;
   if (!institutionId) return false;
 
-  await db.plaidItem.create({
-    data: {
+  await db.plaidItem.upsert({
+    where: {
+      itemId,
+    },
+    update: {
+      accessToken,
+      institutionId,
+      updatedAt: new Date(),
+    },
+    create: {
+      userId,
       institutionId,
       accessToken,
       itemId,
-      userId,
       updatedAt: new Date(),
     },
   });
@@ -92,6 +134,7 @@ export async function syncItems(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
       userId,
+      loginRequired: false,
     },
   });
   await getRecurringTransactions(userId);
@@ -111,6 +154,7 @@ export async function getTransactions(
   const plaidItem = await db.plaidItem.findFirst({
     where: {
       userId,
+      loginRequired: false,
     },
     orderBy: {
       updatedAt: 'desc',
@@ -174,6 +218,7 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
       userId,
+      loginRequired: false,
     },
   });
 
@@ -334,6 +379,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
       transactionId: transaction.transaction_id,
       institutionId: plaidItem.institutionId,
       amount: transaction.amount,
+      plaidItemId: plaidItem.itemId,
       name: transaction.name,
       pending: transaction.pending,
       date: new Date(transaction.date),
@@ -441,7 +487,7 @@ export async function markTransactionAsRead(
 
 export async function removeAllPlaidItems(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
-    where: { institutionId: userId },
+    where: { userId: userId },
   });
 
   if (!plaidItems || plaidItems.length === 0) {
@@ -457,7 +503,7 @@ export async function removeAllPlaidItems(userId: string) {
   );
 
   await db.plaidItem.deleteMany({
-    where: { institutionId: userId },
+    where: { userId },
   });
 
   revalidatePath('/');
@@ -466,9 +512,31 @@ export async function removeAllPlaidItems(userId: string) {
   return true;
 }
 
-export async function removePlaidItem(id: string) {
+export async function handleLoginExpiration(
+  plaidItem: PlaidItem,
+  loginRequired: boolean
+) {
+  await db.plaidItem.update({
+    where: {
+      id: plaidItem.id,
+    },
+    data: {
+      loginRequired,
+      updatedAt: new Date(),
+    },
+  });
+}
+
+export async function handleUserPermissionRevoked(plaidItem: PlaidItem) {
+  removePlaidItem(plaidItem.itemId);
+
+  revalidatePath('/');
+  revalidatePath('/user');
+}
+
+export async function removePlaidItem(itemId: string) {
   const plaidItem = await db.plaidItem.findFirst({
-    where: { institutionId: id },
+    where: { itemId },
   });
 
   if (!plaidItem) {
@@ -480,7 +548,11 @@ export async function removePlaidItem(id: string) {
   });
 
   await db.plaidItem.delete({
-    where: { institutionId: id },
+    where: { itemId: plaidItem.itemId },
+  });
+
+  await db.transaction.deleteMany({
+    where: { plaidItemId: plaidItem.itemId },
   });
 
   revalidatePath('/');
@@ -490,15 +562,20 @@ export async function removePlaidItem(id: string) {
 
 export type ItemData = {
   institution?: Institution;
+  linkToken: string;
+  linkText: string;
   accounts: AccountBase[];
+  itemId: string;
 };
 export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   const itemsMeta = await db.plaidItem.findMany({
     where: {
       userId,
+      loginRequired: false,
       deletedAt: null,
     },
   });
+
   const items = await Promise.all(
     itemsMeta.map(async (item) => {
       const itemResponse = await plaidClient.itemGet({
@@ -510,6 +587,18 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   );
   const itemsData = await Promise.all(
     itemsMeta.map(async (item) => {
+      const status = await checkPlaidItemStatus(item);
+      const linkToken = (await createLinkToken(userId, item.accessToken))
+        .link_token;
+      if (status.status === 'ITEM_LOGIN_REQUIRED') {
+        return {
+          linkToken,
+          linkText: 'Login required',
+          institution: undefined,
+          itemId: item.itemId,
+          accounts: [],
+        };
+      }
       const accountResponse = await plaidClient.accountsGet({
         access_token: item.accessToken,
       });
@@ -517,7 +606,13 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
       let institution: Institution | undefined = undefined;
       if (plaidItem)
         institution = await getInstitutionById(plaidItem.institution_id!);
-      return { institution, accounts: accountResponse.data.accounts };
+      return {
+        linkToken,
+        institution,
+        linkText: 'Reselect accounts',
+        itemId: item.itemId,
+        accounts: accountResponse.data.accounts,
+      };
     })
   );
 
@@ -528,6 +623,7 @@ export async function getRecurringTransactions(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
       userId,
+      loginRequired: false,
     },
   });
 

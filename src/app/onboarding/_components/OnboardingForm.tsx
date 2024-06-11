@@ -366,7 +366,10 @@ export default function OnboardingForm({
                         userId={session.user.id}
                         linkToken={linkToken}
                       />
-                      <InstitutionCollapses itemsData={itemsData} />
+                      <InstitutionCollapses
+                        itemsData={itemsData}
+                        userId={session.user.id}
+                      />
                     </div>
                   </div>
                 ),

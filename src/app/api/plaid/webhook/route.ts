@@ -1,5 +1,7 @@
 import {
   getRecurringTransactions,
+  handleLoginExpiration,
+  handleUserPermissionRevoked,
   syncTransactions,
 } from '@/app/_actions/plaid';
 import { appInsightsClient } from '@/appInsights';
@@ -25,6 +27,15 @@ async function plaidWebhookHandler(req: any) {
       case 'HISTORICAL_UPDATE':
       case 'RECURRING_TRANSACTIONS_UPDATE':
         await getRecurringTransactions(plaidItem.userId);
+        break;
+      case 'LOGIN_REPAIRED':
+        await handleLoginExpiration(plaidItem, false);
+        break;
+      case 'PENDING_EXPIRATION':
+        await handleLoginExpiration(plaidItem, true);
+        break;
+      case 'USER_PERMISSION_REVOKED':
+        await handleUserPermissionRevoked(plaidItem);
         break;
       default:
         console.log(`Unhandled webhook code: ${webhook_code}`);

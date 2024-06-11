@@ -6,6 +6,8 @@ import { exchangePublicToken } from '../../../_actions/plaid';
 interface LinkProps {
   linkToken: string | null;
   userId: string;
+  size?: 'small' | 'large' | 'middle';
+  text?: string;
 }
 const Link = (props: LinkProps) => {
   const onSuccess = async (public_token: string, metadata: unknown) => {
@@ -20,11 +22,11 @@ const Link = (props: LinkProps) => {
     <Button
       data-id='plaid-link-button'
       type='primary'
-      size='large'
+      size={props.size ?? 'large'}
       onClick={() => open()}
       disabled={!ready}
     >
-      Link account
+      {props.text ?? 'Link account'}
     </Button>
   );
 };

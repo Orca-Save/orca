@@ -8,32 +8,33 @@ export const loggingExtension = Prisma.defineExtension({
       const startTime = Date.now();
 
       const queryDetails = JSON.stringify(args);
+      let target = process.env.DATABASE_URL?.split('@')[1];
+      target = target ? `${target}` : 'PostgreSQL';
       try {
         const result = await query(args);
-        let name = process.env.DATABASE_URL?.split('@')[1];
-        name = name ? `PostgreSQL:${name}` : 'PostgreSQL';
         const duration = Date.now() - startTime;
         appInsightsClient.trackDependency({
-          target: 'PostgreSQL',
-          name,
-          data: queryDetails,
+          target,
+          name: `${model}:${operation}`,
+          properties: args,
           duration,
           resultCode: 0,
           success: true,
-          dependencyTypeName: 'DB',
+          type: 'PostgreSQL',
         });
 
         return result;
       } catch (error) {
         const duration = Date.now() - startTime;
         appInsightsClient.trackDependency({
-          target: 'PostgreSQL',
-          name: `PostgreSQL`,
+          target,
+          name: `${model}:${operation}`,
           data: queryDetails,
           duration,
+          properties: args,
           resultCode: 1,
           success: false,
-          dependencyTypeName: 'DB',
+          type: 'PostgreSQL',
         });
 
         throw error;
