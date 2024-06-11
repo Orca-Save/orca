@@ -2,7 +2,7 @@ import {
   getRecurringTransactions,
   syncTransactions,
 } from '@/app/_actions/plaid';
-import { client } from '@/appInsights';
+import { appInsightsClient } from '@/appInsights';
 import db from '@/db/db';
 import { NextResponse } from 'next/server';
 
@@ -32,7 +32,7 @@ async function plaidWebhookHandler(req: any) {
 
     return NextResponse.json({ message: 'success' });
   } catch (e) {
-    client.trackException({ exception: e });
+    appInsightsClient.trackException({ exception: e });
     return NextResponse.json({ message: 'error' });
   }
 }

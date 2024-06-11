@@ -15,5 +15,5 @@ appInsights
 appInsights.serviceName = process.env.INSIGHTS_NAME;
 appInsights.start();
 export default appInsights;
-const client = appInsights.defaultClient;
-export { client };
+const appInsightsClient = appInsights.defaultClient;
+export { appInsightsClient };
