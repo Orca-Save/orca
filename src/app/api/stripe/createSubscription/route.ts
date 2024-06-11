@@ -1,15 +1,18 @@
 import { createSubscription } from '@/app/(customerFacing)/user/_actions/stripe';
-import { client } from '@/appInsights';
+import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 
-async function plaidWebhookHandler(req: any) {
+async function stripeSubscriptionHandler(req: any) {
   try {
+    const token = await getToken({ req });
+    if (!token) {
+      return NextResponse.json({ message: 'Not signed in' }, { status: 401 });
+    }
     const { userId, email } = await req.json();
     return NextResponse.json(await createSubscription(userId, email));
   } catch (e) {
-    client.trackException({ exception: e });
-    return NextResponse.json({ message: 'error' });
+    return NextResponse.json({ message: 'error' }, { status: 500 });
   }
 }
 
-export { plaidWebhookHandler as POST };
+export { stripeSubscriptionHandler as POST };

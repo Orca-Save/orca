@@ -465,6 +465,7 @@ export async function removeAllPlaidItems(userId: string) {
   revalidatePath('/onboarding');
   return true;
 }
+
 export async function removePlaidItem(id: string) {
   const plaidItem = await db.plaidItem.findFirst({
     where: { institutionId: id },
