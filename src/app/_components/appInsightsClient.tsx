@@ -12,10 +12,6 @@ var clickPluginConfig = {
 };
 const initializeAppInsights = () => {
   if (typeof window !== 'undefined') {
-    console.log(
-      'Initializing App Insights',
-      process.env.NEXT_PUBLIC_APP_INSIGHTS_CONNECTION_STRING
-    );
     const customHistory = createBrowserHistory();
     appInsights = new ApplicationInsights({
       config: {

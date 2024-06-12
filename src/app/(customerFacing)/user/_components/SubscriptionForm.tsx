@@ -123,7 +123,7 @@ function SubscriptionForm({
         disabled={!stripe || !elements}
         onClick={onFinish}
       >
-        Subscribe for $4.00/months
+        Subscribe for $4.00/month
       </Button>
     </>
   );

@@ -78,7 +78,6 @@ export default function OnboardingForm({
   const currentTab = Number(pageState.tabKey);
   const forceRender = true;
   let disableNext = false;
-  console.log('here');
   if (currentTab === 2 && !privacyChecked) disableNext = true;
   if (currentTab === 3 && !userProfile?.stripeSubscriptionId)
     disableNext = true;
@@ -413,7 +412,7 @@ export default function OnboardingForm({
                     const onboardingProfile = {
                       ...form.getFieldsValue(),
                       privacyAgreement: privacyChecked,
-                      goalDueAt: form.getFieldValue('goalDueAt').format(),
+                      goalDueAt: form.getFieldValue('goalDueAt')?.format(),
                     };
                     if (currentTab === 4) {
                       await onboardUser(session.user.id, onboardingProfile);
