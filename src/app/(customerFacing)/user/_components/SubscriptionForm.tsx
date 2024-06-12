@@ -1,5 +1,6 @@
 'use client';
 
+import { currencyFormatter } from '@/lib/utils';
 import {
   ExpressCheckoutElement,
   PaymentElement,
@@ -12,8 +13,25 @@ import {
 } from '@stripe/stripe-js';
 import { Button, notification } from 'antd';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Stripe from 'stripe';
 import { addSubscriptionId } from '../_actions/stripe';
 
+function useStripePrice() {
+  const [price, setPrice] = useState<Stripe.Price | undefined>();
+
+  useEffect(() => {
+    fetch('/api/stripe/product', {
+      method: 'GET',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setPrice(data);
+      });
+  }, []);
+
+  return price;
+}
 function SubscriptionForm({
   clientSecret,
   userId,
@@ -29,7 +47,7 @@ function SubscriptionForm({
   const elements = useElements();
   const router = useRouter();
   const [api, contextHolder] = notification.useNotification();
-
+  const price = useStripePrice();
   const onFinish = async () => {
     try {
       if (!stripe || !elements) return;
@@ -114,15 +132,18 @@ function SubscriptionForm({
           },
         }}
       />
-      <Button
-        type='primary'
-        size='large'
-        data-id='subscription-button'
-        disabled={!stripe || !elements}
-        onClick={onFinish}
-      >
-        Subscribe for $4.00/month
-      </Button>
+      {price?.unit_amount && (
+        <Button
+          type='primary'
+          size='large'
+          data-id='subscription-button'
+          disabled={!stripe || !elements}
+          onClick={onFinish}
+        >
+          Subscribe for {currencyFormatter(price.unit_amount / 100)}/
+          {price.recurring?.interval}
+        </Button>
+      )}
     </>
   );
 }

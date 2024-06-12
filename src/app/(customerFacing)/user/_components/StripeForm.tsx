@@ -13,8 +13,6 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-// custom hook to get the subscription object from the server at api/stripe/createSubscription
-// this is a custom hook that is used to get the subscription object from the server
 function useSubscription(userId: string, email: string) {
   const [subscription, setSubscription] = useState<{
     clientSecret?: string;
@@ -22,7 +20,6 @@ function useSubscription(userId: string, email: string) {
   }>({});
 
   useEffect(() => {
-    if (!userId) return;
     fetch('/api/stripe/createSubscription', {
       method: 'POST',
       body: JSON.stringify({ userId, email }),
@@ -31,7 +28,7 @@ function useSubscription(userId: string, email: string) {
       .then((data) => {
         setSubscription(data);
       });
-  }, [userId]);
+  }, []);
 
   return subscription;
 }
@@ -56,7 +53,7 @@ export default function StripeForm({
       </div>
     );
   return (
-    <>
+    <div>
       <Elements stripe={stripePromise} options={{ clientSecret }}>
         <SubscriptionForm
           clientSecret={clientSecret}
@@ -65,6 +62,6 @@ export default function StripeForm({
           subscriptionId={subscriptionId}
         />
       </Elements>
-    </>
+    </div>
   );
 }

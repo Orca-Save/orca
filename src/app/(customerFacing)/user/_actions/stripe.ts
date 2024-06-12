@@ -35,7 +35,7 @@ export async function createSubscription(
     customerId = customer.id;
   }
 
-  const priceId = process.env.STRIPE_PRODUCT_SUBSCRIPTION_ID;
+  const priceId = process.env.STRIPE_PRICE_SUBSCRIPTION_ID;
 
   const subscription = await stripe.subscriptions.create({
     customer: customerId,
@@ -44,6 +44,7 @@ export async function createSubscription(
         price: priceId,
       },
     ],
+    // trial_period_days: 7,
     payment_behavior: 'default_incomplete',
     payment_settings: {
       save_default_payment_method: 'on_subscription',
@@ -52,21 +53,19 @@ export async function createSubscription(
     expand: ['latest_invoice.payment_intent'],
   });
 
-  if (!userProfile) {
-    await db.userProfile.upsert({
-      where: {
-        userId,
-      },
-      create: {
-        userId,
-        stripeCustomerId: customerId,
-      },
-      update: {
-        stripeCustomerId: customerId,
-        updatedAt: new Date(),
-      },
-    });
-  }
+  await db.userProfile.upsert({
+    where: {
+      userId,
+    },
+    create: {
+      userId,
+      stripeCustomerId: customerId,
+    },
+    update: {
+      stripeCustomerId: customerId,
+      updatedAt: new Date(),
+    },
+  });
 
   // @ts-ignore
   if (subscription.latest_invoice?.payment_intent?.client_secret) {
@@ -137,4 +136,15 @@ export async function getSubscription(userId: string) {
   );
 
   return subscription;
+}
+
+export async function getPrice() {
+  if (!process.env.STRIPE_PRICE_SUBSCRIPTION_ID) {
+    console.error('MISSING STRIPE_PRODUCT_ID!');
+    return;
+  }
+  const price = await stripe.prices.retrieve(
+    process.env.STRIPE_PRICE_SUBSCRIPTION_ID
+  );
+  return price;
 }

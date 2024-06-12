@@ -1,4 +1,4 @@
-import { appInsightsClient } from '@/appInsights';
+import { appInsightsClient } from '@/lib/appInsights';
 import { Prisma } from '@prisma/client';
 
 export const loggingExtension = Prisma.defineExtension({

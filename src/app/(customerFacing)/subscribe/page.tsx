@@ -12,7 +12,6 @@ export default async function SubscribePage() {
   if (!session) return <SignIn />;
   if (!isExtendedSession(session)) return <></>;
   const [userProfile] = await Promise.all([getUserProfile(session.user.id)]);
-
   if (userProfile?.stripeSubscriptionId)
     return (
       <>

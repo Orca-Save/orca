@@ -4,8 +4,8 @@ import {
   handleUserPermissionRevoked,
   syncTransactions,
 } from '@/app/_actions/plaid';
-import { appInsightsClient } from '@/appInsights';
 import db from '@/db/db';
+import { appInsightsClient } from '@/lib/appInsights';
 import { NextResponse } from 'next/server';
 
 async function plaidWebhookHandler(req: any) {

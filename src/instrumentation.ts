@@ -3,6 +3,6 @@ export async function register() {
     return;
   }
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await import('./appInsights');
+    await import('./lib/appInsights');
   }
 }

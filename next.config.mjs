@@ -3,6 +3,7 @@ const nextConfig = {
   experimental: {
     instrumentationHook: true,
   },
+  // reactStrictMode: false,
   webpack: (config, { isServer }) => {
     config.optimization.minimize = false;
     if (isServer) {
