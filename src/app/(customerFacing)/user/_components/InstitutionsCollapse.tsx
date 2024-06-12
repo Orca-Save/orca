@@ -16,6 +16,7 @@ type InstitutionProps = {
   linkToken: string;
   linkText: string;
   userId: string;
+  itemId: string;
 };
 const InstitutionCollapse = ({
   institution,
@@ -23,9 +24,10 @@ const InstitutionCollapse = ({
   accounts,
   linkText,
   userId,
+  itemId,
 }: InstitutionProps) => {
-  const handleRemoveInstitution = async (institutionId: string) => {
-    await removePlaidItem(institutionId);
+  const handleRemoveInstitution = async () => {
+    await removePlaidItem(itemId);
   };
   return (
     <Collapse>
@@ -59,9 +61,7 @@ const InstitutionCollapse = ({
               disabled={!institution?.institution_id}
               danger
               icon={<DeleteOutlined />}
-              onClick={() =>
-                handleRemoveInstitution(institution?.institution_id || '')
-              }
+              onClick={handleRemoveInstitution}
             >
               Remove Institution
             </Button>
@@ -101,16 +101,19 @@ const InstitutionCollapses = ({
       {itemsData.length > 0 && (
         <Title level={5}>Currently connected accounts</Title>
       )}
-      {itemsData.map(({ institution, accounts, linkToken, linkText }) => (
-        <InstitutionCollapse
-          key={institution?.institution_id}
-          institution={institution}
-          linkToken={linkToken}
-          linkText={linkText}
-          userId={userId}
-          accounts={accounts}
-        />
-      ))}
+      {itemsData.map(
+        ({ institution, accounts, linkToken, itemId, linkText }) => (
+          <InstitutionCollapse
+            key={institution?.institution_id}
+            institution={institution}
+            itemId={itemId}
+            linkToken={linkToken}
+            linkText={linkText}
+            userId={userId}
+            accounts={accounts}
+          />
+        )
+      )}
     </div>
   );
 };
