@@ -16,7 +16,6 @@ export const loggingExtension = Prisma.defineExtension({
         appInsightsClient.trackDependency({
           target,
           name: `${model}:${operation}`,
-          properties: args,
           duration,
           resultCode: 0,
           success: true,
@@ -31,7 +30,6 @@ export const loggingExtension = Prisma.defineExtension({
           name: `${model}:${operation}`,
           data: queryDetails,
           duration,
-          properties: args,
           resultCode: 1,
           success: false,
           type: 'PostgreSQL',

@@ -137,8 +137,8 @@ export async function syncItems(userId: string) {
       loginRequired: false,
     },
   });
-  await getRecurringTransactions(userId);
   await Promise.all(plaidItems.map((plaidItem) => syncTransactions(plaidItem)));
+  await getRecurringTransactions(userId);
 
   revalidatePath('/');
   revalidatePath('/transactions');
@@ -361,6 +361,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   const addedTransactions = allData.added;
   const modifiedTransactions = allData.modified;
   const removedTransactions = allData.removed;
+  const combinedTransactions = [...addedTransactions, ...modifiedTransactions];
 
   await db.plaidItem.update({
     where: {
@@ -372,38 +373,11 @@ export async function syncTransactions(plaidItem: PlaidItem) {
     },
   });
 
-  await db.transaction.createMany({
-    data: addedTransactions.map((transaction) => ({
-      userId: plaidItem.userId,
-      accountId: transaction.account_id,
-      transactionId: transaction.transaction_id,
-      institutionId: plaidItem.institutionId,
-      amount: transaction.amount,
-      plaidItemId: plaidItem.itemId,
-      name: transaction.name,
-      pending: transaction.pending,
-      date: new Date(transaction.date),
-      merchantName: transaction.merchant_name,
-      paymentChannel: transaction.payment_channel,
-      isoCurrencyCode: transaction.iso_currency_code,
-      pendingTransactionId: transaction.pending_transaction_id,
-      personalFinanceCategoryIcon:
-        transaction.personal_finance_category_icon_url,
-      location: transaction.location as unknown as Prisma.InputJsonObject,
-      personalFinanceCategory:
-        transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
-      paymentMeta:
-        transaction.payment_meta as unknown as Prisma.InputJsonObject,
-    })),
-  });
-
   await Promise.all(
-    modifiedTransactions.map(async (transaction) => {
-      await db.transaction.update({
-        where: {
-          transactionId: transaction.transaction_id,
-        },
-        data: {
+    combinedTransactions.map(async (transaction) => {
+      await db.transaction.upsert({
+        where: { transactionId: transaction.transaction_id },
+        update: {
           accountId: transaction.account_id,
           amount: transaction.amount,
           date: new Date(transaction.date),
@@ -413,6 +387,28 @@ export async function syncTransactions(plaidItem: PlaidItem) {
           pending: transaction.pending,
           pendingTransactionId: transaction.pending_transaction_id,
           merchantName: transaction.merchant_name,
+          personalFinanceCategoryIcon:
+            transaction.personal_finance_category_icon_url,
+          location: transaction.location as unknown as Prisma.InputJsonObject,
+          personalFinanceCategory:
+            transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
+          paymentMeta:
+            transaction.payment_meta as unknown as Prisma.InputJsonObject,
+        },
+        create: {
+          userId: plaidItem.userId,
+          accountId: transaction.account_id,
+          transactionId: transaction.transaction_id,
+          institutionId: plaidItem.institutionId,
+          amount: transaction.amount,
+          plaidItemId: plaidItem.itemId,
+          name: transaction.name,
+          pending: transaction.pending,
+          date: new Date(transaction.date),
+          merchantName: transaction.merchant_name,
+          paymentChannel: transaction.payment_channel,
+          isoCurrencyCode: transaction.iso_currency_code,
+          pendingTransactionId: transaction.pending_transaction_id,
           personalFinanceCategoryIcon:
             transaction.personal_finance_category_icon_url,
           location: transaction.location as unknown as Prisma.InputJsonObject,

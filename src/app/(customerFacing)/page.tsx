@@ -4,6 +4,7 @@ import Link from 'next/link';
 import * as emoji from 'node-emoji';
 
 import { HappyProvider } from '@/components/HappyProvider';
+import { getUserProfile } from '@/db/common';
 import db from '@/db/db';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
@@ -41,11 +42,16 @@ export default async function HomePage({
   if (!session) redirect('/signup');
   if (!isExtendedSession(session)) redirect('/signup');
 
-  const [onboardingProfileCount, unreadObj] = await Promise.all([
+  const [onboardingProfileCount, unreadObj, userProfile] = await Promise.all([
     getOnboardingProfileCount(session.user.id),
     getUnreadTransactionCount(session.user.id),
+    getUserProfile(session.user.id),
   ]);
-  if (session.isNewUser || onboardingProfileCount === 0)
+  if (
+    session.isNewUser ||
+    onboardingProfileCount === 0 ||
+    !userProfile?.privacyPolicyAccepted
+  )
     redirect('/onboarding');
 
   return (

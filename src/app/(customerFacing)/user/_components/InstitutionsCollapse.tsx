@@ -48,7 +48,7 @@ const InstitutionCollapse = ({
         key='1'
       >
         <Space direction='vertical' style={{ width: '100%' }}>
-          <Space>
+          <Space wrap>
             <PlaidLink
               linkToken={linkToken}
               userId={userId}

@@ -152,5 +152,5 @@ model Transaction {
   personalFinanceCategory     Json?
   location                    Json?
   paymentMeta                 Json?
-  plaidItem                   PlaidItem? @relation(fields: [plaidItemId], references: [id])
+  plaidItem                   PlaidItem? @relation(fields: [plaidItemId], references: [itemId])
 }

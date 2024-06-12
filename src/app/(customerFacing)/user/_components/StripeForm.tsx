@@ -56,7 +56,7 @@ export default function StripeForm({
       </div>
     );
   return (
-    <div>
+    <>
       <Elements stripe={stripePromise} options={{ clientSecret }}>
         <SubscriptionForm
           clientSecret={clientSecret}
@@ -65,6 +65,6 @@ export default function StripeForm({
           subscriptionId={subscriptionId}
         />
       </Elements>
-    </div>
+    </>
   );
 }

@@ -7,6 +7,7 @@ export const onboardingSchema = z.object({
   goalAmount: z.coerce.number().min(0),
   goalDueAt: zodDay,
 
+  id: z.string().optional(),
   privacyAgreement: z.boolean().optional(),
   saving: z.string().min(1).nullable().optional(),
   imagePath: z.string().optional(),

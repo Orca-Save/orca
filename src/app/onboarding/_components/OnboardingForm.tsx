@@ -111,27 +111,6 @@ export default function OnboardingForm({
             saving: onboardingProfile?.saving,
             savingAmount: onboardingProfile?.savingAmount,
           }}
-          onFinishFailed={(error) => setPageState({ tabKey: '0' })}
-          onFinish={async (data) => {
-            setLoading(true);
-            try {
-              if (session?.user?.id) {
-                const result = await onboardUser(session.user.id, {
-                  ...data,
-                  privacyAgreement: privacyChecked,
-                  goalDueAt: data.goalDueAt.format(),
-                });
-                if (isFieldErrors(result)) {
-                  applyFormErrors(form, result);
-                } else {
-                  router.push('/?confetti=true');
-                }
-              }
-            } catch (error) {
-              console.error(error);
-            }
-            setLoading(false);
-          }}
         >
           <Tabs
             animated
@@ -409,13 +388,14 @@ export default function OnboardingForm({
                       return;
 
                     setLoading(true);
-                    const onboardingProfile = {
+                    const newOnboardingProfile = {
+                      ...onboardingProfile,
                       ...form.getFieldsValue(),
                       privacyAgreement: privacyChecked,
                       goalDueAt: form.getFieldValue('goalDueAt')?.format(),
                     };
                     if (currentTab === 4) {
-                      await onboardUser(session.user.id, onboardingProfile);
+                      await onboardUser(session.user.id, newOnboardingProfile);
                       setLoading(false);
                       router.push('/?confetti=true');
                       return;
@@ -424,7 +404,7 @@ export default function OnboardingForm({
                     const nextTab = currentTab + 1;
                     const result = await saveOnboardingProfile(
                       session.user.id,
-                      onboardingProfile
+                      newOnboardingProfile
                     );
                     setLoading(false);
 

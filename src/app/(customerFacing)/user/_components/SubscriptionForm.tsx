@@ -100,22 +100,20 @@ function SubscriptionForm({
           event: StripeExpressCheckoutElementConfirmEvent
         ) {}}
       />
-      <div style={{ height: 400 }}>
-        <PaymentElement
-          options={{
-            wallets: {
-              applePay: 'auto',
-              googlePay: 'auto',
+      <PaymentElement
+        options={{
+          wallets: {
+            applePay: 'auto',
+            googlePay: 'auto',
+          },
+          fields: {
+            billingDetails: {
+              name: 'auto',
+              email: 'auto',
             },
-            fields: {
-              billingDetails: {
-                name: 'auto',
-                email: 'auto',
-              },
-            },
-          }}
-        />
-      </div>
+          },
+        }}
+      />
       <Button
         type='primary'
         size='large'

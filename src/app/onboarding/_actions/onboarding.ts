@@ -56,40 +56,7 @@ export async function saveOnboardingProfile(
   return { onboardingProfile };
 }
 
-export async function onboardUser(userId: string, onboardingProfileInput: any) {
-  onboardingProfileInput.goalDueAt = dayjs(onboardingProfileInput.goalDueAt);
-  const result = onboardingSchema.safeParse(onboardingProfileInput);
-
-  if (result.success === false) {
-    return { fieldErrors: result.error.formErrors.fieldErrors };
-  }
-
-  const onboardingProfileData = result.data;
-  const goal = await db.goal.create({
-    data: {
-      userId: userId,
-      name: onboardingProfileData.goalName,
-      targetAmount: onboardingProfileData.goalAmount,
-      dueAt: onboardingProfileData.goalDueAt.format(),
-      pinned: true,
-      imagePath: onboardingProfileData.imagePath,
-    },
-  });
-
-  let initialAmountTransfer;
-  if (onboardingProfileData.initialAmount) {
-    initialAmountTransfer = await db.goalTransfer.create({
-      data: {
-        userId: userId,
-        goalId: goal.id,
-        amount: onboardingProfileData.initialAmount,
-        transactedAt: new Date(),
-        itemName: onboardingProfileData.goalName + ' Initial Amount',
-        categoryId: externalAccountId,
-      },
-    });
-  }
-
+async function createDefaultOneTaps(userId: string) {
   const defaultGoalTransfers = [
     {
       itemName: 'Skipped the coffee shop',
@@ -107,10 +74,63 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
       },
     });
   }
+}
 
-  let saveGoalTransfer;
-  if (onboardingProfileData.savingAmount && onboardingProfileData.saving) {
-    saveGoalTransfer = await db.goalTransfer.create({
+export async function onboardUser(userId: string, onboardingProfileInput: any) {
+  onboardingProfileInput.goalDueAt = dayjs(onboardingProfileInput.goalDueAt);
+  const result = onboardingSchema.safeParse(onboardingProfileInput);
+
+  if (result.success === false) {
+    return { fieldErrors: result.error.formErrors.fieldErrors };
+  }
+
+  const onboardingProfileData = result.data;
+  const currentOnboardingProfile = await db.onboardingProfile.findFirst({
+    where: { id: onboardingProfileData.id },
+  });
+
+  let goalId = currentOnboardingProfile?.goalId;
+
+  if (!goalId) {
+    const goal = await db.goal.create({
+      data: {
+        userId: userId,
+        name: onboardingProfileData.goalName,
+        targetAmount: onboardingProfileData.goalAmount,
+        dueAt: onboardingProfileData.goalDueAt.format(),
+        pinned: true,
+        imagePath: onboardingProfileData.imagePath,
+      },
+    });
+    goalId = goal.id;
+
+    await createDefaultOneTaps(userId);
+  }
+
+  let initialAmountTransfer;
+  if (
+    !currentOnboardingProfile?.initialTransferId &&
+    onboardingProfileData.initialAmount
+  ) {
+    initialAmountTransfer = await db.goalTransfer.create({
+      data: {
+        userId: userId,
+        goalId: goalId,
+        amount: onboardingProfileData.initialAmount,
+        transactedAt: new Date(),
+        itemName: onboardingProfileData.goalName + ' Initial Amount',
+        categoryId: externalAccountId,
+      },
+    });
+  }
+
+  let saveGoalTransferId = currentOnboardingProfile?.savingTransferId;
+  if (
+    !saveGoalTransferId &&
+    onboardingProfileData.savingAmount &&
+    onboardingProfileData.saving
+  ) {
+    const saveGoalTransfer = await db.goalTransfer.create({
       data: {
         userId: userId,
         amount: onboardingProfileData.savingAmount,
@@ -118,6 +138,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
         pinned: true,
       },
     });
+    saveGoalTransferId = saveGoalTransfer.id;
   }
 
   delete onboardingProfileData.privacyAgreement;
@@ -127,8 +148,8 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
       ...onboardingProfileData,
       goalDueAt: onboardingProfileData.goalDueAt.format(),
       userId: userId,
-      goalId: goal.id,
-      savingTransferId: saveGoalTransfer?.id,
+      goalId: goalId,
+      savingTransferId: saveGoalTransferId,
       initialTransferId: initialAmountTransfer?.id,
     },
   });
@@ -144,5 +165,5 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
   );
   await getRecurringTransactions(userId);
 
-  return { goal, onboardingProfile, saveGoalTransfer, initialAmountTransfer };
+  return onboardingProfile;
 }
