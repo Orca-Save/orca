@@ -12,6 +12,7 @@ interface LinkProps {
   size?: 'small' | 'large' | 'middle';
   text?: string;
 }
+
 const LinkButton = (props: LinkProps) => {
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
   const [isExistingInstitutionModalOpen, setIsExistingInstitutionModalOpen] =

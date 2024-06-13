@@ -7,6 +7,7 @@ import {
 import db from '@/db/db';
 import { externalAccountId } from '@/lib/goalTransfers';
 import dayjs from 'dayjs';
+import { revalidatePath } from 'next/cache';
 import { onboardingSchema } from '../_schemas/onboarding';
 
 export async function getOnboardingProfile(userId: string) {
@@ -164,6 +165,9 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     })
   );
   await getRecurringTransactions(userId);
-
+  revalidatePath('/');
+  revalidatePath('/user');
+  revalidatePath('/goals');
+  revalidatePath('/savings');
   return onboardingProfile;
 }

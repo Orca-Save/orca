@@ -2,7 +2,9 @@ import { PrismaClient } from '@prisma/client';
 import { loggingExtension } from './middleware/prismaLogger';
 
 const prismaClientSingleton = () => {
-  const prisma = new PrismaClient().$extends(loggingExtension);
+  const prisma = new PrismaClient();
+  if (process.env.NODE_ENV === 'production') prisma.$extends(loggingExtension);
+
   return prisma;
 };
 

@@ -78,10 +78,12 @@ export const useCardSwiper = ({
       switch (event.key) {
         case 'ArrowLeft':
         case 'a':
+        case 'w':
           swipeDirection = SwipeDirection.LEFT;
           break;
         case 'ArrowRight':
         case 'd':
+        case 'e':
           swipeDirection = SwipeDirection.RIGHT;
           break;
         default:

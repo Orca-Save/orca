@@ -21,6 +21,7 @@ import UnsplashForm from '@/app/_components/UnsplashForm';
 import { isFieldErrors } from '@/lib/goals';
 import { isExtendedSession } from '@/lib/session';
 import { applyFormErrors } from '@/lib/utils';
+import { HappyProvider } from '@ant-design/happy-work-theme';
 import { UserOutlined } from '@ant-design/icons';
 import { OnboardingProfile, UserProfile } from '@prisma/client';
 import dayjs from 'dayjs';
@@ -28,7 +29,7 @@ import { useSession } from 'next-auth/react';
 import { Open_Sans, Varela_Round } from 'next/font/google';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { onboardUser, saveOnboardingProfile } from '../_actions/onboarding';
 
 const { Title, Text } = Typography;
@@ -65,6 +66,8 @@ export default function OnboardingForm({
   const [privacyChecked, setPrivacyChecked] = useState(
     userProfile?.privacyPolicyAccepted ?? false
   );
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const router = useRouter();
   const { data: session } = useSession({
     required: true,
@@ -176,17 +179,28 @@ export default function OnboardingForm({
                       <DatePicker />
                     </Form.Item>
 
-                    <Form.Item name='imagePath' required>
-                      <UnsplashForm
-                        onSelect={(url) =>
-                          form.setFieldsValue({ imagePath: url })
-                        }
-                        defaultValue={
-                          onboardingProfile?.imagePath === null
-                            ? undefined
-                            : onboardingProfile?.imagePath
-                        }
-                      />
+                    <Form.Item
+                      name='imagePath'
+                      label='Visualize your goal!'
+                      tooltip='Search and select your goal image.'
+                      required
+                    >
+                      <div>
+                        <UnsplashForm
+                          onSelect={(url) => {
+                            form.setFieldsValue({ imagePath: url });
+                            if (buttonRef.current) {
+                              console.log('clicking', buttonRef.current);
+                              buttonRef.current.click();
+                            }
+                          }}
+                          defaultValue={
+                            onboardingProfile?.imagePath === null
+                              ? undefined
+                              : onboardingProfile?.imagePath
+                          }
+                        />
+                      </div>
                     </Form.Item>
 
                     <Form.Item
@@ -246,6 +260,10 @@ export default function OnboardingForm({
                         we kindly ask you to review and agree to our privacy
                         policy. Please take a moment to read through{' '}
                         <Link href='/privacy-policy'>our Privacy Policy</Link>.
+                      </Paragraph>
+                      <Paragraph>
+                        You are able to manage your data and clear it from your{' '}
+                        <Link href='/user'>user profile page</Link>.
                       </Paragraph>
                     </div>
                     <Form.Item
@@ -376,46 +394,55 @@ export default function OnboardingForm({
                 </Button>
               </Form.Item>
               <Form.Item>
-                <Button
-                  type='primary'
-                  data-id='onboarding-form-next'
-                  size='large'
-                  disabled={disableNext}
-                  loading={loading}
-                  onClick={async () => {
-                    if (currentTab === 2 && !privacyChecked) return;
-                    if (currentTab === 3 && !userProfile?.stripeSubscriptionId)
-                      return;
+                <HappyProvider>
+                  <Button
+                    type='primary'
+                    data-id='onboarding-form-next'
+                    size='large'
+                    disabled={disableNext}
+                    loading={loading}
+                    onClick={async () => {
+                      console.log('here');
+                      if (currentTab === 2 && !privacyChecked) return;
+                      if (
+                        currentTab === 3 &&
+                        !userProfile?.stripeSubscriptionId
+                      )
+                        return;
 
-                    setLoading(true);
-                    const newOnboardingProfile = {
-                      ...onboardingProfile,
-                      ...form.getFieldsValue(),
-                      privacyAgreement: privacyChecked,
-                      goalDueAt: form.getFieldValue('goalDueAt')?.format(),
-                    };
-                    if (currentTab === 4) {
-                      await onboardUser(session.user.id, newOnboardingProfile);
+                      setLoading(true);
+                      const newOnboardingProfile = {
+                        ...onboardingProfile,
+                        ...form.getFieldsValue(),
+                        privacyAgreement: privacyChecked,
+                        goalDueAt: form.getFieldValue('goalDueAt')?.format(),
+                      };
+                      if (currentTab === 4) {
+                        await onboardUser(
+                          session.user.id,
+                          newOnboardingProfile
+                        );
+                        setLoading(false);
+                        router.push('/?confetti=true');
+                        return;
+                      }
+
+                      const nextTab = currentTab + 1;
+                      const result = await saveOnboardingProfile(
+                        session.user.id,
+                        newOnboardingProfile
+                      );
                       setLoading(false);
-                      router.push('/?confetti=true');
-                      return;
-                    }
 
-                    const nextTab = currentTab + 1;
-                    const result = await saveOnboardingProfile(
-                      session.user.id,
-                      newOnboardingProfile
-                    );
-                    setLoading(false);
-
-                    if (isFieldErrors(result)) {
-                      applyFormErrors(form, result);
-                    } else if (nextTab <= 4)
-                      setPageState({ tabKey: nextTab.toString() });
-                  }}
-                >
-                  {currentTab === 4 ? 'Done' : 'Next'}
-                </Button>
+                      if (isFieldErrors(result)) {
+                        applyFormErrors(form, result);
+                      } else if (nextTab <= 4)
+                        setPageState({ tabKey: nextTab.toString() });
+                    }}
+                  >
+                    {currentTab === 4 ? 'Done' : 'Next'}
+                  </Button>
+                </HappyProvider>
               </Form.Item>
             </Space>
           </Row>

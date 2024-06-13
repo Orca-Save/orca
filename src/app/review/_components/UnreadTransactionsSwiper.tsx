@@ -83,6 +83,7 @@ export default function UnreadTransactionsSwiper({
     setTransactions((prev) =>
       prev.filter((transaction) => transaction.id !== id)
     );
+    setRating(undefined);
   }
 
   const transactionCards: CardData[] = transactions.map((transaction) => {

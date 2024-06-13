@@ -597,12 +597,11 @@ export async function removePlaidItem(itemId: string) {
     access_token: plaidItem.accessToken,
   });
 
-  await db.plaidItem.delete({
-    where: { itemId: plaidItem.itemId },
-  });
-
   await db.transaction.deleteMany({
     where: { plaidItemId: plaidItem.itemId },
+  });
+  await db.plaidItem.delete({
+    where: { itemId: plaidItem.itemId },
   });
 
   revalidatePath('/');
