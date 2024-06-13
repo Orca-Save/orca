@@ -190,7 +190,6 @@ export default function OnboardingForm({
                           onSelect={(url) => {
                             form.setFieldsValue({ imagePath: url });
                             if (buttonRef.current) {
-                              console.log('clicking', buttonRef.current);
                               buttonRef.current.click();
                             }
                           }}
@@ -402,7 +401,6 @@ export default function OnboardingForm({
                     disabled={disableNext}
                     loading={loading}
                     onClick={async () => {
-                      console.log('here');
                       if (currentTab === 2 && !privacyChecked) return;
                       if (
                         currentTab === 3 &&

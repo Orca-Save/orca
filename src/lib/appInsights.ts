@@ -4,7 +4,6 @@ appInsights
   .setAutoCollectConsole(true)
   .setAutoCollectDependencies(true)
   .setAutoCollectExceptions(true)
-  .setAutoCollectHeartbeat(true)
   .setAutoCollectPerformance(true, true)
   .setAutoCollectRequests(true)
   .setAutoDependencyCorrelation(true)
