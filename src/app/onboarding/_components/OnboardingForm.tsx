@@ -13,7 +13,6 @@ import {
 
 import InstitutionCollapses from '@/app/(customerFacing)/user/_components/InstitutionsCollapse';
 import PlaidLink from '@/app/(customerFacing)/user/_components/PlaidLink';
-import StripeForm from '@/app/(customerFacing)/user/_components/StripeForm';
 import { ItemData } from '@/app/_actions/plaid';
 import CurrencyInput from '@/app/_components/CurrencyInput';
 import { Paragraph } from '@/app/_components/Typography';
@@ -81,11 +80,11 @@ export default function OnboardingForm({
   const currentTab = Number(pageState.tabKey);
   const forceRender = true;
   let disableNext = false;
-  if (currentTab === 2 && !privacyChecked) disableNext = true;
-  if (currentTab === 3 && !userProfile?.stripeSubscriptionId)
-    disableNext = true;
-  if (currentTab === 3 && !privacyChecked && !userProfile?.stripeSubscriptionId)
-    disableNext = true;
+  if (currentTab === 3 && !privacyChecked) disableNext = true;
+  // if (currentTab === 3 && !userProfile?.stripeSubscriptionId)
+  //   disableNext = true;
+  // if (currentTab === 3 && !privacyChecked && !userProfile?.stripeSubscriptionId)
+  //   disableNext = true;
   if (currentTab === 4 && itemsData.length === 0) disableNext = true;
 
   return (
@@ -130,7 +129,7 @@ export default function OnboardingForm({
             items={[
               {
                 label: '1 Goal',
-                key: '0',
+                key: '1',
                 forceRender,
                 children: (
                   <div style={{ margin: '15px' }}>
@@ -213,7 +212,7 @@ export default function OnboardingForm({
               },
               {
                 label: '2 One-Tap',
-                key: '1',
+                key: '2',
                 forceRender,
                 children: (
                   <div style={{ margin: '15px' }}>
@@ -244,7 +243,7 @@ export default function OnboardingForm({
               },
               {
                 label: '3 Privacy',
-                key: '2',
+                key: '3',
                 forceRender,
                 children: (
                   <div style={{ margin: '15px' }}>
@@ -279,56 +278,56 @@ export default function OnboardingForm({
                   </div>
                 ),
               },
-              {
-                label: '4 Subscription',
-                key: '3',
-                disabled: !privacyChecked && !userProfile?.stripeSubscriptionId,
-                children: (
-                  <div style={{ margin: '15px' }}>
-                    <div style={{ marginBottom: '20px' }}>
-                      <h3
-                        className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
-                      >
-                        Transform Your Finances with Orca!
-                      </h3>
-                      <Paragraph>
-                        Join Orca&apos;s subscription service to effortlessly
-                        save money and manage your spending. Enjoy personalized
-                        insights, real-time alerts, and user-friendly tools
-                        designed to help you achieve your financial goals.
-                        Subscribe now and take control of your financial future!
-                      </Paragraph>
-                      {userProfile?.stripeSubscriptionId ? (
-                        <>
-                          <Text>
-                            You are subscribed.{' '}
-                            <Link href='/user'>View your subscription</Link>
-                          </Text>
-                        </>
-                      ) : (
-                        <Paragraph>
-                          Sign up and cancel anytime at your{' '}
-                          <Link href='/user'>
-                            <UserOutlined /> user profile
-                          </Link>
-                          .
-                        </Paragraph>
-                      )}
+              // {
+              //   label: '4 Subscription',
+              //   key: '3',
+              //   disabled: !privacyChecked && !userProfile?.stripeSubscriptionId,
+              //   children: (
+              //     <div style={{ margin: '15px' }}>
+              //       <div style={{ marginBottom: '20px' }}>
+              //         <h3
+              //           className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+              //         >
+              //           Transform Your Finances with Orca!
+              //         </h3>
+              //         <Paragraph>
+              //           Join Orca&apos;s subscription service to effortlessly
+              //           save money and manage your spending. Enjoy personalized
+              //           insights, real-time alerts, and user-friendly tools
+              //           designed to help you achieve your financial goals.
+              //           Subscribe now and take control of your financial future!
+              //         </Paragraph>
+              //         {userProfile?.stripeSubscriptionId ? (
+              //           <>
+              //             <Text>
+              //               You are subscribed.{' '}
+              //               <Link href='/user'>View your subscription</Link>
+              //             </Text>
+              //           </>
+              //         ) : (
+              //           <Paragraph>
+              //             Sign up and cancel anytime at your{' '}
+              //             <Link href='/user'>
+              //               <UserOutlined /> user profile
+              //             </Link>
+              //             .
+              //           </Paragraph>
+              //         )}
 
-                      {currentTab === 3 &&
-                      !userProfile?.stripeSubscriptionId ? (
-                        <StripeForm
-                          email={session?.user.email ?? ''}
-                          userId={session?.user.id}
-                          redirect={false}
-                        />
-                      ) : null}
-                    </div>
-                  </div>
-                ),
-              },
+              //         {currentTab === 3 &&
+              //         !userProfile?.stripeSubscriptionId ? (
+              //           <StripeForm
+              //             email={session?.user.email ?? ''}
+              //             userId={session?.user.id}
+              //             redirect={false}
+              //           />
+              //         ) : null}
+              //       </div>
+              //     </div>
+              //   ),
+              // },
               {
-                label: '5 Connect Accounts',
+                label: '4 Connect Accounts',
                 key: '4',
                 forceRender,
                 disabled: !privacyChecked || !userProfile?.stripeSubscriptionId,
@@ -401,12 +400,13 @@ export default function OnboardingForm({
                     disabled={disableNext}
                     loading={loading}
                     onClick={async () => {
-                      if (currentTab === 2 && !privacyChecked) return;
-                      if (
-                        currentTab === 3 &&
-                        !userProfile?.stripeSubscriptionId
-                      )
-                        return;
+                      console.log('currentTab', currentTab);
+                      if (currentTab === 3 && !privacyChecked) return;
+                      // if (
+                      //   currentTab === 3 &&
+                      //   !userProfile?.stripeSubscriptionId
+                      // )
+                      //   return;
 
                       setLoading(true);
                       const newOnboardingProfile = {
@@ -454,11 +454,11 @@ function initialPageState(
   onboardingProfile: OnboardingProfile | null,
   userProfile: UserProfile | null
 ) {
-  let tabKey = '0';
+  let tabKey = '1';
   if (onboardingProfile) {
     if (onboardingProfile.goalName) tabKey = '1';
     if (onboardingProfile.saving) tabKey = '2';
-    if (userProfile?.privacyPolicyAccepted) tabKey = '3';
+    if (userProfile?.privacyPolicyAccepted) tabKey = '4';
     if (userProfile?.stripeSubscriptionId) tabKey = '4';
   }
   return {

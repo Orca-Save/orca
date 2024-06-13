@@ -1,4 +1,3 @@
-
 delete
 	FROM public."Transaction";
 delete

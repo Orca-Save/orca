@@ -26,7 +26,7 @@ export default function ConnectPlaidCard({
   useBeginTour(setOpen);
   const steps: TourProps['steps'] = [
     {
-      title: 'Review Buys',
+      title: 'Review Transactions',
       description:
         'Connect your account now and begin reviewing your purchases here. Go to your profile page to connect more accounts.',
 
@@ -37,7 +37,11 @@ export default function ConnectPlaidCard({
     <>
       <Card
         ref={unreadRef}
-        title={<span>Review Buys {emoji.find('money_with_wings')?.emoji}</span>}
+        title={
+          <span>
+            Review Transactions {emoji.find('money_with_wings')?.emoji}
+          </span>
+        }
         headStyle={{ backgroundColor: '#f0f2f5', textAlign: 'center' }}
         bodyStyle={{
           display: 'flex',

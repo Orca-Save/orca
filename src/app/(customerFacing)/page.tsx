@@ -95,7 +95,7 @@ export default async function HomePage({
               title={
                 unreadObj.unreadCount ? (
                   <>
-                    <span>Unread Buys</span>
+                    <span>Unread Transactions</span>
                     {emoji.find('money_with_wings')?.emoji}
                   </>
                 ) : (
