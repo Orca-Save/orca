@@ -23,13 +23,19 @@ import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
-const PLAID_ENV = process.env.PLAID_ENV || PlaidEnvironments.sandbox;
+let PLAID_ENV = PlaidEnvironments.sandbox;
+if (process.env.PLAID_ENV === 'development')
+  PLAID_ENV = PlaidEnvironments.development;
+if (process.env.PLAID_ENV === 'production')
+  PLAID_ENV = PlaidEnvironments.production;
+
 const PLAID_PRODUCTS = (
   process.env.PLAID_PRODUCTS || Products.Transactions
 ).split(',');
 const PLAID_COUNTRY_CODES = (process.env.PLAID_COUNTRY_CODES || 'US').split(
   ','
 );
+
 const PLAID_REDIRECT_URI = process.env.PLAID_REDIRECT_URI || '';
 const configuration = new Configuration({
   basePath: PlaidEnvironments[PLAID_ENV],
