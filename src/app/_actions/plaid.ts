@@ -19,6 +19,7 @@ import {
   TransactionsGetRequest,
   TransactionsSyncRequest,
 } from 'plaid';
+import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
@@ -92,7 +93,36 @@ export async function createLinkToken(userId: string, access_token?: string) {
   return createTokenResponse.data;
 }
 
-export async function exchangePublicToken(publicToken: string, userId: string) {
+export async function exchangePublicToken(
+  publicToken: string,
+  metadata: PlaidLinkOnSuccessMetadata,
+  userId: string,
+  overrideExistingCheck = false
+) {
+  const accounts = await getAllUserAccounts(userId);
+  const institutionId = metadata.institution?.institution_id;
+  if (!institutionId) throw new Error('Institution ID not found');
+  for (let i = 0; i < metadata.accounts.length; i++) {
+    const account = metadata.accounts[i];
+    for (let j = 0; j < accounts.length; j++) {
+      const a = accounts[j];
+      if (
+        a.item.institution_id === institutionId &&
+        a.accounts.some(
+          (b) => b.name === account.name && b.mask === account.mask
+        )
+      ) {
+        return { duplicate: true };
+      }
+    }
+    if (
+      accounts.some((a) => a.item.institution_id === institutionId) &&
+      !overrideExistingCheck
+    ) {
+      return { existingInstitution: true };
+    }
+  }
+
   const exchangeTokenResponse = await plaidClient.itemPublicTokenExchange({
     public_token: publicToken,
   });
@@ -102,8 +132,6 @@ export async function exchangePublicToken(publicToken: string, userId: string) {
   const itemResponse = await plaidClient.itemGet({
     access_token: accessToken,
   });
-  const institutionId = itemResponse.data.item.institution_id;
-  if (!institutionId) return false;
 
   await db.plaidItem.upsert({
     where: {
@@ -127,7 +155,7 @@ export async function exchangePublicToken(publicToken: string, userId: string) {
   revalidatePath('/user');
   revalidatePath('/review');
   revalidatePath('/transactions');
-  return true;
+  return { duplicate: false, existingInstitution: false };
 }
 
 export async function syncItems(userId: string) {
@@ -212,6 +240,32 @@ export async function getInstitutionById(institutionId: string) {
   const response = await plaidClient.institutionsGetById(request);
   currentInstitutions.set(institutionId, response.data.institution);
   return response.data.institution;
+}
+
+async function getAllUserAccounts(userId: string) {
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      userId,
+      loginRequired: false,
+    },
+  });
+
+  if (!plaidItems) {
+    throw new Error('Plaid item not found');
+  }
+
+  const accounts = await Promise.all(
+    plaidItems.map(
+      async (plaidItem) =>
+        (
+          await plaidClient.accountsGet({
+            access_token: plaidItem.accessToken,
+          })
+        ).data
+    )
+  );
+
+  return accounts;
 }
 
 export async function getUnreadTransactionsAndAccounts(userId: string) {
