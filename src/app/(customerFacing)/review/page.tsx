@@ -1,3 +1,7 @@
+import {
+  getTransactions,
+  getUnreadTransactionsAndAccounts,
+} from '@/app/_actions/plaid';
 import { completedUserGoalCount } from '@/app/_actions/users';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
@@ -6,11 +10,7 @@ import dayjs from 'dayjs';
 import { getServerSession } from 'next-auth';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import CompletedCounts from '../(customerFacing)/_components/CompletedCounts';
-import {
-  getTransactions,
-  getUnreadTransactionsAndAccounts,
-} from '../_actions/plaid';
+import CompletedCounts from '../_components/CompletedCounts';
 import UnreadButton from './_components/UnreadButton';
 import UnreadTransactionsSwiper from './_components/UnreadTransactionsSwiper';
 

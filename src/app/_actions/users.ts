@@ -73,7 +73,7 @@ export const getUnreadTransactionCount = async (userId: string) => {
   const unreadTransactions = await db.transaction.findMany({
     where: {
       userId,
-      unread: true,
+      read: false,
       recurring: false,
     },
   });

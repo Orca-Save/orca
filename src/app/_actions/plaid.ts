@@ -287,7 +287,7 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
   const unreadTransactions = await db.transaction.findMany({
     where: {
       userId,
-      unread: true,
+      read: false,
       recurring: false,
     },
     orderBy: {
@@ -498,7 +498,7 @@ export async function getUnreadTransactions(userId: string) {
   const transactions = await db.transaction.findMany({
     where: {
       userId,
-      unread: true,
+      read: false,
       recurring: false,
     },
     orderBy: {
@@ -517,10 +517,10 @@ export async function markAllTransactionsAsUnread(userId: string) {
   await db.transaction.updateMany({
     where: {
       userId,
-      unread: false,
+      read: true,
     },
     data: {
-      unread: true,
+      read: false,
       updatedAt: new Date(),
     },
   });
@@ -534,7 +534,7 @@ export async function markTransactionAsRead(
 ) {
   await db.transaction.update({
     where: { id },
-    data: { unread: false, rating, impulse },
+    data: { read: true, rating, impulse },
   });
   revalidatePath('/');
 }

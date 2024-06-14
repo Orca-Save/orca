@@ -24,9 +24,7 @@ const DynamicSavingsList = dynamic(() => import('./SavingsList'), {
 export default async function SavingsPage({
   filter,
   newSaveText,
-  newPurchaseText,
   saveHref,
-  buyHref,
   hide,
   bottomGoalTransfers,
   topGoalTransfers,
@@ -34,12 +32,10 @@ export default async function SavingsPage({
   totalSaved,
 }: {
   filter?: GoalTransferFilter;
-  newPurchaseText?: string;
   newSaveText: string;
   totalSaved: number;
   goalsCompleted: number;
   saveHref: string;
-  buyHref: string;
   bottomGoalTransfers: GoalTransfer[];
   topGoalTransfers?: GoalTransfer[];
   hide?: boolean;
@@ -75,13 +71,6 @@ export default async function SavingsPage({
               </ConfigProvider>
             </Link>
           ) : null}
-          {filter === undefined && (
-            <Link href={buyHref}>
-              <Button data-id='purchase-button' size='large'>
-                {newPurchaseText}
-              </Button>
-            </Link>
-          )}
         </Space>
         <div>
           <CompletedCounts

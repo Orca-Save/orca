@@ -8,7 +8,6 @@ import {
   SwipeOperation,
 } from '@/app/_components/CardSwiper';
 import { Title } from '@/app/_components/Typography';
-import { InstitutionCard } from '@/app/review/_components/InstitutionCard';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Liquid } from '@ant-design/plots';
 import { Transaction as TransactionPrisma } from '@prisma/client';
@@ -27,7 +26,8 @@ import {
 import 'antd/dist/reset.css'; // Import Ant Design styles by using 'reset.css'
 import { AccountBase, Institution, Item } from 'plaid';
 import { useEffect, useState } from 'react';
-import { markTransactionAsRead, syncItems } from '../../_actions/plaid';
+import { markTransactionAsRead, syncItems } from '../../../_actions/plaid';
+import { InstitutionCard } from './InstitutionCard';
 import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
