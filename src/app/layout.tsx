@@ -1,7 +1,7 @@
 import AppInsightsLayout from '@/components/AppInsightsLayout';
 import { ConfigProvider } from '@/components/ConfigProvider';
 import { SessionProvider } from '@/components/SessionProvider';
-import { mainThemeConfig } from '@/lib/themes';
+import { mainThemeConfig } from '@/lib/themeConfig';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';

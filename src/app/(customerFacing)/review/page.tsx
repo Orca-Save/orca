@@ -1,6 +1,6 @@
 import {
+  getFormattedTransactions,
   getTransactions,
-  getUnreadTransactionsAndAccounts,
 } from '@/app/_actions/plaid';
 import { completedUserGoalCount } from '@/app/_actions/users';
 import authOptions from '@/lib/nextAuthOptions';
@@ -18,15 +18,16 @@ export default async function TransactionsPage() {
   const session = await getServerSession(authOptions);
   if (!session || !isExtendedSession(session)) redirect('/');
 
-  const [plaidItem, completedCounts, transactions] = await Promise.all([
-    getUnreadTransactionsAndAccounts(session.user.id),
-    completedUserGoalCount(session.user.id),
-    getTransactions(
-      session.user.id,
-      dayjs().subtract(90, 'day').format('YYYY-MM-DD'),
-      dayjs().format('YYYY-MM-DD')
-    ),
-  ]);
+  const [formattedTransactions, completedCounts, transactions] =
+    await Promise.all([
+      getFormattedTransactions(session.user.id),
+      completedUserGoalCount(session.user.id),
+      getTransactions(
+        session.user.id,
+        dayjs().subtract(90, 'day').format('YYYY-MM-DD'),
+        dayjs().format('YYYY-MM-DD')
+      ),
+    ]);
 
   return (
     <div className='min-h-full max-h-full flex flex-col'>
@@ -54,7 +55,7 @@ export default async function TransactionsPage() {
       <div className='mt-auto w-full'>
         <UnreadTransactionsSwiper
           userId={session.user.id}
-          plaidItem={plaidItem}
+          formattedTransactions={formattedTransactions}
         />
       </div>
     </div>

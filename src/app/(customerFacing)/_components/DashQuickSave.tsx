@@ -1,7 +1,7 @@
 import { Text } from '@/app/_components/Typography';
 import { HappyProvider } from '@/components/HappyProvider';
 import db from '@/db/db';
-import { greenThemeColors } from '@/lib/themes';
+import { greenThemeColors } from '@/lib/themeConfig';
 import { ConfigProvider, Space } from 'antd';
 import { getPinnedUserGoal } from '../_actions/data';
 import { QuickSaveButton } from './QuickSaveButton';

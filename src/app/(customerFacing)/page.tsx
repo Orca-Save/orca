@@ -8,7 +8,7 @@ import { getUserProfile } from '@/db/common';
 import db from '@/db/db';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
-import { greenThemeColors } from '@/lib/themes';
+import { greenThemeColors } from '@/lib/themeConfig';
 import { MailOutlined } from '@ant-design/icons';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';

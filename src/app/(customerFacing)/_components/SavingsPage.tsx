@@ -1,4 +1,4 @@
-import { greenThemeColors } from '@/lib/themes';
+import { greenThemeColors } from '@/lib/themeConfig';
 import { GoalTransfer } from '@prisma/client';
 import { Button, Card, ConfigProvider, Skeleton, Space } from 'antd';
 import dynamic from 'next/dynamic';

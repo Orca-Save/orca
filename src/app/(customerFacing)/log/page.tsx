@@ -2,6 +2,7 @@ import { completedUserGoalCount } from '@/app/_actions/users';
 import db from '@/db/db';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
+import { GoalTransfer } from '@prisma/client';
 import { Tabs, TabsProps } from 'antd';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
@@ -42,7 +43,7 @@ export default async function MySavingsPage({
           totalSaved={completedCounts.totalSaved}
           goalsCompleted={completedCounts.goalsCompleted}
           bottomGoalTransfers={goalTransfers.filter(
-            (transfer) =>
+            (transfer: GoalTransfer) =>
               transfer.goalId !== null || transfer.amount.toNumber() < 0
           )}
           saveHref='/savings/new'
@@ -73,7 +74,7 @@ export default async function MySavingsPage({
     {
       key: '3',
       label: 'Transactions',
-      children: <ReviewTab />,
+      children: <ReviewTab userId={session.user.id} />,
     },
   ];
   return (

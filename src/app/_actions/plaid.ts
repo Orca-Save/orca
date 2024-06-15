@@ -1,7 +1,13 @@
 'use server';
 
 import db from '@/db/db';
-import { PlaidItem, Prisma } from '@prisma/client';
+import { plaidCategories } from '@/lib/plaid';
+import {
+  PlaidItem,
+  Prisma,
+  Transaction as PrismaTransaction,
+} from '@prisma/client';
+import { format, formatDistanceToNow, formatRelative } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
 import {
@@ -271,8 +277,32 @@ async function getAllUserAccounts(userId: string) {
 
   return accounts;
 }
-
-export async function getUnreadTransactionsAndAccounts(userId: string) {
+export type FormattedTransaction = {
+  id: string;
+  merchantName: string;
+  amount: number;
+  category: string;
+  plaidCategory: string;
+  accountName: string;
+  accountMask: string;
+  read: boolean;
+  impulse: boolean;
+  recurring: boolean;
+  date: Date;
+  friendlyDistanceDate: string;
+  friendlyRelativeDate: string;
+  formattedDate: string;
+};
+type PersonalFinanceCategory = {
+  confidence_level: string;
+  detailed: string;
+  primary: string;
+};
+export async function getFormattedTransactions(
+  userId: string,
+  read?: boolean,
+  recurring?: boolean
+) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
       userId,
@@ -284,11 +314,11 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
     throw new Error('Plaid item not found');
   }
 
-  const unreadTransactions = await db.transaction.findMany({
+  const transactions = await db.transaction.findMany({
     where: {
       userId,
-      read: false,
-      recurring: false,
+      read,
+      recurring,
     },
     orderBy: {
       date: 'asc',
@@ -306,35 +336,51 @@ export async function getUnreadTransactionsAndAccounts(userId: string) {
     )
   );
   const accounts = groupedAccounts.flat();
+  const categories = plaidCategories();
+  const formattedTransactions = transactions
+    .sort(sortTransactionDateDesc)
+    .map((transaction): FormattedTransaction => {
+      const account = accounts.find(
+        (account) => account.account_id === transaction.accountId
+      );
 
-  const items = await Promise.all(
-    plaidItems.map(
-      async (plaidItem) =>
-        (
-          await plaidClient.itemGet({
-            access_token: plaidItem.accessToken,
-          })
-        ).data.item
-    )
-  );
-  const institutions = await Promise.all(
-    items
-      .filter((item) => item.institution_id)
-      .map(async (item) => await getInstitutionById(item.institution_id!))
-  );
+      const personalFinanceCategory =
+        transaction.personalFinanceCategory as PersonalFinanceCategory;
+      const plaidCategory = personalFinanceCategory?.primary ?? '';
+      const category =
+        categories.find((cat) => cat.value === plaidCategory)?.label ?? '';
+      return {
+        id: transaction.transactionId,
+        date: transaction.date,
+        read: transaction.read,
+        impulse: transaction.impulse ?? false,
+        recurring: transaction.recurring,
+        formattedDate: format(transaction.date, 'EEE, MMMM dd'),
+        friendlyDistanceDate: formatDistanceToNow(transaction.date, {
+          addSuffix: true,
+        }),
+        friendlyRelativeDate: formatRelative(transaction.date, new Date()),
+        merchantName: transaction.merchantName ?? '',
+        amount: parseFloat(transaction.amount.toFixed(2)),
+        category,
+        plaidCategory,
 
-  const formattedTransactions = unreadTransactions.map((transaction) =>
-    Object.assign(transaction, {
-      amount: parseFloat(transaction.amount.toFixed(2)),
-    })
-  );
+        accountName: account?.name ?? '',
+        accountMask: account?.mask ?? '',
+      };
+    });
 
-  return {
-    items,
-    accounts,
-    institutions,
-    unreadTransactions: formattedTransactions,
-  };
+  return formattedTransactions;
+}
+
+function sortTransactionDateDesc(a: PrismaTransaction, b: PrismaTransaction) {
+  if (a.date < b.date) {
+    return 1;
+  }
+  if (a.date > b.date) {
+    return -1;
+  }
+  return 0;
 }
 
 async function fetchAllSyncData(
@@ -533,7 +579,7 @@ export async function markTransactionAsRead(
   rating?: number
 ) {
   await db.transaction.update({
-    where: { id },
+    where: { transactionId: id },
     data: { read: true, rating, impulse },
   });
   revalidatePath('/');

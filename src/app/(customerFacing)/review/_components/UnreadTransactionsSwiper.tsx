@@ -10,9 +10,7 @@ import {
 import { Title } from '@/app/_components/Typography';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Liquid } from '@ant-design/plots';
-import { Transaction as TransactionPrisma } from '@prisma/client';
 import {
-  Avatar,
   Button,
   Card,
   Col,
@@ -24,25 +22,19 @@ import {
   Typography,
 } from 'antd';
 import 'antd/dist/reset.css'; // Import Ant Design styles by using 'reset.css'
-import { AccountBase, Institution, Item } from 'plaid';
-import { useEffect, useState } from 'react';
-import { markTransactionAsRead, syncItems } from '../../../_actions/plaid';
-import { InstitutionCard } from './InstitutionCard';
+import { useState } from 'react';
+import {
+  FormattedTransaction,
+  markTransactionAsRead,
+  syncItems,
+} from '../../../_actions/plaid';
 import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
-type Transaction = TransactionPrisma & {
-  amount: number;
-};
-interface UnreadTransactionsSwiperProps {
+type UnreadTransactionsSwiperProps = {
+  formattedTransactions: FormattedTransaction[];
   userId: string;
-  plaidItem: {
-    unreadTransactions: Transaction[];
-    accounts: AccountBase[];
-    items: Item[];
-    institutions: Institution[];
-  };
-}
+};
 
 const customIcons: Record<number, React.ReactNode> = {
   1: <span>😞</span>,
@@ -53,17 +45,13 @@ const customIcons: Record<number, React.ReactNode> = {
 };
 
 export default function UnreadTransactionsSwiper({
-  plaidItem,
+  formattedTransactions,
   userId,
 }: UnreadTransactionsSwiperProps) {
-  const initialTransactions = plaidItem.unreadTransactions;
+  const initialTransactions = formattedTransactions;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [rating, setRating] = useState<number | undefined>(undefined);
   const key = useRatingInput(setRating);
-
-  useEffect(() => {
-    setTransactions(initialTransactions);
-  }, [initialTransactions]);
 
   const handleDismiss = async (
     element: HTMLDivElement,
@@ -87,17 +75,6 @@ export default function UnreadTransactionsSwiper({
   }
 
   const transactionCards: CardData[] = transactions.map((transaction) => {
-    const account = plaidItem.accounts.find(
-      (account) => account.account_id === transaction.accountId
-    );
-    // const institutionLogo =
-    //   institution.logo ?? institution.url + '/apple-touch-icon.png';
-    const institution = plaidItem.institutions.find(
-      (institution) => institution.institution_id === transaction.institutionId
-    );
-    const institutionLogo =
-      institution?.logo ?? institution?.url + '/favicon.ico';
-
     return {
       id: transaction.id,
       src: '',
@@ -105,8 +82,7 @@ export default function UnreadTransactionsSwiper({
       content: (
         <Card>
           <Meta
-            avatar={<Avatar src={transaction.logoIcon} />}
-            title={transaction.name}
+            title={transaction.merchantName}
             description={
               <>
                 <Text>{transaction.merchantName}</Text>
@@ -126,11 +102,7 @@ export default function UnreadTransactionsSwiper({
           >
             <Title level={3}>${transaction.amount.toFixed(2)}</Title>
           </div>
-          <InstitutionCard
-            institution={institution}
-            account={account}
-            categoryIcon={transaction.personalFinanceCategoryIcon ?? ''}
-          />
+
           <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
             <Col span={24}>
               <div
@@ -199,7 +171,7 @@ export default function UnreadTransactionsSwiper({
 
       <Liquid {...config} />
       <div className='flex justify-center h-full'>
-        <div style={{ height: '450px' }} className='w-full md:w-4/5 lg:w-3/5'>
+        <div style={{ height: '300px' }} className='w-full md:w-4/5 lg:w-3/5'>
           <CardSwiper
             key={key}
             data={transactionCards}
