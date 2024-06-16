@@ -8,15 +8,18 @@ import {
   SwipeOperation,
 } from '@/app/_components/CardSwiper';
 import { Title } from '@/app/_components/Typography';
+import { impulseButtonTheme } from '@/lib/themeConfig';
+import { currencyFormatter } from '@/lib/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Liquid } from '@ant-design/plots';
 import {
   Button,
   Card,
-  Col,
+  ConfigProvider,
   Empty,
+  Flex,
+  Modal,
   Rate,
-  Row,
   Space,
   Tooltip,
   Typography,
@@ -28,7 +31,6 @@ import {
   markTransactionAsRead,
   syncItems,
 } from '../../../_actions/plaid';
-import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
 type UnreadTransactionsSwiperProps = {
@@ -50,9 +52,10 @@ export default function UnreadTransactionsSwiper({
 }: UnreadTransactionsSwiperProps) {
   const initialTransactions = formattedTransactions;
   const [transactions, setTransactions] = useState(initialTransactions);
-  const [rating, setRating] = useState<number | undefined>(undefined);
-  const key = useRatingInput(setRating);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] =
+    useState<string>('');
+  // const key = useRatingInput(setRating);
   const handleDismiss = async (
     element: HTMLDivElement,
     meta: CardMetaData,
@@ -63,15 +66,16 @@ export default function UnreadTransactionsSwiper({
     await swipeOperation(id, action);
   };
   async function swipeOperation(id: CardId, action: SwipeAction) {
-    await markTransactionAsRead(
-      id as string,
-      action === SwipeAction.DISLIKE,
-      rating
-    );
+    console.log('swipeOperation', id, action);
+    if (action === SwipeAction.DISLIKE) {
+      setSelectedTransactionId(id as string);
+      setIsModalOpen(true);
+      return;
+    }
+    await markTransactionAsRead(id as string, false);
     setTransactions((prev) =>
       prev.filter((transaction) => transaction.id !== id)
     );
-    setRating(undefined);
   }
 
   const transactionCards: CardData[] = transactions.map((transaction) => {
@@ -80,86 +84,112 @@ export default function UnreadTransactionsSwiper({
       src: '',
       meta: {},
       content: (
-        <Card>
-          <Meta
-            title={transaction.merchantName}
-            description={
-              <>
-                <Text>{transaction.merchantName}</Text>
-                <br />
-                <Text type='secondary'>
-                  {new Date(transaction.date).toLocaleDateString()}
-                </Text>
-              </>
-            }
-          />
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Title level={3}>${transaction.amount.toFixed(2)}</Title>
-          </div>
-
-          <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-            <Col span={24}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <div>
-                    <Tooltip
-                      title={
-                        <>
-                          <p style={{ marginBottom: '0.5rem' }}>
-                            This rating is necessary to ensure the insights we
-                            deliver are truly personalized.
-                          </p>
-                          <p>
-                            For example, we don&apos;t want to suggest you cut
-                            back on “Yoga with friends” to meet your goal if
-                            this is something you truly value.
-                          </p>
-                        </>
-                      }
-                    >
-                      <Text strong>
-                        How did you feel about this purchase?
-                        <InfoCircleOutlined style={{ marginLeft: '5px' }} />
-                      </Text>
-                    </Tooltip>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Rate
-                      character={({ index = 0 }) => customIcons[index + 1]}
-                      style={{ marginTop: 8 }}
-                      value={rating}
-                      onChange={(value) => setRating(value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Card>
+        <Flex
+          justify='center'
+          align='center'
+          className='w-full'
+          style={{ height: 275 }}
+        >
+          <Text strong>
+            {transaction.merchantName ? transaction.merchantName : 'Unknown'}{' '}
+          </Text>
+          <Text type='secondary'>
+            ({transaction.accountName} {transaction.accountMask})
+          </Text>
+          <Text strong className='ml-4'>
+            {currencyFormatter(transaction.amount)}
+          </Text>
+        </Flex>
       ),
     };
   });
   const config = liquidConfig(transactions.length, initialTransactions.length);
+  const transaction = transactions.find((x) => x.id === selectedTransactionId);
   return (
     <>
+      <Modal
+        centered
+        open={isModalOpen}
+        footer={null}
+        title={
+          <Flex justify='center'>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Button: impulseButtonTheme,
+                },
+              }}
+            >
+              <Button shape='round' size='large' type='primary'>
+                Impulse Buy
+              </Button>
+            </ConfigProvider>
+          </Flex>
+        }
+      >
+        <Flex justify='center'>
+          <Space direction='vertical' align='center'>
+            <Flex justify='center' className='w-full'>
+              <Text strong>
+                {transaction?.merchantName
+                  ? transaction.merchantName
+                  : 'Unknown'}{' '}
+              </Text>
+              <Text type='secondary'>
+                ({transaction?.accountName} {transaction?.accountMask})
+              </Text>
+              <Text strong className='ml-4'>
+                {transaction?.amount && currencyFormatter(transaction?.amount)}
+              </Text>
+            </Flex>
+            <Flex justify='center'>
+              <Tooltip
+                title={
+                  <>
+                    <p style={{ marginBottom: '0.5rem' }}>
+                      This rating is necessary to ensure the insights we deliver
+                      are truly personalized.
+                    </p>
+                    <p>
+                      For example, we don&apos;t want to suggest you cut back on
+                      “Yoga with friends” to meet your goal if this is something
+                      you truly value.
+                    </p>
+                  </>
+                }
+              >
+                <Text strong>
+                  How did you feel about this purchase?
+                  <InfoCircleOutlined style={{ marginLeft: '5px' }} />
+                </Text>
+              </Tooltip>
+            </Flex>
+            <Flex justify='center'>
+              <Rate
+                key={selectedTransactionId}
+                defaultValue={4}
+                character={({ index = 0 }) => customIcons[index + 1]}
+                style={{ marginTop: 8 }}
+                onChange={async (value) => {
+                  console.log('Rating:', value, selectedTransactionId);
+                  await markTransactionAsRead(
+                    selectedTransactionId,
+                    true,
+                    value
+                  );
+                  setTransactions((prev) =>
+                    prev.filter(
+                      (transaction) => transaction.id !== selectedTransactionId
+                    )
+                  );
+                  setSelectedTransactionId('');
+                  setIsModalOpen(false);
+                }}
+              />
+            </Flex>
+          </Space>
+        </Flex>
+      </Modal>
       <div className='flex justify-center'>
         <Button
           data-id='sync-transactions-button'
@@ -169,19 +199,28 @@ export default function UnreadTransactionsSwiper({
         </Button>
       </div>
 
+      <div className='flex justify-center'>
+        <Title level={5}>Transactions Left</Title>
+      </div>
       <Liquid {...config} />
-      <div className='flex justify-center h-full'>
-        <div style={{ height: '300px' }} className='w-full md:w-4/5 lg:w-3/5'>
+      <div className='flex justify-center'>
+        <Text>
+          <strong>Swipe Left</strong> for Impulse Buys, or{' '}
+          <strong>Swipe Right</strong> for Reviewed
+        </Text>
+      </div>
+      <div className='flex flex-col items-center justify-center h-full'>
+        <div style={{ height: 400 }} className='w-full md:w-4/5 lg:w-3/5'>
           <CardSwiper
-            key={key}
+            // key={key}
             data={transactionCards}
             onDismiss={handleDismiss}
-            dislikeButton={<div>Impulse</div>}
-            likeButton={<div>Reviewed</div>}
-            withActionButtons
+            dislikeButton={<div>Impulse Buy (A)</div>}
+            likeButton={<div>Reviewed (D)</div>}
             withRibbons
+            withActionButtons
             likeRibbonText='Reviewed'
-            dislikeRibbonText='Impulse'
+            dislikeRibbonText='Impulse Buy'
             ribbonColors={{
               bgLike: 'green',
               bgDislike: 'red',
@@ -197,6 +236,18 @@ export default function UnreadTransactionsSwiper({
               </Space>
             }
           />
+        </div>
+        <div className='flex my-4 justify-center'>
+          <Button
+            data-id='sync-transactions-button'
+            onClick={() => syncItems(userId)}
+            style={{
+              height: 80,
+              width: 220,
+            }}
+          >
+            All Reviewed
+          </Button>
         </div>
       </div>
     </>

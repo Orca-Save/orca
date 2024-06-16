@@ -55,7 +55,7 @@ export default function HeaderMenu({ className }: { className: string }) {
         <Menu.Item eventKey='/goals' key='/goals'>
           Goals
         </Menu.Item>
-        <Menu.Item eventKey='/log' key='/log'>
+        <Menu.Item eventKey='/log/saves' key='/log'>
           Log
         </Menu.Item>
         <Menu.Item eventKey='/user' key='/user'>

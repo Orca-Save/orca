@@ -1,6 +1,9 @@
 import '../main.css';
 
+import { impulseDefaultButtonTheme } from '@/lib/themeConfig';
+import { ConfigProvider, Space } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
+import { Title } from '../../Typography';
 import { useCardSwiper } from '../hooks/useCardSwiper';
 import { CardSwiperProps, SwipeAction, SwipeDirection } from '../types/types';
 import { Swiper } from '../utils/swiper';
@@ -55,7 +58,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
         <div
           key={id}
           ref={(ref) => handleNewCardSwiper(ref, id, meta)}
-          className='swipe-card__container'
+          className={'swipe-card__container'}
           id='swipe-card__container'
         >
           {header && (
@@ -114,22 +117,35 @@ export const CardSwiper = (props: CardSwiperProps) => {
           id='swipe-card__children'
         >
           {likeButton && dislikeButton ? (
-            <>
-              <CardSwiperActionButton
-                isCustom
-                direction={SwipeDirection.LEFT}
-                action={SwipeAction.DISLIKE}
-                onClick={handleClickEvents}
-                buttonContent={dislikeButton}
-              />
-              <CardSwiperActionButton
-                isCustom
-                direction={SwipeDirection.RIGHT}
-                action={SwipeAction.LIKE}
-                onClick={handleClickEvents}
-                buttonContent={likeButton}
-              />
-            </>
+            <div>
+              <div className='flex justify-center'>
+                <Title level={5}>Mark As</Title>
+              </div>
+              <Space size='large'>
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      Button: impulseDefaultButtonTheme,
+                    },
+                  }}
+                >
+                  <CardSwiperActionButton
+                    isCustom
+                    direction={SwipeDirection.LEFT}
+                    action={SwipeAction.DISLIKE}
+                    onClick={handleClickEvents}
+                    buttonContent={dislikeButton}
+                  />
+                </ConfigProvider>
+                <CardSwiperActionButton
+                  isCustom
+                  direction={SwipeDirection.RIGHT}
+                  action={SwipeAction.LIKE}
+                  onClick={handleClickEvents}
+                  buttonContent={likeButton}
+                />
+              </Space>
+            </div>
           ) : (
             <>
               <CardSwiperActionButton

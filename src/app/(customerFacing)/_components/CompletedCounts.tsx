@@ -1,6 +1,7 @@
 import { Text } from '@/app/_components/Typography';
+import { greenCardThemeConfig } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
-import { Card, Space } from 'antd';
+import { Card, ConfigProvider, Space } from 'antd';
 
 export default async function CompletedCounts({
   totalSaved,
@@ -18,10 +19,16 @@ export default async function CompletedCounts({
         width: '100%',
       }}
     >
-      <Card>
-        <Text>Total saved: {currencyFormatter(totalSaved)}</Text>{' '}
-        <Text>Goals completed: {goalsCompleted}</Text>
-      </Card>
+      <ConfigProvider
+        theme={{
+          components: greenCardThemeConfig,
+        }}
+      >
+        <Card>
+          <Text>Total saved: {currencyFormatter(totalSaved)}</Text>{' '}
+          <Text>Goals completed: {goalsCompleted}</Text>
+        </Card>
+      </ConfigProvider>
     </Space>
   );
 }

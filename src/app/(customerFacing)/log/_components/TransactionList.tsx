@@ -1,7 +1,7 @@
 'use client';
 
 import { FormattedTransaction } from '@/app/_actions/plaid';
-import { antdDefaultButton } from '@/lib/themeConfig';
+import { impulseButtonTheme } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
 import {
   Button,
@@ -74,18 +74,13 @@ export default function TransactionList({
                         <ConfigProvider
                           theme={{
                             components: {
-                              Button: {
-                                ...antdDefaultButton,
-                                defaultBg: 'rgba(154,0,207, 0.2)',
-                                colorPrimaryHover: 'rgba(154,0,207, 0.6)',
-                                defaultHoverBorderColor: '#9A00CF',
-                                defaultHoverColor: '#9A00CF',
-                                defaultColor: '#9A00CF',
-                              },
+                              Button: impulseButtonTheme,
                             },
                           }}
                         >
-                          <Button shape='circle'>I</Button>
+                          <Button type='primary' shape='circle'>
+                            I
+                          </Button>
                         </ConfigProvider>
                       ) : null}
                     </Col>
@@ -180,14 +175,7 @@ function FilterOptions({
     <ConfigProvider
       theme={{
         components: {
-          Button: {
-            ...antdDefaultButton,
-            colorPrimary: 'rgba(154,0,207, 0.2)',
-            colorPrimaryHover: 'rgba(154,0,207, 0.6)',
-            defaultHoverBorderColor: '#9A00CF',
-            defaultHoverColor: '#9A00CF',
-            primaryColor: '#9A00CF',
-          },
+          Button: impulseButtonTheme,
         },
       }}
     >

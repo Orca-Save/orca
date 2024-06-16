@@ -3,12 +3,12 @@ import {
   getTransactions,
 } from '@/app/_actions/plaid';
 import { completedUserGoalCount } from '@/app/_actions/users';
+import { Title } from '@/app/_components/Typography';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
-import { Button, Space } from 'antd';
+import { Flex, Space } from 'antd';
 import dayjs from 'dayjs';
 import { getServerSession } from 'next-auth';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import CompletedCounts from '../_components/CompletedCounts';
 import UnreadButton from './_components/UnreadButton';
@@ -20,7 +20,7 @@ export default async function TransactionsPage() {
 
   const [formattedTransactions, completedCounts, transactions] =
     await Promise.all([
-      getFormattedTransactions(session.user.id),
+      getFormattedTransactions(session.user.id, false, false),
       completedUserGoalCount(session.user.id),
       getTransactions(
         session.user.id,
@@ -31,25 +31,16 @@ export default async function TransactionsPage() {
 
   return (
     <div className='min-h-full max-h-full flex flex-col'>
-      <Space
-        className='flex justify-center'
-        direction='vertical'
-        size='large'
-        align='center'
-      >
-        <div className='w-full md:w-4/5 lg:w-3/5'>
-          <CompletedCounts
-            goalsCompleted={completedCounts.goalsCompleted}
-            totalSaved={completedCounts.totalSaved}
-          />
-        </div>
+      <Space direction='vertical' size='large' align='center'>
+        <Flex justify='center'>
+          <Title level={3}>Review Transactions</Title>
+        </Flex>
+        <CompletedCounts
+          goalsCompleted={completedCounts.goalsCompleted}
+          totalSaved={completedCounts.totalSaved}
+        />
         <Space>
           <UnreadButton userId={session.user.id} />
-          <Link href='/'>
-            <Button data-id='return-home-button' type='primary' size='large'>
-              Return home
-            </Button>
-          </Link>
         </Space>
       </Space>
       <div className='mt-auto w-full'>
