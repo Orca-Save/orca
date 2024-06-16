@@ -173,10 +173,7 @@ function FilterOptions({
     <ConfigProvider
       theme={{
         components: {
-          Button:
-            filter.filter === 'impulseBuy' && filter.antiFilter
-              ? impulseButtonTheme
-              : antdDefaultButton,
+          Button: antdDefaultButton,
         },
       }}
     >
@@ -198,19 +195,32 @@ function FilterOptions({
         </Space>
         {options.map(({ filterLabel, value, antiFilterLabel }) => (
           <Space key={`${value}-filters`} direction='vertical' className='w-32'>
-            <Button
-              size='small'
-              className='w-full'
-              shape='round'
-              type={
-                filter.filter === value && filter.antiFilter
-                  ? 'primary'
-                  : 'default'
+            <ConfigProvider
+              theme={
+                value === 'impulseBuy'
+                  ? {
+                      components: {
+                        Button: impulseButtonTheme,
+                      },
+                    }
+                  : undefined
               }
-              onClick={() => setFilterHandler(value, true)}
             >
-              {filterLabel}
-            </Button>
+              <Button
+                size='small'
+                className='w-full'
+                shape='round'
+                type={
+                  filter.filter === value && filter.antiFilter
+                    ? 'primary'
+                    : 'default'
+                }
+                onClick={() => setFilterHandler(value, true)}
+              >
+                {filterLabel}
+              </Button>
+            </ConfigProvider>
+
             <Button
               size='small'
               className='w-full'
