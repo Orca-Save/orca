@@ -203,7 +203,7 @@ export function GoalForm({
           <Button
             data-id='goal-form-cancel'
             size='large'
-            onClick={() => router.push(getPrevPageHref(referer, window))}
+            onClick={() => router.back()}
           >
             Cancel
           </Button>

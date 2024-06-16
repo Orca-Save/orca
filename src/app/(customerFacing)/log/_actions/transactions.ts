@@ -11,3 +11,13 @@ export async function getTransactions(userId: string) {
 
   return transactions;
 }
+
+export async function getGoalTransfers(userId: string) {
+  return db.goalTransfer.findMany({
+    where: {
+      userId,
+    },
+    include: { category: true },
+    orderBy: { transactedAt: 'desc' },
+  });
+}

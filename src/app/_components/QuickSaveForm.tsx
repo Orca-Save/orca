@@ -126,7 +126,7 @@ export default function QuickSaveForm({
           <Button
             data-id='goal-transfer-form-cancel'
             size='large'
-            onClick={() => router.push(getPrevPageHref(referer, window))}
+            onClick={() => router.back()}
           >
             Cancel
           </Button>

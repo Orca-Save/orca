@@ -52,46 +52,51 @@ export default function TransactionList({
           <List.Item>
             <Space direction='vertical' className='w-full'>
               <Text strong>{friendlyDistanceDate}</Text>
-              {transactions.map((transaction) => (
-                <List.Item
-                  onClick={() => router.push(`/transactions/${transaction.id}`)}
-                  key={transaction.id}
-                  className='hover:bg-gray-200 hover:shadow-lg cursor-pointer transition-colors duration-300'
-                >
-                  <Row className='w-full mx-2'>
-                    <Col span={16}>
-                      <Text strong>
-                        {transaction.merchantName
-                          ? transaction.merchantName
-                          : 'Unknown'}{' '}
-                      </Text>
-                      <Text type='secondary'>
-                        ({transaction.accountName} {transaction.accountMask})
-                      </Text>
-                    </Col>
-                    <Col span={2}>
-                      {transaction.impulse ? (
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Button: impulseButtonTheme,
-                            },
-                          }}
-                        >
-                          <Button type='primary' shape='circle'>
-                            I
-                          </Button>
-                        </ConfigProvider>
-                      ) : null}
-                    </Col>
-                    <Col span={6}>
-                      <Text strong>
-                        {currencyFormatter(transaction.amount)}
-                      </Text>
-                    </Col>
-                  </Row>
-                </List.Item>
-              ))}
+              <List
+                dataSource={transactions}
+                renderItem={(transaction) => (
+                  <List.Item
+                    onClick={() =>
+                      router.push(`/transactions/${transaction.id}`)
+                    }
+                    key={transaction.id}
+                    className='hover:bg-gray-200 hover:shadow-lg cursor-pointer transition-colors duration-300'
+                  >
+                    <Row className='w-full mx-2'>
+                      <Col span={16}>
+                        <Text strong>
+                          {transaction.merchantName
+                            ? transaction.merchantName
+                            : 'Unknown'}{' '}
+                        </Text>
+                        <Text type='secondary'>
+                          ({transaction.accountName} {transaction.accountMask})
+                        </Text>
+                      </Col>
+                      <Col span={2}>
+                        {transaction.impulse ? (
+                          <ConfigProvider
+                            theme={{
+                              components: {
+                                Button: impulseButtonTheme,
+                              },
+                            }}
+                          >
+                            <Button type='primary' shape='circle'>
+                              I
+                            </Button>
+                          </ConfigProvider>
+                        ) : null}
+                      </Col>
+                      <Col span={6}>
+                        <Text strong>
+                          {currencyFormatter(transaction.amount)}
+                        </Text>
+                      </Col>
+                    </Row>
+                  </List.Item>
+                )}
+              />
             </Space>
           </List.Item>
         )}

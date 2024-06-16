@@ -1,14 +1,18 @@
 import { getFormattedTransactions } from '@/app/_actions/plaid';
 import { HappyProvider } from '@/components/HappyProvider';
+import authOptions from '@/lib/nextAuthOptions';
+import { isExtendedSession } from '@/lib/session';
 import { Button } from 'antd';
+import { getServerSession } from 'next-auth';
 import Link from 'next/link';
-import TransactionList from './TransactionList';
+import { redirect } from 'next/navigation';
+import TransactionList from '../_components/TransactionList';
 
-type ReviewTabProps = {
-  userId: string;
-};
-export default async function ReviewTab({ userId }: ReviewTabProps) {
-  const formattedTransactions = await getFormattedTransactions(userId);
+export default async function TransactionsPage() {
+  const session = await getServerSession(authOptions);
+  if (!session || !isExtendedSession(session)) redirect('/');
+  const formattedTransactions = await getFormattedTransactions(session.user.id);
+
   return (
     <>
       <Link href='/review'>
