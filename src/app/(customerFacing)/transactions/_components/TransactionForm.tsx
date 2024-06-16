@@ -3,18 +3,37 @@
 import { plaidCategories } from '@/lib/plaid';
 import { currencyFormatter } from '@/lib/utils';
 import { Transaction } from '@prisma/client';
-import { Button, Flex, Form, Select, Space, Switch, Typography } from 'antd';
+import {
+  Button,
+  Flex,
+  Form,
+  Rate,
+  Select,
+  Space,
+  Switch,
+  Typography,
+} from 'antd';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { saveTransaction } from '../_actions/transactions';
 
 const { Text } = Typography;
 
+const customIcons: Record<number, React.ReactNode> = {
+  1: <span>😞</span>,
+  2: <span>😐</span>,
+  3: <span>😊</span>,
+  4: <span>😃</span>,
+  5: <span>😍</span>,
+};
 type TransactionFormProps = {
   transaction: Transaction;
 };
 
 export default function TransactionForm({ transaction }: TransactionFormProps) {
   const router = useRouter();
+  const [impulse, setImpulse] = useState(transaction.impulse);
   return (
     <Form
       layout='vertical'
@@ -23,8 +42,19 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
         personalFinanceCategory:
           (transaction.personalFinanceCategory as any)?.primary || null,
       }}
-      onFinish={(values) => {
-        console.log(values);
+      onFinish={async (values) => {
+        await saveTransaction({
+          read: values.read,
+          impulse: values.impulse,
+          userId: transaction.userId,
+          transactionId: transaction.transactionId,
+          personalFinanceCategory: {
+            ...(transaction.personalFinanceCategory as any),
+            primary: values.personalFinanceCategory,
+          },
+          rating: values.rating,
+        });
+        router.back();
       }}
     >
       <Space direction='vertical' className='w-full'>
@@ -32,7 +62,6 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           <Space direction='vertical' className='w-full'>
             <Text strong>Merchant Name</Text>
             <Text>{transaction.merchantName}</Text>
-
             <Text strong>Amount</Text>
             <Text type={(transaction.amount as any) < 0 ? 'danger' : 'success'}>
               {currencyFormatter(transaction.amount as any)}
@@ -48,7 +77,7 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
         <Form.Item
           label='Category'
           name='personalFinanceCategory'
-          rules={[{ required: true, message: 'Please input category!' }]}
+          rules={[{ message: 'Please input category!' }]}
         >
           <Select options={plaidCategories()} />
         </Form.Item>
@@ -56,8 +85,21 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           <Switch />
         </Form.Item>
         <Form.Item label='Impulse Buy' name='impulse'>
-          <Switch />
+          <Switch onChange={(value) => setImpulse(value)} />
         </Form.Item>
+        {impulse && (
+          <Form.Item
+            required
+            label='How did you feel about this purchase?'
+            name='rating'
+          >
+            <Rate
+              defaultValue={4}
+              style={{ marginTop: 8 }}
+              character={({ index = 0 }) => customIcons[index + 1]}
+            />
+          </Form.Item>
+        )}
       </Space>
       <Flex justify='end'>
         <Space>

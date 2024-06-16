@@ -66,7 +66,6 @@ export default function UnreadTransactionsSwiper({
     await swipeOperation(id, action);
   };
   async function swipeOperation(id: CardId, action: SwipeAction) {
-    console.log('swipeOperation', id, action);
     if (action === SwipeAction.DISLIKE) {
       setSelectedTransactionId(id as string);
       setIsModalOpen(true);
@@ -171,7 +170,6 @@ export default function UnreadTransactionsSwiper({
                 character={({ index = 0 }) => customIcons[index + 1]}
                 style={{ marginTop: 8 }}
                 onChange={async (value) => {
-                  console.log('Rating:', value, selectedTransactionId);
                   await markTransactionAsRead(
                     selectedTransactionId,
                     true,

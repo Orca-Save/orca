@@ -57,7 +57,7 @@ export const currencyFormatter = (
 
     return formatters[currencyCode!].format(numericAmount);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return amount.toString();
   }
 };

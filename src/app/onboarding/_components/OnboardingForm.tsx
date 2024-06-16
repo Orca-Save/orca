@@ -400,7 +400,6 @@ export default function OnboardingForm({
                     disabled={disableNext}
                     loading={loading}
                     onClick={async () => {
-                      console.log('currentTab', currentTab);
                       if (currentTab === 3 && !privacyChecked) return;
                       // if (
                       //   currentTab === 3 &&

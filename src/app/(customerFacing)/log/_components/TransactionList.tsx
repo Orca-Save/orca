@@ -1,7 +1,7 @@
 'use client';
 
 import { FormattedTransaction } from '@/app/_actions/plaid';
-import { impulseButtonTheme } from '@/lib/themeConfig';
+import { antdDefaultButton, impulseButtonTheme } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
 import {
   Button,
@@ -105,12 +105,10 @@ function groupedTransactions(
   filter: Filter
 ) {
   const filteredTransactions = transactions.filter((transaction) => {
-    console.log('filter', filter);
     if (filter.filter === 'all') {
       return true;
     }
     if (filter.filter === 'reviewed') {
-      console.log('reviewed');
       return transaction.read === filter.antiFilter;
     }
     if (filter.filter === 'impulseBuy') {
@@ -175,7 +173,10 @@ function FilterOptions({
     <ConfigProvider
       theme={{
         components: {
-          Button: impulseButtonTheme,
+          Button:
+            filter.filter === 'impulseBuy' && filter.antiFilter
+              ? impulseButtonTheme
+              : antdDefaultButton,
         },
       }}
     >
