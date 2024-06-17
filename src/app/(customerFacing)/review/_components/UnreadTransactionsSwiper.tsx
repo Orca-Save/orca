@@ -166,7 +166,7 @@ export default function UnreadTransactionsSwiper({
             <Flex justify='center'>
               <Rate
                 key={selectedTransactionId}
-                defaultValue={4}
+                defaultValue={5}
                 character={({ index = 0 }) => customIcons[index + 1]}
                 style={{ marginTop: 8 }}
                 onChange={async (value) => {

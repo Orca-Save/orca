@@ -37,7 +37,6 @@ export default function HeaderMenu({ className }: { className: string }) {
       label: 'Transactions',
     },
   ];
-  console.log('current', current, 'topPath', topPath);
   return (
     <>
       <Menu
@@ -89,8 +88,7 @@ export default function HeaderMenu({ className }: { className: string }) {
           defaultActiveKey={current}
           items={items}
           onTabClick={(key) => {
-            console.log('key', key);
-            router.push('/log/' + key);
+            router.push(key);
           }}
         />
       )}

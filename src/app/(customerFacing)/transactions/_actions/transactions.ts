@@ -1,6 +1,7 @@
 'use server';
 
 import db from '@/db/db';
+import { revalidatePath } from 'next/cache';
 
 export async function saveTransaction({
   userId,
@@ -26,4 +27,6 @@ export async function saveTransaction({
       rating,
     },
   });
+  revalidatePath('/log/transactions');
+  revalidatePath('/transactions');
 }

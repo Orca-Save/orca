@@ -43,6 +43,7 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           (transaction.personalFinanceCategory as any)?.primary || null,
       }}
       onFinish={async (values) => {
+        console.log(values);
         await saveTransaction({
           read: values.read,
           impulse: values.impulse,
@@ -91,6 +92,19 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           <Form.Item
             required
             label='How did you feel about this purchase?'
+            tooltip={
+              <>
+                <p style={{ marginBottom: '0.5rem' }}>
+                  This rating is necessary to ensure the insights we deliver are
+                  truly personalized.
+                </p>
+                <p>
+                  For example, we don&apos;t want to suggest you cut back on
+                  “Yoga with friends” to meet your goal if this is something you
+                  truly value.
+                </p>
+              </>
+            }
             name='rating'
           >
             <Rate
