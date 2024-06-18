@@ -11,6 +11,7 @@ interface LinkProps {
   userId: string;
   size?: 'small' | 'large' | 'middle';
   text?: string;
+  usingExistingInstitution?: boolean;
 }
 
 const LinkButton = (props: LinkProps) => {
@@ -40,7 +41,8 @@ const LinkButton = (props: LinkProps) => {
     const results = await exchangePublicToken(
       public_token,
       metadata,
-      props.userId
+      props.userId,
+      props.usingExistingInstitution
     );
     if (results.duplicate) {
       setIsDuplicateModalOpen(true);

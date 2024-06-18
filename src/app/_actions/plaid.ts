@@ -112,22 +112,23 @@ export async function exchangePublicToken(
   const accounts = await getAllUserAccounts(userId);
   const institutionId = metadata.institution?.institution_id;
   if (!institutionId) throw new Error('Institution ID not found');
-  for (let i = 0; i < metadata.accounts.length; i++) {
-    const account = metadata.accounts[i];
-    for (let j = 0; j < accounts.length; j++) {
-      const a = accounts[j];
-      if (
-        a.institutionId === institutionId &&
-        accounts.some((b) => b.name === account.name && b.mask === account.mask)
-      ) {
-        return { duplicate: true };
+  if (!overrideExistingCheck) {
+    for (let i = 0; i < metadata.accounts.length; i++) {
+      const account = metadata.accounts[i];
+      for (let j = 0; j < accounts.length; j++) {
+        const a = accounts[j];
+        if (
+          a.institutionId === institutionId &&
+          accounts.some(
+            (b) => b.name === account.name && b.mask === account.mask
+          )
+        ) {
+          return { duplicate: true };
+        }
       }
-    }
-    if (
-      accounts.some((a) => a.institutionId === institutionId) &&
-      !overrideExistingCheck
-    ) {
-      return { existingInstitution: true };
+      if (accounts.some((a) => a.institutionId === institutionId)) {
+        return { existingInstitution: true };
+      }
     }
   }
 
@@ -481,7 +482,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
 
   await Promise.all(
     combinedTransactions.map(async (transaction) => {
-      const read = new Date(transaction.date) > weekAgo;
+      const read = new Date(transaction.date) < weekAgo;
       await db.transaction.upsert({
         where: { transactionId: transaction.transaction_id },
         update: {
@@ -504,7 +505,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
         },
         create: {
           userId: plaidItem.userId,
-          read: new Date(transaction.date) > weekAgo,
+          read,
           accountId: transaction.account_id,
           transactionId: transaction.transaction_id,
           institutionId: plaidItem.institutionId,
@@ -713,7 +714,7 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
       return {
         linkToken,
         institution,
-        linkText: 'Reselect accounts',
+        linkText: 'Reselect Accounts',
         itemId: item.itemId,
         accounts: accountResponse.data.accounts,
       };
@@ -761,6 +762,7 @@ export async function getRecurringTransactions(userId: string) {
           },
           data: {
             recurring: true,
+            read: true,
           },
         });
       } catch (en) {

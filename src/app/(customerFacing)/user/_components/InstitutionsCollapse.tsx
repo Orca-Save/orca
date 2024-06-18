@@ -54,6 +54,7 @@ const InstitutionCollapse = ({
               userId={userId}
               size='middle'
               text={linkText}
+              usingExistingInstitution={true}
             />
             <Button
               data-id='remove-institution-button'
