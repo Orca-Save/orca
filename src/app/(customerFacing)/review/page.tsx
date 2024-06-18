@@ -28,9 +28,6 @@ export default async function TransactionsPage() {
           goalsCompleted={completedCounts.goalsCompleted}
           totalSaved={completedCounts.totalSaved}
         />
-        {/* <Space>
-          <UnreadButton userId={session.user.id} />
-        </Space> */}
       </Space>
       <UnreadTransactionsSwiper
         userId={session.user.id}

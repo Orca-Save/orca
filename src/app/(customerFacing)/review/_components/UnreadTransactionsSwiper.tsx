@@ -32,6 +32,7 @@ import {
   syncItems,
 } from '../../../_actions/plaid';
 import UnreadButton from './UnreadButton';
+import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
 type UnreadTransactionsSwiperProps = {
@@ -40,11 +41,36 @@ type UnreadTransactionsSwiperProps = {
 };
 
 const customIcons: Record<number, React.ReactNode> = {
-  1: <span>😞</span>,
-  2: <span>😐</span>,
-  3: <span>😊</span>,
-  4: <span>😃</span>,
-  5: <span>😍</span>,
+  1: (
+    <Flex vertical justify='center'>
+      <span>😞</span>
+      <Text className='m-auto'>1</Text>
+    </Flex>
+  ),
+  2: (
+    <Flex vertical justify='center'>
+      <span>😐</span>
+      <Text className='m-auto'>2</Text>
+    </Flex>
+  ),
+  3: (
+    <Flex vertical justify='center'>
+      <span>😊</span>
+      <Text className='m-auto'>3</Text>
+    </Flex>
+  ),
+  4: (
+    <Flex vertical justify='center'>
+      <span>😃</span>
+      <Text className='m-auto'>4</Text>
+    </Flex>
+  ),
+  5: (
+    <Flex vertical justify='center'>
+      <span>😍</span>
+      <Text className='m-auto'>5</Text>
+    </Flex>
+  ),
 };
 
 export default function UnreadTransactionsSwiper({
@@ -54,9 +80,26 @@ export default function UnreadTransactionsSwiper({
   const initialTransactions = formattedTransactions;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [rating, setRating] = useState(5);
   const router = useRouter();
   const [selectedTransactionId, setSelectedTransactionId] =
     useState<string>('');
+  const rateImpulseBuy = async (value: number) => {
+    setRating(value);
+    await markTransactionAsRead(selectedTransactionId, true, value);
+    setTransactions((prev) =>
+      prev.filter((transaction) => transaction.id !== selectedTransactionId)
+    );
+    setSelectedTransactionId('');
+    setIsModalOpen(false);
+    setRating(5);
+  };
+
+  const key = useRatingInput((rating) => {
+    if (!isModalOpen) return;
+    rateImpulseBuy(rating);
+  });
+
   const handleDismiss = async (
     element: HTMLDivElement,
     meta: CardMetaData,
@@ -112,6 +155,7 @@ export default function UnreadTransactionsSwiper({
         centered
         open={isModalOpen}
         footer={null}
+        onCancel={() => setIsModalOpen(false)}
         title={
           <Flex justify='center'>
             <ConfigProvider
@@ -131,7 +175,7 @@ export default function UnreadTransactionsSwiper({
         <Flex justify='center'>
           <Space direction='vertical' align='center'>
             <Flex justify='center' className='w-full'>
-              <Text strong>
+              <Text>
                 {transaction?.merchantName
                   ? transaction.merchantName
                   : 'Unknown'}{' '}
@@ -139,7 +183,7 @@ export default function UnreadTransactionsSwiper({
               <Text type='secondary'>
                 ({transaction?.accountName} {transaction?.accountMask})
               </Text>
-              <Text strong className='ml-4'>
+              <Text className='ml-4'>
                 {transaction?.amount && currencyFormatter(transaction?.amount)}
               </Text>
             </Flex>
@@ -160,7 +204,8 @@ export default function UnreadTransactionsSwiper({
                 }
               >
                 <Text strong>
-                  How did you feel about this purchase?
+                  <Text type='danger'>*</Text>How did you feel about this
+                  purchase?
                   <InfoCircleOutlined style={{ marginLeft: '5px' }} />
                 </Text>
               </Tooltip>
@@ -168,23 +213,10 @@ export default function UnreadTransactionsSwiper({
             <Flex justify='center'>
               <Rate
                 key={selectedTransactionId}
-                defaultValue={5}
+                value={rating}
                 character={({ index = 0 }) => customIcons[index + 1]}
                 style={{ marginTop: 8 }}
-                onChange={async (value) => {
-                  await markTransactionAsRead(
-                    selectedTransactionId,
-                    true,
-                    value
-                  );
-                  setTransactions((prev) =>
-                    prev.filter(
-                      (transaction) => transaction.id !== selectedTransactionId
-                    )
-                  );
-                  setSelectedTransactionId('');
-                  setIsModalOpen(false);
-                }}
+                onChange={rateImpulseBuy}
               />
             </Flex>
           </Space>
