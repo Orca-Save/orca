@@ -182,7 +182,7 @@ function FilterOptions({
         },
       }}
     >
-      <Flex justify='center'>
+      <Flex justify='center' wrap>
         <Space direction='vertical' className='w-32'>
           <Flex justify='center'>
             <Text strong>Filters</Text>

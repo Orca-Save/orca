@@ -2,7 +2,7 @@
 
 import {
   getRecurringTransactions,
-  markAllTransactionsAsUnread,
+  markAllTransactionsAsRead,
 } from '@/app/_actions/plaid';
 import { Button } from 'antd';
 
@@ -11,7 +11,7 @@ export default function UnreadButton({ userId }: { userId: string }) {
     <>
       <Button
         data-id='mark-all-unread'
-        onClick={() => markAllTransactionsAsUnread(userId)}
+        onClick={() => markAllTransactionsAsRead(userId, false)}
       >
         Mark all unread
       </Button>

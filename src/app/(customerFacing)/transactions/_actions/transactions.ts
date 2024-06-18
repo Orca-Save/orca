@@ -27,6 +27,6 @@ export async function saveTransaction({
       rating,
     },
   });
+  revalidatePath('/log/log/transactions');
   revalidatePath('/log/transactions');
-  revalidatePath('/transactions');
 }

@@ -8,9 +8,16 @@ import { signIn, useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+const { SubMenu } = Menu;
 const { Text } = Typography;
 
-export default function HeaderMenu({ className }: { className: string }) {
+export default function HeaderMenu({
+  className,
+  position,
+}: {
+  className: string;
+  position: 'bottom' | 'top';
+}) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [current, setCurrent] = useState(pathname);
@@ -42,7 +49,7 @@ export default function HeaderMenu({ className }: { className: string }) {
       <Menu
         className={className}
         mode='horizontal'
-        selectedKeys={[topPath]}
+        selectedKeys={[topPath, current]}
         onSelect={({ key }) => {
           if (key === '/user') {
             if (session) {
@@ -74,9 +81,17 @@ export default function HeaderMenu({ className }: { className: string }) {
           <Menu.Item eventKey='/goals' key='/goals'>
             Goals
           </Menu.Item>
-          <Menu.Item eventKey='/log' key='/log'>
-            Log
-          </Menu.Item>
+          <SubMenu key='/log' title='Log'>
+            <Menu.Item eventKey='/log/saves' key='/log/saves'>
+              Impulse Saves
+            </Menu.Item>
+            <Menu.Item eventKey='/log/one-taps' key='/log/one-taps'>
+              One-Taps
+            </Menu.Item>
+            <Menu.Item eventKey='/log/transactions' key='/log/transactions'>
+              Transactions
+            </Menu.Item>
+          </SubMenu>
           <Menu.Item eventKey='/user' key='/user'>
             {session ? <UserOutlined /> : <LoginOutlined />}
           </Menu.Item>
@@ -85,7 +100,9 @@ export default function HeaderMenu({ className }: { className: string }) {
       {current.includes('/log') && (
         <Tabs
           centered
+          className={position === 'bottom' ? 'hidden' : 'inline'} //hidden md:inline'}
           defaultActiveKey={current}
+          activeKey={current}
           items={items}
           onTabClick={(key) => {
             router.push(key);

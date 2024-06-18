@@ -43,7 +43,6 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           (transaction.personalFinanceCategory as any)?.primary || null,
       }}
       onFinish={async (values) => {
-        console.log(values);
         await saveTransaction({
           read: values.read,
           impulse: values.impulse,
@@ -108,7 +107,6 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
             name='rating'
           >
             <Rate
-              defaultValue={4}
               style={{ marginTop: 8 }}
               character={({ index = 0 }) => customIcons[index + 1]}
             />

@@ -117,16 +117,14 @@ export async function exchangePublicToken(
     for (let j = 0; j < accounts.length; j++) {
       const a = accounts[j];
       if (
-        a.item.institution_id === institutionId &&
-        a.accounts.some(
-          (b) => b.name === account.name && b.mask === account.mask
-        )
+        a.institutionId === institutionId &&
+        accounts.some((b) => b.name === account.name && b.mask === account.mask)
       ) {
         return { duplicate: true };
       }
     }
     if (
-      accounts.some((a) => a.item.institution_id === institutionId) &&
+      accounts.some((a) => a.institutionId === institutionId) &&
       !overrideExistingCheck
     ) {
       return { existingInstitution: true };
@@ -161,10 +159,38 @@ export async function exchangePublicToken(
     },
   });
 
+  await Promise.all(
+    metadata.accounts.map(async (account) =>
+      db.account.upsert({
+        where: {
+          id: account.id,
+        },
+        update: {
+          accessToken,
+          mask: account.mask,
+          name: account.name,
+          type: account.type,
+          subtype: account.subtype,
+        },
+        create: {
+          userId,
+          accessToken,
+          id: account.id,
+          mask: account.mask,
+          name: account.name,
+          type: account.type,
+          subtype: account.subtype,
+          institutionId: institutionId,
+          plaidItemId: itemId,
+        },
+      })
+    )
+  );
+
   revalidatePath('/');
   revalidatePath('/user');
   revalidatePath('/review');
-  revalidatePath('/transactions');
+  revalidatePath('/log/transactions');
   return { duplicate: false, existingInstitution: false };
 }
 
@@ -179,7 +205,7 @@ export async function syncItems(userId: string) {
   await getRecurringTransactions(userId);
 
   revalidatePath('/');
-  revalidatePath('/transactions');
+  revalidatePath('/log/transactions');
   revalidatePath('/review');
   return true;
 }
@@ -253,30 +279,15 @@ export async function getInstitutionById(institutionId: string) {
 }
 
 async function getAllUserAccounts(userId: string) {
-  const plaidItems = await db.plaidItem.findMany({
+  const accounts = await db.account.findMany({
     where: {
       userId,
-      loginRequired: false,
     },
   });
 
-  if (!plaidItems) {
-    throw new Error('Plaid item not found');
-  }
-
-  const accounts = await Promise.all(
-    plaidItems.map(
-      async (plaidItem) =>
-        (
-          await plaidClient.accountsGet({
-            access_token: plaidItem.accessToken,
-          })
-        ).data
-    )
-  );
-
   return accounts;
 }
+
 export type FormattedTransaction = {
   id: string;
   merchantName: string;
@@ -325,23 +336,17 @@ export async function getFormattedTransactions(
     },
   });
 
-  const groupedAccounts = await Promise.all(
-    plaidItems.map(
-      async (plaidItem) =>
-        (
-          await plaidClient.accountsGet({
-            access_token: plaidItem.accessToken,
-          })
-        ).data.accounts
-    )
-  );
-  const accounts = groupedAccounts.flat();
+  const accounts = await db.account.findMany({
+    where: {
+      userId,
+    },
+  });
   const categories = plaidCategories();
   const formattedTransactions = transactions
     .sort(sortTransactionDateDesc)
     .map((transaction): FormattedTransaction => {
       const account = accounts.find(
-        (account) => account.account_id === transaction.accountId
+        (account) => account.id === transaction.accountId
       );
 
       const personalFinanceCategory =
@@ -438,12 +443,9 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   }
 
   const currentDate = new Date();
-  const threeDaysAgo = new Date(currentDate);
-  threeDaysAgo.setDate(currentDate.getDate() - 3);
+  const weekAgo = new Date(currentDate);
+  weekAgo.setDate(currentDate.getDate() - 7);
 
-  const startDate = plaidItem.cursor
-    ? undefined
-    : threeDaysAgo.toISOString().split('T')[0];
   const endDate = currentDate.toISOString().split('T')[0];
 
   const request: TransactionsSyncRequest = {
@@ -479,6 +481,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
 
   await Promise.all(
     combinedTransactions.map(async (transaction) => {
+      const read = new Date(transaction.date) > weekAgo;
       await db.transaction.upsert({
         where: { transactionId: transaction.transaction_id },
         update: {
@@ -501,6 +504,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
         },
         create: {
           userId: plaidItem.userId,
+          read: new Date(transaction.date) > weekAgo,
           accountId: transaction.account_id,
           transactionId: transaction.transaction_id,
           institutionId: plaidItem.institutionId,
@@ -536,7 +540,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   );
 
   revalidatePath('/');
-  revalidatePath('/transactions');
+  revalidatePath('/log/transactions');
   revalidatePath('/review');
 }
 
@@ -559,18 +563,19 @@ export async function getUnreadTransactions(userId: string) {
   );
 }
 
-export async function markAllTransactionsAsUnread(userId: string) {
-  await db.transaction.updateMany({
+export async function markAllTransactionsAsRead(userId: string, read = true) {
+  const results = await db.transaction.updateMany({
     where: {
       userId,
-      read: true,
+      read: !read,
     },
     data: {
-      read: false,
+      read,
       updatedAt: new Date(),
     },
   });
-  revalidatePath('/transactions/review');
+  revalidatePath('/review');
+  revalidatePath('/log/transactions');
 }
 
 export async function markTransactionAsRead(
@@ -765,7 +770,7 @@ export async function getRecurringTransactions(userId: string) {
   );
 
   revalidatePath('/');
-  revalidatePath('/transactions');
+  revalidatePath('/log/transactions');
   revalidatePath('/review');
   return true;
 }

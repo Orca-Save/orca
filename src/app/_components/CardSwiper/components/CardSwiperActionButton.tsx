@@ -22,7 +22,7 @@ function CardSwiperActionButton({
     <Button
       data-id={`swipe-card-${direction}-button-${action}`}
       size='large'
-      style={{ width: 220, height: 80 }}
+      // style={{ width: 220, height: 80 }}
       onClick={() => onClick(direction)}
     >
       {buttonContent}

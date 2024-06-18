@@ -154,3 +154,15 @@ model Transaction {
   paymentMeta                 Json?
   plaidItem                   PlaidItem? @relation(fields: [plaidItemId], references: [itemId])
 }
+
+model Account {
+  id            String @id
+  userId        String
+  mask          String
+  name          String
+  subtype       String
+  type          String
+  accessToken   String
+  plaidItemId   String
+  institutionId String
+}

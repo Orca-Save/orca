@@ -16,7 +16,6 @@ import {
   Button,
   Card,
   ConfigProvider,
-  Empty,
   Flex,
   Modal,
   Rate,
@@ -24,13 +23,15 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import 'antd/dist/reset.css'; // Import Ant Design styles by using 'reset.css'
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
   FormattedTransaction,
+  markAllTransactionsAsRead,
   markTransactionAsRead,
   syncItems,
 } from '../../../_actions/plaid';
+import UnreadButton from './UnreadButton';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
 type UnreadTransactionsSwiperProps = {
@@ -53,9 +54,9 @@ export default function UnreadTransactionsSwiper({
   const initialTransactions = formattedTransactions;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
   const [selectedTransactionId, setSelectedTransactionId] =
     useState<string>('');
-  // const key = useRatingInput(setRating);
   const handleDismiss = async (
     element: HTMLDivElement,
     meta: CardMetaData,
@@ -84,10 +85,11 @@ export default function UnreadTransactionsSwiper({
       meta: {},
       content: (
         <Flex
+          id='big-boom'
           justify='center'
           align='center'
           className='w-full'
-          style={{ height: 275 }}
+          style={{ height: 140 }}
         >
           <Text strong>
             {transaction.merchantName ? transaction.merchantName : 'Unknown'}{' '}
@@ -105,7 +107,7 @@ export default function UnreadTransactionsSwiper({
   const config = liquidConfig(transactions.length, initialTransactions.length);
   const transaction = transactions.find((x) => x.id === selectedTransactionId);
   return (
-    <>
+    <div className='w-full'>
       <Modal
         centered
         open={isModalOpen}
@@ -195,20 +197,26 @@ export default function UnreadTransactionsSwiper({
         >
           Sync Transactions
         </Button>
+        <UnreadButton userId={userId} />
       </div>
 
       <div className='flex justify-center'>
         <Title level={5}>Transactions Left</Title>
       </div>
-      <Liquid {...config} />
+      <div style={{ height: config.height }}>
+        <Liquid {...config} />
+      </div>
       <div className='flex justify-center'>
         <Text>
           <strong>Swipe Left</strong> for Impulse Buys, or{' '}
           <strong>Swipe Right</strong> for Reviewed
         </Text>
       </div>
-      <div className='flex flex-col items-center justify-center h-full'>
-        <div style={{ height: 400 }} className='w-full md:w-4/5 lg:w-3/5'>
+      <Flex vertical justify='center' align='end'>
+        <div
+          style={{ height: 240 }}
+          className='flex justify-center mx-auto w-full md:w-4/5 lg:w-3/5'
+        >
           <CardSwiper
             // key={key}
             data={transactionCards}
@@ -224,31 +232,23 @@ export default function UnreadTransactionsSwiper({
               bgDislike: 'red',
               textColor: 'white',
             }}
-            emptyState={
-              <Space
-                direction='vertical'
-                align='center'
-                style={{ width: '100%' }}
-              >
-                <Empty description="You've reached the end of the list" />
-              </Space>
-            }
+            emptyState={<p>Anything here?</p>}
           />
         </div>
-        <div className='flex my-4 justify-center'>
+        <Flex justify='center' className='mt-4 w-full'>
           <Button
             data-id='sync-transactions-button'
-            onClick={() => syncItems(userId)}
-            style={{
-              height: 80,
-              width: 220,
+            size='large'
+            onClick={async () => {
+              await markAllTransactionsAsRead(userId);
+              router.push('/');
             }}
           >
             All Reviewed
           </Button>
-        </div>
-      </div>
-    </>
+        </Flex>
+      </Flex>
+    </div>
   );
 }
 
@@ -258,7 +258,7 @@ function liquidConfig(currentCount: number, totalCount: number) {
   if (totalCount > binSize) binSize = 100;
   return {
     percent: currentCount / binSize,
-    height: 200,
+    height: 150,
     shape: 'rect',
     annotations: [
       {

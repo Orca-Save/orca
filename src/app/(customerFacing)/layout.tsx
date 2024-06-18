@@ -13,8 +13,7 @@ export default function CustomerLayout({
 }>) {
   return (
     <Layout style={{ minHeight: '100vh', height: '100%' }}>
-      <HeaderMenu className='hidden sm:flex' />
-      {/* Orca text header centered if on sm display */}
+      <HeaderMenu position='top' className='hidden sm:flex' />
       <div className='sm:hidden'>
         <Title
           className={`${varelaRound.className} text-center`}
@@ -44,7 +43,7 @@ export default function CustomerLayout({
           borderTop: '2px solid #f0f0f0',
         }}
       >
-        <HeaderMenu className='' />
+        <HeaderMenu position='bottom' className='' />
       </Footer>
     </Layout>
   );

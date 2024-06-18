@@ -66,9 +66,9 @@ export const useCardSwiper = ({
   };
 
   useEffect(() => {
-    if (!swiperIndex && onFinish) {
+    if (!swiperIndex) {
       setIsFinish(true);
-      onFinish(SwipeAction.FINISHED);
+      if (onFinish) onFinish(SwipeAction.FINISHED);
     }
   }, [swiperIndex]);
 

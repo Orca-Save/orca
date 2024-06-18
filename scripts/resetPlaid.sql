@@ -1,4 +1,6 @@
 delete
+	FROM public."Account";
+delete
 	FROM public."Transaction";
 delete
 	FROM public."PlaidItem";
