@@ -146,6 +146,7 @@ model Transaction {
   merchantName         String?
   rating               Int?
   impulse              Boolean?
+  impulseReturn        Boolean?
 
   logoIcon                    String?
   personalFinanceCategoryIcon String?

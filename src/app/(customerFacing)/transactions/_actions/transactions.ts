@@ -10,19 +10,22 @@ export async function saveTransaction({
   impulse,
   read,
   rating,
+  impulseReturn,
 }: {
+  read: boolean;
   userId: string;
+  impulse: boolean;
   transactionId: string;
   personalFinanceCategory: Object;
-  rating: number;
-  impulse: boolean;
-  read: boolean;
+  rating?: number;
+  impulseReturn?: boolean;
 }) {
   await db.transaction.update({
     where: { userId, transactionId },
     data: {
       personalFinanceCategory: personalFinanceCategory as any,
       impulse,
+      impulseReturn,
       read,
       rating,
     },

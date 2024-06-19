@@ -85,6 +85,7 @@ export default function UnreadTransactionsSwiper({
   const [selectedTransactionId, setSelectedTransactionId] =
     useState<string>('');
   const rateImpulseBuy = async (value: number) => {
+    console.log('rating', value);
     setRating(value);
     await markTransactionAsRead(selectedTransactionId, true, value);
     setTransactions((prev) =>
@@ -212,8 +213,9 @@ export default function UnreadTransactionsSwiper({
             </Flex>
             <Flex justify='center'>
               <Rate
-                key={selectedTransactionId}
                 value={rating}
+                key={selectedTransactionId}
+                allowClear={false}
                 character={({ index = 0 }) => customIcons[index + 1]}
                 style={{ marginTop: 8 }}
                 onChange={rateImpulseBuy}

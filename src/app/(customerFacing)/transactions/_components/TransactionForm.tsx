@@ -53,6 +53,7 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
             primary: values.personalFinanceCategory,
           },
           rating: values.rating,
+          impulseReturn: values.impulseReturn,
         });
         router.back();
       }}
@@ -81,11 +82,18 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
         >
           <Select options={plaidCategories()} />
         </Form.Item>
+        <Space>
+          <Form.Item label='Impulse Buy' name='impulse'>
+            <Switch onChange={(value) => setImpulse(value)} />
+          </Form.Item>
+          {impulse && (
+            <Form.Item label='Impulse Buy Return' name='impulseReturn'>
+              <Switch />
+            </Form.Item>
+          )}
+        </Space>
         <Form.Item label='Reviewed' name='read'>
           <Switch />
-        </Form.Item>
-        <Form.Item label='Impulse Buy' name='impulse'>
-          <Switch onChange={(value) => setImpulse(value)} />
         </Form.Item>
         {impulse && (
           <Form.Item

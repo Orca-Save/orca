@@ -4,6 +4,7 @@ import { FormattedTransaction } from '@/app/_actions/plaid';
 import { antdDefaultButton, impulseButtonTheme } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
 import {
+  Badge,
   Button,
   Col,
   ConfigProvider,
@@ -82,16 +83,21 @@ export default function TransactionList({
                               },
                             }}
                           >
-                            <Button type='primary' shape='circle'>
+                            <Button type='primary' size='small' shape='circle'>
                               I
                             </Button>
                           </ConfigProvider>
                         ) : null}
                       </Col>
-                      <Col span={6}>
+                      <Col span={5}>
                         <Text strong>
                           {currencyFormatter(transaction.amount)}
                         </Text>
+                      </Col>
+                      <Col span={1}>
+                        {transaction.read === false ? (
+                          <Badge status='processing' />
+                        ) : null}
                       </Col>
                     </Row>
                   </List.Item>
@@ -182,7 +188,7 @@ function FilterOptions({
         },
       }}
     >
-      <Flex justify='center' wrap>
+      <Flex justify='center' wrap gap='small'>
         <Space direction='vertical' className='w-32'>
           <Flex justify='center'>
             <Text strong>Filters</Text>
