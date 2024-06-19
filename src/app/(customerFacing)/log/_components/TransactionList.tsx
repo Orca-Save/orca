@@ -49,10 +49,10 @@ export default function TransactionList({
       <List
         dataSource={groupedTransactionsArray}
         split={false}
-        renderItem={({ friendlyDistanceDate, transactions }) => (
+        renderItem={({ formattedDate, transactions }) => (
           <List.Item>
             <Space direction='vertical' className='w-full'>
-              <Text strong>{friendlyDistanceDate}</Text>
+              <Text type='secondary'>{formattedDate}</Text>
               <List
                 dataSource={transactions}
                 renderItem={(transaction) => (
@@ -133,19 +133,19 @@ function groupedTransactions(
 
   const groupedTransactions = filteredTransactions.reduce(
     (acc, transaction) => {
-      const { friendlyDistanceDate } = transaction;
+      const { formattedDate } = transaction;
 
-      if (!acc[friendlyDistanceDate]) {
-        acc[friendlyDistanceDate] = [];
+      if (!acc[formattedDate]) {
+        acc[formattedDate] = [];
       }
-      acc[friendlyDistanceDate].push(transaction);
+      acc[formattedDate].push(transaction);
       return acc;
     },
     {} as Record<string, FormattedTransaction[]>
   );
   const groupedTransactionsArray = Object.entries(groupedTransactions).map(
-    ([friendlyDistanceDate, transactions]) => ({
-      friendlyDistanceDate,
+    ([formattedDate, transactions]) => ({
+      formattedDate,
       transactions,
     })
   );

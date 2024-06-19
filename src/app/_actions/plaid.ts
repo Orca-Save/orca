@@ -7,7 +7,7 @@ import {
   Prisma,
   Transaction as PrismaTransaction,
 } from '@prisma/client';
-import { format, formatDistanceToNow, formatRelative } from 'date-fns';
+import { format, formatDistanceToNow, formatRelative, isToday } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
 import {
@@ -361,7 +361,9 @@ export async function getFormattedTransactions(
         read: transaction.read,
         impulse: transaction.impulse ?? false,
         recurring: transaction.recurring,
-        formattedDate: format(transaction.date, 'EEE, MMMM dd'),
+        formattedDate: isToday(transaction.date)
+          ? 'TODAY'
+          : format(transaction.date, 'EEE, MMMM dd').toUpperCase(),
         friendlyDistanceDate: formatDistanceToNow(transaction.date, {
           addSuffix: true,
         }),

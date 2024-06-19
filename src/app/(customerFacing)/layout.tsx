@@ -13,7 +13,7 @@ export default function CustomerLayout({
 }>) {
   return (
     <Layout style={{ minHeight: '100vh', height: '100%' }}>
-      <HeaderMenu position='top' className='hidden sm:flex' />
+      <HeaderMenu className='hidden sm:flex' />
       <div className='sm:hidden'>
         <Title
           className={`${varelaRound.className} text-center`}
@@ -43,7 +43,7 @@ export default function CustomerLayout({
           borderTop: '2px solid #f0f0f0',
         }}
       >
-        <HeaderMenu position='bottom' className='' />
+        <HeaderMenu className='' />
       </Footer>
     </Layout>
   );

@@ -30,10 +30,8 @@ import {
   FormattedTransaction,
   markAllTransactionsAsRead,
   markTransactionAsRead,
-  syncItems,
 } from '../../../_actions/plaid';
 import ConfettiComp from '../../_components/Confetti';
-import UnreadButton from './UnreadButton';
 import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
@@ -82,13 +80,13 @@ export default function UnreadTransactionsSwiper({
   const initialTransactions = formattedTransactions;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [swiperKey, setSwiperKey] = useState('swiper-key');
   const [isEmptyModalOpen, setIsEmptyModalOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const router = useRouter();
   const [selectedTransactionId, setSelectedTransactionId] =
     useState<string>('');
   const rateImpulseBuy = async (value: number) => {
-    console.log('rating', value);
     setRating(value);
     await markTransactionAsRead(selectedTransactionId, true, value);
     setTransactions((prev) =>
@@ -137,13 +135,17 @@ export default function UnreadTransactionsSwiper({
           align='center'
           className='w-full'
           style={{ height: 140 }}
+          vertical
         >
-          <Text strong>
-            {transaction.merchantName ? transaction.merchantName : 'Unknown'}{' '}
-          </Text>
-          <Text type='secondary'>
-            ({transaction.accountName} {transaction.accountMask})
-          </Text>
+          <Text>{transaction.formattedDate}</Text>
+          <div>
+            <Text strong ellipsis={true}>
+              {transaction.merchantName ? transaction.merchantName : 'Unknown'}{' '}
+            </Text>
+            <Text type='secondary'>
+              {` (${transaction.accountName} ${transaction.accountMask})`}
+            </Text>
+          </div>
           <Text strong className='ml-4'>
             {currencyFormatter(transaction.amount)}
           </Text>
@@ -191,7 +193,10 @@ export default function UnreadTransactionsSwiper({
         centered
         open={isModalOpen}
         footer={null}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          setSwiperKey('swiper-key-' + Math.random());
+          setIsModalOpen(false);
+        }}
         title={
           <Flex justify='center'>
             <ConfigProvider
@@ -208,58 +213,56 @@ export default function UnreadTransactionsSwiper({
           </Flex>
         }
       >
-        <Flex justify='center'>
-          <Space direction='vertical' align='center'>
-            <Flex justify='center' className='w-full'>
-              <Text>
-                {transaction?.merchantName
-                  ? transaction.merchantName
-                  : 'Unknown'}{' '}
+        <Space direction='vertical' align='center' className='w-full'>
+          <Text>{transaction?.formattedDate}</Text>
+          <div>
+            <Text strong>
+              {transaction?.merchantName ? transaction.merchantName : 'Unknown'}
+            </Text>
+            <Text type='secondary' className='whitespace-nowrap'>
+              {` (${transaction?.accountName} ${transaction?.accountMask})`}
+            </Text>
+          </div>
+          <Text className='ml-4'>
+            {transaction?.amount && currencyFormatter(transaction?.amount)}
+          </Text>
+          <Flex justify='center'>
+            <Tooltip
+              title={
+                <>
+                  <p style={{ marginBottom: '0.5rem' }}>
+                    This rating is necessary to ensure the insights we deliver
+                    are truly personalized.
+                  </p>
+                  <p>
+                    For example, we don&apos;t want to suggest you cut back on
+                    “Yoga with friends” to meet your goal if this is something
+                    you truly value.
+                  </p>
+                </>
+              }
+            >
+              <Text strong>
+                <Text type='danger'>*</Text>How did you feel about this
+                purchase?
+                <InfoCircleOutlined style={{ marginLeft: '5px' }} />
               </Text>
-              <Text type='secondary'>
-                ({transaction?.accountName} {transaction?.accountMask})
-              </Text>
-              <Text className='ml-4'>
-                {transaction?.amount && currencyFormatter(transaction?.amount)}
-              </Text>
-            </Flex>
-            <Flex justify='center'>
-              <Tooltip
-                title={
-                  <>
-                    <p style={{ marginBottom: '0.5rem' }}>
-                      This rating is necessary to ensure the insights we deliver
-                      are truly personalized.
-                    </p>
-                    <p>
-                      For example, we don&apos;t want to suggest you cut back on
-                      “Yoga with friends” to meet your goal if this is something
-                      you truly value.
-                    </p>
-                  </>
-                }
-              >
-                <Text strong>
-                  <Text type='danger'>*</Text>How did you feel about this
-                  purchase?
-                  <InfoCircleOutlined style={{ marginLeft: '5px' }} />
-                </Text>
-              </Tooltip>
-            </Flex>
-            <Flex justify='center'>
-              <Rate
-                value={rating}
-                key={selectedTransactionId}
-                allowClear={false}
-                character={({ index = 0 }) => customIcons[index + 1]}
-                style={{ marginTop: 8 }}
-                onChange={rateImpulseBuy}
-              />
-            </Flex>
-          </Space>
-        </Flex>
+            </Tooltip>
+          </Flex>
+          <Flex justify='center'>
+            <Rate
+              value={rating}
+              key={selectedTransactionId}
+              allowClear={false}
+              character={({ index = 0 }) => customIcons[index + 1]}
+              style={{ marginTop: 8 }}
+              onChange={rateImpulseBuy}
+            />
+          </Flex>
+        </Space>
       </Modal>
-      <div className='flex justify-center'>
+      {/* debug buttons */}
+      {/* <div className='flex justify-center'>
         <Button
           data-id='sync-transactions-button'
           onClick={() => syncItems(userId)}
@@ -267,7 +270,7 @@ export default function UnreadTransactionsSwiper({
           Sync Transactions
         </Button>
         <UnreadButton userId={userId} />
-      </div>
+      </div> */}
 
       <div className='flex justify-center'>
         <Title level={5}>Transactions Left</Title>
@@ -287,7 +290,7 @@ export default function UnreadTransactionsSwiper({
           className='flex justify-center mx-auto w-full md:w-4/5 lg:w-3/5'
         >
           <CardSwiper
-            // key={key}
+            key={swiperKey}
             data={transactionCards}
             onDismiss={handleDismiss}
             dislikeButton={<div>Impulse Buy (A)</div>}
@@ -303,7 +306,7 @@ export default function UnreadTransactionsSwiper({
             }}
             onFinish={() => setIsEmptyModalOpen(true)}
             emptyState={
-              <Text>No more transactions! You're all caught up! 🎉</Text>
+              <Text>No more transactions! You&apos;re all caught up! 🎉</Text>
             }
           />
         </div>

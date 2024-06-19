@@ -64,9 +64,7 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
             <Text strong>Merchant Name</Text>
             <Text>{transaction.merchantName}</Text>
             <Text strong>Amount</Text>
-            <Text type={(transaction.amount as any) < 0 ? 'danger' : 'success'}>
-              {currencyFormatter(transaction.amount as any)}
-            </Text>
+            <Text>{currencyFormatter(transaction.amount as any)}</Text>
           </Space>
           <Space direction='vertical' className='w-full'>
             <Text strong>Authorized Date</Text>
