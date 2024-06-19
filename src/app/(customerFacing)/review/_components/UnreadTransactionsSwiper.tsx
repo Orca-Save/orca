@@ -23,6 +23,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
@@ -31,6 +32,7 @@ import {
   markTransactionAsRead,
   syncItems,
 } from '../../../_actions/plaid';
+import ConfettiComp from '../../_components/Confetti';
 import UnreadButton from './UnreadButton';
 import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
@@ -80,6 +82,7 @@ export default function UnreadTransactionsSwiper({
   const initialTransactions = formattedTransactions;
   const [transactions, setTransactions] = useState(initialTransactions);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEmptyModalOpen, setIsEmptyModalOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const router = useRouter();
   const [selectedTransactionId, setSelectedTransactionId] =
@@ -152,6 +155,38 @@ export default function UnreadTransactionsSwiper({
   const transaction = transactions.find((x) => x.id === selectedTransactionId);
   return (
     <div className='w-full'>
+      <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 800 }}>
+        <ConfettiComp
+          count={20}
+          run={isEmptyModalOpen}
+          redirect={false}
+          path='/'
+        />
+      </div>
+      <Modal
+        centered
+        open={isEmptyModalOpen}
+        zIndex={500}
+        footer={
+          <>
+            <Link href='/'>
+              <Button type='primary'>Return Home</Button>
+            </Link>
+          </>
+        }
+        onCancel={() => setIsEmptyModalOpen(false)}
+        title={<Text>All Transactions Reviewed!</Text>}
+        onOk={() => setIsEmptyModalOpen(false)}
+        okText='Return Home'
+      >
+        <Flex justify='center' align='center'>
+          <img
+            alt='awe-inspiring photo of a waterfall in the forest'
+            style={{ width: '100%', height: 'auto' }}
+            src='https://orcasavestorage.blob.core.windows.net/images/pexels-mikhail-nilov-6942667.jpg'
+          />
+        </Flex>
+      </Modal>
       <Modal
         centered
         open={isModalOpen}
@@ -266,7 +301,10 @@ export default function UnreadTransactionsSwiper({
               bgDislike: 'red',
               textColor: 'white',
             }}
-            emptyState={<p>Anything here?</p>}
+            onFinish={() => setIsEmptyModalOpen(true)}
+            emptyState={
+              <Text>No more transactions! You're all caught up! 🎉</Text>
+            }
           />
         </div>
         <Flex justify='center' className='mt-4 w-full'>

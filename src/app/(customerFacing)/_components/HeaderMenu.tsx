@@ -44,6 +44,17 @@ export default function HeaderMenu({
       label: 'Transactions',
     },
   ];
+  const onClick = (key: string) => {
+    if (key === '/user') {
+      if (session) {
+        router.push(key);
+      } else {
+        signIn('azure-ad-b2c', { callbackUrl: baseURL + '/' });
+      }
+    } else {
+      router.push(key);
+    }
+  };
   return (
     <>
       <Menu
@@ -51,15 +62,7 @@ export default function HeaderMenu({
         mode='horizontal'
         selectedKeys={[topPath, current]}
         onSelect={({ key }) => {
-          if (key === '/user') {
-            if (session) {
-              router.push(key);
-            } else {
-              signIn('azure-ad-b2c', { callbackUrl: baseURL + '/' });
-            }
-          } else {
-            router.push(key);
-          }
+          onClick(key);
         }}
       >
         <Space
@@ -81,7 +84,7 @@ export default function HeaderMenu({
           <Menu.Item eventKey='/goals' key='/goals'>
             Goals
           </Menu.Item>
-          <SubMenu key='/log' title='Log'>
+          <SubMenu key='/log' title='Log' onTitleClick={() => onClick('/log')}>
             <Menu.Item eventKey='/log/saves' key='/log/saves'>
               Impulse Saves
             </Menu.Item>
