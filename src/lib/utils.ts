@@ -34,18 +34,23 @@ export const currencyFormatter2 = (
 
 export const currencyFormatter = (
   amount: number | string,
-  currencyCode?: string
+  currencyCode?: string,
+  alwaysPositive?: boolean
 ) => {
   try {
     if (typeof amount === 'undefined' || amount === null) {
       return '';
     }
 
-    const numericAmount =
+    let numericAmount =
       typeof amount === 'string' ? parseFloat(amount) : amount;
 
     if (isNaN(numericAmount)) {
       return '';
+    }
+
+    if (alwaysPositive) {
+      numericAmount = Math.abs(numericAmount);
     }
 
     if (!formatters[currencyCode!]) {

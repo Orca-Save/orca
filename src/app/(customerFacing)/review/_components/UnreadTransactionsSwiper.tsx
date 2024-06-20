@@ -8,7 +8,7 @@ import {
   SwipeOperation,
 } from '@/app/_components/CardSwiper';
 import { Title } from '@/app/_components/Typography';
-import { impulseButtonTheme } from '@/lib/themeConfig';
+import { impulseButtonTheme, lightGreenThemeColor } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Liquid } from '@ant-design/plots';
@@ -32,8 +32,10 @@ import {
   FormattedTransaction,
   markAllTransactionsAsRead,
   markTransactionAsRead,
+  syncItems,
 } from '../../../_actions/plaid';
 import ConfettiComp from '../../_components/Confetti';
+import UnreadButton from './UnreadButton';
 import useRatingInput from './useRatingInput';
 const { Text, Paragraph } = Typography;
 const { Meta } = Card;
@@ -114,12 +116,14 @@ export default function UnreadTransactionsSwiper({
     await swipeOperation(id, action);
   };
   async function swipeOperation(id: CardId, action: SwipeAction) {
-    if (action === SwipeAction.DISLIKE) {
+    const transaction = transactions.find((x) => x.id === id)!;
+    const isDislike = action === SwipeAction.DISLIKE;
+    if (isDislike && transaction.amount > 0) {
       setSelectedTransactionId(id as string);
       setIsModalOpen(true);
       return;
     }
-    await markTransactionAsRead(id as string, false);
+    await markTransactionAsRead(id as string, isDislike);
     setTransactions((prev) =>
       prev.filter((transaction) => transaction.id !== id)
     );
@@ -132,11 +136,14 @@ export default function UnreadTransactionsSwiper({
       meta: {},
       content: (
         <Flex
-          id='big-boom'
           justify='center'
           align='center'
           className='w-full'
-          style={{ height: 140 }}
+          style={{
+            height: 140,
+            backgroundColor:
+              transaction.amount < 0 ? lightGreenThemeColor : undefined,
+          }}
           vertical
         >
           <Text>{transaction?.formattedDate}</Text>
@@ -164,11 +171,12 @@ export default function UnreadTransactionsSwiper({
           </Row>
           <Text
             strong
+            type={transaction.amount < 0 ? 'success' : undefined}
             style={{
               marginRight: '0.3rem',
             }}
           >
-            {currencyFormatter(transaction.amount)}
+            {currencyFormatter(transaction.amount, undefined, true)}
           </Text>
         </Flex>
       ),
@@ -301,16 +309,17 @@ export default function UnreadTransactionsSwiper({
           </Flex>
         </Space>
       </Modal>
-      {/* debug buttons */}
-      {/* <div className='flex justify-center'>
-        <Button
-          data-id='sync-transactions-button'
-          onClick={() => syncItems(userId)}
-        >
-          Sync Transactions
-        </Button>
-        <UnreadButton userId={userId} />
-      </div> */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className='flex justify-center'>
+          <Button
+            data-id='sync-transactions-button'
+            onClick={() => syncItems(userId)}
+          >
+            Sync Transactions
+          </Button>
+          <UnreadButton userId={userId} />
+        </div>
+      )}
 
       <div className='flex justify-center'>
         <Title level={5}>Transactions Left</Title>
@@ -320,8 +329,8 @@ export default function UnreadTransactionsSwiper({
       </div>
       <div className='flex justify-center text-center'>
         <Text>
-          <strong>Swipe Left</strong> for Impulse Buys, or{' '}
-          <strong>Swipe Right</strong> for Reviewed
+          <strong>Swipe Left</strong> for Impulse Buys, or
+          <strong> Swipe Right</strong> for Reviewed
         </Text>
       </div>
       <Flex vertical justify='center' align='end'>

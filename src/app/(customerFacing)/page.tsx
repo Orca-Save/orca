@@ -1,4 +1,4 @@
-import { Badge, Button, Card, ConfigProvider, Skeleton, Space } from 'antd';
+import { Button, ConfigProvider, Skeleton, Space } from 'antd';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import * as emoji from 'node-emoji';
@@ -9,13 +9,13 @@ import db from '@/db/db';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { greenThemeColors } from '@/lib/themeConfig';
-import { MailOutlined } from '@ant-design/icons';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { getUnreadTransactionCount } from '../_actions/users';
 import { Title } from '../_components/Typography';
 import ConfettiComp from './_components/Confetti';
 import ConnectPlaid from './_components/ConnectPlaid';
+import ReviewLink from './_components/ReviewLink';
 
 const DynamicPinnedGoal = dynamic(() => import('./_components/DashGoalCard'), {
   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
@@ -79,10 +79,11 @@ export default async function HomePage({
                   width: '100%',
                   height: '90px',
                   color: 'black',
-                  fontWeight: 'bold',
                 }}
               >
-                <span style={{ paddingRight: '1rem' }}>Impulse Save</span>
+                <strong>
+                  <span className='pr-2'>Impulse Save</span>
+                </strong>
                 {emoji.find('money_mouth_face')?.emoji}
               </Button>
             </HappyProvider>
@@ -90,31 +91,7 @@ export default async function HomePage({
         </Link>
 
         {unreadObj.plaidItemExist ? (
-          <Link href='/review'>
-            <Card
-              title={
-                unreadObj.unreadCount ? (
-                  <>
-                    <span>Unread Transactions</span>
-                    {emoji.find('money_with_wings')?.emoji}
-                  </>
-                ) : (
-                  <span>All transactions reviewed</span>
-                )
-              }
-              headStyle={{ backgroundColor: '#f0f2f5', textAlign: 'center' }}
-              bodyStyle={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontSize: '2rem',
-              }}
-            >
-              <Badge count={unreadObj.unreadCount} overflowCount={99}>
-                <MailOutlined style={{ fontSize: '3rem', color: '#08c' }} />
-              </Badge>
-            </Card>
-          </Link>
+          <ReviewLink unreadObj={unreadObj} />
         ) : (
           <ConnectPlaid userId={session.user.id} />
         )}

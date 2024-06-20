@@ -56,6 +56,8 @@ export const defaultCardThemeConfig = {
   colorBorderSecondary: '#CFCFCF',
   colorBgContainer: '#EEEDED',
 };
+export const lightGreenThemeColor = '#F0FFD8';
+export const greenThemeColor = '#34A853';
 export const greenCardThemeConfig: ThemeConfig['components'] = {
   Card: {
     // colorBorderSecondary: '#CFCFCF',
@@ -63,10 +65,13 @@ export const greenCardThemeConfig: ThemeConfig['components'] = {
     colorBorderSecondary: 'transparent',
   },
   Typography: {
-    colorText: '#34A853',
+    colorText: greenThemeColor,
   },
 };
 export const mainThemeConfig: ThemeConfig = {
+  token: {
+    colorSuccess: greenThemeColor,
+  },
   components: {
     Button: {
       ...defaultButton,

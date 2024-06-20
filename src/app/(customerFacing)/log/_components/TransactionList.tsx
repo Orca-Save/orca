@@ -74,7 +74,7 @@ export default function TransactionList({
                           {transaction.name ? transaction.name : 'Unknown'}
                         </Text>
                       </Col>
-                      <Col span={7}>
+                      <Col span={6}>
                         <Text
                           type='secondary'
                           ellipsis={{
@@ -114,14 +114,19 @@ export default function TransactionList({
                           </div>
                         ) : null}
                       </Col>
-                      <Col span={6} className='text-right w-full'>
+                      <Col span={8} className='text-right w-full'>
                         <Text
                           strong
                           style={{
                             marginRight: '0.3rem',
                           }}
+                          type={transaction.amount < 0 ? 'success' : undefined}
                         >
-                          {currencyFormatter(transaction.amount)}
+                          {currencyFormatter(
+                            transaction.amount,
+                            undefined,
+                            true
+                          )}
                         </Text>
                       </Col>
                       <Col span={1}>
