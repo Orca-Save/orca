@@ -140,7 +140,7 @@ export default function UnreadTransactionsSwiper({
           <Text>{transaction.formattedDate}</Text>
           <div>
             <Text strong ellipsis={true}>
-              {transaction.merchantName ? transaction.merchantName : 'Unknown'}{' '}
+              {transaction.name ? transaction.name : 'Unknown'}{' '}
             </Text>
             <Text type='secondary'>
               {` (${transaction.accountName} ${transaction.accountMask})`}
@@ -217,7 +217,7 @@ export default function UnreadTransactionsSwiper({
           <Text>{transaction?.formattedDate}</Text>
           <div>
             <Text strong>
-              {transaction?.merchantName ? transaction.merchantName : 'Unknown'}
+              {transaction?.name ? transaction.name : 'Unknown'}
             </Text>
             <Text type='secondary' className='whitespace-nowrap'>
               {` (${transaction?.accountName} ${transaction?.accountMask})`}

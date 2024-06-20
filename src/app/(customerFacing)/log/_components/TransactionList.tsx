@@ -64,33 +64,63 @@ export default function TransactionList({
                     className='hover:bg-gray-200 hover:shadow-lg cursor-pointer transition-colors duration-300'
                   >
                     <Row className='w-full mx-2'>
-                      <Col span={16}>
-                        <Text strong>
-                          {transaction.merchantName
-                            ? transaction.merchantName
-                            : 'Unknown'}{' '}
-                        </Text>
-                        <Text type='secondary'>
-                          ({transaction.accountName} {transaction.accountMask})
+                      <Col span={8}>
+                        <Text
+                          strong
+                          ellipsis={{
+                            tooltip: true,
+                          }}
+                        >
+                          {transaction.name ? transaction.name : 'Unknown'}
                         </Text>
                       </Col>
-                      <Col span={2}>
+                      <Col span={8}>
+                        <Text
+                          type='secondary'
+                          ellipsis={{
+                            tooltip: true,
+                          }}
+                        >
+                          {` (${transaction.accountName} ${transaction.accountMask})`}
+                        </Text>
+                      </Col>
+                      <Col span={1}>
                         {transaction.impulse ? (
-                          <ConfigProvider
-                            theme={{
-                              components: {
-                                Button: impulseButtonTheme,
-                              },
+                          <div
+                            style={{
+                              border: '1px solid rgba(154,0,207, 0.6)',
+                              borderRadius: '0.25rem',
+                              backgroundColor: 'rgba(154,0,207, 0.2)',
+                              color: 'rgba(154,0,207, 0.6)',
+                              width: '1rem',
+                              textAlign: 'center',
                             }}
                           >
-                            <Button type='primary' size='small' shape='circle'>
-                              I
-                            </Button>
-                          </ConfigProvider>
+                            I
+                          </div>
+                        ) : null}
+                        {transaction.recurring ? (
+                          <div
+                            style={{
+                              border: '1px solid #6B7280',
+                              borderRadius: '0.25rem',
+                              color: '#6B7280',
+                              fontSize: '0.7rem',
+                              textAlign: 'center',
+                              width: '1rem',
+                            }}
+                          >
+                            R
+                          </div>
                         ) : null}
                       </Col>
-                      <Col span={5}>
-                        <Text strong>
+                      <Col span={6} className='text-right w-full'>
+                        <Text
+                          strong
+                          style={{
+                            marginRight: '0.3rem',
+                          }}
+                        >
                           {currencyFormatter(transaction.amount)}
                         </Text>
                       </Col>

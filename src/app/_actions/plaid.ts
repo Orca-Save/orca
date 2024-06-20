@@ -291,6 +291,7 @@ async function getAllUserAccounts(userId: string) {
 
 export type FormattedTransaction = {
   id: string;
+  name: string;
   merchantName: string;
   amount: number;
   category: string;
@@ -367,6 +368,7 @@ export async function getFormattedTransactions(
         friendlyDistanceDate: formatDistanceToNow(transaction.date, {
           addSuffix: true,
         }),
+        name: transaction.name,
         friendlyRelativeDate: formatRelative(transaction.date, new Date()),
         merchantName: transaction.merchantName ?? '',
         amount: parseFloat(transaction.amount.toFixed(2)),

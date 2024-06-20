@@ -34,6 +34,7 @@ type TransactionFormProps = {
 export default function TransactionForm({ transaction }: TransactionFormProps) {
   const router = useRouter();
   const [impulse, setImpulse] = useState(transaction.impulse);
+  const amount = transaction.amount as unknown as number;
   return (
     <Form
       layout='vertical'
@@ -62,9 +63,9 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
         <Flex justify='center'>
           <Space direction='vertical' className='w-full'>
             <Text strong>Merchant Name</Text>
-            <Text>{transaction.merchantName}</Text>
+            <Text>{transaction.merchantName ?? transaction.name ?? ' '}</Text>
             <Text strong>Amount</Text>
-            <Text>{currencyFormatter(transaction.amount as any)}</Text>
+            <Text>{currencyFormatter(amount)}</Text>
           </Space>
           <Space direction='vertical' className='w-full'>
             <Text strong>Authorized Date</Text>
@@ -81,10 +82,12 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           <Select options={plaidCategories()} />
         </Form.Item>
         <Space>
-          <Form.Item label='Impulse Buy' name='impulse'>
-            <Switch onChange={(value) => setImpulse(value)} />
-          </Form.Item>
-          {impulse && (
+          {amount > 0 && (
+            <Form.Item label='Impulse Buy' name='impulse'>
+              <Switch onChange={(value) => setImpulse(value)} />
+            </Form.Item>
+          )}
+          {amount < 0 && (
             <Form.Item label='Impulse Buy Return' name='impulseReturn'>
               <Switch />
             </Form.Item>

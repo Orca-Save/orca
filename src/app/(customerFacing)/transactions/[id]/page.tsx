@@ -1,6 +1,6 @@
 import { Title } from '@/app/_components/Typography';
 import db from '@/db/db';
-import TransactionForm from '../_components/TransactionForm';
+import TransactionForm from '../../log/transactions/_components/TransactionForm';
 
 export default async function TransactionPage({
   params: { id },

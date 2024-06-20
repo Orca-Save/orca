@@ -67,9 +67,6 @@ export const greenCardThemeConfig: ThemeConfig['components'] = {
   },
 };
 export const mainThemeConfig: ThemeConfig = {
-  token: {
-    fontSize: 16,
-  },
   components: {
     Button: {
       ...defaultButton,
@@ -78,6 +75,9 @@ export const mainThemeConfig: ThemeConfig = {
     Layout: {
       bodyBg: 'rgb(255, 255, 255)',
       footerPadding: 0,
+    },
+    Form: {
+      fontSize: 16,
     },
   },
 };

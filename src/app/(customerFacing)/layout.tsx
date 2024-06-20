@@ -1,16 +1,23 @@
 import { varelaRound } from '@/lib/fonts';
+import authOptions from '@/lib/nextAuthOptions';
+import { isExtendedSession } from '@/lib/session';
 import { Layout } from 'antd';
+import { getServerSession } from 'next-auth';
 import { Content, Footer } from '../_components/Layout';
+import SignIn from '../_components/SignIn';
 import { Title } from '../_components/Typography';
 import HeaderMenu from './_components/HeaderMenu';
 
 export const dynamic = 'force-dynamic';
 
-export default function CustomerLayout({
+export default async function CustomerLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+  if (!session) return <SignIn />;
+  if (!isExtendedSession(session)) <SignIn />;
   return (
     <Layout style={{ minHeight: '100vh', height: '100%' }}>
       <HeaderMenu className='hidden sm:flex' />
