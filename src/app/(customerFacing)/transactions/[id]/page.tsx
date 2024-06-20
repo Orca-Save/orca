@@ -1,5 +1,9 @@
 import { Title } from '@/app/_components/Typography';
 import db from '@/db/db';
+import authOptions from '@/lib/nextAuthOptions';
+import { isExtendedSession } from '@/lib/session';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
 import TransactionForm from '../../log/transactions/_components/TransactionForm';
 
 export default async function TransactionPage({
@@ -7,11 +11,16 @@ export default async function TransactionPage({
 }: {
   params: { id: string };
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session || !isExtendedSession(session)) redirect('/');
   const transaction = await db.transaction.findUnique({
     where: { transactionId: id },
   });
   if (!transaction) {
-    return <div>Transaction not found</div>;
+    return redirect('/');
+  }
+  if (transaction.userId !== session.user.id) {
+    return redirect('/');
   }
 
   return (
