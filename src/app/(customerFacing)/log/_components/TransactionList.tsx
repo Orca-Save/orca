@@ -74,7 +74,7 @@ export default function TransactionList({
                           {transaction.name ? transaction.name : 'Unknown'}
                         </Text>
                       </Col>
-                      <Col span={8}>
+                      <Col span={7}>
                         <Text
                           type='secondary'
                           ellipsis={{

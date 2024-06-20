@@ -15,10 +15,12 @@ import { Liquid } from '@ant-design/plots';
 import {
   Button,
   Card,
+  Col,
   ConfigProvider,
   Flex,
   Modal,
   Rate,
+  Row,
   Space,
   Tooltip,
   Typography,
@@ -137,16 +139,35 @@ export default function UnreadTransactionsSwiper({
           style={{ height: 140 }}
           vertical
         >
-          <Text>{transaction.formattedDate}</Text>
-          <div>
-            <Text strong ellipsis={true}>
-              {transaction.name ? transaction.name : 'Unknown'}{' '}
-            </Text>
-            <Text type='secondary'>
-              {` (${transaction.accountName} ${transaction.accountMask})`}
-            </Text>
-          </div>
-          <Text strong className='ml-4'>
+          <Text>{transaction?.formattedDate}</Text>
+          <Row className='w-full mx-auto'>
+            <Col span={12} className='text-right'>
+              <Text
+                strong
+                ellipsis={{
+                  tooltip: true,
+                }}
+              >
+                {transaction.name ? transaction.name : 'Unknown'}
+              </Text>
+            </Col>
+            <Col span={12}>
+              <Text
+                type='secondary'
+                ellipsis={{
+                  tooltip: true,
+                }}
+              >
+                {` (${transaction.accountName} ${transaction.accountMask})`}
+              </Text>
+            </Col>
+          </Row>
+          <Text
+            strong
+            style={{
+              marginRight: '0.3rem',
+            }}
+          >
             {currencyFormatter(transaction.amount)}
           </Text>
         </Flex>
@@ -213,19 +234,38 @@ export default function UnreadTransactionsSwiper({
           </Flex>
         }
       >
-        <Space direction='vertical' align='center' className='w-full'>
-          <Text>{transaction?.formattedDate}</Text>
-          <div>
-            <Text strong>
-              {transaction?.name ? transaction.name : 'Unknown'}
+        <Space direction='vertical' className='w-full'>
+          <Flex justify='center'>
+            <Text>{transaction?.formattedDate}</Text>
+          </Flex>
+          <Flex justify='center'>
+            <Row className='w-full'>
+              <Col span={12} className='text-right'>
+                <Text
+                  ellipsis={{
+                    tooltip: true,
+                  }}
+                >
+                  {transaction?.name ? transaction.name : 'Unknown'}
+                </Text>
+              </Col>
+              <Col span={12}>
+                <Text
+                  type='secondary'
+                  ellipsis={{
+                    tooltip: true,
+                  }}
+                >
+                  {` (${transaction?.accountName} ${transaction?.accountMask})`}
+                </Text>
+              </Col>
+            </Row>
+          </Flex>
+          <Flex justify='center'>
+            <Text className='ml-4'>
+              {transaction?.amount && currencyFormatter(transaction?.amount)}
             </Text>
-            <Text type='secondary' className='whitespace-nowrap'>
-              {` (${transaction?.accountName} ${transaction?.accountMask})`}
-            </Text>
-          </div>
-          <Text className='ml-4'>
-            {transaction?.amount && currencyFormatter(transaction?.amount)}
-          </Text>
+          </Flex>
           <Flex justify='center'>
             <Tooltip
               title={
@@ -278,7 +318,7 @@ export default function UnreadTransactionsSwiper({
       <div style={{ height: config.height }}>
         <Liquid {...config} />
       </div>
-      <div className='flex justify-center'>
+      <div className='flex justify-center text-center'>
         <Text>
           <strong>Swipe Left</strong> for Impulse Buys, or{' '}
           <strong>Swipe Right</strong> for Reviewed
