@@ -19,6 +19,7 @@ import {
   externalAccountId,
   isGoalTransferFieldErrors,
 } from '@/lib/goalTransfers';
+import { plaidCategories } from '@/lib/plaid';
 import { isExtendedSession } from '@/lib/session';
 import { getPrevPageHref } from '@/lib/utils';
 import {
@@ -38,6 +39,7 @@ type GoalTransferFormValues = {
   note?: string;
   itemName: string;
   merchantName: string;
+  plaidCategory: string;
   amount: number;
   rating: number;
   transactedAt: Dayjs | null;
@@ -104,6 +106,8 @@ export function GoalTransferForm({
     if (values.rating) formData.append('rating', String(values.rating));
     if (values.goalId) formData.append('goalId', values.goalId);
     if (values.categoryId) formData.append('categoryId', values.categoryId);
+    if (values.plaidCategory)
+      formData.append('plaidCategory', values.plaidCategory);
 
     setLoading(true);
 
@@ -135,7 +139,9 @@ export function GoalTransferForm({
     amount = -amount;
   }
   let isExternalAccount =
-    filterParam === 'accounts' || goalTransfer?.goalId === externalAccountId;
+    filterParam === 'accounts' ||
+    goalTransfer?.goalId === externalAccountId ||
+    goalTransfer?.initialTransfer;
   const initialCategoryId = isExternalAccount ? externalAccountId : undefined;
   return (
     <Form
@@ -151,6 +157,7 @@ export function GoalTransferForm({
         note: goalTransfer?.note,
         link: goalTransfer?.link,
         name: goalTransfer?.itemName,
+        plaidCategory: goalTransfer?.plaidCategory,
         rating: goalTransfer?.rating,
         merchantName: goalTransfer?.merchantName,
         goalId: goalTransfer?.goalId ?? goals.find((goal) => goal.pinned)?.id,
@@ -228,14 +235,11 @@ export function GoalTransferForm({
           <Form.Item name='merchantName' label='Merchant Name'>
             <Input placeholder='Merchant Name' />
           </Form.Item>
-          <Form.Item name='categoryId' label='Category'>
+          <Form.Item name='plaidCategory' label='Category'>
             <Select
               placeholder='Select a category'
               disabled={isExternalAccount}
-              options={categories.map((category: GoalCategory) => ({
-                label: category.name,
-                value: category.id,
-              }))}
+              options={plaidCategories}
             />
           </Form.Item>
           <Form.Item name='link' label='Link'>

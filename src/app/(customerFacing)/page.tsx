@@ -11,7 +11,7 @@ import { isExtendedSession } from '@/lib/session';
 import { greenThemeColors } from '@/lib/themeConfig';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { getUnreadTransactionCount } from '../_actions/users';
+import { getUnreadTransactionCount } from '../_actions/plaid';
 import { Title } from '../_components/Typography';
 import ConfettiComp from './_components/Confetti';
 import ConnectPlaid from './_components/ConnectPlaid';

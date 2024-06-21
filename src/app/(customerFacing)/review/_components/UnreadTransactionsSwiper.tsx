@@ -15,12 +15,10 @@ import { Liquid } from '@ant-design/plots';
 import {
   Button,
   Card,
-  Col,
   ConfigProvider,
   Flex,
   Modal,
   Rate,
-  Row,
   Space,
   Tooltip,
   Typography,
@@ -147,8 +145,13 @@ export default function UnreadTransactionsSwiper({
           vertical
         >
           <Text>{transaction?.formattedDate}</Text>
-          <Row className='w-full mx-auto'>
-            <Col span={12} className='text-right'>
+          <Flex className='w-full' justify='center'>
+            <span
+              className='text-right'
+              style={{
+                maxWidth: '70%',
+              }}
+            >
               <Text
                 strong
                 ellipsis={{
@@ -157,8 +160,12 @@ export default function UnreadTransactionsSwiper({
               >
                 {transaction.name ? transaction.name : 'Unknown'}
               </Text>
-            </Col>
-            <Col span={12}>
+            </span>
+            <span
+              style={{
+                maxWidth: '30%',
+              }}
+            >
               <Text
                 type='secondary'
                 ellipsis={{
@@ -167,8 +174,8 @@ export default function UnreadTransactionsSwiper({
               >
                 {` (${transaction.accountName} ${transaction.accountMask})`}
               </Text>
-            </Col>
-          </Row>
+            </span>
+          </Flex>
           <Text
             strong
             type={transaction.amount < 0 ? 'success' : undefined}
@@ -246,28 +253,36 @@ export default function UnreadTransactionsSwiper({
           <Flex justify='center'>
             <Text>{transaction?.formattedDate}</Text>
           </Flex>
-          <Flex justify='center'>
-            <Row className='w-full'>
-              <Col span={12} className='text-right'>
-                <Text
-                  ellipsis={{
-                    tooltip: true,
-                  }}
-                >
-                  {transaction?.name ? transaction.name : 'Unknown'}
-                </Text>
-              </Col>
-              <Col span={12}>
-                <Text
-                  type='secondary'
-                  ellipsis={{
-                    tooltip: true,
-                  }}
-                >
-                  {` (${transaction?.accountName} ${transaction?.accountMask})`}
-                </Text>
-              </Col>
-            </Row>
+          <Flex className='w-full' justify='center'>
+            <span
+              className='text-right'
+              style={{
+                maxWidth: '70%',
+              }}
+            >
+              <Text
+                strong
+                ellipsis={{
+                  tooltip: true,
+                }}
+              >
+                {transaction?.name ? transaction.name : 'Unknown'}
+              </Text>
+            </span>
+            <span
+              style={{
+                maxWidth: '30%',
+              }}
+            >
+              <Text
+                type='secondary'
+                ellipsis={{
+                  tooltip: true,
+                }}
+              >
+                {` (${transaction?.accountName} ${transaction?.accountMask})`}
+              </Text>
+            </span>
           </Flex>
           <Flex justify='center'>
             <Text className='ml-4'>

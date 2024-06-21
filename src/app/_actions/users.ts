@@ -68,28 +68,3 @@ export const completedUserGoalCount = async (userId: string) => {
     goalsCompleted,
   };
 };
-
-export type UnreadCountObject = {
-  unreadCount: number;
-  plaidItemExist: boolean;
-};
-export const getUnreadTransactionCount = async (
-  userId: string
-): Promise<UnreadCountObject> => {
-  const unreadTransactions = await db.transaction.findMany({
-    where: {
-      userId,
-      read: false,
-      recurring: false,
-    },
-  });
-  const plaidItem = await db.plaidItem.findFirst({
-    where: {
-      userId,
-    },
-  });
-  return {
-    unreadCount: unreadTransactions.length,
-    plaidItemExist: plaidItem !== null,
-  };
-};

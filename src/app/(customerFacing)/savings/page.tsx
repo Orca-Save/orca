@@ -1,6 +1,5 @@
 import { completedUserGoalCount } from '@/app/_actions/users';
 import db from '@/db/db';
-import { externalAccountId } from '@/lib/goalTransfers';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { Tabs, TabsProps } from 'antd';
@@ -78,7 +77,7 @@ export default async function MySavingsPage({
           totalSaved={completedCounts.totalSaved}
           goalsCompleted={completedCounts.goalsCompleted}
           bottomGoalTransfers={goalTransfers.filter(
-            (transfer) => transfer.categoryId === externalAccountId
+            (transfer) => transfer.initialTransfer === true
           )}
           saveHref='/savings/new?filter=templates'
           newSaveText='New External Account'

@@ -1,7 +1,11 @@
 'use server';
 
 import db from '@/db/db';
-import { plaidCategories } from '@/lib/plaid';
+import {
+  UnreadCountObject,
+  discretionaryFilter,
+  plaidCategories,
+} from '@/lib/plaid';
 import {
   PlaidItem,
   Prisma,
@@ -260,6 +264,7 @@ export async function getTransactions(
     throw error;
   }
 }
+
 const currentInstitutions = new Map<string, Institution>();
 export async function getInstitutionById(institutionId: string) {
   if (currentInstitutions.has(institutionId)) {
@@ -302,11 +307,12 @@ export type FormattedTransaction = {
   impulse: boolean;
   recurring: boolean;
   date: Date;
+  personalFinanceCategory: PersonalFinanceCategory;
   friendlyDistanceDate: string;
   friendlyRelativeDate: string;
   formattedDate: string;
 };
-type PersonalFinanceCategory = {
+export type PersonalFinanceCategory = {
   confidence_level: string;
   detailed: string;
   primary: string;
@@ -331,7 +337,6 @@ export async function getFormattedTransactions(
     where: {
       userId,
       read,
-      recurring,
     },
     orderBy: {
       date: 'asc',
@@ -343,7 +348,7 @@ export async function getFormattedTransactions(
       userId,
     },
   });
-  const categories = plaidCategories();
+  const categories = plaidCategories;
   const formattedTransactions = transactions
     .sort(sortTransactionDateDesc)
     .map((transaction): FormattedTransaction => {
@@ -360,6 +365,7 @@ export async function getFormattedTransactions(
         id: transaction.transactionId,
         date: transaction.date,
         read: transaction.read,
+        personalFinanceCategory,
         impulse: transaction.impulse ?? false,
         recurring: transaction.recurring,
         formattedDate: isToday(transaction.date)
@@ -588,11 +594,30 @@ export async function markTransactionAsRead(
   impulse: boolean,
   rating?: number
 ) {
+  const transaction = await db.transaction.findFirst({
+    where: { transactionId: id },
+  });
   await db.transaction.update({
     where: { transactionId: id },
     data: { read: true, rating, impulse },
   });
-  revalidatePath('/');
+  if (transaction && transaction.amount.toNumber() < 0 && impulse) {
+    const pinnedGoal = await db.goal.findFirst({
+      where: { userId: transaction?.userId, pinned: true },
+    });
+    let pinnedGoalId = pinnedGoal?.id;
+    await db.goalTransfer.create({
+      data: {
+        amount: transaction?.amount.toNumber() * -1,
+        goalId: pinnedGoalId,
+        itemName: transaction?.name ?? '',
+        userId: transaction?.userId,
+        plaidCategory:
+          (transaction?.personalFinanceCategory as any)?.primary ?? '',
+      },
+    });
+  }
+  if (impulse) revalidatePath('/');
 }
 
 export async function removeAllPlaidItems(userId: string) {
@@ -780,3 +805,24 @@ export async function getRecurringTransactions(userId: string) {
   revalidatePath('/review');
   return true;
 }
+
+export const getUnreadTransactionCount = async (
+  userId: string
+): Promise<UnreadCountObject> => {
+  const unreadTransactions = await db.transaction.findMany({
+    where: {
+      userId,
+      read: false,
+      // recurring: false,
+    },
+  });
+  const plaidItem = await db.plaidItem.findFirst({
+    where: {
+      userId,
+    },
+  });
+  return {
+    unreadCount: unreadTransactions.filter(discretionaryFilter).length,
+    plaidItemExist: plaidItem !== null,
+  };
+};

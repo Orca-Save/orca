@@ -1,11 +1,12 @@
-import { GoalForm } from "@/app/_components/GoalForm";
-import { Title } from "@/app/_components/Typography";
-import db from "@/db/db";
-import { headers } from "next/headers";
+import { GoalForm } from '@/app/_components/GoalForm';
+import { Title } from '@/app/_components/Typography';
+import db from '@/db/db';
+import { plaidCategories } from '@/lib/plaid';
+import { headers } from 'next/headers';
 
 const getCategories = () => {
   return db.goalCategory.findMany({
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
   });
 };
 
@@ -15,11 +16,8 @@ export default async function EditGoalPage({
   params: { id: string };
 }) {
   const headersList = headers();
-  const referer = headersList.get("referer");
-  const [goal, categories] = await Promise.all([
-    db.goal.findUnique({ where: { id } }),
-    getCategories(),
-  ]);
+  const referer = headersList.get('referer');
+  const [goal] = await Promise.all([db.goal.findUnique({ where: { id } })]);
 
   let initialAmount: number | undefined = undefined;
   if (goal?.initialTransferId)
@@ -35,7 +33,7 @@ export default async function EditGoalPage({
       <GoalForm
         goal={goal}
         referer={referer!}
-        categories={categories}
+        categories={plaidCategories}
         initialAmount={initialAmount}
       />
     </>

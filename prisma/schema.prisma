@@ -28,6 +28,7 @@ model Goal {
   imagePath         String?
   description       String?
   categoryId        String?
+  plaidCategory     String?
   pinned            Boolean?
   initialTransferId String?
 
@@ -70,22 +71,24 @@ model OnboardingProfile {
 }
 
 model GoalTransfer {
-  id       String  @id @default(uuid())
-  userId   String
-  itemName String
-  amount   Decimal @db.Decimal(65, 2)
-  pinned   Boolean @default(false)
+  id              String  @id @default(uuid())
+  userId          String
+  itemName        String
+  amount          Decimal @db.Decimal(65, 2)
+  pinned          Boolean @default(false)
+  initialTransfer Boolean @default(false)
 
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime  @updatedAt @db.Timestamptz()
   deletedAt DateTime? @db.Timestamptz()
 
-  transactedAt DateTime? @db.Timestamptz()
-  link         String?
-  note         String?
-  imagePath    String?
-  merchantName String?
-  rating       Int?
+  transactedAt  DateTime? @db.Timestamptz()
+  link          String?
+  note          String?
+  imagePath     String?
+  merchantName  String?
+  rating        Int?
+  plaidCategory String?
 
   categoryId String?
   goalId     String?

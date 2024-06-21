@@ -81,7 +81,7 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           name='personalFinanceCategory'
           rules={[{ message: 'Please input category!' }]}
         >
-          <Select options={plaidCategories()} />
+          <Select options={plaidCategories} />
         </Form.Item>
         <Space>
           {amount > 0 && (

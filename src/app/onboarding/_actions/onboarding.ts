@@ -121,6 +121,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
         transactedAt: new Date(),
         itemName: onboardingProfileData.goalName + ' Initial Amount',
         categoryId: externalAccountId,
+        initialTransfer: true,
       },
     });
   }

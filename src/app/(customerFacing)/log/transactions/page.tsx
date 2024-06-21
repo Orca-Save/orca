@@ -1,5 +1,7 @@
-import { getFormattedTransactions } from '@/app/_actions/plaid';
-import { getUnreadTransactionCount } from '@/app/_actions/users';
+import {
+  getFormattedTransactions,
+  getUnreadTransactionCount,
+} from '@/app/_actions/plaid';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { getServerSession } from 'next-auth';

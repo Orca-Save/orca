@@ -1,6 +1,6 @@
 'use client';
 
-import { Goal, GoalCategory } from '@prisma/client';
+import { Goal } from '@prisma/client';
 import {
   Button,
   Collapse,
@@ -33,6 +33,7 @@ type GoalFormValues = {
   imagePath?: string;
   dueAt: Dayjs | null;
   categoryId: string;
+  plaidCategory: string;
   file: {
     file: File;
   };
@@ -49,7 +50,10 @@ export function GoalForm({
   initialAmount,
 }: {
   goal?: Goal | null;
-  categories: GoalCategory[];
+  categories: {
+    label: string;
+    value: string;
+  }[];
   initialAmount?: number;
   referer: string;
 }) {
@@ -73,6 +77,9 @@ export function GoalForm({
     if (values.note) formData.append('note', values.note);
     if (values.categoryId) {
       formData.append('categoryId', values.categoryId);
+    }
+    if (values.plaidCategory) {
+      formData.append('plaidCategory', values.plaidCategory);
     }
     if (values.dueAt) {
       formData.append('dueAt', values.dueAt.format()); // Assuming moment.js for date formatting
@@ -126,6 +133,7 @@ export function GoalForm({
           initialAmount: initialAmount,
           imagePath: goal?.imagePath,
           categoryId: goal?.categoryId,
+          plaidCategory: goal?.plaidCategory,
         }}
       >
         <Form.Item
@@ -170,20 +178,9 @@ export function GoalForm({
           />
         </Form.Item>
         <Collapse>
-          {/* <CollapsePanel header="Image" key="1" forceRender>
-            
-            
-          </CollapsePanel> */}
-
           <CollapsePanel header='Optional Fields' key='1' forceRender>
-            <Form.Item name='categoryId' label='Category'>
-              <Select
-                placeholder='Select a category'
-                options={categories.map((category: GoalCategory) => ({
-                  label: category.name,
-                  value: category.id,
-                }))}
-              />
+            <Form.Item name='plaidCategory' label='Category'>
+              <Select placeholder='Select a category' options={categories} />
             </Form.Item>
             <Form.Item name='description' label='Description'>
               <TextArea placeholder='Description' />

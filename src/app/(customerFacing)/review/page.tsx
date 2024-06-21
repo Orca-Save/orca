@@ -2,6 +2,7 @@ import { getFormattedTransactions } from '@/app/_actions/plaid';
 import { completedUserGoalCount } from '@/app/_actions/users';
 import { Title } from '@/app/_components/Typography';
 import authOptions from '@/lib/nextAuthOptions';
+import { discretionaryFilter } from '@/lib/plaid';
 import { isExtendedSession } from '@/lib/session';
 import { Flex, Space } from 'antd';
 import { getServerSession } from 'next-auth';
@@ -31,7 +32,9 @@ export default async function TransactionsPage() {
       </Space>
       <UnreadTransactionsSwiper
         userId={session.user.id}
-        formattedTransactions={formattedTransactions}
+        formattedTransactions={formattedTransactions.filter(
+          discretionaryFilter
+        )}
       />
     </>
   );

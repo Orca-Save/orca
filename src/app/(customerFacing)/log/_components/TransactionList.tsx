@@ -21,7 +21,7 @@ const { Text } = Typography;
 type TransactionListProps = {
   transactions: FormattedTransaction[];
 };
-type FilterType = 'all' | 'reviewed' | 'impulseBuy' | 'recurring';
+type FilterType = 'all' | 'reviewed' | 'impulseBuy' | 'discretionary';
 type Filter = {
   filter: FilterType;
   antiFilter: boolean;
@@ -99,20 +99,6 @@ export default function TransactionList({
                             I
                           </div>
                         ) : null}
-                        {transaction.recurring ? (
-                          <div
-                            style={{
-                              border: '1px solid #6B7280',
-                              borderRadius: '0.25rem',
-                              color: '#6B7280',
-                              fontSize: '0.7rem',
-                              textAlign: 'center',
-                              width: '1rem',
-                            }}
-                          >
-                            R
-                          </div>
-                        ) : null}
                       </Col>
                       <Col span={8} className='text-right w-full'>
                         <Text
@@ -160,7 +146,7 @@ function groupedTransactions(
     if (filter.filter === 'impulseBuy') {
       return transaction.impulse === filter.antiFilter;
     }
-    if (filter.filter === 'recurring') {
+    if (filter.filter === 'discretionary') {
       return transaction.recurring === filter.antiFilter;
     }
     return false;
@@ -210,9 +196,9 @@ function FilterOptions({
       value: 'impulseBuy',
     },
     {
-      filterLabel: 'Recurring',
-      antiFilterLabel: 'Non-Recurring',
-      value: 'recurring',
+      filterLabel: 'Discretionary',
+      antiFilterLabel: 'Non-Discretionary',
+      value: 'discretionary',
     },
   ];
   return (
