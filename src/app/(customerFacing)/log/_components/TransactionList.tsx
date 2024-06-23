@@ -1,6 +1,7 @@
 'use client';
 
 import { FormattedTransaction } from '@/app/_actions/plaid';
+import { discretionaryFilter } from '@/lib/plaid';
 import { antdDefaultButton, impulseButtonTheme } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
 import {
@@ -14,7 +15,7 @@ import {
   Space,
   Typography,
 } from 'antd';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 const { Text } = Typography;
 
@@ -30,12 +31,14 @@ export default function TransactionList({
   transactions,
 }: TransactionListProps) {
   const router = useRouter();
+  const params = useParams();
+  const searchParams = useSearchParams();
   const [filter, setFilter] = useState<{
     antiFilter: boolean;
     filter: FilterType;
   }>({
-    antiFilter: false,
-    filter: 'all',
+    antiFilter: searchParams.get('anti') === 'true' ? true : false,
+    filter: (searchParams.get('filter') as FilterType) ?? 'all',
   });
 
   const setFilterHandler = (filter: FilterType, antiFilter: boolean) => {
@@ -44,7 +47,11 @@ export default function TransactionList({
   const groupedTransactionsArray = groupedTransactions(transactions, filter);
   return (
     <>
-      <FilterOptions filter={filter} setFilterHandler={setFilterHandler} />
+      <FilterOptions
+        filter={filter}
+        router={router}
+        setFilterHandler={setFilterHandler}
+      />
 
       <List
         dataSource={groupedTransactionsArray}
@@ -147,7 +154,7 @@ function groupedTransactions(
       return transaction.impulse === filter.antiFilter;
     }
     if (filter.filter === 'discretionary') {
-      return transaction.recurring === filter.antiFilter;
+      return discretionaryFilter(transaction) === filter.antiFilter;
     }
     return false;
   });
@@ -176,8 +183,10 @@ function groupedTransactions(
 function FilterOptions({
   filter,
   setFilterHandler,
+  router,
 }: {
   filter: Filter;
+  router: any;
   setFilterHandler: (filter: FilterType, antiFilter: boolean) => void;
 }) {
   const options: {
@@ -210,7 +219,7 @@ function FilterOptions({
       }}
     >
       <Flex justify='center' wrap gap='small'>
-        <Space direction='vertical' className='w-32'>
+        <Space direction='vertical' className='w-36'>
           <Flex justify='center'>
             <Text strong>Filters</Text>
           </Flex>
@@ -226,7 +235,7 @@ function FilterOptions({
           </Flex>
         </Space>
         {options.map(({ filterLabel, value, antiFilterLabel }) => (
-          <Space key={`${value}-filters`} direction='vertical' className='w-32'>
+          <Space key={`${value}-filters`} direction='vertical' className='w-36'>
             <ConfigProvider
               theme={
                 value === 'impulseBuy'
@@ -247,7 +256,15 @@ function FilterOptions({
                     ? 'primary'
                     : 'default'
                 }
-                onClick={() => setFilterHandler(value, true)}
+                onClick={() => {
+                  setFilterHandler(value, true);
+                  router.replace(
+                    `/log/transactions?filter=${value}&anti=${true}`,
+                    {
+                      shallow: true,
+                    }
+                  );
+                }}
               >
                 {filterLabel}
               </Button>
@@ -262,7 +279,15 @@ function FilterOptions({
                   ? 'primary'
                   : 'default'
               }
-              onClick={() => setFilterHandler(value, false)}
+              onClick={() => {
+                setFilterHandler(value, false);
+                router.replace(
+                  `/log/transactions?filter=${value}&anti=${false}`,
+                  {
+                    shallow: true,
+                  }
+                );
+              }}
             >
               {antiFilterLabel}
             </Button>
