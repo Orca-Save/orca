@@ -23,7 +23,7 @@ async function plaidWebhookHandler(req: any) {
       initial_update_complete,
       environment,
     } = reqObj;
-    db.plaidWebhook.create({
+    await db.plaidWebhook.create({
       data: {
         itemId: item_id,
         type: webhook_type,
