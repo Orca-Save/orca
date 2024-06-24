@@ -20,6 +20,7 @@ import {
   CountryCode,
   Institution,
   InstitutionsGetByIdRequest,
+  LinkTokenCreateRequest,
   PlaidApi,
   PlaidEnvironments,
   PlaidError,
@@ -92,7 +93,7 @@ export async function checkPlaidItemStatus(
 }
 
 export async function createLinkToken(userId: string, access_token?: string) {
-  const request = {
+  const request: LinkTokenCreateRequest = {
     user: {
       client_user_id: userId,
     },
@@ -100,6 +101,9 @@ export async function createLinkToken(userId: string, access_token?: string) {
     client_name: 'Plaid Test App',
     products: [Products.Transactions],
     language: 'en',
+    transactions: {
+      days_requested: 180,
+    },
     webhook: process.env.BASE_URL + '/api/plaid/webhook',
     country_codes: [CountryCode.Us],
   };
@@ -192,6 +196,8 @@ export async function exchangePublicToken(
     )
   );
 
+  await syncItems(userId);
+
   revalidatePath('/');
   revalidatePath('/user');
   revalidatePath('/review');
@@ -215,54 +221,137 @@ export async function syncItems(userId: string) {
   return true;
 }
 
-export async function getTransactions(
-  userId: string,
-  start_date: string,
-  end_date: string
-) {
-  const plaidItem = await db.plaidItem.findFirst({
+export async function getUserItems(userId: string) {
+  const items = await db.plaidItem.findMany({
     where: {
       userId,
       loginRequired: false,
     },
+  });
+
+  return items;
+}
+
+export async function getOlderTransactions(userId: string, days: number) {
+  const oldestTransaction = await db.transaction.findFirst({
+    where: {
+      userId,
+    },
     orderBy: {
-      updatedAt: 'desc',
+      date: 'asc',
     },
   });
 
-  if (!plaidItem) {
+  if (!oldestTransaction) {
     return [];
   }
 
+  const oldestDate = oldestTransaction.date;
+  const currentDate = new Date();
+  const startDate = new Date(oldestDate);
+  startDate.setDate(startDate.getDate() - days);
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + days);
+
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      userId,
+      loginRequired: false,
+    },
+  });
+
+  if (!plaidItems) {
+    throw new Error('Plaid item not found');
+  }
+
+  await Promise.all(
+    plaidItems.map((plaidItem) =>
+      getItemTransactions(
+        plaidItem,
+        startDate.toISOString().split('T')[0],
+        endDate.toISOString().split('T')[0]
+      )
+    )
+  );
+  console.log('completed fetching transactions');
+}
+
+export async function getItemTransactions(
+  plaidItem: PlaidItem,
+  start_date: string,
+  end_date: string
+) {
   const request: TransactionsGetRequest = {
     access_token: plaidItem.accessToken,
     start_date,
     end_date,
   };
-  try {
-    const response = await plaidClient.transactionsGet(request);
-    let transactions = response.data.transactions;
-    const total_transactions = response.data.total_transactions;
-    while (transactions.length < total_transactions) {
-      const paginatedRequest: TransactionsGetRequest = {
-        access_token: plaidItem.accessToken,
-        start_date,
-        end_date,
-        options: {
-          offset: transactions.length,
-        },
-      };
-      const paginatedResponse = await plaidClient.transactionsGet(
-        paginatedRequest
-      );
-      transactions = transactions.concat(paginatedResponse.data.transactions);
-    }
-
-    return transactions;
-  } catch (error) {
-    // console.error('Error fetching transactions:', error);
-    throw error;
+  const response = await plaidClient.transactionsGet(request);
+  let transactions = response.data.transactions;
+  const total_transactions = response.data.total_transactions;
+  while (transactions.length < total_transactions) {
+    const paginatedRequest: TransactionsGetRequest = {
+      access_token: plaidItem.accessToken,
+      start_date,
+      end_date,
+      options: {
+        offset: transactions.length,
+      },
+    };
+    const paginatedResponse = await plaidClient.transactionsGet(
+      paginatedRequest
+    );
+    transactions = transactions.concat(paginatedResponse.data.transactions);
   }
+
+  await Promise.all(
+    transactions.map(async (transaction) => {
+      await db.transaction.upsert({
+        where: { transactionId: transaction.transaction_id },
+        update: {
+          accountId: transaction.account_id,
+          amount: transaction.amount,
+          date: new Date(transaction.date),
+          name: transaction.name,
+          isoCurrencyCode: transaction.iso_currency_code,
+          paymentChannel: transaction.payment_channel,
+          pending: transaction.pending,
+          pendingTransactionId: transaction.pending_transaction_id,
+          merchantName: transaction.merchant_name,
+          personalFinanceCategoryIcon:
+            transaction.personal_finance_category_icon_url,
+          location: transaction.location as unknown as Prisma.InputJsonObject,
+          personalFinanceCategory:
+            transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
+          paymentMeta:
+            transaction.payment_meta as unknown as Prisma.InputJsonObject,
+        },
+        create: {
+          userId: plaidItem.userId,
+          read: false,
+          accountId: transaction.account_id,
+          transactionId: transaction.transaction_id,
+          institutionId: plaidItem.institutionId,
+          amount: transaction.amount,
+          plaidItemId: plaidItem.itemId,
+          name: transaction.name,
+          pending: transaction.pending,
+          date: new Date(transaction.date),
+          merchantName: transaction.merchant_name,
+          paymentChannel: transaction.payment_channel,
+          isoCurrencyCode: transaction.iso_currency_code,
+          pendingTransactionId: transaction.pending_transaction_id,
+          personalFinanceCategoryIcon:
+            transaction.personal_finance_category_icon_url,
+          location: transaction.location as unknown as Prisma.InputJsonObject,
+          personalFinanceCategory:
+            transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
+          paymentMeta:
+            transaction.payment_meta as unknown as Prisma.InputJsonObject,
+        },
+      });
+    })
+  );
 }
 
 const currentInstitutions = new Map<string, Institution>();
@@ -493,7 +582,13 @@ export async function syncTransactions(plaidItem: PlaidItem) {
 
   await Promise.all(
     combinedTransactions.map(async (transaction) => {
-      const read = new Date(transaction.date) < weekAgo;
+      const read =
+        new Date(transaction.date) < weekAgo &&
+        !discretionaryFilter({
+          personalFinanceCategory: transaction.personal_finance_category,
+          recurring: false,
+        });
+
       await db.transaction.upsert({
         where: { transactionId: transaction.transaction_id },
         update: {
@@ -684,6 +779,9 @@ export async function removePlaidItem(itemId: string) {
   });
 
   await db.transaction.deleteMany({
+    where: { plaidItemId: plaidItem.itemId },
+  });
+  await db.account.deleteMany({
     where: { plaidItemId: plaidItem.itemId },
   });
   await db.plaidItem.delete({

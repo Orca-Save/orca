@@ -4,7 +4,7 @@ import { ItemData, removePlaidItem } from '@/app/_actions/plaid';
 import { Title } from '@/app/_components/Typography';
 import { currencyFormatter } from '@/lib/utils';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Card, Collapse, List, Space } from 'antd';
+import { Button, Card, Collapse, List, Popconfirm, Space } from 'antd';
 import { AccountBase, Institution } from 'plaid';
 import PlaidLink from './PlaidLink';
 
@@ -56,16 +56,24 @@ const InstitutionCollapse = ({
               text={linkText}
               usingExistingInstitution={true}
             />
-            <Button
-              data-id='remove-institution-button'
-              type='primary'
-              disabled={!institution?.institution_id}
-              danger
-              icon={<DeleteOutlined />}
-              onClick={handleRemoveInstitution}
+            <Popconfirm
+              placement='topLeft'
+              title={'Confirm Deletion'}
+              description={'Are you sure you want to remove this institution?'}
+              okText='Yes'
+              cancelText='No'
             >
-              Remove Institution
-            </Button>
+              <Button
+                data-id='remove-institution-button'
+                type='primary'
+                disabled={!institution?.institution_id}
+                danger
+                icon={<DeleteOutlined />}
+                onClick={handleRemoveInstitution}
+              >
+                Remove Institution
+              </Button>
+            </Popconfirm>
           </Space>
           <List
             grid={{ gutter: 16, column: 1 }}

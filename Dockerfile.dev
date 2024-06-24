@@ -14,6 +14,9 @@ COPY .env.staging .env.production
 RUN npx prisma generate
 RUN npm run build
 
+RUN rm .env.*
+RUN rm .env
+
 EXPOSE 8080
 
 CMD ["npm", "start"] 
