@@ -424,6 +424,7 @@ async function fetchAllSyncData(
         cursor: allData.nextCursor ?? undefined,
         options: {
           include_personal_finance_category: true,
+          days_requested: 180,
         },
       };
 

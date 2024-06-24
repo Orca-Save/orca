@@ -13,6 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model PlaidWebhook {
+  id          String   @id @default(uuid())
+  itemId      String
+  type        String
+  code        String
+  historical  Boolean
+  initial     Boolean
+  environment String
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+}
+
 model Goal {
   id           String   @id @default(uuid())
   userId       String

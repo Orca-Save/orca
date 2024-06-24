@@ -9,8 +9,30 @@ import { appInsightsClient } from '@/lib/appInsights';
 import { NextResponse } from 'next/server';
 
 async function plaidWebhookHandler(req: any) {
+  const reqObj = await req.json();
   try {
-    const { item_id, webhook_code } = await req.json();
+    appInsightsClient.trackEvent({
+      name: 'PlaidWebhookReceived',
+      properties: { ...reqObj },
+    });
+    const {
+      item_id,
+      webhook_code,
+      webhook_type,
+      historical_update_complete,
+      initial_update_complete,
+      environment,
+    } = reqObj;
+    db.plaidWebhook.create({
+      data: {
+        itemId: item_id,
+        type: webhook_type,
+        code: webhook_code,
+        historical: historical_update_complete,
+        initial: initial_update_complete,
+        environment: environment,
+      },
+    });
     const plaidItem = await db.plaidItem.findFirst({
       where: { itemId: item_id },
     });
@@ -73,10 +95,7 @@ async function plaidWebhookHandler(req: any) {
     return NextResponse.json({ message: 'success' });
   } catch (e: any) {
     appInsightsClient.trackException({ exception: e });
-    appInsightsClient.trackEvent({
-      name: 'PlaidWebhookError',
-      properties: { error: e.message, item_id: req?.body?.item_id },
-    });
+
     return NextResponse.json({ message: 'error' });
   }
 }
