@@ -1,7 +1,6 @@
 'use client';
 
 import { plaidCategories } from '@/lib/plaid';
-import { currencyFormatter } from '@/lib/utils';
 import { Transaction } from '@prisma/client';
 import {
   Button,
@@ -13,7 +12,6 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { saveTransaction } from '../_actions/transactions';
@@ -60,22 +58,6 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
       }}
     >
       <Space direction='vertical' className='w-full'>
-        <Flex justify='center'>
-          <Space direction='vertical' className='w-full'>
-            <Text strong>Merchant Name</Text>
-            <Text>{transaction.merchantName ?? transaction.name ?? ' '}</Text>
-            <Text strong>Amount</Text>
-            <Text type={amount < 0 ? 'success' : undefined}>
-              {currencyFormatter(amount, undefined, true)}
-            </Text>
-          </Space>
-          <Space direction='vertical' className='w-full'>
-            <Text strong>Authorized Date</Text>
-            <Text>{format(transaction.date, 'EEE, MMMM dd')}</Text>
-            <Text strong>Recurring</Text>
-            <Text>{transaction.recurring ? 'Yes' : 'No'}</Text>
-          </Space>
-        </Flex>
         <Form.Item
           label='Category'
           name='personalFinanceCategory'

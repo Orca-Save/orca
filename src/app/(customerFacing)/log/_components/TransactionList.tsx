@@ -105,20 +105,7 @@ export default function TransactionList({
                           >
                             I
                           </div>
-                        ) : (
-                          <div
-                            style={{
-                              border: '1px solid rgba(154,0,207, 0.6)',
-                              borderRadius: '0.25rem',
-                              backgroundColor: 'rgba(154,0,207, 0.2)',
-                              color: 'rgba(154,0,207, 0.6)',
-                              width: '1rem',
-                              textAlign: 'center',
-                            }}
-                          >
-                            N
-                          </div>
-                        )}
+                        ) : null}
                       </Col>
                       <Col span={6} className='text-right w-full'>
                         <Text
