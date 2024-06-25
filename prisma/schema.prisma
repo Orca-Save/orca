@@ -15,12 +15,13 @@ datasource db {
 
 model PlaidWebhook {
   id          String   @id @default(uuid())
-  itemId      String
-  type        String
-  code        String
-  historical  Boolean
-  initial     Boolean
-  environment String
+  itemId      String?
+  type        String?
+  code        String?
+  historical  Boolean?
+  initial     Boolean?
+  environment String?
+  json        Json?
   createdAt   DateTime @default(now()) @db.Timestamptz()
 }
 

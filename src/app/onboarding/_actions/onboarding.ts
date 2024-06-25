@@ -1,9 +1,6 @@
 'use server';
 
-import {
-  getRecurringTransactions,
-  syncTransactions,
-} from '@/app/_actions/plaid';
+import { syncItems } from '@/app/_actions/plaid';
 import db from '@/db/db';
 import { externalAccountId } from '@/lib/goalTransfers';
 import dayjs from 'dayjs';
@@ -156,16 +153,8 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     },
   });
 
-  const plaidItems = await db.plaidItem.findMany({
-    where: { userId },
-  });
+  await syncItems(userId);
 
-  await Promise.all(
-    plaidItems.map(async (item) => {
-      if (item.cursor === null) await syncTransactions(item);
-    })
-  );
-  await getRecurringTransactions(userId);
   revalidatePath('/');
   revalidatePath('/user');
   revalidatePath('/goals');

@@ -7,6 +7,7 @@ import {
   plaidCategories,
 } from '@/lib/plaid';
 import {
+  Account,
   PlaidItem,
   Prisma,
   Transaction as PrismaTransaction,
@@ -15,7 +16,6 @@ import { format, formatDistanceToNow, formatRelative, isToday } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
 import {
-  AccountBase,
   Configuration,
   CountryCode,
   Institution,
@@ -195,8 +195,6 @@ export async function exchangePublicToken(
       })
     )
   );
-
-  await syncItems(userId);
 
   revalidatePath('/');
   revalidatePath('/user');
@@ -797,7 +795,7 @@ export type ItemData = {
   institution?: Institution;
   linkToken: string;
   linkText: string;
-  accounts: AccountBase[];
+  accounts: Account[];
   itemId: string;
 };
 export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
@@ -824,6 +822,21 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
       try {
         linkToken = (await createLinkToken(userId, item.accessToken))
           .link_token;
+
+        const accounts = await db.account.findMany({
+          where: { accessToken: item.accessToken },
+        });
+        const plaidItem = items.find((x) => x.item_id === item.itemId);
+        let institution: Institution | undefined = undefined;
+        if (plaidItem)
+          institution = await getInstitutionById(plaidItem.institution_id!);
+        return {
+          linkToken,
+          institution,
+          linkText: 'Reselect Accounts',
+          itemId: item.itemId,
+          accounts,
+        };
       } catch (e) {
         console.error(e);
         console.log('Error creating link token. Could be login required');
@@ -835,20 +848,6 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
           accounts: [],
         };
       }
-      const accountResponse = await plaidClient.accountsGet({
-        access_token: item.accessToken,
-      });
-      const plaidItem = items.find((x) => x.item_id === item.itemId);
-      let institution: Institution | undefined = undefined;
-      if (plaidItem)
-        institution = await getInstitutionById(plaidItem.institution_id!);
-      return {
-        linkToken,
-        institution,
-        linkText: 'Reselect Accounts',
-        itemId: item.itemId,
-        accounts: accountResponse.data.accounts,
-      };
     })
   );
 

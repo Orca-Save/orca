@@ -2,17 +2,17 @@
 
 import { ItemData, removePlaidItem } from '@/app/_actions/plaid';
 import { Title } from '@/app/_components/Typography';
-import { currencyFormatter } from '@/lib/utils';
 import { DeleteOutlined } from '@ant-design/icons';
+import { Account } from '@prisma/client';
 import { Button, Card, Collapse, List, Popconfirm, Space } from 'antd';
-import { AccountBase, Institution } from 'plaid';
+import { Institution } from 'plaid';
 import PlaidLink from './PlaidLink';
 
 const { Panel } = Collapse;
 
 type InstitutionProps = {
   institution?: Institution;
-  accounts: AccountBase[];
+  accounts: Account[];
   linkToken: string;
   linkText: string;
   userId: string;
@@ -84,10 +84,6 @@ const InstitutionCollapse = ({
                   <p>Type: {account.type}</p>
                   <p>Subtype: {account.subtype}</p>
                   <p>Mask: {account.mask}</p>
-                  <p>
-                    Balance: {currencyFormatter(account.balances.current ?? '')}{' '}
-                    {account.balances.iso_currency_code}
-                  </p>
                 </Card>
               </List.Item>
             )}

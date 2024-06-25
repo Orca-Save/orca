@@ -31,6 +31,7 @@ async function plaidWebhookHandler(req: any) {
         historical: historical_update_complete,
         initial: initial_update_complete,
         environment: environment,
+        json: reqObj,
       },
     });
     const plaidItem = await db.plaidItem.findFirst({
