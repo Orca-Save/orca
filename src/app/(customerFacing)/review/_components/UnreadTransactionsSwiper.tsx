@@ -145,37 +145,22 @@ export default function UnreadTransactionsSwiper({
           vertical
         >
           <Text>{transaction?.formattedDate}</Text>
-          <Flex className='w-full' justify='center'>
-            <span
-              className='text-right'
-              style={{
-                maxWidth: '70%',
-              }}
-            >
-              <Text
-                strong
-                ellipsis={{
-                  tooltip: true,
-                }}
-              >
-                {transaction.name ? transaction.name : 'Unknown'}
-              </Text>
-            </span>
-            <span
-              style={{
-                maxWidth: '30%',
-              }}
-            >
-              <Text
-                type='secondary'
-                ellipsis={{
-                  tooltip: true,
-                }}
-              >
-                {` (${transaction.accountName} ${transaction.accountMask})`}
-              </Text>
-            </span>
-          </Flex>
+          <Text
+            strong
+            ellipsis={{
+              tooltip: true,
+            }}
+          >
+            {transaction.name ? transaction.name : 'Unknown'}
+          </Text>
+          <Text
+            type='secondary'
+            ellipsis={{
+              tooltip: true,
+            }}
+          >
+            {` (${transaction.accountName} ${transaction.accountMask})`}
+          </Text>
           <Text
             strong
             type={transaction.amount < 0 ? 'success' : undefined}
@@ -253,37 +238,22 @@ export default function UnreadTransactionsSwiper({
           <Flex justify='center'>
             <Text>{transaction?.formattedDate}</Text>
           </Flex>
-          <Flex className='w-full' justify='center'>
-            <span
-              className='text-right'
-              style={{
-                maxWidth: '70%',
-              }}
-            >
-              <Text
-                strong
-                ellipsis={{
-                  tooltip: true,
-                }}
-              >
-                {transaction?.name ? transaction.name : 'Unknown'}
-              </Text>
-            </span>
-            <span
-              style={{
-                maxWidth: '30%',
-              }}
-            >
-              <Text
-                type='secondary'
-                ellipsis={{
-                  tooltip: true,
-                }}
-              >
-                {` (${transaction?.accountName} ${transaction?.accountMask})`}
-              </Text>
-            </span>
-          </Flex>
+          <Text
+            strong
+            ellipsis={{
+              tooltip: true,
+            }}
+          >
+            {transaction?.name ? transaction.name : 'Unknown'}
+          </Text>
+          <Text
+            type='secondary'
+            ellipsis={{
+              tooltip: true,
+            }}
+          >
+            {` (${transaction?.accountName} ${transaction?.accountMask})`}
+          </Text>
           <Flex justify='center'>
             <Text className='ml-4'>
               {transaction?.amount && currencyFormatter(transaction?.amount)}

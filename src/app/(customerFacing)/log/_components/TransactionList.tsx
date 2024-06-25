@@ -81,7 +81,7 @@ export default function TransactionList({
                           {transaction.name ? transaction.name : 'Unknown'}
                         </Text>
                       </Col>
-                      <Col span={6}>
+                      <Col span={8}>
                         <Text
                           type='secondary'
                           ellipsis={{
@@ -105,9 +105,22 @@ export default function TransactionList({
                           >
                             I
                           </div>
-                        ) : null}
+                        ) : (
+                          <div
+                            style={{
+                              border: '1px solid rgba(154,0,207, 0.6)',
+                              borderRadius: '0.25rem',
+                              backgroundColor: 'rgba(154,0,207, 0.2)',
+                              color: 'rgba(154,0,207, 0.6)',
+                              width: '1rem',
+                              textAlign: 'center',
+                            }}
+                          >
+                            N
+                          </div>
+                        )}
                       </Col>
-                      <Col span={8} className='text-right w-full'>
+                      <Col span={6} className='text-right w-full'>
                         <Text
                           strong
                           style={{
@@ -228,7 +241,12 @@ function FilterOptions({
               size='small'
               shape='round'
               type={filter.filter === 'all' ? 'primary' : 'default'}
-              onClick={() => setFilterHandler('all', false)}
+              onClick={() => {
+                setFilterHandler('all', false);
+                router.replace(`/log/transactions`, {
+                  shallow: true,
+                });
+              }}
             >
               All
             </Button>
