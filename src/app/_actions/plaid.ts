@@ -826,7 +826,7 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
           .link_token;
       } catch (e) {
         console.error(e);
-        // status could be 'ITEM_LOGIN_REQUIRED'
+        console.log('Error creating link token. Could be login required');
         return {
           linkToken,
           linkText: 'Login required',
