@@ -820,10 +820,13 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   );
   const itemsData = await Promise.all(
     itemsMeta.map(async (item) => {
-      const status = await checkPlaidItemStatus(item);
-      const linkToken = (await createLinkToken(userId, item.accessToken))
-        .link_token;
-      if (status.status === 'ITEM_LOGIN_REQUIRED') {
+      let linkToken = '';
+      try {
+        linkToken = (await createLinkToken(userId, item.accessToken))
+          .link_token;
+      } catch (e) {
+        console.error(e);
+        // status could be 'ITEM_LOGIN_REQUIRED'
         return {
           linkToken,
           linkText: 'Login required',
