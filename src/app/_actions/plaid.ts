@@ -208,6 +208,7 @@ export async function syncItems(userId: string) {
     where: {
       userId,
       loginRequired: false,
+      deletedAt: null,
     },
   });
   await Promise.all(plaidItems.map((plaidItem) => syncTransactions(plaidItem)));
@@ -224,6 +225,7 @@ export async function getUserItems(userId: string) {
     where: {
       userId,
       loginRequired: false,
+      deletedAt: null,
     },
   });
 
@@ -255,6 +257,7 @@ export async function getOlderTransactions(userId: string, days: number) {
     where: {
       userId,
       loginRequired: false,
+      deletedAt: null,
     },
   });
 
@@ -413,6 +416,7 @@ export async function getFormattedTransactions(
     where: {
       userId,
       loginRequired: false,
+      deletedAt: null,
     },
   });
 
@@ -581,7 +585,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   await Promise.all(
     combinedTransactions.map(async (transaction) => {
       const read =
-        new Date(transaction.date) < weekAgo &&
+        new Date(transaction.date) < weekAgo ||
         !discretionaryFilter({
           personalFinanceCategory: transaction.personal_finance_category,
           recurring: false,
@@ -716,7 +720,7 @@ export async function markTransactionAsRead(
 
 export async function removeAllPlaidItems(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
-    where: { userId: userId },
+    where: { userId: userId, deletedAt: null },
   });
 
   if (!plaidItems || plaidItems.length === 0) {
@@ -731,8 +735,11 @@ export async function removeAllPlaidItems(userId: string) {
     })
   );
 
-  await db.plaidItem.deleteMany({
+  await db.plaidItem.updateMany({
     where: { userId },
+    data: {
+      deletedAt: new Date(),
+    },
   });
 
   revalidatePath('/');
@@ -782,8 +789,11 @@ export async function removePlaidItem(itemId: string) {
   await db.account.deleteMany({
     where: { plaidItemId: plaidItem.itemId },
   });
-  await db.plaidItem.delete({
+  await db.plaidItem.update({
     where: { itemId: plaidItem.itemId },
+    data: {
+      deletedAt: new Date(),
+    },
   });
 
   revalidatePath('/');
@@ -859,6 +869,7 @@ export async function getRecurringTransactions(userId: string) {
     where: {
       userId,
       loginRequired: false,
+      deletedAt: null,
     },
   });
 
@@ -920,6 +931,8 @@ export const getUnreadTransactionCount = async (
   const plaidItem = await db.plaidItem.findFirst({
     where: {
       userId,
+      loginRequired: false,
+      deletedAt: null,
     },
   });
   return {

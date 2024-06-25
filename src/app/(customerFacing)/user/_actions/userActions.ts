@@ -13,9 +13,6 @@ export async function clearUserData(userId: string) {
   db.transaction.deleteMany({
     where: { userId },
   });
-  db.plaidItem.deleteMany({
-    where: { userId },
-  });
   db.goal.deleteMany({
     where: { userId },
   });
