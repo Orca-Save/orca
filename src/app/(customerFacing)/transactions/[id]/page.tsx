@@ -38,7 +38,13 @@ export default async function TransactionPage({
       <Flex justify='center'>
         <Space direction='vertical' className='w-full'>
           <Text strong>Transaction Name</Text>
-          <Text>{transaction?.name ? transaction.name : 'Unknown'}</Text>
+          <Text
+            ellipsis={{
+              tooltip: true,
+            }}
+          >
+            {transaction?.name ? transaction.name : 'Unknown'}
+          </Text>
           <Text strong>Merchant Name</Text>
           <Text>
             {transaction.merchantName ?? transaction.merchantName ?? 'Unknown'}
@@ -51,7 +57,6 @@ export default async function TransactionPage({
         <Space direction='vertical' className='w-full'>
           <Text strong>Account Name</Text>
           <Text
-            type='secondary'
             ellipsis={{
               tooltip: true,
             }}
