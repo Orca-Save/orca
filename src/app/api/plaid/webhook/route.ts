@@ -41,11 +41,6 @@ async function plaidWebhookHandler(req: any) {
       throw new Error('Plaid item not found');
     }
 
-    appInsightsClient.trackEvent({
-      name: 'PlaidWebhookReceived',
-      properties: { item_id, webhook_code },
-    });
-
     switch (webhook_code) {
       case 'INITIAL_UPDATE':
       case 'SYNC_UPDATES_AVAILABLE':
