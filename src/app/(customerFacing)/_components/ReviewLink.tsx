@@ -8,19 +8,15 @@ import RefreshPlaidItems from './RefreshPlaidItems';
 export default async function ReviewLink({
   unreadObj,
   userId,
-  hideSyncWhenHasItems,
 }: {
   unreadObj: UnreadCountObject;
   userId: string;
-  hideSyncWhenHasItems?: boolean;
 }) {
   const [nextRefreshTime, userItems] = await Promise.all([
     getNextRefreshTime(userId),
     getUserItems(userId),
   ]);
   const hasItems = userItems.length > 0;
-  const showSync =
-    !hideSyncWhenHasItems || !hasItems || unreadObj.unreadCount === 0;
   return (
     <Flex
       justify='center'
@@ -30,14 +26,12 @@ export default async function ReviewLink({
         width: '100%',
       }}
     >
-      {showSync && (
-        <RefreshPlaidItems
-          userId={userId}
-          height={90}
-          hasItems={hasItems}
-          nextRefreshTime={nextRefreshTime}
-        />
-      )}
+      <RefreshPlaidItems
+        userId={userId}
+        height={90}
+        hasItems={hasItems}
+        nextRefreshTime={nextRefreshTime}
+      />
       <Link href='/review' className='w-full'>
         <HappyProvider>
           <Button

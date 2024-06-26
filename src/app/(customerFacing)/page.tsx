@@ -91,11 +91,7 @@ export default async function HomePage({
         </Link>
 
         {unreadObj.plaidItemExist ? (
-          <ReviewLink
-            hideSyncWhenHasItems
-            unreadObj={unreadObj}
-            userId={session.user.id}
-          />
+          <ReviewLink unreadObj={unreadObj} userId={session.user.id} />
         ) : (
           <ConnectPlaid userId={session.user.id} />
         )}
