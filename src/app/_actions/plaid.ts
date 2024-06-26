@@ -498,11 +498,13 @@ async function fetchAllSyncData(
     added: Transaction[];
     modified: Transaction[];
     removed: RemovedTransaction[];
+    accessToken: string;
     nextCursor: string | null;
   } = {
     added: [],
     modified: [],
     removed: [],
+    accessToken,
     nextCursor: cursor,
   };
 
@@ -665,6 +667,111 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   revalidatePath('/');
   revalidatePath('/log/transactions');
   revalidatePath('/review');
+
+  return allData;
+}
+
+export async function refreshUserItems(userId: string) {
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      userId,
+      loginRequired: false,
+      deletedAt: null,
+    },
+  });
+
+  if (!plaidItems) {
+    throw new Error('Plaid item not found');
+  }
+  let allItemsData: {
+    added: Transaction[];
+    modified: Transaction[];
+    removed: RemovedTransaction[];
+    nextCursor: string | null;
+  }[] = [];
+  try {
+    await Promise.all(plaidItems.map((plaidItem) => refreshItem(plaidItem)));
+    allItemsData = await Promise.all(
+      plaidItems.map((plaidItem) => syncTransactions(plaidItem))
+    );
+    await getRecurringTransactions(userId);
+  } catch (e) {
+    console.error('Error refreshing items. Could be login required.');
+    console.error(e);
+  }
+
+  await Promise.all(
+    plaidItems.map((plaidItem, index) => {
+      const itemData = allItemsData[index];
+      return db.plaidItem.update({
+        where: {
+          accessToken: plaidItem.accessToken,
+        },
+        data: {
+          cursor: itemData.nextCursor,
+          lastSync: new Date(),
+          lastRefresh: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    })
+  );
+
+  // check if there were any changes from the sync
+  const changes = allItemsData.some(
+    (data) =>
+      data.added.length > 0 ||
+      data.modified.length > 0 ||
+      data.removed.length > 0
+  );
+  revalidatePath('/');
+  revalidatePath('/log/transactions');
+  revalidatePath('/review');
+  return {
+    changes,
+  };
+}
+
+export async function getNextRefreshTime(userId: string) {
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      userId,
+      loginRequired: false,
+      deletedAt: null,
+      lastRefresh: {
+        not: null,
+      },
+    },
+  });
+
+  if (!plaidItems) {
+    throw new Error('Plaid item not found');
+  }
+  if (plaidItems.length === 0) {
+    return null;
+  }
+
+  // get the oldest last refresh date
+  const oldestItem = plaidItems.reduce((prev, current) =>
+    prev.lastRefresh! < current.lastRefresh! ? prev : current
+  );
+
+  // next refresh is 12 hours after the oldest last refresh
+  if (oldestItem.lastRefresh) {
+    const nextRefresh = new Date();
+    nextRefresh.setHours(oldestItem.lastRefresh.getHours() + 12);
+    return nextRefresh;
+  }
+
+  return null;
+}
+
+async function refreshItem(plaidItem: PlaidItem) {
+  const response = await plaidClient.transactionsRefresh({
+    access_token: plaidItem.accessToken,
+  });
+
+  return response.data.request_id;
 }
 
 export async function getUnreadTransactions(userId: string) {
