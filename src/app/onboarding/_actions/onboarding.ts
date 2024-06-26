@@ -3,7 +3,10 @@
 import { syncItems } from '@/app/_actions/plaid';
 import db from '@/db/db';
 import { externalAccountId } from '@/lib/goalTransfers';
+import authOptions from '@/lib/nextAuthOptions';
+import { sendSlackMessage } from '@/lib/utils';
 import dayjs from 'dayjs';
+import { getServerSession } from 'next-auth';
 import { revalidatePath } from 'next/cache';
 import { onboardingSchema } from '../_schemas/onboarding';
 
@@ -154,6 +157,18 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
   });
 
   await syncItems(userId);
+
+  const session = await getServerSession(authOptions);
+  await sendSlackMessage(
+    session?.user?.email +
+      ' has completed onboarding with the goal ' +
+      onboardingProfileData.goalName +
+      ' for $' +
+      onboardingProfileData.goalAmount.toFixed(2) +
+      ' by ' +
+      onboardingProfileData.goalDueAt.locale() +
+      '.'
+  );
 
   revalidatePath('/');
   revalidatePath('/user');
