@@ -19,8 +19,7 @@ export default async function TransactionsPage() {
 
   return (
     <>
-      <ReviewLink unreadObj={unreadObj} />
-
+      <ReviewLink unreadObj={unreadObj} userId={session.user.id} />
       <TransactionList transactions={formattedTransactions} />
     </>
   );
