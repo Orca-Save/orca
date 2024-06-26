@@ -124,12 +124,14 @@ model UserProfile {
 }
 
 model PlaidItem {
-  id            String  @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
-  itemId        String  @unique
+  itemId        String    @unique
   institutionId String
-  accessToken   String  @unique
-  loginRequired Boolean @default(false)
+  accessToken   String    @unique
+  loginRequired Boolean   @default(false)
+  lastRefresh   DateTime? @db.Timestamptz()
+  lastSync      DateTime? @db.Timestamptz()
 
   cursor      String?
   createdAt   DateTime      @default(now()) @db.Timestamptz()
@@ -146,7 +148,6 @@ model Transaction {
   institutionId  String
   plaidItemId    String
   amount         Decimal   @db.Decimal(65, 2)
-  date           DateTime
   name           String
   paymentChannel String
   pending        Boolean
@@ -155,6 +156,11 @@ model Transaction {
   createdAt      DateTime  @default(now()) @db.Timestamptz()
   updatedAt      DateTime  @updatedAt @db.Timestamptz()
   deletedAt      DateTime? @db.Timestamptz()
+
+  date               DateTime
+  dateTime           DateTime? @db.Timestamptz()
+  authorizedDate     DateTime?
+  authorizedDateTime DateTime? @db.Timestamptz()
 
   isoCurrencyCode      String?
   pendingTransactionId String?

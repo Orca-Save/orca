@@ -407,11 +407,7 @@ export type PersonalFinanceCategory = {
   detailed: string;
   primary: string;
 };
-export async function getFormattedTransactions(
-  userId: string,
-  read?: boolean,
-  recurring?: boolean
-) {
+export async function getFormattedTransactions(userId: string, read?: boolean) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
       userId,
@@ -452,21 +448,23 @@ export async function getFormattedTransactions(
       const plaidCategory = personalFinanceCategory?.primary ?? '';
       const category =
         categories.find((cat) => cat.value === plaidCategory)?.label ?? '';
+
+      const date = transaction.authorizedDate ?? transaction.date;
       return {
         id: transaction.transactionId,
-        date: transaction.date,
+        date,
         read: transaction.read,
         personalFinanceCategory,
         impulse: transaction.impulse ?? false,
         recurring: transaction.recurring,
-        formattedDate: isToday(transaction.date)
+        formattedDate: isToday(date)
           ? 'TODAY'
           : format(transaction.date, 'EEE, MMMM dd').toUpperCase(),
-        friendlyDistanceDate: formatDistanceToNow(transaction.date, {
+        friendlyDistanceDate: formatDistanceToNow(date, {
           addSuffix: true,
         }),
         name: transaction.name,
-        friendlyRelativeDate: formatRelative(transaction.date, new Date()),
+        friendlyRelativeDate: formatRelative(date, new Date()),
         merchantName: transaction.merchantName ?? '',
         amount: parseFloat(transaction.amount.toFixed(2)),
         category,
@@ -578,14 +576,16 @@ export async function syncTransactions(plaidItem: PlaidItem) {
     },
     data: {
       cursor: allData.nextCursor,
+      lastSync: new Date(),
       updatedAt: new Date(),
     },
   });
 
   await Promise.all(
     combinedTransactions.map(async (transaction) => {
+      const date = transaction.authorized_date ?? transaction.date;
       const read =
-        new Date(transaction.date) < weekAgo ||
+        new Date(date) < weekAgo ||
         !discretionaryFilter({
           personalFinanceCategory: transaction.personal_finance_category,
           recurring: false,
@@ -596,11 +596,18 @@ export async function syncTransactions(plaidItem: PlaidItem) {
         update: {
           accountId: transaction.account_id,
           amount: transaction.amount,
-          date: new Date(transaction.date),
           name: transaction.name,
           isoCurrencyCode: transaction.iso_currency_code,
           paymentChannel: transaction.payment_channel,
           pending: transaction.pending,
+
+          authorizedDate: transaction.authorized_date
+            ? new Date(transaction.authorized_date)
+            : null,
+          date: new Date(transaction.date),
+          dateTime: transaction.datetime,
+          authorizedDateTime: transaction.authorized_datetime,
+
           pendingTransactionId: transaction.pending_transaction_id,
           merchantName: transaction.merchant_name,
           personalFinanceCategoryIcon:
@@ -621,7 +628,14 @@ export async function syncTransactions(plaidItem: PlaidItem) {
           plaidItemId: plaidItem.itemId,
           name: transaction.name,
           pending: transaction.pending,
+
+          authorizedDate: transaction.authorized_date
+            ? new Date(transaction.authorized_date)
+            : null,
           date: new Date(transaction.date),
+          dateTime: transaction.datetime,
+          authorizedDateTime: transaction.authorized_datetime,
+
           merchantName: transaction.merchant_name,
           paymentChannel: transaction.payment_channel,
           isoCurrencyCode: transaction.iso_currency_code,

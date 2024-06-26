@@ -15,7 +15,7 @@ export default async function TransactionsPage() {
   if (!session || !isExtendedSession(session)) redirect('/');
 
   const [formattedTransactions, completedCounts] = await Promise.all([
-    getFormattedTransactions(session.user.id, false, false),
+    getFormattedTransactions(session.user.id, false),
     completedUserGoalCount(session.user.id),
   ]);
 
