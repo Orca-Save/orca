@@ -62,6 +62,7 @@ const InstitutionCollapse = ({
               description={'Are you sure you want to remove this institution?'}
               okText='Yes'
               cancelText='No'
+              onConfirm={handleRemoveInstitution}
             >
               <Button
                 data-id='remove-institution-button'
@@ -69,7 +70,6 @@ const InstitutionCollapse = ({
                 disabled={!institution?.institution_id}
                 danger
                 icon={<DeleteOutlined />}
-                onClick={handleRemoveInstitution}
               >
                 Remove Institution
               </Button>
