@@ -27,7 +27,7 @@ export default function RefreshPlaidItems({
   const nextRefreshMessage = `No new transactions were found. Another refresh can be performed in 12 hours (${nextTime}).`;
   return (
     <>
-      <Tooltip title={nextRefreshMessage}>
+      <Tooltip title={disabled ? '' : nextRefreshMessage}>
         <Button
           size='large'
           loading={loading}
