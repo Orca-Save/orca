@@ -836,7 +836,8 @@ export async function markTransactionAsRead(
       },
     });
   }
-  if (impulse) revalidatePath('/');
+  revalidatePath('/');
+  revalidatePath('/log/transactions');
 }
 
 export async function removeAllPlaidItems(userId: string) {

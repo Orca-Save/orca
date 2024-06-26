@@ -30,6 +30,6 @@ export async function saveTransaction({
       rating,
     },
   });
-  revalidatePath('/log/log/transactions');
+  revalidatePath('/');
   revalidatePath('/log/transactions');
 }

@@ -12,22 +12,27 @@ export default function RefreshPlaidItems({
   height,
   nextRefreshTime,
   userId,
+  hasItems,
 }: {
   height: number;
+  hasItems: boolean;
   nextRefreshTime: Date | null;
   userId: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const disabled: any = nextRefreshTime && nextRefreshTime > new Date();
+  const disabled: any =
+    hasItems && nextRefreshTime && nextRefreshTime > new Date();
   const nextTime = nextRefreshTime
     ? format(nextRefreshTime, 'EEE, h:mm a').toUpperCase()
     : 'Unknown time';
   const nextRefreshMessage = `No new transactions were found. Another refresh can be performed in 12 hours (${nextTime}).`;
   return (
     <>
-      <Tooltip title={disabled ? '' : nextRefreshMessage}>
+      <Tooltip
+        title={!hasItems || nextRefreshTime === null ? '' : nextRefreshMessage}
+      >
         <Button
           size='large'
           loading={loading}
