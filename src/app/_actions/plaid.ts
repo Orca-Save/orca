@@ -615,8 +615,6 @@ export async function syncTransactions(plaidItem: PlaidItem) {
           personalFinanceCategoryIcon:
             transaction.personal_finance_category_icon_url,
           location: transaction.location as unknown as Prisma.InputJsonObject,
-          personalFinanceCategory:
-            transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
           paymentMeta:
             transaction.payment_meta as unknown as Prisma.InputJsonObject,
         },

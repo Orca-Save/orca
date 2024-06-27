@@ -1,8 +1,6 @@
 FROM node:20-alpine
 
 RUN apk add --no-cache postgresql-client
-# RUN apk add --no-cache openssh
-COPY sshd_config /etc/ssh/
 
 WORKDIR /usr/src/app
 
@@ -11,12 +9,14 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-
-RUN if [ -s .env ]; then echo ".env file created and it has contents:" && cat .env; else echo ".env file is missing or empty"; fi
+COPY .env.production .env.production
 
 RUN npx prisma generate
 RUN npm run build
 
-EXPOSE 8080 2222
+RUN rm .env.*
+RUN rm .env
+
+EXPOSE 8080
 
 CMD ["npm", "start"] 

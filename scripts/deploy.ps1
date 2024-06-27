@@ -7,10 +7,10 @@ docker login
 $dockerHubRepository = "reharly20/orca"
 $dockerTag = "latest"
 
-$dockerfile = "Dockerfile.dev"
+$dockerfile = "Dockerfile"
 if ($dev) {
     $dockerfile = "Dockerfile.dev"
-    # $dockerTag = "dev"
+    $dockerTag = "staging"
 }
 
 if ($LASTEXITCODE -ne 0) {
@@ -20,7 +20,7 @@ if ($LASTEXITCODE -ne 0) {
 
 $startTime = Get-Date
 
-Write-Host "Building Docker image using $dockerfile..."
+Write-Host "Building Docker image using $dockerfile... $dockerHubRepository : $dockerTag"
 docker build -f $dockerfile -t "${dockerHubRepository}:$dockerTag" .
 
 if ($LASTEXITCODE -ne 0) {
