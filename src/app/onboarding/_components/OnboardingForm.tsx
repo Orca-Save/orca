@@ -457,7 +457,7 @@ function initialPageState(
   if (onboardingProfile) {
     if (onboardingProfile.goalName) tabKey = '2';
     if (onboardingProfile.saving) tabKey = '3';
-    if (userProfile?.privacyPolicyAccepted) tabKey = '3';
+    if (userProfile?.privacyPolicyAccepted) tabKey = '4';
     if (userProfile?.stripeSubscriptionId) tabKey = '3';
   }
   return {

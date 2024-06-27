@@ -459,7 +459,7 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
         recurring: transaction.recurring,
         formattedDate: isToday(date)
           ? 'TODAY'
-          : format(transaction.date, 'EEE, MMMM dd').toUpperCase(),
+          : format(date, 'EEE, MMMM dd').toUpperCase(),
         friendlyDistanceDate: formatDistanceToNow(date, {
           addSuffix: true,
         }),
@@ -479,10 +479,12 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
 }
 
 function sortTransactionDateDesc(a: PrismaTransaction, b: PrismaTransaction) {
-  if (a.date < b.date) {
+  const aDate = a.authorizedDate ?? a.date;
+  const bDate = b.authorizedDate ?? b.date;
+  if (aDate < bDate) {
     return 1;
   }
-  if (a.date > b.date) {
+  if (aDate > bDate) {
     return -1;
   }
   return 0;

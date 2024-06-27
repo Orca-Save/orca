@@ -158,17 +158,19 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
 
   await syncItems(userId);
 
-  const session = await getServerSession(authOptions);
-  await sendSlackMessage(
-    session?.user?.email +
-      ' has completed onboarding with the goal ' +
-      onboardingProfileData.goalName +
-      ' for $' +
-      onboardingProfileData.goalAmount.toFixed(2) +
-      ' by ' +
-      onboardingProfileData.goalDueAt.locale() +
-      '.'
-  );
+  if (process.env.NODE_ENV === 'production') {
+    const session = await getServerSession(authOptions);
+    await sendSlackMessage(
+      session?.user?.email +
+        ' has completed onboarding with the goal ' +
+        onboardingProfileData.goalName +
+        ' for $' +
+        onboardingProfileData.goalAmount.toFixed(2) +
+        ' by ' +
+        onboardingProfileData.goalDueAt.locale() +
+        '.'
+    );
+  }
 
   revalidatePath('/');
   revalidatePath('/user');

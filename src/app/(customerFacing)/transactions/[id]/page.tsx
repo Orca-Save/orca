@@ -31,20 +31,18 @@ export default async function TransactionPage({
     where: { id: transaction.accountId },
   });
   const amount = transaction.amount.toNumber();
+  const date = transaction.authorizedDate ?? transaction.date;
   return (
     <>
       <Title level={3}>Edit Transaction</Title>
 
-      <Flex justify='center'>
-        <Space direction='vertical' className='w-full'>
-          <Text strong>Transaction Name</Text>
-          <Text
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {transaction?.name ? transaction.name : 'Unknown'}
-          </Text>
+      <Flex
+        justify='center'
+        style={{
+          marginBottom: '2rem',
+        }}
+      >
+        <Space direction='vertical' className='w-1/2'>
           <Text strong>Merchant Name</Text>
           <Text>
             {transaction.merchantName ?? transaction.merchantName ?? 'Unknown'}
@@ -53,20 +51,16 @@ export default async function TransactionPage({
           <Text type={amount < 0 ? 'success' : undefined}>
             {currencyFormatter(amount, undefined, true)}
           </Text>
+          <Text strong>Transaction Name</Text>
+          <Text>{transaction?.name ? transaction.name : 'Unknown'}</Text>
         </Space>
-        <Space direction='vertical' className='w-full'>
-          <Text strong>Account Name</Text>
-          <Text
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {` (${account?.name} ${account?.mask})`}
-          </Text>
+        <Space direction='vertical' className='w-1/2'>
           <Text strong>Authorized Date</Text>
-          <Text>{format(transaction.date, 'EEE, MMMM dd')}</Text>
+          <Text>{format(date, 'EEE, MMMM dd')}</Text>
           <Text strong>Recurring</Text>
           <Text>{transaction.recurring ? 'Yes' : 'No'}</Text>
+          <Text strong>Account Name</Text>
+          <Text>{` (${account?.name} ${account?.mask})`}</Text>
         </Space>
       </Flex>
       <TransactionForm transaction={transaction} />
