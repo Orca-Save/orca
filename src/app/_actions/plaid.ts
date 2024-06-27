@@ -6,6 +6,7 @@ import {
   discretionaryFilter,
   plaidCategories,
 } from '@/lib/plaid';
+import { delay } from '@/lib/utils';
 import {
   Account,
   PlaidItem,
@@ -683,53 +684,17 @@ export async function refreshUserItems(userId: string) {
   if (!plaidItems) {
     throw new Error('Plaid item not found');
   }
-  let allItemsData: {
-    added: Transaction[];
-    modified: Transaction[];
-    removed: RemovedTransaction[];
-    nextCursor: string | null;
-  }[] = [];
+
   try {
     await Promise.all(plaidItems.map((plaidItem) => refreshItem(plaidItem)));
-    allItemsData = await Promise.all(
-      plaidItems.map((plaidItem) => syncTransactions(plaidItem))
-    );
-    await getRecurringTransactions(userId);
   } catch (e) {
     console.error('Error refreshing items. Could be login required.');
     console.error(e);
   }
 
-  await Promise.all(
-    plaidItems.map((plaidItem, index) => {
-      const itemData = allItemsData[index];
-      return db.plaidItem.update({
-        where: {
-          accessToken: plaidItem.accessToken,
-        },
-        data: {
-          cursor: itemData.nextCursor,
-          lastSync: new Date(),
-          lastRefresh: new Date(),
-          updatedAt: new Date(),
-        },
-      });
-    })
-  );
-
-  // check if there were any changes from the sync
-  const changes = allItemsData.some(
-    (data) =>
-      data.added.length > 0 ||
-      data.modified.length > 0 ||
-      data.removed.length > 0
-  );
   revalidatePath('/');
   revalidatePath('/log/transactions');
   revalidatePath('/review');
-  return {
-    changes,
-  };
 }
 
 export async function getNextRefreshTime(userId: string) {
@@ -767,9 +732,28 @@ export async function getNextRefreshTime(userId: string) {
 }
 
 async function refreshItem(plaidItem: PlaidItem) {
+  // check if last refresh happened more than 12 hours ago
+  if (plaidItem.lastRefresh && plaidItem.lastRefresh < new Date()) {
+    await delay(800);
+    return;
+  }
   const response = await plaidClient.transactionsRefresh({
     access_token: plaidItem.accessToken,
   });
+
+  await db.plaidItem.update({
+    where: {
+      accessToken: plaidItem.accessToken,
+    },
+    data: {
+      lastSync: new Date(),
+      lastRefresh: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  // delay 15 seconds to allow Plaid to process the refresh
+  await delay(15000);
 
   return response.data.request_id;
 }

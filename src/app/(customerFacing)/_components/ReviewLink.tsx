@@ -1,4 +1,3 @@
-import { getNextRefreshTime, getUserItems } from '@/app/_actions/plaid';
 import { HappyProvider } from '@/components/HappyProvider';
 import { UnreadCountObject } from '@/lib/plaid';
 import { Badge, Button, ConfigProvider, Flex } from 'antd';
@@ -12,11 +11,6 @@ export default async function ReviewLink({
   unreadObj: UnreadCountObject;
   userId: string;
 }) {
-  const [nextRefreshTime, userItems] = await Promise.all([
-    getNextRefreshTime(userId),
-    getUserItems(userId),
-  ]);
-  const hasItems = userItems.length > 0;
   return (
     <Flex
       justify='center'
@@ -26,12 +20,7 @@ export default async function ReviewLink({
         width: '100%',
       }}
     >
-      <RefreshPlaidItems
-        userId={userId}
-        height={90}
-        hasItems={hasItems}
-        nextRefreshTime={nextRefreshTime}
-      />
+      <RefreshPlaidItems userId={userId} height={90} />
       <Link href='/review' className='w-full'>
         <HappyProvider>
           <Button
