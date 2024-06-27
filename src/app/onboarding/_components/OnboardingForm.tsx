@@ -432,7 +432,9 @@ export default function OnboardingForm({
                       setLoading(false);
 
                       if (isFieldErrors(result)) {
+                        console.log('field errors', result);
                         applyFormErrors(form, result);
+                        setPageState({ tabKey: '1' });
                       } else if (nextTab <= 4)
                         setPageState({ tabKey: nextTab.toString() });
                     }}

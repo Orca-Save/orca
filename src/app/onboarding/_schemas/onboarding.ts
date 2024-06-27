@@ -7,10 +7,16 @@ export const onboardingSchema = z.object({
   goalAmount: z.coerce.number().min(0),
   goalDueAt: zodDay,
 
+  imagePath: z
+    .string()
+    .nullable()
+    .optional()
+    .refine((value) => value !== null && value !== undefined, {
+      message: 'Search for an image to visualize your goal!',
+    }),
   id: z.string().optional(),
   privacyAgreement: z.boolean().optional(),
   saving: z.string().min(1).nullable().optional(),
-  imagePath: z.string().optional(),
   savingAmount: z.coerce.number().min(0).optional(),
   initialAmount: z.coerce.number().min(0).optional(),
 });
