@@ -101,12 +101,12 @@ model GoalTransfer {
   merchantName  String?
   rating        Int?
   plaidCategory String?
+  transactionId String?
 
-  categoryId String?
-  goalId     String?
-  category   GoalCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  goal       Goal?         @relation(fields: [goalId], references: [id], onDelete: Restrict)
-
+  categoryId               String?
+  goalId                   String?
+  category                 GoalCategory?       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  goal                     Goal?               @relation(fields: [goalId], references: [id], onDelete: Restrict)
   savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
   initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
 }

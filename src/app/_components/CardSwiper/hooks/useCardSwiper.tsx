@@ -13,14 +13,17 @@ import { Swiper } from '../utils/swiper';
 
 interface UseCardSwiper extends CardEvents {
   data: CardData[];
+  disableSwipe?: boolean;
 }
 
 export const useCardSwiper = ({
+  disableSwipe,
   onDismiss,
   onFinish,
   onEnter,
   data,
 }: UseCardSwiper) => {
+  console.log('disableSwipe:321 ', disableSwipe);
   const swiperElements = useRef<Swiper[]>([]);
   const [swiperIndex, setSwiperIndex] = useState(data.length);
   const [dynamicData, setDynamicData] = useState(data);
@@ -38,6 +41,7 @@ export const useCardSwiper = ({
         meta,
         onDismiss: handleDismiss,
       });
+      currentSwiper.setDisableSwipe(disableSwipe);
       swiperElements.current.push(currentSwiper);
     }
   };
@@ -64,6 +68,13 @@ export const useCardSwiper = ({
       swiper?.dismissById(direction);
     }
   };
+
+  useEffect(() => {
+    if (swiperIndex) {
+      const currentSwiper = swiperElements.current[swiperIndex - 1];
+      currentSwiper?.setDisableSwipe(disableSwipe);
+    }
+  }, [disableSwipe]);
 
   useEffect(() => {
     if (!swiperIndex) {

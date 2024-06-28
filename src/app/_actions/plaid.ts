@@ -464,7 +464,7 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
         friendlyDistanceDate: formatDistanceToNow(date, {
           addSuffix: true,
         }),
-        name: transaction.name,
+        name: transaction.merchantName ?? transaction.name,
         friendlyRelativeDate: formatRelative(date, new Date()),
         merchantName: transaction.merchantName ?? '',
         amount: parseFloat(transaction.amount.toFixed(2)),
@@ -789,6 +789,21 @@ export async function markAllTransactionsAsRead(userId: string, read = true) {
     },
   });
   revalidatePath('/review');
+  revalidatePath('/log/transactions');
+}
+
+export async function markTransactionAsUnread(id: string) {
+  await db.transaction.update({
+    where: { transactionId: id },
+    data: { read: false, rating: null, impulse: false },
+  });
+  await db.goalTransfer.deleteMany({
+    where: {
+      transactionId: id,
+    },
+  });
+
+  revalidatePath('/');
   revalidatePath('/log/transactions');
 }
 

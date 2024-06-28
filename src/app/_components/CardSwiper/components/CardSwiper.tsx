@@ -21,6 +21,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     withActionButtons = false,
     emptyState,
     onDismiss,
+    disableSwipe,
     onFinish,
     onEnter,
   } = props;
@@ -33,6 +34,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     swiperIndex,
     swiperElements,
   } = useCardSwiper({
+    disableSwipe,
     onDismiss,
     onFinish,
     onEnter,

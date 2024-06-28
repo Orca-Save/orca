@@ -28,8 +28,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
   FormattedTransaction,
-  markAllTransactionsAsRead,
   markTransactionAsRead,
+  markTransactionAsUnread,
   syncItems,
 } from '../../../_actions/plaid';
 import ConfettiComp from '../../_components/Confetti';
@@ -75,32 +75,51 @@ const customIcons: Record<number, React.ReactNode> = {
   ),
 };
 
+type SwipeState = {
+  transactions: FormattedTransaction[];
+  reviewHistory: FormattedTransaction[];
+  isModalOpen: boolean;
+  swiperKey: string;
+  isEmptyModalOpen: boolean;
+  selectedTransactionId: string;
+};
+
 export default function UnreadTransactionsSwiper({
   formattedTransactions,
   userId,
 }: UnreadTransactionsSwiperProps) {
+  console.log('initialTransactions');
   const initialTransactions = formattedTransactions;
-  const [transactions, setTransactions] = useState(initialTransactions);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [swiperKey, setSwiperKey] = useState('swiper-key');
-  const [isEmptyModalOpen, setIsEmptyModalOpen] = useState(false);
+
+  const [swipeState, setSwipeState] = useState<SwipeState>({
+    transactions: [...initialTransactions],
+    reviewHistory: [],
+    isModalOpen: false,
+    swiperKey: 'swiper-key',
+    isEmptyModalOpen: false,
+    selectedTransactionId: '',
+  });
+
   const [rating, setRating] = useState(5);
+
   const router = useRouter();
-  const [selectedTransactionId, setSelectedTransactionId] =
-    useState<string>('');
   const rateImpulseBuy = async (value: number) => {
     setRating(value);
-    await markTransactionAsRead(selectedTransactionId, true, value);
-    setTransactions((prev) =>
-      prev.filter((transaction) => transaction.id !== selectedTransactionId)
-    );
-    setSelectedTransactionId('');
-    setIsModalOpen(false);
+    await markTransactionAsRead(swipeState.selectedTransactionId, true, value);
+    setSwipeState((prev) => ({
+      ...prev,
+      transactions: prev.transactions.filter(
+        (transaction) => transaction.id !== swipeState.selectedTransactionId
+      ),
+      selectedTransactionId: '',
+      isModalOpen: false,
+      isEmptyModalOpen: prev.transactions.length === 1,
+    }));
     setRating(5);
   };
 
   const key = useRatingInput((rating) => {
-    if (!isModalOpen) return;
+    if (!swipeState.isModalOpen) return;
     rateImpulseBuy(rating);
   });
 
@@ -113,82 +132,102 @@ export default function UnreadTransactionsSwiper({
   ) => {
     await swipeOperation(id, action);
   };
+  console.log('transactions', swipeState.transactions);
   async function swipeOperation(id: CardId, action: SwipeAction) {
-    const transaction = transactions.find((x) => x.id === id)!;
+    const transaction = swipeState.transactions.find((x) => x.id === id)!;
     const isDislike = action === SwipeAction.DISLIKE;
     if (isDislike && transaction.amount > 0) {
-      setSelectedTransactionId(id as string);
-      setIsModalOpen(true);
+      setSwipeState((prev) => ({
+        ...prev,
+        isModalOpen: true,
+        selectedTransactionId: id as string,
+      }));
       return;
     }
     await markTransactionAsRead(id as string, isDislike);
-    setTransactions((prev) =>
-      prev.filter((transaction) => transaction.id !== id)
-    );
+    setSwipeState((prev) => ({
+      ...prev,
+      reviewHistory: prev.reviewHistory.concat([transaction]),
+      transactions: prev.transactions.filter(
+        (transaction) => transaction.id !== id
+      ),
+    }));
   }
 
-  const transactionCards: CardData[] = transactions.map((transaction) => {
-    return {
-      id: transaction.id,
-      src: '',
-      meta: {},
-      content: (
-        <Flex
-          justify='center'
-          align='center'
-          className='w-full'
-          style={{
-            height: 140,
-            backgroundColor:
-              transaction.amount < 0 ? lightGreenThemeColor : undefined,
-          }}
-          vertical
-        >
-          <Text>{transaction?.formattedDate}</Text>
-          <Text
-            strong
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {transaction.name ? transaction.name : 'Unknown'}
-          </Text>
-          <Text
-            type='secondary'
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {` (${transaction.accountName} ${transaction.accountMask})`}
-          </Text>
-          <Text
-            strong
-            type={transaction.amount < 0 ? 'success' : undefined}
+  const transactionCards: CardData[] = swipeState.transactions.map(
+    (transaction) => {
+      const transactionName =
+        transaction.merchantName ?? transaction.name ?? 'Unknown';
+      return {
+        id: transaction.id,
+        src: '',
+        meta: {},
+        content: (
+          <Flex
+            justify='center'
+            align='center'
+            className='w-full'
             style={{
-              marginRight: '0.3rem',
+              height: 140,
+              backgroundColor:
+                transaction.amount < 0 ? lightGreenThemeColor : undefined,
             }}
+            vertical
           >
-            {currencyFormatter(transaction.amount, undefined, true)}
-          </Text>
-        </Flex>
-      ),
-    };
-  });
-  const config = liquidConfig(transactions.length, initialTransactions.length);
-  const transaction = transactions.find((x) => x.id === selectedTransactionId);
+            <Text>{transaction?.formattedDate}</Text>
+            <Text
+              strong
+              ellipsis={{
+                tooltip: true,
+              }}
+            >
+              {transactionName}
+            </Text>
+            <Text
+              type='secondary'
+              ellipsis={{
+                tooltip: true,
+              }}
+            >
+              {transaction?.category ?? 'Unknown'}
+            </Text>
+            <Text
+              strong
+              type={transaction.amount < 0 ? 'success' : undefined}
+              style={{
+                marginRight: '0.3rem',
+              }}
+            >
+              {currencyFormatter(transaction.amount, undefined, true)}
+            </Text>
+          </Flex>
+        ),
+      };
+    }
+  );
+  const config = liquidConfig(
+    swipeState.transactions.length,
+    initialTransactions.length
+  );
+  const transaction = swipeState.transactions.find(
+    (x) => x.id === swipeState.selectedTransactionId
+  );
+  const transactionName =
+    transaction?.merchantName ?? transaction?.name ?? 'Unknown';
+
   return (
     <div className='w-full'>
       <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 800 }}>
         <ConfettiComp
           count={20}
-          run={isEmptyModalOpen}
+          run={swipeState.isEmptyModalOpen}
           redirect={false}
           path='/'
         />
       </div>
       <Modal
         centered
-        open={isEmptyModalOpen}
+        open={swipeState.isEmptyModalOpen}
         zIndex={500}
         footer={
           <>
@@ -197,9 +236,19 @@ export default function UnreadTransactionsSwiper({
             </Link>
           </>
         }
-        onCancel={() => setIsEmptyModalOpen(false)}
+        onCancel={() =>
+          setSwipeState((prev) => ({
+            ...prev,
+            isEmptyModalOpen: false,
+          }))
+        }
         title={<Text>All Transactions Reviewed!</Text>}
-        onOk={() => setIsEmptyModalOpen(false)}
+        onOk={() =>
+          setSwipeState((prev) => ({
+            ...prev,
+            isEmptyModalOpen: false,
+          }))
+        }
         okText='Return Home'
       >
         <Flex justify='center' align='center'>
@@ -212,11 +261,15 @@ export default function UnreadTransactionsSwiper({
       </Modal>
       <Modal
         centered
-        open={isModalOpen}
+        open={swipeState.isModalOpen}
         footer={null}
         onCancel={() => {
-          setSwiperKey('swiper-key-' + Math.random());
-          setIsModalOpen(false);
+          setSwipeState((prev) => ({
+            ...prev,
+            swiperKey: 'swiper-key-' + Math.random(),
+            isModalOpen: false,
+            selectedTransactionId: '',
+          }));
         }}
         title={
           <Flex justify='center'>
@@ -244,7 +297,7 @@ export default function UnreadTransactionsSwiper({
               tooltip: true,
             }}
           >
-            {transaction?.name ? transaction.name : 'Unknown'}
+            {transactionName}
           </Text>
           <Text
             type='secondary'
@@ -252,7 +305,7 @@ export default function UnreadTransactionsSwiper({
               tooltip: true,
             }}
           >
-            {` (${transaction?.accountName} ${transaction?.accountMask})`}
+            {transaction?.category ?? 'Unknown'}
           </Text>
           <Flex justify='center'>
             <Text className='ml-4'>
@@ -285,7 +338,7 @@ export default function UnreadTransactionsSwiper({
           <Flex justify='center'>
             <Rate
               value={rating}
-              key={selectedTransactionId}
+              key={swipeState.selectedTransactionId}
               allowClear={false}
               character={({ index = 0 }) => customIcons[index + 1]}
               style={{ marginTop: 8 }}
@@ -324,11 +377,12 @@ export default function UnreadTransactionsSwiper({
           className='flex justify-center mx-auto w-full md:w-4/5 lg:w-3/5'
         >
           <CardSwiper
-            key={swiperKey}
+            key={swipeState.swiperKey}
+            disableSwipe={!!swipeState.selectedTransactionId}
             data={transactionCards}
             onDismiss={handleDismiss}
             dislikeButton={<div>Impulse Buy (A)</div>}
-            likeButton={<div>Reviewed (D)</div>}
+            likeButton={<div>Non-Impulse Buy (D)</div>}
             withRibbons
             withActionButtons
             likeRibbonText='Reviewed'
@@ -338,7 +392,14 @@ export default function UnreadTransactionsSwiper({
               bgDislike: 'red',
               textColor: 'white',
             }}
-            onFinish={() => setIsEmptyModalOpen(true)}
+            onFinish={() => {
+              if (swipeState.transactions.length === 0) {
+                setSwipeState((prev) => ({
+                  ...prev,
+                  isEmptyModalOpen: true,
+                }));
+              }
+            }}
             emptyState={
               <Text>No more transactions! You&apos;re all caught up! 🎉</Text>
             }
@@ -348,12 +409,25 @@ export default function UnreadTransactionsSwiper({
           <Button
             data-id='sync-transactions-button'
             size='large'
+            disabled={swipeState.reviewHistory.length === 0}
             onClick={async () => {
-              await markAllTransactionsAsRead(userId);
-              router.push('/');
+              const transaction = swipeState.reviewHistory.at(-1);
+              if (!transaction) return;
+              await markTransactionAsUnread(transaction.id);
+              console.log(
+                swipeState.transactions.concat(
+                  initialTransactions.filter((x) => x.id === transaction.id)
+                )
+              );
+              setSwipeState((prev) => ({
+                ...prev,
+                transactions: prev.transactions.concat([transaction]),
+                reviewHistory: prev.reviewHistory.slice(0, -1),
+                swiperKey: 'swiper-key-' + Math.random(),
+              }));
             }}
           >
-            All Reviewed
+            Undo
           </Button>
         </Flex>
       </Flex>

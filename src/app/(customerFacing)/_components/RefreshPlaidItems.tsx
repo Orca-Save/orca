@@ -17,7 +17,7 @@ export default function RefreshPlaidItems({
   const router = useRouter();
   return (
     <Button
-      id='refresh-plaid-items'
+      data-id='refresh-plaid-items'
       size='large'
       loading={loading}
       icon={<SyncOutlined />}
