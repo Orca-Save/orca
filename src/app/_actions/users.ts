@@ -31,6 +31,15 @@ export async function setGoalTransferPinned(goalId: string, pinned: boolean) {
   return goalTransfer;
 }
 
+export async function getPinnedUserGoal(userId: string) {
+  return db.goal.findFirst({
+    where: {
+      userId,
+      pinned: true,
+    },
+  });
+}
+
 export const completedUserGoalCount = async (userId: string) => {
   // get all the goals for the user
   const goals = await db.goal.findMany({

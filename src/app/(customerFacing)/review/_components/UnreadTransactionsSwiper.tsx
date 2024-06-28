@@ -40,6 +40,7 @@ const { Meta } = Card;
 type UnreadTransactionsSwiperProps = {
   formattedTransactions: FormattedTransaction[];
   userId: string;
+  focusGoalImgURL: string;
 };
 
 const customIcons: Record<number, React.ReactNode> = {
@@ -87,6 +88,7 @@ type SwipeState = {
 export default function UnreadTransactionsSwiper({
   formattedTransactions,
   userId,
+  focusGoalImgURL,
 }: UnreadTransactionsSwiperProps) {
   console.log('initialTransactions');
   const initialTransactions = formattedTransactions;
@@ -253,9 +255,9 @@ export default function UnreadTransactionsSwiper({
       >
         <Flex justify='center' align='center'>
           <img
-            alt='awe-inspiring photo of a waterfall in the forest'
-            style={{ width: '100%', height: 'auto' }}
-            src='https://orcasavestorage.blob.core.windows.net/images/pexels-mikhail-nilov-6942667.jpg'
+            style={{ maxHeight: '75vh', maxWidth: '95vw' }}
+            alt='focus-goal-image'
+            src={focusGoalImgURL}
           />
         </Flex>
       </Modal>
