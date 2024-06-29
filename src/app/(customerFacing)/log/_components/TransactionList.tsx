@@ -10,6 +10,7 @@ import {
   ConfigProvider,
   Flex,
   List,
+  Menu,
   Row,
   Space,
   Switch,
@@ -68,77 +69,116 @@ export default function TransactionList({
           <List.Item>
             <Space direction='vertical' className='w-full'>
               <Text type='secondary'>{formattedDate}</Text>
-              <List
-                dataSource={transactions}
-                renderItem={(transaction) => (
-                  <List.Item
+              <Menu
+                selectedKeys={transactions
+                  .filter((x) => x.read === false)
+                  .map((x) => x.id)}
+              >
+                {transactions.map((transaction) => (
+                  <Menu.Item
                     onClick={() =>
                       router.push(`/transactions/${transaction.id}`)
                     }
                     key={transaction.id}
-                    className='hover:bg-gray-200 hover:shadow-lg cursor-pointer transition-colors duration-300'
                   >
-                    <Row className='w-full mx-2'>
-                      <Col span={8}>
-                        <Text
-                          strong
-                          ellipsis={{
-                            tooltip: true,
-                          }}
-                        >
-                          {transaction.name ? transaction.name : 'Unknown'}
-                        </Text>
+                    <Row className='w-full h-full'>
+                      <Col span={9} className='h-full w-full'>
+                        <Flex align='center' className='h-full w-full'>
+                          <Text
+                            strong
+                            ellipsis={{
+                              tooltip: true,
+                            }}
+                          >
+                            {transaction.name ? transaction.name : 'Unknown'}
+                          </Text>
+                        </Flex>
                       </Col>
-                      <Col span={8}>
-                        <Text
-                          type='secondary'
-                          ellipsis={{
-                            tooltip: true,
-                          }}
-                        >
-                          {` (${transaction.accountName} ${transaction.accountMask})`}
-                        </Text>
-                      </Col>
-                      <Col span={1}>
-                        {transaction.impulse ? (
-                          <div
+                      <Col span={7} className='h-full w-full'>
+                        <Flex align='center' className='h-full w-full'>
+                          <Text
+                            ellipsis={{
+                              tooltip: true,
+                            }}
+                            // color='orange'
                             style={{
-                              border: '1px solid rgba(154,0,207, 0.6)',
+                              // border: '1px solid rgba(251,188,5, 0.2)',
                               borderRadius: '0.25rem',
-                              backgroundColor: 'rgba(154,0,207, 0.2)',
-                              color: 'rgba(154,0,207, 0.6)',
-                              width: '1rem',
+                              backgroundColor: 'rgba(251,188,5, 0.2)',
+                              padding: '0 0.25rem',
+                              color: 'rgba(251,188,5)',
                               textAlign: 'center',
                             }}
                           >
-                            I
-                          </div>
-                        ) : null}
+                            {transaction.category}
+                          </Text>
+                          {/* <Tag
+                            // color={color} key={category}
+                            color='orange'
+                          >
+                            {transaction.category}
+                          </Tag> */}
+                        </Flex>
                       </Col>
-                      <Col span={6} className='text-right w-full'>
-                        <Text
-                          strong
-                          style={{
-                            marginRight: '0.3rem',
-                          }}
-                          type={transaction.amount < 0 ? 'success' : undefined}
+                      <Col span={1} className='h-full w-full'>
+                        {transaction.impulse ? (
+                          <Flex align='center' className='h-full w-full'>
+                            <Text
+                              style={{
+                                // border: '1px solid rgba(154,0,207, 0.6)',
+                                borderRadius: '5rem',
+                                backgroundColor: 'rgba(154,0,207, 0.2)',
+                                // fontSize: 13,
+                                color: 'rgba(154,0,207, 0.6)',
+                                width: '100%',
+                                textAlign: 'center',
+                              }}
+                            >
+                              I
+                            </Text>
+                          </Flex>
+                        ) : (
+                          <div className='h-full w-full' />
+                        )}
+                      </Col>
+                      <Col span={6} className='text-right h-full w-full'>
+                        <Flex
+                          align='center'
+                          justify='right'
+                          className='h-full w-full'
                         >
-                          {currencyFormatter(
-                            transaction.amount,
-                            undefined,
-                            true
-                          )}
-                        </Text>
+                          <Text
+                            strong
+                            style={{
+                              marginRight: '0.3rem',
+                            }}
+                            type={
+                              transaction.amount < 0 ? 'success' : undefined
+                            }
+                          >
+                            {currencyFormatter(
+                              transaction.amount,
+                              undefined,
+                              true
+                            )}
+                          </Text>
+                        </Flex>
                       </Col>
-                      <Col span={1}>
+                      <Col span={1} className='h-full w-full'>
                         {transaction.read === false ? (
-                          <Badge status='processing' />
+                          <Flex
+                            align='center'
+                            justify='right'
+                            className='h-full w-full'
+                          >
+                            <Badge status='processing' />
+                          </Flex>
                         ) : null}
                       </Col>
                     </Row>
-                  </List.Item>
-                )}
-              />
+                  </Menu.Item>
+                ))}
+              </Menu>
             </Space>
           </List.Item>
         )}
