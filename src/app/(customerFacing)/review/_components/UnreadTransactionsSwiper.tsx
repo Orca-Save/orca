@@ -81,7 +81,7 @@ type SwipeState = {
   reviewHistory: FormattedTransaction[];
   isModalOpen: boolean;
   swiperKey: string;
-  isEmptyModalOpen: boolean;
+  isEmpty: boolean;
   selectedTransactionId: string;
 };
 
@@ -98,7 +98,7 @@ export default function UnreadTransactionsSwiper({
     reviewHistory: [],
     isModalOpen: false,
     swiperKey: 'swiper-key',
-    isEmptyModalOpen: false,
+    isEmpty: initialTransactions.length === 0,
     selectedTransactionId: '',
   });
 
@@ -115,7 +115,7 @@ export default function UnreadTransactionsSwiper({
       ),
       selectedTransactionId: '',
       isModalOpen: false,
-      isEmptyModalOpen: prev.transactions.length === 1,
+      isEmpty: prev.transactions.length === 1,
     }));
     setRating(5);
   };
@@ -134,7 +134,6 @@ export default function UnreadTransactionsSwiper({
   ) => {
     await swipeOperation(id, action);
   };
-  console.log('transactions', swipeState.transactions);
   async function swipeOperation(id: CardId, action: SwipeAction) {
     const transaction = swipeState.transactions.find((x) => x.id === id)!;
     const isDislike = action === SwipeAction.DISLIKE;
@@ -158,8 +157,7 @@ export default function UnreadTransactionsSwiper({
 
   const transactionCards: CardData[] = swipeState.transactions.map(
     (transaction) => {
-      const transactionName =
-        transaction.merchantName ?? transaction.name ?? 'Unknown';
+      const transactionName = transaction.name ?? 'Unknown';
       return {
         id: transaction.id,
         src: '',
@@ -170,29 +168,17 @@ export default function UnreadTransactionsSwiper({
             align='center'
             className='w-full'
             style={{
-              height: 140,
+              height: 200,
               backgroundColor:
                 transaction.amount < 0 ? lightGreenThemeColor : undefined,
             }}
             vertical
           >
             <Text>{transaction?.formattedDate}</Text>
-            <Text
-              strong
-              ellipsis={{
-                tooltip: true,
-              }}
-            >
-              {transactionName}
-            </Text>
-            <Text
-              type='secondary'
-              ellipsis={{
-                tooltip: true,
-              }}
-            >
+            <Text strong>{transactionName}</Text>
+            <Button shape='round' size='small' type='text'>
               {transaction?.category ?? 'Unknown'}
-            </Text>
+            </Button>
             <Text
               strong
               type={transaction.amount < 0 ? 'success' : undefined}
@@ -222,45 +208,11 @@ export default function UnreadTransactionsSwiper({
       <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 800 }}>
         <ConfettiComp
           count={20}
-          run={swipeState.isEmptyModalOpen}
+          run={swipeState.isEmpty}
           redirect={false}
           path='/'
         />
       </div>
-      <Modal
-        centered
-        open={swipeState.isEmptyModalOpen}
-        zIndex={500}
-        footer={
-          <>
-            <Link href='/'>
-              <Button type='primary'>Return Home</Button>
-            </Link>
-          </>
-        }
-        onCancel={() =>
-          setSwipeState((prev) => ({
-            ...prev,
-            isEmptyModalOpen: false,
-          }))
-        }
-        title={<Text>All Transactions Reviewed!</Text>}
-        onOk={() =>
-          setSwipeState((prev) => ({
-            ...prev,
-            isEmptyModalOpen: false,
-          }))
-        }
-        okText='Return Home'
-      >
-        <Flex justify='center' align='center'>
-          <img
-            style={{ maxHeight: '75vh', maxWidth: '95vw' }}
-            alt='focus-goal-image'
-            src={focusGoalImgURL}
-          />
-        </Flex>
-      </Modal>
       <Modal
         centered
         open={swipeState.isModalOpen}
@@ -361,21 +313,27 @@ export default function UnreadTransactionsSwiper({
         </div>
       )}
 
-      <div className='flex justify-center'>
-        <Title level={5}>Transactions Left</Title>
-      </div>
-      <div style={{ height: config.height }}>
-        <Liquid {...config} />
-      </div>
-      <div className='flex justify-center text-center'>
-        <Text>
-          <strong>Swipe Left</strong> for Impulse Buys, or
-          <strong> Swipe Right</strong> for Reviewed
-        </Text>
-      </div>
+      {swipeState.transactions.length > 0 && (
+        <>
+          <div className='flex justify-center text-center'>
+            <Title className='text-center' level={5}>
+              Transactions Left
+            </Title>
+          </div>
+          <div style={{ height: config.height }}>
+            <Liquid {...config} />
+          </div>
+          <div className='flex justify-center text-center'>
+            <Text>
+              <strong>Swipe Left</strong> for Impulse Buys, or
+              <strong> Swipe Right</strong> for Reviewed
+            </Text>
+          </div>
+        </>
+      )}
       <Flex vertical justify='center' align='end'>
         <div
-          style={{ height: 240 }}
+          style={{ height: 300 }}
           className='flex justify-center mx-auto w-full md:w-4/5 lg:w-3/5'
         >
           <CardSwiper
@@ -394,43 +352,52 @@ export default function UnreadTransactionsSwiper({
               bgDislike: 'red',
               textColor: 'white',
             }}
-            onFinish={() => {
-              if (swipeState.transactions.length === 0) {
-                setSwipeState((prev) => ({
-                  ...prev,
-                  isEmptyModalOpen: true,
-                }));
-              }
-            }}
             emptyState={
-              <Text>No more transactions! You&apos;re all caught up! 🎉</Text>
+              <div>
+                <Flex justify='center' align='center' className='text-center'>
+                  <Title level={3}>
+                    No more transactions! You&apos;re all caught up! 🎉
+                  </Title>
+                </Flex>
+                <img
+                  // style={{ maxHeight: '75vh', maxWidth: '95vw' }}
+                  alt='focus-goal-image'
+                  src={focusGoalImgURL}
+                />
+              </div>
             }
           />
         </div>
         <Flex justify='center' className='mt-4 w-full'>
-          <Button
-            data-id='sync-transactions-button'
-            size='large'
-            disabled={swipeState.reviewHistory.length === 0}
-            onClick={async () => {
-              const transaction = swipeState.reviewHistory.at(-1);
-              if (!transaction) return;
-              await markTransactionAsUnread(transaction.id);
-              console.log(
-                swipeState.transactions.concat(
-                  initialTransactions.filter((x) => x.id === transaction.id)
-                )
-              );
-              setSwipeState((prev) => ({
-                ...prev,
-                transactions: prev.transactions.concat([transaction]),
-                reviewHistory: prev.reviewHistory.slice(0, -1),
-                swiperKey: 'swiper-key-' + Math.random(),
-              }));
-            }}
-          >
-            Undo
-          </Button>
+          {swipeState.isEmpty === false ? (
+            <Button
+              data-id='sync-transactions-button'
+              size='large'
+              disabled={swipeState.reviewHistory.length === 0}
+              onClick={async () => {
+                const transaction = swipeState.reviewHistory.at(-1);
+                if (!transaction) return;
+                await markTransactionAsUnread(transaction.id);
+                console.log(
+                  swipeState.transactions.concat(
+                    initialTransactions.filter((x) => x.id === transaction.id)
+                  )
+                );
+                setSwipeState((prev) => ({
+                  ...prev,
+                  transactions: prev.transactions.concat([transaction]),
+                  reviewHistory: prev.reviewHistory.slice(0, -1),
+                  swiperKey: 'swiper-key-' + Math.random(),
+                }));
+              }}
+            >
+              Undo
+            </Button>
+          ) : (
+            <Link href='/'>
+              <Button type='primary'>Return Home</Button>
+            </Link>
+          )}
         </Flex>
       </Flex>
     </div>
