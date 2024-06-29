@@ -23,7 +23,6 @@ export const useCardSwiper = ({
   onEnter,
   data,
 }: UseCardSwiper) => {
-  console.log('disableSwipe:321 ', disableSwipe);
   const swiperElements = useRef<Swiper[]>([]);
   const [swiperIndex, setSwiperIndex] = useState(data.length);
   const [dynamicData, setDynamicData] = useState(data);

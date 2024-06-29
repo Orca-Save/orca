@@ -11,13 +11,13 @@ export default function UnreadButton({ userId }: { userId: string }) {
     <>
       <Button
         data-id='mark-all-unread'
-        onClick={() => markAllTransactionsAsRead(userId, false)}
+        onClick={async () => await markAllTransactionsAsRead(userId, false)}
       >
         Mark all unread
       </Button>
       <Button
         data-id='get-recurring-transactions'
-        onClick={() => getRecurringTransactions(userId)}
+        onClick={async () => await getRecurringTransactions(userId)}
       >
         Get recurring
       </Button>

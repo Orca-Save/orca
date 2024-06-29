@@ -2,17 +2,17 @@
 
 import { FormattedTransaction } from '@/app/_actions/plaid';
 import { discretionaryFilter } from '@/lib/plaid';
-import { antdDefaultButton, impulseButtonTheme } from '@/lib/themeConfig';
+import { antdDefaultButton } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
 import {
   Badge,
-  Button,
   Col,
   ConfigProvider,
   Flex,
   List,
   Row,
   Space,
+  Switch,
   Typography,
 } from 'antd';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -22,35 +22,43 @@ const { Text } = Typography;
 type TransactionListProps = {
   transactions: FormattedTransaction[];
 };
-type FilterType = 'all' | 'reviewed' | 'impulseBuy' | 'discretionary';
+type FilterType = 'reviewed' | 'impulseBuy' | 'discretionary';
 type Filter = {
-  filter: FilterType;
-  antiFilter: boolean;
+  reviewed: boolean;
+  impulseBuy: boolean;
+  discretionary: boolean;
 };
+
+function useFilterParams(): Filter {
+  const searchParams = useSearchParams();
+  const filterParams = searchParams.get('filter')?.split(',');
+  if (!filterParams) {
+    return {
+      impulseBuy: false,
+      reviewed: false,
+      discretionary: false,
+    };
+  }
+  return {
+    impulseBuy: filterParams.includes('impulseBuy'),
+    reviewed: filterParams.includes('reviewed'),
+    discretionary: filterParams.includes('discretionary'),
+  };
+}
 export default function TransactionList({
   transactions,
 }: TransactionListProps) {
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
-  const [filter, setFilter] = useState<{
-    antiFilter: boolean;
-    filter: FilterType;
-  }>({
-    antiFilter: searchParams.get('anti') === 'true' ? true : false,
-    filter: (searchParams.get('filter') as FilterType) ?? 'all',
-  });
-
-  const setFilterHandler = (filter: FilterType, antiFilter: boolean) => {
-    setFilter({ filter, antiFilter });
-  };
+  const filterParams = useFilterParams();
+  const [filter, setFilter] = useState(filterParams);
   const groupedTransactionsArray = groupedTransactions(transactions, filter);
   return (
     <>
       <FilterOptions
         filter={filter}
         router={router}
-        setFilterHandler={setFilterHandler}
+        setFilterHandler={setFilter}
       />
 
       <List
@@ -139,23 +147,29 @@ export default function TransactionList({
   );
 }
 
+function filterToParams(filter: Filter) {
+  if (!filter.reviewed && !filter.impulseBuy && !filter.discretionary) {
+    return 'all';
+  }
+  return Object.entries(filter)
+    .filter(([_, value]) => value)
+    .map(([key]) => key)
+    .join(',');
+}
+
 function groupedTransactions(
   transactions: FormattedTransaction[],
   filter: Filter
 ) {
   const filteredTransactions = transactions.filter((transaction) => {
-    if (filter.filter === 'all') {
+    if (!filter.reviewed && !filter.impulseBuy && !filter.discretionary) {
       return true;
     }
-    if (filter.filter === 'reviewed') {
-      return transaction.read === filter.antiFilter;
-    }
-    if (filter.filter === 'impulseBuy') {
-      return transaction.impulse === filter.antiFilter;
-    }
-    if (filter.filter === 'discretionary') {
-      return discretionaryFilter(transaction) === filter.antiFilter;
-    }
+
+    if (filter.reviewed && transaction.read === true) return true;
+    if (filter.impulseBuy && transaction.impulse === true) return true;
+    if (filter.discretionary && discretionaryFilter(transaction) === true)
+      return true;
     return false;
   });
 
@@ -187,26 +201,22 @@ function FilterOptions({
 }: {
   filter: Filter;
   router: any;
-  setFilterHandler: (filter: FilterType, antiFilter: boolean) => void;
+  setFilterHandler: (filter: Filter) => void;
 }) {
   const options: {
-    filterLabel: string;
-    antiFilterLabel: string;
+    label: string;
     value: FilterType;
   }[] = [
     {
-      filterLabel: 'Reviewed',
-      antiFilterLabel: 'Not Reviewed',
+      label: 'Reviewed',
       value: 'reviewed',
     },
     {
-      filterLabel: 'Impulse Buy',
-      antiFilterLabel: 'Non-Impulse',
+      label: 'Impulse Buy',
       value: 'impulseBuy',
     },
     {
-      filterLabel: 'Discretionary',
-      antiFilterLabel: 'Non-Discretionary',
+      label: 'Recurring, transfer etc.',
       value: 'discretionary',
     },
   ];
@@ -218,85 +228,30 @@ function FilterOptions({
         },
       }}
     >
-      <Flex justify='center' wrap gap='small'>
-        <Space direction='vertical' className='w-36'>
-          <Flex justify='center'>
-            <Text strong>Filters</Text>
-          </Flex>
-          <Flex justify='center'>
-            <Button
+      <Flex justify='center' align='center' wrap gap='small'>
+        <Flex justify='center'>
+          <Text strong>Filters</Text>
+        </Flex>
+        {options.map(({ label, value }) => (
+          <>
+            {label}
+            <Switch
               size='small'
-              shape='round'
-              type={filter.filter === 'all' ? 'primary' : 'default'}
-              onClick={() => {
-                setFilterHandler('all', false);
-                router.replace(`/log/transactions`, {
-                  shallow: true,
-                });
-              }}
-            >
-              All
-            </Button>
-          </Flex>
-        </Space>
-        {options.map(({ filterLabel, value, antiFilterLabel }) => (
-          <Space key={`${value}-filters`} direction='vertical' className='w-36'>
-            <ConfigProvider
-              theme={
-                value === 'impulseBuy'
-                  ? {
-                      components: {
-                        Button: impulseButtonTheme,
-                      },
-                    }
-                  : undefined
-              }
-            >
-              <Button
-                size='small'
-                className='w-full'
-                shape='round'
-                type={
-                  filter.filter === value && filter.antiFilter
-                    ? 'primary'
-                    : 'default'
-                }
-                onClick={() => {
-                  setFilterHandler(value, true);
-                  router.replace(
-                    `/log/transactions?filter=${value}&anti=${true}`,
-                    {
-                      shallow: true,
-                    }
-                  );
-                }}
-              >
-                {filterLabel}
-              </Button>
-            </ConfigProvider>
-
-            <Button
-              size='small'
-              className='w-full'
-              shape='round'
-              type={
-                filter.filter === value && !filter.antiFilter
-                  ? 'primary'
-                  : 'default'
-              }
-              onClick={() => {
-                setFilterHandler(value, false);
+              checked={filter[value]}
+              onClick={(checked) => {
+                setFilterHandler({ ...filter, [value]: checked });
                 router.replace(
-                  `/log/transactions?filter=${value}&anti=${false}`,
+                  `/log/transactions?filter=${filterToParams({
+                    ...filter,
+                    [value]: checked,
+                  })}`,
                   {
                     shallow: true,
                   }
                 );
               }}
-            >
-              {antiFilterLabel}
-            </Button>
-          </Space>
+            />
+          </>
         ))}
       </Flex>
     </ConfigProvider>

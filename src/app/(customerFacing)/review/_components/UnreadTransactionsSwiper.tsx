@@ -24,7 +24,6 @@ import {
   Typography,
 } from 'antd';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
   FormattedTransaction,
@@ -90,7 +89,6 @@ export default function UnreadTransactionsSwiper({
   userId,
   focusGoalImgURL,
 }: UnreadTransactionsSwiperProps) {
-  console.log('initialTransactions');
   const initialTransactions = formattedTransactions;
 
   const [swipeState, setSwipeState] = useState<SwipeState>({
@@ -104,7 +102,6 @@ export default function UnreadTransactionsSwiper({
 
   const [rating, setRating] = useState(5);
 
-  const router = useRouter();
   const rateImpulseBuy = async (value: number) => {
     setRating(value);
     await markTransactionAsRead(swipeState.selectedTransactionId, true, value);
@@ -115,7 +112,7 @@ export default function UnreadTransactionsSwiper({
       ),
       selectedTransactionId: '',
       isModalOpen: false,
-      isEmpty: prev.transactions.length === 1,
+      isEmpty: prev.transactions.length === 0,
     }));
     setRating(5);
   };
@@ -331,74 +328,67 @@ export default function UnreadTransactionsSwiper({
           </div>
         </>
       )}
-      <Flex vertical justify='center' align='end'>
-        <div
-          style={{ height: 300 }}
-          className='flex justify-center mx-auto w-full md:w-4/5 lg:w-3/5'
-        >
-          <CardSwiper
-            key={swipeState.swiperKey}
-            disableSwipe={!!swipeState.selectedTransactionId}
-            data={transactionCards}
-            onDismiss={handleDismiss}
-            dislikeButton={<div>Impulse Buy (A)</div>}
-            likeButton={<div>Non-Impulse Buy (D)</div>}
-            withRibbons
-            withActionButtons
-            likeRibbonText='Reviewed'
-            dislikeRibbonText='Impulse Buy'
-            ribbonColors={{
-              bgLike: 'green',
-              bgDislike: 'red',
-              textColor: 'white',
-            }}
-            emptyState={
-              <div>
-                <Flex justify='center' align='center' className='text-center'>
-                  <Title level={3}>
-                    No more transactions! You&apos;re all caught up! 🎉
-                  </Title>
-                </Flex>
-                <img
-                  // style={{ maxHeight: '75vh', maxWidth: '95vw' }}
-                  alt='focus-goal-image'
-                  src={focusGoalImgURL}
-                />
-              </div>
-            }
-          />
-        </div>
-        <Flex justify='center' className='mt-4 w-full'>
-          {swipeState.isEmpty === false ? (
-            <Button
-              data-id='sync-transactions-button'
-              size='large'
-              disabled={swipeState.reviewHistory.length === 0}
-              onClick={async () => {
-                const transaction = swipeState.reviewHistory.at(-1);
-                if (!transaction) return;
-                await markTransactionAsUnread(transaction.id);
-                console.log(
-                  swipeState.transactions.concat(
-                    initialTransactions.filter((x) => x.id === transaction.id)
-                  )
-                );
-                setSwipeState((prev) => ({
-                  ...prev,
-                  transactions: prev.transactions.concat([transaction]),
-                  reviewHistory: prev.reviewHistory.slice(0, -1),
-                  swiperKey: 'swiper-key-' + Math.random(),
-                }));
-              }}
+      <div
+        style={{ height: swipeState.isEmpty ? undefined : 300 }}
+        className='flex justify-center mx-auto w-full md:w-4/5 lg:w-3/5'
+      >
+        <CardSwiper
+          key={swipeState.swiperKey}
+          disableSwipe={!!swipeState.selectedTransactionId}
+          data={transactionCards}
+          onDismiss={handleDismiss}
+          dislikeButton={<div>Impulse Buy (A)</div>}
+          likeButton={<div>Non-Impulse Buy (D)</div>}
+          withRibbons
+          withActionButtons
+          likeRibbonText='Reviewed'
+          dislikeRibbonText='Impulse Buy'
+          ribbonColors={{
+            bgLike: 'green',
+            bgDislike: 'red',
+            textColor: 'white',
+          }}
+          emptyState={
+            <div
+            //  style={{ marginTop: 250 }}
             >
-              Undo
-            </Button>
-          ) : (
-            <Link href='/'>
-              <Button type='primary'>Return Home</Button>
-            </Link>
-          )}
-        </Flex>
+              <Flex justify='center' align='center' className='text-center'>
+                <Title level={3}>
+                  No more transactions! You&apos;re all caught up! 🎉
+                </Title>
+              </Flex>
+              <img alt='focus-goal-image' src={focusGoalImgURL} />
+              <Flex justify='center' align='center' className='text-center m-2'>
+                <Link href='/'>
+                  <Button type='primary'>Return Home</Button>
+                </Link>
+              </Flex>
+            </div>
+          }
+        />
+      </div>
+      <Flex justify='center' className='mt-4 w-full'>
+        {swipeState.isEmpty === false ? (
+          <Button
+            data-id='sync-transactions-button'
+            size='large'
+            disabled={swipeState.reviewHistory.length === 0}
+            onClick={async () => {
+              const transaction = swipeState.reviewHistory.at(-1);
+              if (!transaction) return;
+              await markTransactionAsUnread(transaction.id);
+
+              setSwipeState((prev) => ({
+                ...prev,
+                transactions: prev.transactions.concat([transaction]),
+                reviewHistory: prev.reviewHistory.slice(0, -1),
+                swiperKey: 'swiper-key-' + Math.random(),
+              }));
+            }}
+          >
+            Undo
+          </Button>
+        ) : null}
       </Flex>
     </div>
   );
