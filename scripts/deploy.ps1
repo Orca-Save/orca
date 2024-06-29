@@ -10,6 +10,7 @@ $dockerTag = "latest"
 $dockerfile = "Dockerfile"
 if ($dev) {
     $dockerfile = "Dockerfile.dev"
+    $dockerHubRepository = "reharly20/orca-staging"
     $dockerTag = "staging"
 }
 
