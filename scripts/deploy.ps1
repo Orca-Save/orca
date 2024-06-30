@@ -1,17 +1,17 @@
 param(
-    [switch]$dev
+    [switch]$prod
 )
 
 Write-Host "Logging in to Docker Hub..."
 docker login
-$dockerHubRepository = "reharly20/orca"
-$dockerTag = "latest"
+$dockerHubRepository = "reharly20/orca-staging"
+$dockerTag = "staging"
+$dockerfile = "Dockerfile.dev"
 
-$dockerfile = "Dockerfile"
-if ($dev) {
-    $dockerfile = "Dockerfile.dev"
-    $dockerHubRepository = "reharly20/orca-staging"
-    $dockerTag = "staging"
+if ($prod) {
+    $dockerfile = "Dockerfile"
+    $dockerHubRepository = "reharly20/orca"
+    $dockerTag = "latest"
 }
 
 if ($LASTEXITCODE -ne 0) {
