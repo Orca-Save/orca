@@ -1,8 +1,8 @@
-import { Title } from '@/app/_components/Typography';
 import db from '@/db/db';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { Transaction } from '@prisma/client';
+import { Card, Space } from 'antd';
 import { format, startOfWeek } from 'date-fns';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
@@ -16,6 +16,21 @@ export default async function ChartPage() {
   const transactions = await db.transaction.findMany({
     where: {
       userId: session.user.id,
+      // date is within the past month
+      OR: [
+        {
+          date: {
+            gte: new Date(new Date().setDate(new Date().getDate() - 35)), // Greater than or equal to 30 days ago
+            lt: new Date(), // Less than today
+          },
+        },
+        {
+          authorizedDate: {
+            gte: new Date(new Date().setDate(new Date().getDate() - 35)), // Greater than or equal to 30 days ago
+            lt: new Date(), // Less than today
+          },
+        },
+      ],
     },
   });
 
@@ -72,11 +87,13 @@ export default async function ChartPage() {
     ].filter((data) => data.value > 0)
   );
   return (
-    <>
-      <Title level={4}>Impulse Counts</Title>
-      <TransactionChart data={chartData} />
-      <Title level={4}>Impulse sum</Title>
-      <TransactionChart data={chartDataWithSum} />
-    </>
+    <Space className='w-full h-full' wrap>
+      <Card style={{ width: 700 }} title='Impulse Counts'>
+        <TransactionChart data={chartData} />
+      </Card>
+      <Card style={{ width: 700 }} title='Impulse sum'>
+        <TransactionChart data={chartDataWithSum} />
+      </Card>
+    </Space>
   );
 }
