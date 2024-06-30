@@ -40,7 +40,11 @@ const logMessageToAppInsights = (message: string) => {
 };
 const AppInsightService: React.FC = () => {
   useEffect(() => {
-    if (typeof window !== 'undefined' && !appInsights) {
+    if (
+      typeof window !== 'undefined' &&
+      !appInsights &&
+      process.env.NODE_ENV === 'production'
+    ) {
       initializeAppInsights();
     }
   }, []);
