@@ -84,13 +84,27 @@ type SwipeState = {
   selectedTransactionId: string;
 };
 
+function removeCardById(prev: SwipeState, id: string) {
+  const transaction = prev.transactions.find((x) => x.id === id)!;
+  return {
+    ...prev,
+    transactions: prev.transactions.filter(
+      (transaction) => transaction.id !== id
+    ),
+    reviewHistory: prev.reviewHistory.concat([transaction]),
+    selectedTransactionId: '',
+    isModalOpen: false,
+    // we're about to remove the last transaction
+    isEmpty: prev.transactions.length === 1,
+  };
+}
+
 export default function UnreadTransactionsSwiper({
   formattedTransactions,
   userId,
   focusGoalImgURL,
 }: UnreadTransactionsSwiperProps) {
   const initialTransactions = formattedTransactions;
-
   const [swipeState, setSwipeState] = useState<SwipeState>({
     transactions: [...initialTransactions],
     reviewHistory: [],
@@ -105,15 +119,12 @@ export default function UnreadTransactionsSwiper({
   const rateImpulseBuy = async (value: number) => {
     setRating(value);
     await markTransactionAsRead(swipeState.selectedTransactionId, true, value);
-    setSwipeState((prev) => ({
-      ...prev,
-      transactions: prev.transactions.filter(
-        (transaction) => transaction.id !== swipeState.selectedTransactionId
-      ),
-      selectedTransactionId: '',
-      isModalOpen: false,
-      isEmpty: prev.transactions.length === 0,
-    }));
+    const transaction = swipeState.transactions.find(
+      (x) => x.id === swipeState.selectedTransactionId
+    )!;
+    setSwipeState((prev) =>
+      removeCardById(prev, swipeState.selectedTransactionId)
+    );
     setRating(5);
   };
 
@@ -143,13 +154,7 @@ export default function UnreadTransactionsSwiper({
       return;
     }
     await markTransactionAsRead(id as string, isDislike);
-    setSwipeState((prev) => ({
-      ...prev,
-      reviewHistory: prev.reviewHistory.concat([transaction]),
-      transactions: prev.transactions.filter(
-        (transaction) => transaction.id !== id
-      ),
-    }));
+    setSwipeState((prev) => removeCardById(prev, id as string));
   }
 
   const transactionCards: CardData[] = swipeState.transactions.map(
