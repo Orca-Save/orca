@@ -737,7 +737,8 @@ async function refreshItem(plaidItem: PlaidItem) {
   if (plaidItem.lastRefresh) {
     const difference =
       new Date().getTime() - new Date(plaidItem.lastRefresh).getTime();
-    if (difference > 12 * 60 * 60 * 1000) {
+    const twelveHours = 12 * 60 * 60 * 1000;
+    if (difference > twelveHours) {
       await delay(800);
       return;
     }
