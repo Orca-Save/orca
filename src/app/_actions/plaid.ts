@@ -734,9 +734,13 @@ export async function getNextRefreshTime(userId: string) {
 
 async function refreshItem(plaidItem: PlaidItem) {
   // check if last refresh happened more than 12 hours ago
-  if (plaidItem.lastRefresh && plaidItem.lastRefresh < new Date()) {
-    await delay(800);
-    return;
+  if (plaidItem.lastRefresh) {
+    const difference =
+      new Date().getTime() - new Date(plaidItem.lastRefresh).getTime();
+    if (difference > 12 * 60 * 60 * 1000) {
+      await delay(800);
+      return;
+    }
   }
   const response = await plaidClient.transactionsRefresh({
     access_token: plaidItem.accessToken,
