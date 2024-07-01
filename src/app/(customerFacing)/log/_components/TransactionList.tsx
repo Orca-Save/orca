@@ -270,7 +270,7 @@ function FilterOptions({
     >
       <Flex justify='center' align='center' wrap gap='small'>
         <Flex justify='center'>
-          <Text strong>Filters</Text>
+          <Text strong>Filter Only</Text>
         </Flex>
         {options.map(({ label, value }) => (
           <>

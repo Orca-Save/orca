@@ -328,7 +328,7 @@ export default function UnreadTransactionsSwiper({
           <div className='flex justify-center text-center'>
             <Text>
               <strong>Swipe Left</strong> for Impulse Buys, or
-              <strong> Swipe Right</strong> for Reviewed
+              <strong> Swipe Right</strong> for Non-Impulse Buys
             </Text>
           </div>
         </>

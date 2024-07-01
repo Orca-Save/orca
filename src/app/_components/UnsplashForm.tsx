@@ -39,6 +39,7 @@ export default function UnsplashForm({
   const [data, setPhotosResponse] = useState<ApiResponse<Photos> | null>(null);
 
   const search = (query: string) => {
+    if (!query) return;
     setLoading(true);
     api.search
       .getPhotos({ query, orientation: 'landscape' })
