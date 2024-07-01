@@ -1,6 +1,7 @@
 'use client';
 
 import { plaidCategories } from '@/lib/plaid';
+import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
 import { Transaction } from '@prisma/client';
 import {
   Button,
@@ -12,6 +13,7 @@ import {
   Switch,
   Typography,
 } from 'antd';
+
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { saveTransaction } from '../_actions/transactions';
@@ -19,11 +21,11 @@ import { saveTransaction } from '../_actions/transactions';
 const { Text } = Typography;
 
 const customIcons: Record<number, React.ReactNode> = {
-  1: <span>😞</span>,
-  2: <span>😐</span>,
-  3: <span>😊</span>,
-  4: <span>😃</span>,
-  5: <span>😍</span>,
+  1: <FrownOutlined />,
+  2: <FrownOutlined />,
+  3: <MehOutlined />,
+  4: <SmileOutlined />,
+  5: <SmileOutlined />,
 };
 type TransactionFormProps = {
   transaction: Transaction;
