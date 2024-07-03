@@ -39,8 +39,6 @@
     "next": "^14.1.0",
     "next-auth": "^4.24.7",
     "node-emoji": "^2.1.3",
-    "passport": "^0.7.0",
-    "passport-azure-ad": "^4.3.5",
     "plaid": "^23.0.0",
     "plaid-threads": "^14.5.0",
     "react": "^18",
