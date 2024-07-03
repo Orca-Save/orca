@@ -61,128 +61,142 @@ export default function TransactionList({
         router={router}
         setFilterHandler={setFilter}
       />
-
-      <List
-        dataSource={groupedTransactionsArray}
-        split={false}
-        renderItem={({ formattedDate, transactions }) => (
-          <List.Item>
-            <Space direction='vertical' className='w-full'>
-              <Text type='secondary'>{formattedDate}</Text>
-              <Menu
-                selectedKeys={transactions
-                  .filter((x) => x.read === false)
-                  .map((x) => x.id)}
-              >
-                {transactions.map((transaction) => (
-                  <Menu.Item
-                    onClick={() =>
-                      router.push(`/transactions/${transaction.id}`)
-                    }
-                    key={transaction.id}
-                  >
-                    <Row className='w-full h-full'>
-                      <Col span={9} className='h-full w-full'>
-                        <Flex align='center' className='h-full w-full'>
-                          <Text
-                            strong
-                            ellipsis={{
-                              tooltip: true,
-                            }}
-                          >
-                            {transaction.name ? transaction.name : 'Unknown'}
-                          </Text>
-                        </Flex>
-                      </Col>
-                      <Col span={7} className='h-full w-full'>
-                        <Flex align='center' className='h-full w-full'>
-                          <Text
-                            ellipsis={{
-                              tooltip: true,
-                            }}
-                            // color='orange'
-                            style={{
-                              // border: '1px solid rgba(251,188,5, 0.2)',
-                              borderRadius: '0.25rem',
-                              backgroundColor: 'rgba(251,188,5, 0.2)',
-                              padding: '0 0.25rem',
-                              color: 'rgba(251,188,5)',
-                              textAlign: 'center',
-                            }}
-                          >
-                            {transaction.category}
-                          </Text>
-                          {/* <Tag
+      <ConfigProvider
+        theme={{
+          components: {
+            Menu: {
+              activeBarBorderWidth: 0,
+            },
+          },
+        }}
+      >
+        <List
+          dataSource={groupedTransactionsArray}
+          split={false}
+          renderItem={({ formattedDate, transactions }) => (
+            <List.Item>
+              <Space direction='vertical' className='w-full'>
+                <Text type='secondary'>{formattedDate}</Text>
+                <Menu
+                  selectedKeys={transactions
+                    .filter((x) => x.read === false)
+                    .map((x) => x.id)}
+                >
+                  {transactions.map((transaction) => (
+                    <Menu.Item
+                      onClick={() =>
+                        router.push(`/transactions/${transaction.id}`)
+                      }
+                      key={transaction.id}
+                    >
+                      <Row className='w-full h-full'>
+                        <Col span={9} className='h-full w-full'>
+                          <Flex align='center' className='h-full w-full'>
+                            <Text
+                              strong
+                              ellipsis={{
+                                tooltip: true,
+                              }}
+                            >
+                              {transaction.name ? transaction.name : 'Unknown'}
+                            </Text>
+                          </Flex>
+                        </Col>
+                        <Col span={7} className='h-full w-full'>
+                          <Flex align='center' className='h-full w-full'>
+                            <Text
+                              ellipsis={{
+                                tooltip: true,
+                              }}
+                              // color='orange'
+                              style={{
+                                // border: '1px solid rgba(251,188,5, 0.2)',
+                                borderRadius: '0.25rem',
+                                backgroundColor: 'rgba(251,188,5, 0.2)',
+                                padding: '0 0.25rem',
+                                color: 'rgba(251,188,5)',
+                                textAlign: 'center',
+                              }}
+                            >
+                              {transaction.category}
+                            </Text>
+                            {/* <Tag
                             // color={color} key={category}
                             color='orange'
                           >
                             {transaction.category}
                           </Tag> */}
-                        </Flex>
-                      </Col>
-                      <Col span={1} className='h-full w-full'>
-                        {transaction.impulse ? (
-                          <Flex align='center' className='h-full w-full'>
-                            <Text
-                              style={{
-                                // border: '1px solid rgba(154,0,207, 0.6)',
-                                borderRadius: '5rem',
-                                backgroundColor: 'rgba(154,0,207, 0.2)',
-                                // fontSize: 13,
-                                color: 'rgba(154,0,207, 0.6)',
-                                width: '100%',
-                                textAlign: 'center',
-                              }}
-                            >
-                              I
-                            </Text>
                           </Flex>
-                        ) : (
-                          <div className='h-full w-full' />
-                        )}
-                      </Col>
-                      <Col span={6} className='text-right h-full w-full'>
-                        <Flex
-                          align='center'
-                          justify='right'
-                          className='h-full w-full'
-                        >
-                          <Text
-                            strong
-                            style={{
-                              marginRight: '0.3rem',
-                            }}
-                            type={
-                              transaction.amount < 0 ? 'success' : undefined
-                            }
-                          >
-                            {currencyFormatter(
-                              transaction.amount,
-                              undefined,
-                              true
-                            )}
-                          </Text>
-                        </Flex>
-                      </Col>
-                      <Col span={1} className='h-full w-full'>
-                        {transaction.read === false ? (
+                        </Col>
+                        <Col span={2} className='h-full w-full'>
+                          {transaction.impulse ? (
+                            <Flex
+                              align='center'
+                              justify='center'
+                              className='h-full w-full'
+                            >
+                              <Text
+                                style={{
+                                  // border: '1px solid rgba(154,0,207, 0.6)',
+                                  borderRadius: '50%',
+                                  backgroundColor: 'rgba(154,0,207, 0.2)',
+                                  // fontSize: 13,
+                                  color: 'rgba(154,0,207, 0.6)',
+                                  width: '20px',
+                                  height: '20px',
+                                  textAlign: 'center',
+                                }}
+                              >
+                                I
+                              </Text>
+                            </Flex>
+                          ) : (
+                            <div className='h-full w-full' />
+                          )}
+                        </Col>
+                        <Col span={5} className='text-right h-full w-full'>
                           <Flex
                             align='center'
                             justify='right'
                             className='h-full w-full'
                           >
-                            <Badge status='processing' />
+                            <Text
+                              strong
+                              style={{
+                                marginRight: '0.3rem',
+                              }}
+                              type={
+                                transaction.amount < 0 ? 'success' : undefined
+                              }
+                            >
+                              {currencyFormatter(
+                                transaction.amount,
+                                undefined,
+                                true
+                              )}
+                            </Text>
                           </Flex>
-                        ) : null}
-                      </Col>
-                    </Row>
-                  </Menu.Item>
-                ))}
-              </Menu>
-            </Space>
-          </List.Item>
-        )}
-      />
+                        </Col>
+                        <Col span={1} className='h-full w-full'>
+                          {transaction.read === false ? (
+                            <Flex
+                              align='center'
+                              justify='right'
+                              className='h-full w-full'
+                            >
+                              <Badge status='processing' />
+                            </Flex>
+                          ) : null}
+                        </Col>
+                      </Row>
+                    </Menu.Item>
+                  ))}
+                </Menu>
+              </Space>
+            </List.Item>
+          )}
+        />
+      </ConfigProvider>
     </>
   );
 }
@@ -256,7 +270,7 @@ function FilterOptions({
       value: 'impulseBuy',
     },
     {
-      label: 'Recurring, transfer etc.',
+      label: 'Non-Recurring, transfer etc.',
       value: 'discretionary',
     },
   ];

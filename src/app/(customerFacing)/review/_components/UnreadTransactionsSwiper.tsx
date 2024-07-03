@@ -247,22 +247,26 @@ export default function UnreadTransactionsSwiper({
           <Flex justify='center'>
             <Text>{transaction?.formattedDate}</Text>
           </Flex>
-          <Text
-            strong
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {transactionName}
-          </Text>
-          <Text
-            type='secondary'
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {transaction?.category ?? 'Unknown'}
-          </Text>
+          <Flex justify='center'>
+            <Text
+              strong
+              ellipsis={{
+                tooltip: true,
+              }}
+            >
+              {transactionName}
+            </Text>
+          </Flex>
+          <Flex justify='center'>
+            <Text
+              type='secondary'
+              ellipsis={{
+                tooltip: true,
+              }}
+            >
+              {transaction?.category ?? 'Unknown'}
+            </Text>
+          </Flex>
           <Flex justify='center'>
             <Text className='ml-4'>
               {transaction?.amount && currencyFormatter(transaction?.amount)}

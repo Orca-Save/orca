@@ -3,23 +3,13 @@
 import { plaidCategories } from '@/lib/plaid';
 import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
 import { Transaction } from '@prisma/client';
-import {
-  Button,
-  Flex,
-  Form,
-  Rate,
-  Select,
-  Space,
-  Switch,
-  Typography,
-} from 'antd';
+import { Button, Flex, Form, Input, Rate, Select, Space, Switch } from 'antd';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { saveTransaction } from '../_actions/transactions';
 
-const { Text } = Typography;
-
+const { TextArea } = Input;
 const customIcons: Record<number, React.ReactNode> = {
   1: <FrownOutlined />,
   2: <FrownOutlined />,
@@ -55,6 +45,7 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
           },
           rating: values.rating,
           impulseReturn: values.impulseReturn,
+          note: values.note,
         });
         router.back();
       }}
@@ -107,6 +98,9 @@ export default function TransactionForm({ transaction }: TransactionFormProps) {
             />
           </Form.Item>
         )}
+        <Form.Item name='note' label='Note'>
+          <TextArea />
+        </Form.Item>
       </Space>
       <Flex justify='end'>
         <Space>

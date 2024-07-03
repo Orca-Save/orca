@@ -168,6 +168,7 @@ model Transaction {
   rating               Int?
   impulse              Boolean?
   impulseReturn        Boolean?
+  note                 String?
 
   logoIcon                    String?
   personalFinanceCategoryIcon String?

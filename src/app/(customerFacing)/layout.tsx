@@ -34,7 +34,7 @@ export default async function CustomerLayout({
       </div>
       <Content
         style={{
-          margin: '12px 32px 0',
+          margin: '12px 13px 0',
         }}
       >
         <div className='flex justify-center h-full'>
