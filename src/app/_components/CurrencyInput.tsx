@@ -1,13 +1,13 @@
-import { currencyFormatter } from "@/lib/utils";
-import { InputNumber, Select } from "antd";
+import { currencyFormatter2 } from '@/lib/utils';
+import { InputNumber, Select } from 'antd';
 
 const { Option } = Select;
 const selectAfter = (
-  <Select defaultValue="USD" style={{ width: 60 }}>
-    <Option value="USD">$</Option>
-    <Option value="EUR">€</Option>
-    <Option value="GBP">£</Option>
-    <Option value="CNY">¥</Option>
+  <Select defaultValue='USD' style={{ width: 60 }}>
+    <Option value='USD'>$</Option>
+    <Option value='EUR'>€</Option>
+    <Option value='GBP'>£</Option>
+    <Option value='CNY'>¥</Option>
   </Select>
 );
 
@@ -21,19 +21,18 @@ function CurrencyInput({
   onChange?: (value: string | null) => void;
 }) {
   const currencyParser = (value?: string) =>
-    value?.replace?.(/[-,]/g, "") ?? "";
-  // value?.replace?.(/\$\s?|,|-/g, "") ?? "";
+    value?.replace?.(/[-,]/g, '') ?? '';
 
   return (
     <InputNumber
-      formatter={(value) => currencyFormatter(value, true)}
+      formatter={(value, info) => currencyFormatter2(value)}
       parser={currencyParser}
       precision={2}
-      prefix={"$"}
+      prefix={'$'}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      style={{ width: "100%" }}
+      style={{ width: '100%' }}
     />
   );
 }

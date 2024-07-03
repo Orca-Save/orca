@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Button, DatePicker, Form, Input, Space } from "antd";
-import dayjs, { Dayjs } from "dayjs";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { Button, DatePicker, Form, Input, Space } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
-import { isFieldErrors } from "@/lib/goals";
-import { isExtendedSession } from "@/lib/session";
-import { applyFormErrors, getPrevPageHref } from "@/lib/utils";
-import { addQuickGoal } from "../_actions/goals";
-import CurrencyInput from "./CurrencyInput";
+import { isFieldErrors } from '@/lib/goals';
+import { isExtendedSession } from '@/lib/session';
+import { applyFormErrors, getPrevPageHref } from '@/lib/utils';
+import { addQuickGoal } from '../_actions/goals';
+import CurrencyInput from './CurrencyInput';
 
 type GoalFormValues = {
   name: string;
@@ -34,21 +34,21 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      signIn("azure-ad-b2c");
+      signIn('azure-ad-b2c');
     },
   });
 
   const onFinish = async (values: GoalFormValues) => {
     if (!session) return null;
     const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("targetAmount", String(values.targetAmount));
+    formData.append('name', values.name);
+    formData.append('targetAmount', String(values.targetAmount));
 
     if (values.dueAt) {
-      formData.append("dueAt", values.dueAt.format());
+      formData.append('dueAt', values.dueAt.format());
     }
     if (values.initialAmount) {
-      formData.append("initialAmount", String(values.initialAmount));
+      formData.append('initialAmount', String(values.initialAmount));
     }
 
     if (isExtendedSession(session)) {
@@ -58,7 +58,7 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
       if (isFieldErrors(result)) {
         applyFormErrors(form, result);
       } else {
-        router.push(getPrevPageHref(referer, window) + "?confetti=true");
+        router.push(getPrevPageHref(referer, window) + '?confetti=true');
       }
     }
   };
@@ -66,46 +66,52 @@ export default function QuickGoalForm({ referer }: { referer: string }) {
   return (
     <Form
       form={form}
-      layout="vertical"
+      layout='vertical'
       onFinish={onFinish}
       initialValues={{
         dueAt: dayjs(),
       }}
     >
       <Form.Item
-        name="name"
-        label="Goal Name"
-        rules={[{ required: true, message: "Please input the name!" }]}
+        name='name'
+        label='Goal Name'
+        rules={[{ required: true, message: 'Please input the name!' }]}
       >
-        <Input placeholder="Name" />
+        <Input placeholder='Name' />
       </Form.Item>
       <Form.Item
-        name="dueAt"
-        label="Due Date"
-        rules={[{ required: true, message: "Please select the due date!" }]}
+        name='dueAt'
+        label='Due Date'
+        rules={[{ required: true, message: 'Please select the due date!' }]}
       >
-        <DatePicker minDate={dayjs()} style={{ width: "100%" }} />
+        <DatePicker minDate={dayjs()} style={{ width: '100%' }} />
       </Form.Item>
       <Form.Item
-        name="targetAmount"
-        label="Target Balance"
+        name='targetAmount'
+        label='Target Balance'
         rules={[
-          { required: true, message: "Please input the target balance!" },
+          { required: true, message: 'Please input the target balance!' },
         ]}
       >
-        <CurrencyInput placeholder="Target Balance" />
+        <CurrencyInput placeholder='Target Balance' />
       </Form.Item>
-      <Form.Item name="initialAmount" label="Initial Saved Amount">
-        <CurrencyInput placeholder="Initial Balance" />
+      <Form.Item name='initialAmount' label='Initial Saved Amount'>
+        <CurrencyInput placeholder='Initial Balance' />
       </Form.Item>
-      <Space direction="horizontal">
-        <Button size="large" type="primary" htmlType="submit">
+      <Space direction='horizontal'>
+        <Button
+          data-id='goal-form-submit'
+          size='large'
+          type='primary'
+          htmlType='submit'
+        >
           Save
         </Button>
 
         <Button
-          size="large"
-          onClick={() => router.push(getPrevPageHref(referer, window))}
+          data-id='goal-form-cancel'
+          size='large'
+          onClick={() => router.back()}
         >
           Cancel
         </Button>

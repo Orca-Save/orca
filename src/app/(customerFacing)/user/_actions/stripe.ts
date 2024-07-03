@@ -1,24 +1,32 @@
-"use server";
-import db from "@/db/db";
-import { revalidatePath } from "next/cache";
-import Stripe from "stripe";
+'use server';
+import db from '@/db/db';
+import { revalidatePath } from 'next/cache';
+import Stripe from 'stripe';
 
 if (!process.env.STRIPE_SECRET_KEY)
-  console.error("MISSING STRIPE_SECRET_KEY!!!");
+  console.error('MISSING STRIPE_SECRET_KEY!!!');
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-type SubscriptionRequest = {
-  name: string;
-  email: string;
-  paymentMethod: string;
-};
-export async function createSubscription(userId: string, email: string) {
+export async function createSubscription(
+  userId: string,
+  email: string
+): Promise<
+  | {
+      clientSecret?: string;
+      subscriptionId?: string;
+    }
+  | { message: string }
+> {
   const userProfile = await db.userProfile.findFirst({
     where: {
       userId,
     },
   });
 
+  if (userProfile === null)
+    return {
+      message: 'user not found',
+    };
   let customerId = userProfile?.stripeCustomerId;
   if (!customerId) {
     const customer = await stripe.customers.create({
@@ -27,7 +35,7 @@ export async function createSubscription(userId: string, email: string) {
     customerId = customer.id;
   }
 
-  const priceId = process.env.STRIPE_PRODUCT_SUBSCRIPTION_ID;
+  const priceId = process.env.STRIPE_PRICE_SUBSCRIPTION_ID;
 
   const subscription = await stripe.subscriptions.create({
     customer: customerId,
@@ -36,24 +44,28 @@ export async function createSubscription(userId: string, email: string) {
         price: priceId,
       },
     ],
-    payment_behavior: "default_incomplete",
+    // trial_period_days: 7,
+    payment_behavior: 'default_incomplete',
     payment_settings: {
-      save_default_payment_method: "on_subscription",
-      payment_method_types: ["card"],
+      save_default_payment_method: 'on_subscription',
+      payment_method_types: ['card'],
     },
-    expand: ["latest_invoice.payment_intent"],
+    expand: ['latest_invoice.payment_intent'],
   });
 
-  if (!userProfile) {
-    await db.userProfile.create({
-      data: {
-        userId,
-        stripeCustomerId: customerId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-  }
+  await db.userProfile.upsert({
+    where: {
+      userId,
+    },
+    create: {
+      userId,
+      stripeCustomerId: customerId,
+    },
+    update: {
+      stripeCustomerId: customerId,
+      updatedAt: new Date(),
+    },
+  });
 
   // @ts-ignore
   if (subscription.latest_invoice?.payment_intent?.client_secret) {
@@ -63,6 +75,10 @@ export async function createSubscription(userId: string, email: string) {
       subscriptionId: subscription.id,
     };
   }
+
+  return {
+    message: 'Failed to create subscription',
+  };
 }
 
 export async function addSubscriptionId(
@@ -78,7 +94,7 @@ export async function addSubscriptionId(
       userId,
     },
   });
-  revalidatePath("/user");
+  revalidatePath('/user');
 }
 
 export async function updateSubscription(
@@ -92,7 +108,7 @@ export async function updateSubscription(
   });
 
   if (!userProfile?.stripeSubscriptionId)
-    return { success: false, message: "Could not complete the cancellation." };
+    return { success: false, message: 'Could not complete the cancellation.' };
 
   const sub = await stripe.subscriptions.update(
     userProfile.stripeSubscriptionId,
@@ -100,9 +116,9 @@ export async function updateSubscription(
       cancel_at_period_end,
     }
   );
-  revalidatePath("/user");
+  revalidatePath('/user');
   return {
-    message: "Cancel success!",
+    message: 'Cancel success!',
   };
 }
 
@@ -120,4 +136,15 @@ export async function getSubscription(userId: string) {
   );
 
   return subscription;
+}
+
+export async function getPrice() {
+  if (!process.env.STRIPE_PRICE_SUBSCRIPTION_ID) {
+    console.error('MISSING STRIPE_PRODUCT_ID!');
+    return;
+  }
+  const price = await stripe.prices.retrieve(
+    process.env.STRIPE_PRICE_SUBSCRIPTION_ID
+  );
+  return price;
 }

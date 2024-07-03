@@ -1,14 +1,26 @@
 'use server';
 
+import { syncItems } from '@/app/_actions/plaid';
 import db from '@/db/db';
 import { externalAccountId } from '@/lib/goalTransfers';
 import authOptions from '@/lib/nextAuthOptions';
 import { sendSlackMessage } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { getServerSession } from 'next-auth';
+import { revalidatePath } from 'next/cache';
 import { onboardingSchema } from '../_schemas/onboarding';
 
-export async function onboardUser(userId: string, onboardingProfileInput: any) {
+export async function getOnboardingProfile(userId: string) {
+  const onboardingProfile = await db.onboardingProfile.findFirst({
+    where: { userId },
+  });
+  return onboardingProfile;
+}
+
+export async function saveOnboardingProfile(
+  userId: string,
+  onboardingProfileInput: any
+) {
   onboardingProfileInput.goalDueAt = dayjs(onboardingProfileInput.goalDueAt);
   const result = onboardingSchema.safeParse(onboardingProfileInput);
 
@@ -17,31 +29,35 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
   }
 
   const onboardingProfileData = result.data;
-  const goal = await db.goal.create({
-    data: {
+  const privacyAgreement = onboardingProfileData.privacyAgreement;
+  delete onboardingProfileData.privacyAgreement;
+  const onboardingProfile = await db.onboardingProfile.upsert({
+    where: { userId },
+    create: {
+      ...onboardingProfileData,
+      goalDueAt: onboardingProfileData.goalDueAt.format(),
       userId: userId,
-      name: onboardingProfileData.goalName,
-      targetAmount: onboardingProfileData.goalAmount,
-      dueAt: onboardingProfileData.goalDueAt.format(),
-      pinned: true,
-      imagePath: onboardingProfileData.imagePath,
+    },
+    update: {
+      ...onboardingProfileData,
+      goalDueAt: onboardingProfileData.goalDueAt.format(),
     },
   });
 
-  let initialAmountTransfer;
-  if (onboardingProfileData.initialAmount) {
-    initialAmountTransfer = await db.goalTransfer.create({
-      data: {
-        userId: userId,
-        goalId: goal.id,
-        amount: onboardingProfileData.initialAmount,
-        transactedAt: new Date(),
-        itemName: onboardingProfileData.goalName + ' Initial Amount',
-        categoryId: externalAccountId,
+  if (privacyAgreement)
+    await db.userProfile.upsert({
+      where: { userId },
+      create: { userId, privacyPolicyAccepted: privacyAgreement },
+      update: {
+        privacyPolicyAccepted: privacyAgreement,
+        updatedAt: new Date(),
       },
     });
-  }
 
+  return { onboardingProfile };
+}
+
+async function createDefaultOneTaps(userId: string) {
   const defaultGoalTransfers = [
     {
       itemName: 'Skipped the coffee shop',
@@ -59,10 +75,64 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
       },
     });
   }
+}
 
-  let saveGoalTransfer;
-  if (onboardingProfileData.savingAmount && onboardingProfileData.saving) {
-    saveGoalTransfer = await db.goalTransfer.create({
+export async function onboardUser(userId: string, onboardingProfileInput: any) {
+  onboardingProfileInput.goalDueAt = dayjs(onboardingProfileInput.goalDueAt);
+  const result = onboardingSchema.safeParse(onboardingProfileInput);
+
+  if (result.success === false) {
+    return { fieldErrors: result.error.formErrors.fieldErrors };
+  }
+
+  const onboardingProfileData = result.data;
+  const currentOnboardingProfile = await db.onboardingProfile.findFirst({
+    where: { id: onboardingProfileData.id },
+  });
+
+  let goalId = currentOnboardingProfile?.goalId;
+
+  if (!goalId) {
+    const goal = await db.goal.create({
+      data: {
+        userId: userId,
+        name: onboardingProfileData.goalName,
+        targetAmount: onboardingProfileData.goalAmount,
+        dueAt: onboardingProfileData.goalDueAt.format(),
+        pinned: true,
+        imagePath: onboardingProfileData.imagePath,
+      },
+    });
+    goalId = goal.id;
+
+    await createDefaultOneTaps(userId);
+  }
+
+  let initialAmountTransfer;
+  if (
+    !currentOnboardingProfile?.initialTransferId &&
+    onboardingProfileData.initialAmount
+  ) {
+    initialAmountTransfer = await db.goalTransfer.create({
+      data: {
+        userId: userId,
+        goalId: goalId,
+        amount: onboardingProfileData.initialAmount,
+        transactedAt: new Date(),
+        itemName: onboardingProfileData.goalName + ' Initial Amount',
+        categoryId: externalAccountId,
+        initialTransfer: true,
+      },
+    });
+  }
+
+  let saveGoalTransferId = currentOnboardingProfile?.savingTransferId;
+  if (
+    !saveGoalTransferId &&
+    onboardingProfileData.savingAmount &&
+    onboardingProfileData.saving
+  ) {
+    const saveGoalTransfer = await db.goalTransfer.create({
       data: {
         userId: userId,
         amount: onboardingProfileData.savingAmount,
@@ -70,29 +140,41 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
         pinned: true,
       },
     });
+    saveGoalTransferId = saveGoalTransfer.id;
   }
 
-  const onboardingProfile = await db.onboardingProfile.create({
+  delete onboardingProfileData.privacyAgreement;
+  const onboardingProfile = await db.onboardingProfile.update({
+    where: { userId },
     data: {
       ...onboardingProfileData,
       goalDueAt: onboardingProfileData.goalDueAt.format(),
       userId: userId,
-      goalId: goal.id,
-      savingTransferId: saveGoalTransfer?.id,
+      goalId: goalId,
+      savingTransferId: saveGoalTransferId,
       initialTransferId: initialAmountTransfer?.id,
     },
   });
 
-  const session = await getServerSession(authOptions);
-  await sendSlackMessage(
-    session?.user?.email +
-      ' has completed onboarding with the goal ' +
-      goal.name +
-      ' for $' +
-      goal.targetAmount.toFixed(2) +
-      ' by ' +
-      goal.dueAt.toLocaleDateString() +
-      '.'
-  );
-  return { goal, onboardingProfile, saveGoalTransfer, initialAmountTransfer };
+  await syncItems(userId);
+
+  if (process.env.NODE_ENV === 'production') {
+    const session = await getServerSession(authOptions);
+    await sendSlackMessage(
+      session?.user?.email +
+        ' has completed onboarding with the goal ' +
+        onboardingProfileData.goalName +
+        ' for $' +
+        onboardingProfileData.goalAmount.toFixed(2) +
+        ' by ' +
+        onboardingProfileData.goalDueAt.locale() +
+        '.'
+    );
+  }
+
+  revalidatePath('/');
+  revalidatePath('/user');
+  revalidatePath('/goals');
+  revalidatePath('/savings');
+  return onboardingProfile;
 }

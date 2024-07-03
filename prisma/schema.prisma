@@ -13,6 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model PlaidWebhook {
+  id          String   @id @default(uuid())
+  itemId      String?
+  type        String?
+  code        String?
+  historical  Boolean?
+  initial     Boolean?
+  environment String?
+  json        Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+}
+
 model Goal {
   id           String   @id @default(uuid())
   userId       String
@@ -20,13 +32,15 @@ model Goal {
   dueAt        DateTime @db.Timestamptz()
   targetAmount Decimal  @db.Decimal(65, 2)
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
 
   note              String?
   imagePath         String?
   description       String?
   categoryId        String?
+  plaidCategory     String?
   pinned            Boolean?
   initialTransferId String?
 
@@ -45,10 +59,11 @@ model GoalCategory {
 }
 
 model OnboardingProfile {
-  id        String   @id @default(uuid())
-  userId    String
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  id        String    @id @default(uuid())
+  userId    String    @unique
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
 
   imagePath  String?
   goalId     String?
@@ -68,37 +83,108 @@ model OnboardingProfile {
 }
 
 model GoalTransfer {
-  id       String  @id @default(uuid())
-  userId   String
-  itemName String
-  amount   Decimal @db.Decimal(65, 2)
-  pinned   Boolean @default(false)
+  id              String  @id @default(uuid())
+  userId          String
+  itemName        String
+  amount          Decimal @db.Decimal(65, 2)
+  pinned          Boolean @default(false)
+  initialTransfer Boolean @default(false)
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
 
-  transactedAt DateTime? @db.Timestamptz()
-  link         String?
-  note         String?
-  imagePath    String?
-  merchantName String?
-  rating       Int?
+  transactedAt  DateTime? @db.Timestamptz()
+  link          String?
+  note          String?
+  imagePath     String?
+  merchantName  String?
+  rating        Int?
+  plaidCategory String?
+  transactionId String?
 
-  categoryId String?
-  goalId     String?
-  category   GoalCategory? @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  goal       Goal?         @relation(fields: [goalId], references: [id], onDelete: Restrict)
-
+  categoryId               String?
+  goalId                   String?
+  category                 GoalCategory?       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  goal                     Goal?               @relation(fields: [goalId], references: [id], onDelete: Restrict)
   savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
   initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
 }
 
 model UserProfile {
-  id                   String  @id @default(uuid())
-  userId               String  @unique
-  stripeCustomerId     String
-  stripeSubscriptionId String?
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  privacyPolicyAccepted Boolean @default(false)
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+}
+
+model PlaidItem {
+  id            String    @id @default(uuid())
+  userId        String
+  itemId        String    @unique
+  institutionId String
+  accessToken   String    @unique
+  loginRequired Boolean   @default(false)
+  lastRefresh   DateTime? @db.Timestamptz()
+  lastSync      DateTime? @db.Timestamptz()
+
+  cursor      String?
+  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  updatedAt   DateTime      @updatedAt @db.Timestamptz()
+  deletedAt   DateTime?     @db.Timestamptz()
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id             String    @id @default(uuid())
+  transactionId  String    @unique
+  userId         String
+  accountId      String
+  institutionId  String
+  plaidItemId    String
+  amount         Decimal   @db.Decimal(65, 2)
+  name           String
+  paymentChannel String
+  pending        Boolean
+  recurring      Boolean   @default(false)
+  read           Boolean   @default(false)
+  createdAt      DateTime  @default(now()) @db.Timestamptz()
+  updatedAt      DateTime  @updatedAt @db.Timestamptz()
+  deletedAt      DateTime? @db.Timestamptz()
+
+  date               DateTime
+  dateTime           DateTime? @db.Timestamptz()
+  authorizedDate     DateTime?
+  authorizedDateTime DateTime? @db.Timestamptz()
+
+  isoCurrencyCode      String?
+  pendingTransactionId String?
+  merchantName         String?
+  rating               Int?
+  impulse              Boolean?
+  impulseReturn        Boolean?
+
+  logoIcon                    String?
+  personalFinanceCategoryIcon String?
+  personalFinanceCategory     Json?
+  location                    Json?
+  paymentMeta                 Json?
+  plaidItem                   PlaidItem? @relation(fields: [plaidItemId], references: [itemId])
+}
+
+model Account {
+  id            String @id
+  userId        String
+  mask          String
+  name          String
+  subtype       String
+  type          String
+  accessToken   String
+  plaidItemId   String
+  institutionId String
 }

@@ -1,6 +1,5 @@
 import { completedUserGoalCount } from '@/app/_actions/users';
 import db from '@/db/db';
-import { externalAccountId } from '@/lib/goalTransfers';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { Tabs, TabsProps } from 'antd';
@@ -46,9 +45,7 @@ export default async function MySavingsPage({
               transfer.goalId !== null || transfer.amount.toNumber() < 0
           )}
           saveHref='/savings/new'
-          buyHref='/purchases/new'
           newSaveText='Impulse Save'
-          newPurchaseText='Impulse Buy'
         />
       ),
     },
@@ -67,7 +64,6 @@ export default async function MySavingsPage({
               transfer.amount.toNumber() > 0
           )}
           saveHref='/savings/new'
-          buyHref='/purchases/new'
           newSaveText='Add One-Tap Save'
           filter='templates'
         />
@@ -81,10 +77,9 @@ export default async function MySavingsPage({
           totalSaved={completedCounts.totalSaved}
           goalsCompleted={completedCounts.goalsCompleted}
           bottomGoalTransfers={goalTransfers.filter(
-            (transfer) => transfer.categoryId === externalAccountId
+            (transfer) => transfer.initialTransfer === true
           )}
           saveHref='/savings/new?filter=templates'
-          buyHref=''
           newSaveText='New External Account'
           filter='accounts'
           hide={true}

@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import db from "@/db/db";
-import { externalAccountId } from "@/lib/goalTransfers";
-import { Goal } from "@prisma/client";
-import { revalidatePath } from "next/cache";
-import { notFound } from "next/navigation";
-import { z } from "zod";
-import { uploadFile } from "./storage";
+import db from '@/db/db';
+import { externalAccountId } from '@/lib/goalTransfers';
+import { Goal } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
+import { notFound } from 'next/navigation';
+import { z } from 'zod';
+import { uploadFile } from './storage';
 
-const fileSchema = z.instanceof(File, { message: "Required" });
+const fileSchema = z.instanceof(File, { message: 'Required' });
 const imageSchema = fileSchema.refine(
-  (file) => file.size === 0 || file.type.startsWith("image/")
+  (file) => file.size === 0 || file.type.startsWith('image/')
 );
 export type GoalFieldErrors = {
   fieldErrors: {
@@ -28,7 +28,7 @@ const dueAtSchema = z
   .string()
   .regex(
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|(\+|-)\d{2}:\d{2})$/,
-    "Invalid ISO 8601 date time format"
+    'Invalid ISO 8601 date time format'
   );
 const goalSchema = z.object({
   dueAt: dueAtSchema,
@@ -38,11 +38,13 @@ const goalSchema = z.object({
   note: z.string().optional(),
   description: z.string().optional(),
   categoryId: z.string().uuid().optional(),
+  plaidCategory: z.string().optional(),
   initialAmount: z.coerce.number().min(1).optional(),
   image: imageSchema.optional(),
   imagePath: z.string().optional(),
   file: fileSchema.optional(),
 });
+
 const quickGoalSchema = z.object({
   dueAt: dueAtSchema,
   name: z.string().min(1),
@@ -80,17 +82,18 @@ export async function addQuickGoal(
         userId,
         goalId: goal.id,
         categoryId: externalAccountId,
+        initialTransfer: true,
         updatedAt: new Date(),
         itemName: `${data.name} Initial Deposit`,
         amount: data.initialAmount,
         transactedAt: new Date(),
       },
     });
-    revalidatePath("/savings");
+    revalidatePath('/savings');
   }
 
-  revalidatePath("/");
-  revalidatePath("/goals");
+  revalidatePath('/');
+  revalidatePath('/goals');
   return goal;
 }
 
@@ -121,6 +124,7 @@ export async function addGoal(
       updatedAt: new Date(),
       targetAmount: data.targetAmount,
       categoryId: data.categoryId,
+      plaidCategory: data.plaidCategory,
       dueAt: data.dueAt,
       imagePath,
     },
@@ -133,12 +137,14 @@ export async function addGoal(
         goalId: goal.id,
         rating: 5,
         categoryId: externalAccountId,
-        note: "",
-        link: "",
-        imagePath: "",
+        plaidCategory: data.plaidCategory,
+        initialTransfer: true,
+        note: '',
+        link: '',
+        imagePath: '',
         updatedAt: new Date(),
         itemName: `${data.name} Initial Deposit`,
-        merchantName: "",
+        merchantName: '',
         amount: data.initialAmount,
         transactedAt: new Date(),
       },
@@ -148,11 +154,11 @@ export async function addGoal(
       data: { initialTransferId: initialTransfer.id },
       where: { id: goal.id },
     });
-    revalidatePath("/savings");
+    revalidatePath('/savings');
   }
 
-  revalidatePath("/");
-  revalidatePath("/goals");
+  revalidatePath('/');
+  revalidatePath('/goals');
   return goal;
 }
 
@@ -176,7 +182,7 @@ export async function updateGoal(
       where: { id: goal?.initialTransferId },
     });
 
-    revalidatePath("/savings");
+    revalidatePath('/savings');
   }
 
   if (goal == null) return notFound();
@@ -197,13 +203,14 @@ export async function updateGoal(
       updatedAt: new Date(),
       targetAmount: data.targetAmount,
       categoryId: data.categoryId,
+      plaidCategory: data.plaidCategory,
       dueAt: data.dueAt,
       imagePath,
     },
   });
 
-  revalidatePath("/");
-  revalidatePath("/goals");
+  revalidatePath('/');
+  revalidatePath('/goals');
   return updatedGoal;
 }
 
@@ -212,7 +219,7 @@ export async function deleteGoal(id: string) {
 
   if (goal == null) return notFound();
 
-  revalidatePath("/");
-  revalidatePath("/goals");
+  revalidatePath('/');
+  revalidatePath('/goals');
   return goal;
 }

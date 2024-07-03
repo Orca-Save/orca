@@ -1,16 +1,16 @@
-import SignIn from "@/app/_components/SignIn";
-import { Text } from "@/app/_components/Typography";
-import { getUserProfile } from "@/db/common";
-import authOptions from "@/lib/nextAuthOptions";
-import { isExtendedSession } from "@/lib/session";
-import { Button } from "antd";
-import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat";
-import { getServerSession } from "next-auth";
-import Link from "next/link";
-import React from "react";
-import { getSubscription } from "../_actions/stripe";
-import UpdateSubscriptionForm from "./UpdateSubscriptionForm";
+import SignIn from '@/app/_components/SignIn';
+import { Text, Title } from '@/app/_components/Typography';
+import { getUserProfile } from '@/db/common';
+import authOptions from '@/lib/nextAuthOptions';
+import { isExtendedSession } from '@/lib/session';
+import { Button } from 'antd';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import { getServerSession } from 'next-auth';
+import Link from 'next/link';
+import React from 'react';
+import { getSubscription } from '../_actions/stripe';
+import UpdateSubscriptionForm from './UpdateSubscriptionForm';
 
 export default async function Subscription() {
   const session = await getServerSession(authOptions);
@@ -26,10 +26,11 @@ export default async function Subscription() {
   if (userProfile?.stripeSubscriptionId) {
     return (
       <>
+        <Title level={4}>Subscription</Title>
         <div>
           <Text>
-            Next Bill Date:{" "}
-            {dayjs(subscription!.current_period_end * 1000).format("ll")}
+            Next Bill Date:{' '}
+            {dayjs(subscription!.current_period_end * 1000).format('ll')}
           </Text>
         </div>
         <div>
@@ -37,10 +38,10 @@ export default async function Subscription() {
         </div>
         <div>
           <Text>
-            Status:{" "}
+            Status:{' '}
             {subscription?.cancel_at_period_end
-              ? "Cancel at end of period"
-              : "Active"}
+              ? 'Cancel at end of period'
+              : 'Active'}
           </Text>
         </div>
         <UpdateSubscriptionForm
@@ -48,8 +49,8 @@ export default async function Subscription() {
           cancel={!subscription?.cancel_at_period_end}
           actionText={
             subscription?.cancel_at_period_end
-              ? "Continue Subscription"
-              : "Stop Subscription"
+              ? 'Continue Subscription'
+              : 'Stop Subscription'
           }
         />
       </>
@@ -58,14 +59,17 @@ export default async function Subscription() {
 
   return (
     <>
+      <Title level={4}>Subscription</Title>
       <div>
         <Text>
           You are not currently subscribed. Subscribe and cancel at anytime.
         </Text>
       </div>
 
-      <Link href="/subscribe">
-        <Button type="link">Begin Subscription</Button>
+      <Link href='/subscribe'>
+        <Button data-id='subscription-nav-button' type='primary' size='large'>
+          Begin Subscription
+        </Button>
       </Link>
     </>
   );

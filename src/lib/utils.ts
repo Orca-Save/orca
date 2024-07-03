@@ -18,11 +18,22 @@ export function sendSlackMessage(message: string) {
   });
 }
 
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const currencyFormatter = (
+const formatters: { [currency: string]: Intl.NumberFormat } = {
+  USD: new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }),
+};
+
+export const currencyFormatter2 = (
   value?: string | number,
   includeDollar?: boolean
 ) => {
@@ -35,14 +46,49 @@ export const currencyFormatter = (
     ''
   );
   const formattedValue = valueString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const dollarSign = includeDollar ? '' : '$';
+  const dollarSign = includeDollar ? '$' : '';
   return `${Number(value) < 0 ? '-' : ''}${dollarSign}${formattedValue}`;
+};
+
+export const currencyFormatter = (
+  amount: number | string,
+  currencyCode?: string,
+  alwaysPositive?: boolean
+) => {
+  try {
+    if (typeof amount === 'undefined' || amount === null) {
+      return '';
+    }
+
+    let numericAmount =
+      typeof amount === 'string' ? parseFloat(amount) : amount;
+
+    if (isNaN(numericAmount)) {
+      return '';
+    }
+
+    if (alwaysPositive) {
+      numericAmount = Math.abs(numericAmount);
+    }
+
+    if (!formatters[currencyCode!]) {
+      formatters[currencyCode!] = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      });
+    }
+
+    return formatters[currencyCode!].format(numericAmount);
+  } catch (error) {
+    console.error(error);
+    return amount.toString();
+  }
 };
 
 export const baseURL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
-    : 'https://orca-next.azurewebsites.net';
+    : process.env.BASE_URL;
 
 export const navigateBack = (router: AppRouterInstance) => {
   const previousPath = sessionStorage.getItem('previousPath');

@@ -1,10 +1,10 @@
-"use client";
-import { Button, Input, List } from "antd";
-import { Fragment, useState } from "react";
-import { createApi } from "unsplash-js";
-import { ApiResponse } from "unsplash-js/dist/helpers/response";
-import { Basic } from "unsplash-js/dist/methods/photos/types";
-import { Photos } from "unsplash-js/dist/methods/search/types/response";
+'use client';
+import { Button, Input, List } from 'antd';
+import { Fragment, useState } from 'react';
+import { createApi } from 'unsplash-js';
+import { ApiResponse } from 'unsplash-js/dist/helpers/response';
+import { Basic } from 'unsplash-js/dist/methods/photos/types';
+import { Photos } from 'unsplash-js/dist/methods/search/types/response';
 
 const { Search } = Input;
 
@@ -18,7 +18,7 @@ const PhotoComp = ({ photo }: { photo: Basic }) => {
   return (
     <Fragment>
       <img
-        className="img transition-transform duration-300 hover:scale-110"
+        className='img transition-transform duration-300 hover:scale-110'
         src={urls.thumb}
       />
     </Fragment>
@@ -39,34 +39,37 @@ export default function UnsplashForm({
   const [data, setPhotosResponse] = useState<ApiResponse<Photos> | null>(null);
 
   const search = (query: string) => {
+    if (!query) return;
     setLoading(true);
     api.search
-      .getPhotos({ query, orientation: "landscape" })
+      .getPhotos({ query, orientation: 'landscape' })
       .then((result) => {
         setPhotosResponse(result);
         setLoading(false);
       })
       .catch(() => {
         setLoading(false);
-        console.error("something went wrong!");
+        console.error('something went wrong!');
       });
   };
   if (previewMode) {
     let src = value;
-    if (!value?.includes("orcasavestorage")) src += "&h=150";
+    if (!value?.includes('orcasavestorage')) src += '&h=150';
     return (
       <>
-        <Button onClick={() => setPreviewMode(false)}>Search Image</Button>
+        <Button data-id='search-image' onClick={() => setPreviewMode(false)}>
+          Search Image
+        </Button>
         {value ? (
           <img
-            className="img"
+            className='img'
             style={
-              value?.includes("orcasavestorage")
-                ? { height: "150px" }
+              value?.includes('orcasavestorage')
+                ? { height: '150px' }
                 : undefined
             }
             src={src}
-            alt="Image for goal"
+            alt='Image for goal'
           />
         ) : (
           <div>No image selected</div>
@@ -85,9 +88,9 @@ export default function UnsplashForm({
   } else {
     return (
       <>
-        <Input value={value} defaultValue={defaultValue} className="hidden" />
+        <Input value={value} defaultValue={defaultValue} className='hidden' />
         <Search
-          placeholder="Search for images"
+          placeholder='Search for images'
           loading={loading}
           onPressEnter={(e) => {
             e.preventDefault();

@@ -1,30 +1,53 @@
-"use client";
+'use client';
 
+import { currencyFormatter } from '@/lib/utils';
 import {
+  ExpressCheckoutElement,
   PaymentElement,
   useElements,
   useStripe,
-} from "@stripe/react-stripe-js";
-import { StripeError } from "@stripe/stripe-js";
-import { Button, Form, notification } from "antd";
-import { useRouter } from "next/navigation";
-import { addSubscriptionId } from "../_actions/stripe";
+} from '@stripe/react-stripe-js';
+import {
+  StripeError,
+  StripeExpressCheckoutElementConfirmEvent,
+} from '@stripe/stripe-js';
+import { Button, notification } from 'antd';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Stripe from 'stripe';
+import { addSubscriptionId } from '../_actions/stripe';
 
+function useStripePrice() {
+  const [price, setPrice] = useState<Stripe.Price | undefined>();
+
+  useEffect(() => {
+    fetch('/api/stripe/product', {
+      method: 'GET',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setPrice(data);
+      });
+  }, []);
+
+  return price;
+}
 function SubscriptionForm({
   clientSecret,
   userId,
   subscriptionId,
+  redirect,
 }: {
+  redirect: boolean;
   clientSecret: string;
   userId: string;
   subscriptionId: string;
 }) {
-  const [form] = Form.useForm();
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
   const [api, contextHolder] = notification.useNotification();
-
+  const price = useStripePrice();
   const onFinish = async () => {
     try {
       if (!stripe || !elements) return;
@@ -40,14 +63,14 @@ function SubscriptionForm({
         confirmParams: {
           return_url: `${window.location.origin}/user`,
         },
-        redirect: "if_required",
+        redirect: 'if_required',
       });
 
       if (paymentIntent === undefined) {
-        console.error("failed to create payment method record");
+        console.error('failed to create payment method record');
         api.error({
           message: `Failed to create payment method record`,
-          placement: "top",
+          placement: 'top',
           duration: 2,
         });
         return;
@@ -55,21 +78,21 @@ function SubscriptionForm({
       if (error) {
         api.error({
           message: (error as StripeError).message,
-          placement: "top",
+          placement: 'top',
           duration: 3,
         });
       } else {
         api.success({
-          message: "Success! Check your email for the invoice.",
-          placement: "top",
+          message: 'Success! Check your email for the invoice.',
+          placement: 'top',
           duration: 3,
         });
-        router.push("/user");
+        if (redirect) router.push('/user');
       }
     } catch (error) {
       api.error({
-        message: "Something went wrong. Please try again later.",
-        placement: "top",
+        message: 'Something went wrong. Please try again later.',
+        placement: 'top',
         duration: 3,
       });
       console.error(error);
@@ -77,30 +100,51 @@ function SubscriptionForm({
   };
 
   return (
-    <Form form={form} onFinish={onFinish}>
+    <>
+      <ExpressCheckoutElement
+        options={{
+          buttonType: {
+            // applePay: 'check-out',
+            googlePay: 'subscribe',
+            // paypal: 'buynow'
+          },
+
+          // wallets: {
+          //   // applePay: 'always',
+          //   googlePay: 'always',
+          // },
+        }}
+        onConfirm={function (
+          event: StripeExpressCheckoutElementConfirmEvent
+        ) {}}
+      />
       <PaymentElement
         options={{
           wallets: {
-            applePay: "auto",
-            googlePay: "auto",
+            applePay: 'auto',
+            googlePay: 'auto',
           },
           fields: {
             billingDetails: {
-              name: "auto",
-              email: "auto",
+              name: 'auto',
+              email: 'auto',
             },
           },
         }}
       />
-      <Button
-        type="primary"
-        size="large"
-        htmlType="submit"
-        disabled={!stripe || !elements}
-      >
-        Subscribe for $4.00/month
-      </Button>
-    </Form>
+      {price?.unit_amount && (
+        <Button
+          type='primary'
+          size='large'
+          data-id='subscription-button'
+          disabled={!stripe || !elements}
+          onClick={onFinish}
+        >
+          Subscribe for {currencyFormatter(price.unit_amount / 100)}/
+          {price.recurring?.interval}
+        </Button>
+      )}
+    </>
   );
 }
 

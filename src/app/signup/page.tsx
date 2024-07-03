@@ -13,7 +13,9 @@ const openSans = Open_Sans({
   variable: '--font-opensans',
 });
 export default function SignUpPage() {
-  const onClick = () => signIn('azure-ad-b2c', { callbackUrl: baseURL });
+  const onClick = () => {
+    signIn('azure-ad-b2c', { callbackUrl: baseURL });
+  };
   return (
     <Layout>
       <div>
@@ -49,6 +51,7 @@ export default function SignUpPage() {
 
           <div className='w-100 flex flex-col space-y-4'>
             <Button
+              data-id='signup-button'
               type='primary'
               size='large'
               className='w-full text-2xl align-middle'

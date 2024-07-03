@@ -1,15 +1,21 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import Confetti from "react-confetti";
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Confetti from 'react-confetti';
 
 export default function ConfettiComp({
   run,
   path,
+  timer,
+  count,
+  redirect = true,
 }: {
   run?: boolean;
   path: string;
+  count?: number;
+  timer?: number;
+  redirect?: boolean;
 }) {
   const [confetti, setConfetti] = useState({
     run,
@@ -18,16 +24,19 @@ export default function ConfettiComp({
   });
   const router = useRouter();
   if (run && confetti.firstRun) {
-    setConfetti({ run: true, count: 300, firstRun: false });
+    setConfetti({ run: true, count: count ?? 300, firstRun: false });
   }
 
   if (confetti.run && !confetti.firstRun) {
-    setTimeout(() => {
-      router.replace(path, undefined);
-    }, 500);
+    if (redirect) {
+      setTimeout(() => {
+        router.replace(path, undefined);
+      }, timer ?? 500);
+    }
     setTimeout(() => {
       setConfetti({ run: true, count: 0, firstRun: true });
     }, 1500);
   }
+
   return <Confetti run={confetti.run} numberOfPieces={confetti.count} />;
 }

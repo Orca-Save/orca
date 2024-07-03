@@ -1,4 +1,4 @@
-import { greenThemeColors } from '@/lib/themes';
+import { greenThemeColors } from '@/lib/themeConfig';
 import { GoalTransfer } from '@prisma/client';
 import { Button, Card, ConfigProvider, Skeleton, Space } from 'antd';
 import dynamic from 'next/dynamic';
@@ -24,9 +24,7 @@ const DynamicSavingsList = dynamic(() => import('./SavingsList'), {
 export default async function SavingsPage({
   filter,
   newSaveText,
-  newPurchaseText,
   saveHref,
-  buyHref,
   hide,
   bottomGoalTransfers,
   topGoalTransfers,
@@ -34,12 +32,10 @@ export default async function SavingsPage({
   totalSaved,
 }: {
   filter?: GoalTransferFilter;
-  newPurchaseText?: string;
   newSaveText: string;
   totalSaved: number;
   goalsCompleted: number;
   saveHref: string;
-  buyHref: string;
   bottomGoalTransfers: GoalTransfer[];
   topGoalTransfers?: GoalTransfer[];
   hide?: boolean;
@@ -53,7 +49,8 @@ export default async function SavingsPage({
       <Space direction='vertical' style={{ width: '100%' }}>
         <Space
           direction='horizontal'
-          style={{ justifyContent: 'center', width: '100%' }}>
+          style={{ justifyContent: 'center', width: '100%' }}
+        >
           {!hide ? (
             <Link href={saveHref + routeParams}>
               <ConfigProvider
@@ -61,18 +58,19 @@ export default async function SavingsPage({
                   components: {
                     Button: greenThemeColors,
                   },
-                }}>
-                <Button type='primary' size='large' style={{ color: 'black' }}>
+                }}
+              >
+                <Button
+                  data-id='save-button'
+                  type='primary'
+                  size='large'
+                  style={{ color: 'black' }}
+                >
                   {newSaveText}
                 </Button>
               </ConfigProvider>
             </Link>
           ) : null}
-          {filter === undefined && (
-            <Link href={buyHref}>
-              <Button size='large'>{newPurchaseText}</Button>
-            </Link>
-          )}
         </Space>
         <div>
           <CompletedCounts

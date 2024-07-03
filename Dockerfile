@@ -1,27 +1,22 @@
-# Use the official Node.js 18 image as a parent image
-FROM node:18-alpine
+FROM node:20-alpine
 
-# Set the working directory
+RUN apk add --no-cache postgresql-client
+
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (or yarn.lock)
 COPY package*.json ./
-# If you are using yarn, uncomment the next line and comment out the npm install line
-# COPY yarn.lock ./
 
-# Install dependencies
-RUN npm install --frozen-lockfile
-# For yarn, use the following command instead
-# RUN yarn install --frozen-lock
+RUN npm install
 
-# Copy the rest of your application code
 COPY . .
+COPY .env.production .env.production
 
-# Build your Next.js application
+RUN npx prisma generate
 RUN npm run build
 
-# Expose the port your app runs on
-EXPOSE 3000
+RUN rm .env.*
+RUN rm .env
 
-# Command to run your app
-CMD ["npm", "start"]
+EXPOSE 8080
+
+CMD ["npm", "start"] 

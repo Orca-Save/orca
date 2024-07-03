@@ -1,7 +1,6 @@
 'use server';
 
 import db from '@/db/db';
-import { externalAccountId } from '@/lib/goalTransfers';
 import { GoalTransfer } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
@@ -23,7 +22,7 @@ const transferSchema = z.object({
   merchantName: z.string().optional(),
   rating: z.coerce.number().int().min(1).max(5).optional(),
   goalId: z.string().uuid().optional(),
-  categoryId: z.string().uuid().optional(),
+  plaidCategory: z.string().optional(),
 });
 
 export type GoalTransferFieldErrors = {
@@ -53,6 +52,7 @@ export async function addQuickSave(
       userId: transfer.userId,
       rating: transfer.rating,
       categoryId: transfer.categoryId,
+      plaidCategory: transfer.plaidCategory,
       note: transfer.note,
       link: transfer.link,
       imagePath: transfer.imagePath,
@@ -88,6 +88,8 @@ export async function updateGoalTransfer(
   if (!existingTransfer) return notFound();
 
   const data = result.data;
+  let transactedAt: Date | undefined = undefined;
+  if (data.transactedAt) transactedAt = new Date(data.transactedAt);
   const updatedTransfer = await db.goalTransfer.update({
     where: { id },
     data: {
@@ -98,9 +100,9 @@ export async function updateGoalTransfer(
       goalId: data.goalId,
       updatedAt: new Date(),
       amount: data.amount,
-      categoryId: data.categoryId,
+      plaidCategory: data.plaidCategory,
       rating: data.rating,
-      transactedAt: new Date(data.transactedAt),
+      transactedAt,
     },
   });
 
@@ -126,7 +128,7 @@ export async function addGoalTransfer(
       userId: userId,
       goalId: data.goalId,
       rating: data.rating,
-      categoryId: data.categoryId,
+      plaidCategory: data.plaidCategory,
       note: data.note,
       link: data.link,
       imagePath: '',
@@ -161,7 +163,7 @@ export async function addQuickGoalTransfer(
   let userPinGoalId = undefined;
   let updatedAt = new Date();
   let transactedAt: Date | undefined = updatedAt;
-  if (goalTransferType === 'accounts') categoryId = externalAccountId;
+  // if (goalTransferType === 'accounts') categoryId = externalAccountId;
   if (goalTransferType === 'templates') transactedAt = undefined;
   if (goalTransferType !== 'templates' && data.amount > 0) {
     userPinGoalId = (
@@ -180,7 +182,7 @@ export async function addQuickGoalTransfer(
       goalId: userPinGoalId,
       updatedAt,
       transactedAt,
-
+      initialTransfer: goalTransferType === 'accounts',
       rating: data.rating,
       itemName: data.itemName,
       amount: data.amount,

@@ -19,6 +19,7 @@ import {
   externalAccountId,
   isGoalTransferFieldErrors,
 } from '@/lib/goalTransfers';
+import { plaidCategories } from '@/lib/plaid';
 import { isExtendedSession } from '@/lib/session';
 import { getPrevPageHref } from '@/lib/utils';
 import {
@@ -27,6 +28,7 @@ import {
   MehOutlined,
   SmileOutlined,
 } from '@ant-design/icons';
+import { useState } from 'react';
 import { addGoalTransfer, updateGoalTransfer } from '../_actions/goalTransfers';
 import CurrencyInput from './CurrencyInput';
 
@@ -37,6 +39,7 @@ type GoalTransferFormValues = {
   note?: string;
   itemName: string;
   merchantName: string;
+  plaidCategory: string;
   amount: number;
   rating: number;
   transactedAt: Dayjs | null;
@@ -66,6 +69,7 @@ export function GoalTransferForm({
   const [form] = Form.useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false); // Add loading state
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
@@ -102,11 +106,16 @@ export function GoalTransferForm({
     if (values.rating) formData.append('rating', String(values.rating));
     if (values.goalId) formData.append('goalId', values.goalId);
     if (values.categoryId) formData.append('categoryId', values.categoryId);
+    if (values.plaidCategory)
+      formData.append('plaidCategory', values.plaidCategory);
+
+    setLoading(true);
 
     const action = goalTransfer
       ? updateGoalTransfer.bind(null, goalTransfer.id)
       : addGoalTransfer.bind(null, session.user.id, isTemplate);
     const result = await action(formData);
+    setLoading(false);
 
     if (isGoalTransferFieldErrors(result)) {
       Object.entries(result.fieldErrors).forEach(([field, errors]) => {
@@ -130,7 +139,9 @@ export function GoalTransferForm({
     amount = -amount;
   }
   let isExternalAccount =
-    filterParam === 'accounts' || goalTransfer?.goalId === externalAccountId;
+    filterParam === 'accounts' ||
+    goalTransfer?.goalId === externalAccountId ||
+    goalTransfer?.initialTransfer;
   const initialCategoryId = isExternalAccount ? externalAccountId : undefined;
   return (
     <Form
@@ -146,15 +157,18 @@ export function GoalTransferForm({
         note: goalTransfer?.note,
         link: goalTransfer?.link,
         name: goalTransfer?.itemName,
+        plaidCategory: goalTransfer?.plaidCategory,
         rating: goalTransfer?.rating,
         merchantName: goalTransfer?.merchantName,
         goalId: goalTransfer?.goalId ?? goals.find((goal) => goal.pinned)?.id,
         categoryId: goalTransfer?.categoryId ?? initialCategoryId,
-      }}>
+      }}
+    >
       <Form.Item
         name='itemName'
         label='Item or Action'
-        rules={[{ required: true, message: 'Please input the item name!' }]}>
+        rules={[{ required: true, message: 'Please input the item name!' }]}
+      >
         <Input
           placeholder={`ex: ${
             isSavings ? 'Made lunch at home' : 'Starbucks Iced Latte'
@@ -165,7 +179,8 @@ export function GoalTransferForm({
       <Form.Item
         name='amount'
         label='Amount'
-        rules={[{ required: true, message: 'Please input the amount!' }]}>
+        rules={[{ required: true, message: 'Please input the amount!' }]}
+      >
         <CurrencyInput placeholder='Amount' />
       </Form.Item>
       {!isSavings ? (
@@ -187,12 +202,14 @@ export function GoalTransferForm({
                       you truly value.
                     </p>
                   </>
-                }>
+                }
+              >
                 <InfoCircleOutlined style={{ marginLeft: '5px' }} />
               </Tooltip>
             </span>
           }
-          rules={[{ required: true, message: 'Please rate the item!' }]}>
+          rules={[{ required: true, message: 'Please rate the item!' }]}
+        >
           <Rate character={({ index = 0 }) => customIcons[index + 1]} />
         </Form.Item>
       ) : null}
@@ -218,14 +235,11 @@ export function GoalTransferForm({
           <Form.Item name='merchantName' label='Merchant Name'>
             <Input placeholder='Merchant Name' />
           </Form.Item>
-          <Form.Item name='categoryId' label='Category'>
+          <Form.Item name='plaidCategory' label='Category'>
             <Select
               placeholder='Select a category'
               disabled={isExternalAccount}
-              options={categories.map((category: GoalCategory) => ({
-                label: category.name,
-                value: category.id,
-              }))}
+              options={plaidCategories}
             />
           </Form.Item>
           <Form.Item name='link' label='Link'>
@@ -239,11 +253,20 @@ export function GoalTransferForm({
 
       <div className='flex justify-end mt-5 space-x-4'>
         <Button
+          data-id='goal-transfer-form-cancel'
           size='large'
-          onClick={() => router.push(getPrevPageHref(referer, window))}>
+          onClick={() => router.back()}
+        >
           Cancel
         </Button>
-        <Button type='primary' size='large' htmlType='submit'>
+        <Button
+          data-id='goal-transfer-form-submit'
+          type='primary'
+          size='large'
+          htmlType='submit'
+          loading={loading}
+          disabled={loading}
+        >
           Save
         </Button>
       </div>
