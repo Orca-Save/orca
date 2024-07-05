@@ -543,6 +543,87 @@ async function fetchAllSyncData(
   }
 }
 
+export async function softSync() {
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      loginRequired: false,
+      deletedAt: null,
+    },
+  });
+
+  if (!plaidItems) {
+    throw new Error('Plaid item not found');
+  }
+
+  await Promise.all(plaidItems.map((plaidItem) => syncTransactions(plaidItem)));
+
+  revalidatePath('/');
+  revalidatePath('/log/transactions');
+  revalidatePath('/review');
+}
+
+export async function softSyncTransactions(plaidItem: PlaidItem) {
+  plaidItem.cursor = null;
+  const allData = await fetchAllSyncData(
+    plaidItem.accessToken,
+    plaidItem.cursor
+  );
+
+  const currentDate = new Date();
+  const weekAgo = new Date(currentDate);
+  weekAgo.setDate(currentDate.getDate() - 7);
+
+  const addedTransactions = allData.added;
+  const currentUserTransactions = await db.transaction.findMany({
+    where: {
+      plaidItemId: plaidItem.itemId,
+    },
+  });
+  const currentTransactionIds = currentUserTransactions.map(
+    (transaction) => transaction.transactionId
+  );
+  await db.transaction.createMany({
+    data: addedTransactions
+      .filter((x) => currentTransactionIds.includes(x.transaction_id))
+      .map((transaction) => {
+        const date = transaction.authorized_date ?? transaction.date;
+        const read =
+          new Date(date) < weekAgo ||
+          !discretionaryFilter({
+            personalFinanceCategory: transaction.personal_finance_category,
+            recurring: false,
+          });
+        return {
+          userId: plaidItem.userId,
+          read,
+          accountId: transaction.account_id,
+          transactionId: transaction.transaction_id,
+          institutionId: plaidItem.institutionId,
+          amount: transaction.amount,
+          plaidItemId: plaidItem.itemId,
+          name: transaction.name,
+          isoCurrencyCode: transaction.iso_currency_code,
+          paymentChannel: transaction.payment_channel,
+          pending: transaction.pending,
+
+          authorizedDate: transaction.authorized_date
+            ? new Date(transaction.authorized_date)
+            : null,
+          date: new Date(transaction.date),
+          dateTime: transaction.datetime,
+          authorizedDateTime: transaction.authorized_datetime,
+          merchantName: transaction.merchant_name,
+          pendingTransactionId: transaction.pending_transaction_id,
+          personalFinanceCategoryIcon:
+            transaction.personal_finance_category_icon_url,
+          location: transaction.location as unknown as Prisma.InputJsonObject,
+          paymentMeta:
+            transaction.payment_meta as unknown as Prisma.InputJsonObject,
+        };
+      }),
+  });
+}
+
 export async function syncTransactions(plaidItem: PlaidItem) {
   if (!plaidItem) {
     throw new Error('Plaid item not found');
@@ -551,8 +632,6 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   const currentDate = new Date();
   const weekAgo = new Date(currentDate);
   weekAgo.setDate(currentDate.getDate() - 7);
-
-  const endDate = currentDate.toISOString().split('T')[0];
 
   const request: TransactionsSyncRequest = {
     access_token: plaidItem.accessToken,
