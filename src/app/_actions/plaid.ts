@@ -584,7 +584,7 @@ export async function softSyncTransactions(plaidItem: PlaidItem) {
   );
   await db.transaction.createMany({
     data: addedTransactions
-      .filter((x) => currentTransactionIds.includes(x.transaction_id))
+      .filter((x) => !currentTransactionIds.includes(x.transaction_id))
       .map((transaction) => {
         const date = transaction.authorized_date ?? transaction.date;
         const read =
