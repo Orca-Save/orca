@@ -573,7 +573,9 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   const addedTransactions = allData.added;
   const modifiedTransactions = allData.modified;
   const removedTransactions = allData.removed;
-  const combinedTransactions = [...addedTransactions, ...modifiedTransactions];
+  const updatedTransactions = addedTransactions.filter(
+    (x) => x.pending_transaction_id
+  );
 
   await db.plaidItem.update({
     where: {
@@ -586,45 +588,18 @@ export async function syncTransactions(plaidItem: PlaidItem) {
     },
   });
 
-  await Promise.all(
-    combinedTransactions.map(async (transaction) => {
-      const date = transaction.authorized_date ?? transaction.date;
-      const read =
-        new Date(date) < weekAgo ||
-        !discretionaryFilter({
-          personalFinanceCategory: transaction.personal_finance_category,
-          recurring: false,
-        });
-
-      await db.transaction.upsert({
-        where: {
-          transactionId:
-            transaction.pending_transaction_id ?? transaction.transaction_id,
-        },
-        update: {
-          accountId: transaction.account_id,
-          amount: transaction.amount,
-          name: transaction.name,
-          isoCurrencyCode: transaction.iso_currency_code,
-          paymentChannel: transaction.payment_channel,
-          pending: transaction.pending,
-
-          authorizedDate: transaction.authorized_date
-            ? new Date(transaction.authorized_date)
-            : null,
-          date: new Date(transaction.date),
-          dateTime: transaction.datetime,
-          authorizedDateTime: transaction.authorized_datetime,
-
-          pendingTransactionId: transaction.pending_transaction_id,
-          merchantName: transaction.merchant_name,
-          personalFinanceCategoryIcon:
-            transaction.personal_finance_category_icon_url,
-          location: transaction.location as unknown as Prisma.InputJsonObject,
-          paymentMeta:
-            transaction.payment_meta as unknown as Prisma.InputJsonObject,
-        },
-        create: {
+  await db.transaction.createMany({
+    data: addedTransactions
+      .filter((x) => x.pending_transaction_id === null)
+      .map((transaction) => {
+        const date = transaction.authorized_date ?? transaction.date;
+        const read =
+          new Date(date) < weekAgo ||
+          !discretionaryFilter({
+            personalFinanceCategory: transaction.personal_finance_category,
+            recurring: false,
+          });
+        return {
           userId: plaidItem.userId,
           read,
           accountId: transaction.account_id,
@@ -633,6 +608,8 @@ export async function syncTransactions(plaidItem: PlaidItem) {
           amount: transaction.amount,
           plaidItemId: plaidItem.itemId,
           name: transaction.name,
+          isoCurrencyCode: transaction.iso_currency_code,
+          paymentChannel: transaction.payment_channel,
           pending: transaction.pending,
 
           authorizedDate: transaction.authorized_date
@@ -641,22 +618,84 @@ export async function syncTransactions(plaidItem: PlaidItem) {
           date: new Date(transaction.date),
           dateTime: transaction.datetime,
           authorizedDateTime: transaction.authorized_datetime,
-
           merchantName: transaction.merchant_name,
-          paymentChannel: transaction.payment_channel,
-          isoCurrencyCode: transaction.iso_currency_code,
           pendingTransactionId: transaction.pending_transaction_id,
           personalFinanceCategoryIcon:
             transaction.personal_finance_category_icon_url,
           location: transaction.location as unknown as Prisma.InputJsonObject,
-          personalFinanceCategory:
-            transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
           paymentMeta:
             transaction.payment_meta as unknown as Prisma.InputJsonObject,
-        },
-      });
-    })
-  );
+        };
+      }),
+  });
+
+  for (const transaction of updatedTransactions) {
+    if (!transaction.pending_transaction_id) continue;
+    await db.transaction.update({
+      where: {
+        transactionId: transaction.pending_transaction_id,
+      },
+      data: {
+        transactionId: transaction.transaction_id,
+        accountId: transaction.account_id,
+        institutionId: plaidItem.institutionId,
+        amount: transaction.amount,
+        plaidItemId: plaidItem.itemId,
+        name: transaction.name,
+        isoCurrencyCode: transaction.iso_currency_code,
+        paymentChannel: transaction.payment_channel,
+        pending: transaction.pending,
+
+        authorizedDate: transaction.authorized_date
+          ? new Date(transaction.authorized_date)
+          : null,
+        date: new Date(transaction.date),
+        dateTime: transaction.datetime,
+        authorizedDateTime: transaction.authorized_datetime,
+        pendingTransactionId: transaction.pending_transaction_id,
+        merchantName: transaction.merchant_name,
+        personalFinanceCategoryIcon:
+          transaction.personal_finance_category_icon_url,
+        location: transaction.location as unknown as Prisma.InputJsonObject,
+
+        paymentMeta:
+          transaction.payment_meta as unknown as Prisma.InputJsonObject,
+      },
+    });
+  }
+
+  for (const transaction of modifiedTransactions) {
+    await db.transaction.update({
+      where: {
+        transactionId: transaction.transaction_id,
+      },
+      data: {
+        transactionId: transaction.transaction_id,
+        accountId: transaction.account_id,
+        institutionId: plaidItem.institutionId,
+        amount: transaction.amount,
+        plaidItemId: plaidItem.itemId,
+        name: transaction.name,
+        isoCurrencyCode: transaction.iso_currency_code,
+        paymentChannel: transaction.payment_channel,
+        pending: transaction.pending,
+
+        authorizedDate: transaction.authorized_date
+          ? new Date(transaction.authorized_date)
+          : null,
+        date: new Date(transaction.date),
+        dateTime: transaction.datetime,
+        authorizedDateTime: transaction.authorized_datetime,
+        pendingTransactionId: transaction.pending_transaction_id,
+        merchantName: transaction.merchant_name,
+        personalFinanceCategoryIcon:
+          transaction.personal_finance_category_icon_url,
+        location: transaction.location as unknown as Prisma.InputJsonObject,
+        paymentMeta:
+          transaction.payment_meta as unknown as Prisma.InputJsonObject,
+      },
+    });
+  }
 
   await db.transaction.deleteMany({
     where: {
