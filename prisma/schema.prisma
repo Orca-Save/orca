@@ -22,6 +22,7 @@ model PlaidWebhook {
   initial     Boolean?
   environment String?
   json        Json?
+  error       Json?
   createdAt   DateTime @default(now()) @db.Timestamptz()
 }
 

@@ -147,9 +147,6 @@ export async function exchangePublicToken(
 
   const accessToken = exchangeTokenResponse.data.access_token;
   const itemId = exchangeTokenResponse.data.item_id;
-  const itemResponse = await plaidClient.itemGet({
-    access_token: accessToken,
-  });
 
   await db.plaidItem.upsert({
     where: {
@@ -158,6 +155,7 @@ export async function exchangePublicToken(
     update: {
       accessToken,
       institutionId,
+      loginRequired: false,
       updatedAt: new Date(),
     },
     create: {
@@ -1055,25 +1053,16 @@ export type ItemData = {
   linkText: string;
   accounts: Account[];
   itemId: string;
+  loginRequired: boolean;
 };
 export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   const itemsMeta = await db.plaidItem.findMany({
     where: {
       userId,
-      loginRequired: false,
       deletedAt: null,
     },
   });
 
-  const items = await Promise.all(
-    itemsMeta.map(async (item) => {
-      const itemResponse = await plaidClient.itemGet({
-        access_token: item.accessToken,
-      });
-
-      return itemResponse.data.item;
-    })
-  );
   const itemsData = await Promise.all(
     itemsMeta.map(async (item) => {
       let linkToken = '';
@@ -1084,22 +1073,22 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
         const accounts = await db.account.findMany({
           where: { accessToken: item.accessToken },
         });
-        const plaidItem = items.find((x) => x.item_id === item.itemId);
         let institution: Institution | undefined = undefined;
-        if (plaidItem)
-          institution = await getInstitutionById(plaidItem.institution_id!);
+        if (item) institution = await getInstitutionById(item.institutionId!);
         return {
           linkToken,
           institution,
           linkText: 'Reselect Accounts',
           itemId: item.itemId,
           accounts,
+          loginRequired: item.loginRequired,
         };
       } catch (e) {
         console.error(e);
         console.log('Error creating link token. Could be login required');
         return {
           linkToken,
+          loginRequired: item.loginRequired,
           linkText: 'Login required',
           institution: undefined,
           itemId: item.itemId,
@@ -1112,6 +1101,25 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   return itemsData;
 }
 
+export async function getPlaidItemsLoginRequired(userId: string) {
+  const items = await db.plaidItem.findMany({
+    where: {
+      userId,
+      loginRequired: true,
+      deletedAt: null,
+    },
+  });
+
+  const modifiedItems = await Promise.all(
+    items.map(async (item) =>
+      Object.assign(item, {
+        institution: await getInstitutionById(item.institutionId),
+      })
+    )
+  );
+
+  return modifiedItems;
+}
 export async function getRecurringTransactions(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
@@ -1179,12 +1187,12 @@ export const getUnreadTransactionCount = async (
   const plaidItem = await db.plaidItem.findFirst({
     where: {
       userId,
-      loginRequired: false,
       deletedAt: null,
     },
   });
   return {
     unreadCount: unreadTransactions.filter(discretionaryFilter).length,
-    plaidItemExist: plaidItem !== null,
+    plaidItemExists: plaidItem !== null,
+    loginRequired: plaidItem?.loginRequired ?? false,
   };
 };

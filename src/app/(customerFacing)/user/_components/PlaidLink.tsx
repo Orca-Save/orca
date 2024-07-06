@@ -11,7 +11,7 @@ interface LinkProps {
   userId: string;
   size?: 'small' | 'large' | 'middle';
   text?: string;
-  usingExistingInstitution?: boolean;
+  overrideExistingAccountCheck?: boolean;
 }
 
 const LinkButton = (props: LinkProps) => {
@@ -42,7 +42,7 @@ const LinkButton = (props: LinkProps) => {
       public_token,
       metadata,
       props.userId,
-      props.usingExistingInstitution
+      props.overrideExistingAccountCheck
     );
     if (results.duplicate) {
       setIsDuplicateModalOpen(true);
