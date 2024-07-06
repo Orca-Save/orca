@@ -12,7 +12,7 @@ export default async function ItemsLoginRequired({
   return (
     <Card title='Expired logins'>
       {loginRequiredItems.map((item) => (
-        <div>
+        <div key={item.itemId}>
           <PlaidLink
             text={item.institution?.name + ' Login Required'}
             linkToken={item.linkToken}
