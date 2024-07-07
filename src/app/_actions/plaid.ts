@@ -491,7 +491,7 @@ function sortTransactionDateDesc(a: PrismaTransaction, b: PrismaTransaction) {
 
 async function fetchAllSyncData(
   accessToken: string,
-  cursor: string | null,
+  cursor?: string | null,
   retriesLeft = 3
 ) {
   let keepGoing = false;
@@ -500,7 +500,7 @@ async function fetchAllSyncData(
     modified: Transaction[];
     removed: RemovedTransaction[];
     accessToken: string;
-    nextCursor: string | null;
+    nextCursor?: string | null;
   } = {
     added: [],
     modified: [],
@@ -553,7 +553,9 @@ export async function softSync() {
     throw new Error('Plaid item not found');
   }
 
-  await Promise.all(plaidItems.map((plaidItem) => syncTransactions(plaidItem)));
+  await Promise.all(
+    plaidItems.map((plaidItem) => softSyncTransactions(plaidItem))
+  );
 
   revalidatePath('/');
   revalidatePath('/log/transactions');
@@ -562,10 +564,7 @@ export async function softSync() {
 
 export async function softSyncTransactions(plaidItem: PlaidItem) {
   plaidItem.cursor = null;
-  const allData = await fetchAllSyncData(
-    plaidItem.accessToken,
-    plaidItem.cursor
-  );
+  const allData = await fetchAllSyncData(plaidItem.accessToken);
 
   const currentDate = new Date();
   const weekAgo = new Date(currentDate);
@@ -697,6 +696,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
           authorizedDateTime: transaction.authorized_datetime,
           merchantName: transaction.merchant_name,
           pendingTransactionId: transaction.pending_transaction_id,
+          personalFinanceCategory: transaction.personal_finance_category as any,
           personalFinanceCategoryIcon:
             transaction.personal_finance_category_icon_url,
           location: transaction.location as unknown as Prisma.InputJsonObject,
