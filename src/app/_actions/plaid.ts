@@ -611,6 +611,7 @@ export async function softSyncTransactions(plaidItem: PlaidItem) {
           authorizedDateTime: transaction.authorized_datetime,
           merchantName: transaction.merchant_name,
           pendingTransactionId: transaction.pending_transaction_id,
+          personalFinanceCategory: transaction.personal_finance_category as any,
           personalFinanceCategoryIcon:
             transaction.personal_finance_category_icon_url,
           location: transaction.location as unknown as Prisma.InputJsonObject,
