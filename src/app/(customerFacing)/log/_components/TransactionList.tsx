@@ -288,7 +288,20 @@ function FilterOptions({
         </Flex>
         {options.map(({ label, value }) => (
           <>
-            {label}
+            <Text
+              style={
+                value !== 'impulseBuy'
+                  ? undefined
+                  : {
+                      borderRadius: '1rem',
+                      padding: '0.23rem 0.5rem',
+                      backgroundColor: 'rgba(154,0,207, 0.2)',
+                      color: 'rgba(154,0,207, 0.6)',
+                    }
+              }
+            >
+              {label}
+            </Text>
             <Switch
               size='small'
               checked={filter[value]}
