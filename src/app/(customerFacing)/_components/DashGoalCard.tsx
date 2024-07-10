@@ -1,5 +1,5 @@
 import { completedUserGoalCount } from '@/app/_actions/users';
-import db from '@/db/db';
+import db from '../../../../server/src/db/db';
 import { getPinnedUserGoal } from '../_actions/data';
 import CompletedCounts from './CompletedCounts';
 import GoalCard from './GoalCard';

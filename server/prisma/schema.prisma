@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PlaidWebhook {
+  id          String   @id @default(uuid())
+  itemId      String?
+  type        String?
+  code        String?
+  historical  Boolean?
+  initial     Boolean?
+  environment String?
+  json        Json?
+  error       Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+}
+
+model Goal {
+  id           String   @id @default(uuid())
+  userId       String
+  name         String
+  dueAt        DateTime @db.Timestamptz()
+  targetAmount Decimal  @db.Decimal(65, 2)
+
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+
+  note              String?
+  imagePath         String?
+  description       String?
+  categoryId        String?
+  plaidCategory     String?
+  pinned            Boolean?
+  initialTransferId String?
+
+  goalTransfers     GoalTransfer[]
+  category          GoalCategory?       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  OnboardingProfile OnboardingProfile[]
+}
+
+model GoalCategory {
+  id           String         @id @default(uuid())
+  name         String
+  createdAt    DateTime       @default(now()) @db.Timestamptz()
+  updatedAt    DateTime       @updatedAt @db.Timestamptz()
+  Goal         Goal[]
+  GoalTransfer GoalTransfer[]
+}
+
+model OnboardingProfile {
+  id        String    @id @default(uuid())
+  userId    String    @unique
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+
+  imagePath  String?
+  goalId     String?
+  goalName   String
+  goalAmount Decimal  @db.Decimal(65, 2)
+  goalDueAt  DateTime @db.Timestamptz()
+  goal       Goal?    @relation(fields: [goalId], references: [id])
+
+  savingTransferId String?
+  saving           String?
+  savingAmount     Decimal?      @db.Decimal(65, 2)
+  savingTransfer   GoalTransfer? @relation("savingTransfer", fields: [savingTransferId], references: [id])
+
+  initialTransferId String?
+  initialAmount     Decimal?      @db.Decimal(65, 2)
+  initialTransfer   GoalTransfer? @relation("initialTransfer", fields: [initialTransferId], references: [id])
+}
+
+model GoalTransfer {
+  id              String  @id @default(uuid())
+  userId          String
+  itemName        String
+  amount          Decimal @db.Decimal(65, 2)
+  pinned          Boolean @default(false)
+  initialTransfer Boolean @default(false)
+
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+
+  transactedAt  DateTime? @db.Timestamptz()
+  link          String?
+  note          String?
+  imagePath     String?
+  merchantName  String?
+  rating        Int?
+  plaidCategory String?
+  transactionId String?
+
+  categoryId               String?
+  goalId                   String?
+  category                 GoalCategory?       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  goal                     Goal?               @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
+  initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
+}
+
+model UserProfile {
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  privacyPolicyAccepted Boolean @default(false)
+
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+}
+
+model PlaidItem {
+  id            String    @id @default(uuid())
+  userId        String
+  itemId        String    @unique
+  institutionId String
+  accessToken   String    @unique
+  loginRequired Boolean   @default(false)
+  lastRefresh   DateTime? @db.Timestamptz()
+  lastSync      DateTime? @db.Timestamptz()
+
+  cursor      String?
+  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  updatedAt   DateTime      @updatedAt @db.Timestamptz()
+  deletedAt   DateTime?     @db.Timestamptz()
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id             String    @id @default(uuid())
+  transactionId  String    @unique
+  userId         String
+  accountId      String
+  institutionId  String
+  plaidItemId    String
+  amount         Decimal   @db.Decimal(65, 2)
+  name           String
+  paymentChannel String
+  pending        Boolean
+  recurring      Boolean   @default(false)
+  read           Boolean   @default(false)
+  createdAt      DateTime  @default(now()) @db.Timestamptz()
+  updatedAt      DateTime  @updatedAt @db.Timestamptz()
+  deletedAt      DateTime? @db.Timestamptz()
+
+  date               DateTime
+  dateTime           DateTime? @db.Timestamptz()
+  authorizedDate     DateTime?
+  authorizedDateTime DateTime? @db.Timestamptz()
+
+  isoCurrencyCode      String?
+  pendingTransactionId String?
+  merchantName         String?
+  rating               Int?
+  impulse              Boolean?
+  impulseReturn        Boolean?
+  note                 String?
+
+  logoIcon                    String?
+  personalFinanceCategoryIcon String?
+  personalFinanceCategory     Json?
+  location                    Json?
+  paymentMeta                 Json?
+  plaidItem                   PlaidItem? @relation(fields: [plaidItemId], references: [itemId])
+}
+
+model Account {
+  id            String @id
+  userId        String
+  mask          String
+  name          String
+  subtype       String
+  type          String
+  accessToken   String
+  plaidItemId   String
+  institutionId String
+}

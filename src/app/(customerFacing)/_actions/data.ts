@@ -1,4 +1,4 @@
-import db from "@/db/db";
+import db from '../../../../server/src/db/db';
 
 export const getPinnedUserGoal = (userId: string) => {
   return db.goal.findFirst({

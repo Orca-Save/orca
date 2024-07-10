@@ -1,5 +1,4 @@
 import { Text, Title } from '@/app/_components/Typography';
-import db from '@/db/db';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { currencyFormatter } from '@/lib/utils';
@@ -7,6 +6,7 @@ import { Flex, Space } from 'antd';
 import { format } from 'date-fns';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
+import db from '../../../../../server/src/db/db';
 import TransactionForm from '../../log/transactions/_components/TransactionForm';
 
 export default async function TransactionPage({

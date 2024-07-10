@@ -1,6 +1,5 @@
-'use client';
 import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
-import { reactPlugin } from '../app/_components/appInsightsClient';
+import { reactPlugin } from '../../client/src/utils/appInsightsClient';
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <>

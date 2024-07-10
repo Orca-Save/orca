@@ -1,23 +1,23 @@
-import { getServerSession } from "next-auth";
-import { signIn } from "next-auth/react";
+import { getServerSession } from 'next-auth';
+import { signIn } from 'next-auth/react';
 
-import { GoalTransferForm } from "@/app/_components/GoalTransferForm";
-import { Title } from "@/app/_components/Typography";
-import db from "@/db/db";
-import authOptions from "@/lib/nextAuthOptions";
-import { isExtendedSession } from "@/lib/session";
-import { baseURL } from "@/lib/utils";
-import { headers } from "next/headers";
+import { Title } from '@/app/_components/Typography';
+import authOptions from '@/lib/nextAuthOptions';
+import { isExtendedSession } from '@/lib/session';
+import { baseURL } from '@/lib/utils';
+import { headers } from 'next/headers';
+import { GoalTransferForm } from '../../../../client/src/components/saves/GoalTransferForm';
+import db from '../../../../server/src/db/db';
 
 const getCategories = () => {
   return db.goalCategory.findMany({
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
   });
 };
 const getGoals = (userId: string) => {
   return db.goal.findMany({
     where: { userId },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
   });
 };
 const getGoalTransfer = (goalTransferId?: string) => {
@@ -37,11 +37,11 @@ export default async function GoalTransferPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    signIn("azure-ad-b2c", { callbackUrl: baseURL + "/savings" });
+    signIn('azure-ad-b2c', { callbackUrl: baseURL + '/savings' });
     return;
   }
   const headersList = headers();
-  const referer = headersList.get("referer");
+  const referer = headersList.get('referer');
   if (!isExtendedSession(session)) return;
 
   const [categories, goals, goalTransfer] = await Promise.all([

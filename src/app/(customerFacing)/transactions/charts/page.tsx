@@ -1,4 +1,3 @@
-import db from '@/db/db';
 import authOptions from '@/lib/nextAuthOptions';
 import { isExtendedSession } from '@/lib/session';
 import { Transaction } from '@prisma/client';
@@ -6,6 +5,7 @@ import { Card, Space } from 'antd';
 import { format, startOfWeek } from 'date-fns';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
+import db from '../../../../../server/src/db/db';
 import TransactionChart from './_component/TransactionChart';
 
 export default async function ChartPage() {

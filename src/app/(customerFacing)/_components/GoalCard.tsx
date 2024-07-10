@@ -2,8 +2,8 @@ import PinSavingButton from '@/app/_components/PinSavingButton';
 import { Text } from '@/app/_components/Typography';
 import { Goal as PrismaGoal } from '@prisma/client';
 import { Card, Col, Row } from 'antd';
-import GoalProgress from '../goals/_components/GoalProgress';
-import PopconfirmDelete from '../goals/_components/PopconfirmDelete';
+import GoalProgress from '../../../../client/src/components/goals/components/GoalProgress';
+import PopconfirmDelete from '../../../../client/src/components/goals/components/PopconfirmDelete';
 import EditAction from './EditAction';
 
 type Goal = PrismaGoal & {

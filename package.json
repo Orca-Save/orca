@@ -29,7 +29,7 @@
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^3.4.0",
     "@types/stripe": "^8.0.417",
-    "antd": "^5.16.1",
+    "antd": "^5.19.1",
     "applicationinsights": "^3.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
