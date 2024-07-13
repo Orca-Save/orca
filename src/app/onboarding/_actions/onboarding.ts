@@ -77,7 +77,11 @@ async function createDefaultOneTaps(userId: string) {
   }
 }
 
-export async function onboardUser(userId: string, onboardingProfileInput: any) {
+export async function onboardUser(
+  userId: string,
+  onboardingProfileInput: any,
+  skipSync = false
+) {
   onboardingProfileInput.goalDueAt = dayjs(onboardingProfileInput.goalDueAt);
   const result = onboardingSchema.safeParse(onboardingProfileInput);
 
@@ -156,7 +160,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     },
   });
 
-  await syncItems(userId);
+  if (!skipSync) await syncItems(userId);
 
   if (process.env.NODE_ENV === 'production') {
     const session = await getServerSession(authOptions);

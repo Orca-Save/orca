@@ -425,8 +425,9 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
       read,
     },
     orderBy: {
-      date: 'asc',
+      authorizedDate: 'asc',
     },
+    take: 200,
   });
 
   const accounts = await db.account.findMany({
@@ -1184,6 +1185,10 @@ export const getUnreadTransactionCount = async (
       read: false,
       // recurring: false,
     },
+    orderBy: {
+      authorizedDate: 'desc',
+    },
+    take: 150,
   });
   const plaidItem = await db.plaidItem.findFirst({
     where: {
