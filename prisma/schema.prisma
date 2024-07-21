@@ -107,7 +107,7 @@ model GoalTransfer {
   categoryId               String?
   goalId                   String?
   category                 GoalCategory?       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  goal                     Goal?               @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  goal                     Goal?               @relation(fields: [goalId], references: [id])
   savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
   initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
 }

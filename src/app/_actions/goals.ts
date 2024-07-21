@@ -215,6 +215,11 @@ export async function updateGoal(
 }
 
 export async function deleteGoal(id: string) {
+  // update goal transfers to remove goalId
+  await db.goalTransfer.updateMany({
+    where: { goalId: id },
+    data: { goalId: null },
+  });
   const goal = await db.goal.delete({ where: { id } });
 
   if (goal == null) return notFound();
