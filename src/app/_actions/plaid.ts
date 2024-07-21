@@ -13,7 +13,7 @@ import {
   Prisma,
   Transaction as PrismaTransaction,
 } from '@prisma/client';
-import { format, formatDistanceToNow, formatRelative, isToday } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
 import {
@@ -397,8 +397,8 @@ export type FormattedTransaction = {
   recurring: boolean;
   date: Date;
   personalFinanceCategory: PersonalFinanceCategory;
-  friendlyDistanceDate: string;
-  friendlyRelativeDate: string;
+  // friendlyDistanceDate: string;
+  // friendlyRelativeDate: string;
   formattedDate: string;
 };
 export type PersonalFinanceCategory = {
@@ -425,7 +425,7 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
       read,
     },
     orderBy: {
-      authorizedDate: 'asc',
+      authorizedDate: 'desc',
     },
     take: 200,
   });
@@ -460,11 +460,11 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
         formattedDate: isToday(date)
           ? 'TODAY'
           : format(date, 'EEE, MMMM dd').toUpperCase(),
-        friendlyDistanceDate: formatDistanceToNow(date, {
-          addSuffix: true,
-        }),
+        // friendlyDistanceDate: formatDistanceToNow(date, {
+        //   addSuffix: true,
+        // }),
         name: transaction.merchantName ?? transaction.name,
-        friendlyRelativeDate: formatRelative(date, new Date()),
+        // friendlyRelativeDate: formatRelative(date, new Date()),
         merchantName: transaction.merchantName ?? '',
         amount: parseFloat(transaction.amount.toFixed(2)),
         category,
