@@ -1,21 +1,30 @@
-'use client';
-
-import { varelaRound } from '@/lib/fonts';
-import { baseURL } from '@/lib/utils';
-import { LoginOutlined, UserOutlined } from '@ant-design/icons';
-import { Menu, Space, Typography } from 'antd';
-import { signIn, useSession } from 'next-auth/react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useMsal } from '@azure/msal-react';
+import { Button, Menu, Space, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 
 const { SubMenu } = Menu;
 const { Text } = Typography;
 
+const loginRequest = {
+  scopes: ['User.Read'],
+};
 export default function HeaderMenu({ className }: { className: string }) {
-  const pathname = usePathname();
-  const { data: session } = useSession();
+  const { instance } = useMsal();
+  const pathname = '';
+  const handleLogin = (loginType) => {
+    console.log('hello');
+    if (loginType === 'popup') {
+      instance.loginPopup(loginRequest).catch((e) => {
+        console.log(e);
+      });
+    } else if (loginType === 'redirect') {
+      instance.loginRedirect(loginRequest).catch((e) => {
+        console.log(e);
+      });
+    }
+  };
+
   const [current, setCurrent] = useState(pathname);
-  const router = useRouter();
   useEffect(() => {
     setCurrent(pathname);
   }, [pathname]);
@@ -26,13 +35,13 @@ export default function HeaderMenu({ className }: { className: string }) {
   }
   const onClick = (key: string) => {
     if (key === '/user') {
-      if (session) {
-        router.push(key);
-      } else {
-        signIn('azure-ad-b2c', { callbackUrl: baseURL + '/' });
-      }
+      // if (session) {
+      //   // router.push(key);
+      // } else {
+      //   signIn('azure-ad-b2c', { callbackUrl: baseURL + '/' });
+      // }
     } else {
-      router.push(key);
+      // router.push(key);
     }
   };
   return (
@@ -51,7 +60,7 @@ export default function HeaderMenu({ className }: { className: string }) {
           size={0}
           className='hidden md:inline'
         >
-          <Text className={`${varelaRound.className}`}>Orca</Text>
+          <Text className='varela-round'>Orca</Text>
         </Space>
         <Space
           direction='horizontal'
@@ -78,8 +87,15 @@ export default function HeaderMenu({ className }: { className: string }) {
               Transactions
             </Menu.Item>
           </SubMenu> */}
+
+          <Button type='primary' onClick={() => handleLogin('popup')}>
+            Sign in using Popup
+          </Button>
+          <Button type='primary' onClick={() => handleLogin('redirect')}>
+            Sign in using Redirect
+          </Button>
           <Menu.Item eventKey='/user' key='/user'>
-            {session ? <UserOutlined /> : <LoginOutlined />}
+            {/* {session ? <UserOutlined /> : <LoginOutlined />} */}
           </Menu.Item>
         </Space>
       </Menu>

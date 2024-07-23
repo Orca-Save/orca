@@ -1,6 +1,3 @@
-'use client';
-import { softSync } from '@/app/_actions/plaid';
-import { Button } from 'antd';
 import { useState } from 'react';
 
 export default function AdminButtons() {
@@ -23,7 +20,7 @@ export default function AdminButtons() {
       >
         pass
       </Button> */}
-      <Button onClick={async () => await softSync()}>Soft Sync</Button>
+      {/* <Button onClick={async () => await softSync()}>Soft Sync</Button> */}
     </>
   );
 }

@@ -1,7 +1,4 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Confetti from 'react-confetti';
 
 export default function ConfettiComp({
@@ -22,7 +19,6 @@ export default function ConfettiComp({
     count: 0,
     firstRun: true,
   });
-  const router = useRouter();
   if (run && confetti.firstRun) {
     setConfetti({ run: true, count: count ?? 300, firstRun: false });
   }
@@ -30,7 +26,7 @@ export default function ConfettiComp({
   if (confetti.run && !confetti.firstRun) {
     if (redirect) {
       setTimeout(() => {
-        router.replace(path, undefined);
+        // router.replace(path, undefined);
       }, timer ?? 500);
     }
     setTimeout(() => {
