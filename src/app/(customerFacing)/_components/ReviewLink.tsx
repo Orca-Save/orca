@@ -2,6 +2,8 @@ import { HappyProvider } from '@/components/HappyProvider';
 import { UnreadCountObject } from '@/lib/plaid';
 import { Badge, Button, ConfigProvider, Flex } from 'antd';
 import Link from 'next/link';
+import ItemsLoginRequired from '../user/_components/ItemsLoginRequired';
+import ConnectPlaid from './ConnectPlaid';
 import RefreshPlaidItems from './RefreshPlaidItems';
 
 export default async function ReviewLink({
@@ -11,6 +13,10 @@ export default async function ReviewLink({
   unreadObj: UnreadCountObject;
   userId: string;
 }) {
+  if (unreadObj.plaidItemExists === false)
+    return <ConnectPlaid userId={userId} />;
+
+  if (unreadObj.loginRequired) return <ItemsLoginRequired userId={userId} />;
   return (
     <Flex
       justify='center'

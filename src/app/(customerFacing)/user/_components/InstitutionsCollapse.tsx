@@ -54,7 +54,7 @@ const InstitutionCollapse = ({
               userId={userId}
               size='middle'
               text={linkText}
-              usingExistingInstitution={true}
+              overrideExistingAccountCheck={true}
             />
             <Popconfirm
               placement='topLeft'

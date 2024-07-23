@@ -86,7 +86,6 @@ export default function OnboardingForm({
   // if (currentTab === 3 && !privacyChecked && !userProfile?.stripeSubscriptionId)
   //   disableNext = true;
   if (currentTab === 4 && itemsData.length === 0) disableNext = true;
-
   return (
     <div>
       <Row justify='center'>
@@ -330,7 +329,7 @@ export default function OnboardingForm({
                 label: '4 Connect Accounts',
                 key: '4',
                 forceRender,
-                disabled: !privacyChecked || !userProfile?.stripeSubscriptionId,
+                disabled: !privacyChecked, // || !userProfile?.stripeSubscriptionId,
                 children: (
                   <div style={{ margin: '15px' }}>
                     <div style={{ marginBottom: '20px' }}>
@@ -391,6 +390,33 @@ export default function OnboardingForm({
                   Back
                 </Button>
               </Form.Item>
+              {currentTab === 4 && (
+                <Form.Item>
+                  <Button
+                    size='large'
+                    onClick={async () => {
+                      setLoading(true);
+                      if (currentTab === 4) {
+                        const newOnboardingProfile = {
+                          ...onboardingProfile,
+                          ...form.getFieldsValue(),
+                          privacyAgreement: privacyChecked,
+                          goalDueAt: form.getFieldValue('goalDueAt')?.format(),
+                        };
+                        await onboardUser(
+                          session.user.id,
+                          newOnboardingProfile,
+                          true
+                        );
+                        router.push('/?confetti=true');
+                      }
+                      setLoading(false);
+                    }}
+                  >
+                    Skip
+                  </Button>
+                </Form.Item>
+              )}
               <Form.Item>
                 <HappyProvider>
                   <Button

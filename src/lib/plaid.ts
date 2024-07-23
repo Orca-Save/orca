@@ -5,9 +5,9 @@ export function discretionaryFilter(transaction: {
   personalFinanceCategory: any;
 }) {
   const category =
-    transaction.personalFinanceCategory as PersonalFinanceCategory;
+    transaction.personalFinanceCategory as PersonalFinanceCategory | null;
   const categoryDetail = plaidCategoriesDetail.find(
-    (x) => x.detailed === category.detailed
+    (x) => x.detailed === category?.detailed
   );
   if (categoryDetail?.discretionary) {
     const exceptions = [
@@ -25,7 +25,8 @@ export function discretionaryFilter(transaction: {
 
 export type UnreadCountObject = {
   unreadCount: number;
-  plaidItemExist: boolean;
+  plaidItemExists: boolean;
+  loginRequired: boolean;
 };
 
 export const plaidCategories = [
@@ -43,7 +44,6 @@ export const plaidCategories = [
     label: 'Government And Non Profit',
   },
   { value: 'RENT_AND_UTILITIES', label: 'Rent And Utilities' },
-  { value: 'PRIMARY', label: 'Primary' },
   { value: 'INCOME', label: 'Income' },
   { value: 'TRANSFER_IN', label: 'Transfer In' },
   { value: 'TRANSFER_OUT', label: 'Transfer Out' },

@@ -22,6 +22,7 @@ async function plaidWebhookHandler(req: any) {
       historical_update_complete,
       initial_update_complete,
       environment,
+      error,
     } = reqObj;
     await db.plaidWebhook.create({
       data: {
@@ -30,6 +31,7 @@ async function plaidWebhookHandler(req: any) {
         code: webhook_code,
         historical: historical_update_complete,
         initial: initial_update_complete,
+        error,
         environment: environment,
         json: reqObj,
       },
@@ -78,6 +80,19 @@ async function plaidWebhookHandler(req: any) {
         appInsightsClient.trackEvent({
           name: 'HandleUserPermissionRevoked',
           properties: { item_id, result: 'success' },
+        });
+        break;
+      case 'ERROR':
+        if (error.error_code === 'ITEM_LOGIN_REQUIRED')
+          handleLoginExpiration(plaidItem, true);
+        appInsightsClient.trackEvent({
+          name: 'PlaidWebhookError',
+          properties: {
+            item_id,
+            webhook_code,
+            webhook_type,
+            error_code: error.error_code,
+          },
         });
         break;
       default:

@@ -14,7 +14,6 @@ import { redirect } from 'next/navigation';
 import { getUnreadTransactionCount } from '../_actions/plaid';
 import { Title } from '../_components/Typography';
 import ConfettiComp from './_components/Confetti';
-import ConnectPlaid from './_components/ConnectPlaid';
 import ReviewLink from './_components/ReviewLink';
 
 const DynamicPinnedGoal = dynamic(() => import('./_components/DashGoalCard'), {
@@ -90,11 +89,7 @@ export default async function HomePage({
           </ConfigProvider>
         </Link>
 
-        {unreadObj.plaidItemExist ? (
-          <ReviewLink unreadObj={unreadObj} userId={session.user.id} />
-        ) : (
-          <ConnectPlaid userId={session.user.id} />
-        )}
+        <ReviewLink unreadObj={unreadObj} userId={session.user.id} />
         <Title level={4} style={{ margin: 0 }}>
           One-Tap Impulse Saves
         </Title>

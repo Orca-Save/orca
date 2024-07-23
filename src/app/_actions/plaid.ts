@@ -13,7 +13,7 @@ import {
   Prisma,
   Transaction as PrismaTransaction,
 } from '@prisma/client';
-import { format, formatDistanceToNow, formatRelative, isToday } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { revalidatePath } from 'next/cache';
 
 import {
@@ -147,9 +147,6 @@ export async function exchangePublicToken(
 
   const accessToken = exchangeTokenResponse.data.access_token;
   const itemId = exchangeTokenResponse.data.item_id;
-  const itemResponse = await plaidClient.itemGet({
-    access_token: accessToken,
-  });
 
   await db.plaidItem.upsert({
     where: {
@@ -158,6 +155,7 @@ export async function exchangePublicToken(
     update: {
       accessToken,
       institutionId,
+      loginRequired: false,
       updatedAt: new Date(),
     },
     create: {
@@ -399,8 +397,8 @@ export type FormattedTransaction = {
   recurring: boolean;
   date: Date;
   personalFinanceCategory: PersonalFinanceCategory;
-  friendlyDistanceDate: string;
-  friendlyRelativeDate: string;
+  // friendlyDistanceDate: string;
+  // friendlyRelativeDate: string;
   formattedDate: string;
 };
 export type PersonalFinanceCategory = {
@@ -427,8 +425,9 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
       read,
     },
     orderBy: {
-      date: 'asc',
+      authorizedDate: 'desc',
     },
+    take: 200,
   });
 
   const accounts = await db.account.findMany({
@@ -461,11 +460,11 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
         formattedDate: isToday(date)
           ? 'TODAY'
           : format(date, 'EEE, MMMM dd').toUpperCase(),
-        friendlyDistanceDate: formatDistanceToNow(date, {
-          addSuffix: true,
-        }),
+        // friendlyDistanceDate: formatDistanceToNow(date, {
+        //   addSuffix: true,
+        // }),
         name: transaction.merchantName ?? transaction.name,
-        friendlyRelativeDate: formatRelative(date, new Date()),
+        // friendlyRelativeDate: formatRelative(date, new Date()),
         merchantName: transaction.merchantName ?? '',
         amount: parseFloat(transaction.amount.toFixed(2)),
         category,
@@ -493,7 +492,7 @@ function sortTransactionDateDesc(a: PrismaTransaction, b: PrismaTransaction) {
 
 async function fetchAllSyncData(
   accessToken: string,
-  cursor: string | null,
+  cursor?: string | null,
   retriesLeft = 3
 ) {
   let keepGoing = false;
@@ -502,7 +501,7 @@ async function fetchAllSyncData(
     modified: Transaction[];
     removed: RemovedTransaction[];
     accessToken: string;
-    nextCursor: string | null;
+    nextCursor?: string | null;
   } = {
     added: [],
     modified: [],
@@ -543,6 +542,87 @@ async function fetchAllSyncData(
   }
 }
 
+export async function softSync() {
+  const plaidItems = await db.plaidItem.findMany({
+    where: {
+      loginRequired: false,
+      deletedAt: null,
+    },
+  });
+
+  if (!plaidItems) {
+    throw new Error('Plaid item not found');
+  }
+
+  await Promise.all(
+    plaidItems.map((plaidItem) => softSyncTransactions(plaidItem))
+  );
+
+  revalidatePath('/');
+  revalidatePath('/log/transactions');
+  revalidatePath('/review');
+}
+
+export async function softSyncTransactions(plaidItem: PlaidItem) {
+  plaidItem.cursor = null;
+  const allData = await fetchAllSyncData(plaidItem.accessToken);
+
+  const currentDate = new Date();
+  const weekAgo = new Date(currentDate);
+  weekAgo.setDate(currentDate.getDate() - 7);
+
+  const addedTransactions = allData.added;
+  const currentUserTransactions = await db.transaction.findMany({
+    where: {
+      plaidItemId: plaidItem.itemId,
+    },
+  });
+  const currentTransactionIds = currentUserTransactions.map(
+    (transaction) => transaction.transactionId
+  );
+  await db.transaction.createMany({
+    data: addedTransactions
+      .filter((x) => !currentTransactionIds.includes(x.transaction_id))
+      .map((transaction) => {
+        const date = transaction.authorized_date ?? transaction.date;
+        const read =
+          new Date(date) < weekAgo ||
+          !discretionaryFilter({
+            personalFinanceCategory: transaction.personal_finance_category,
+            recurring: false,
+          });
+        return {
+          userId: plaidItem.userId,
+          read,
+          accountId: transaction.account_id,
+          transactionId: transaction.transaction_id,
+          institutionId: plaidItem.institutionId,
+          amount: transaction.amount,
+          plaidItemId: plaidItem.itemId,
+          name: transaction.name,
+          isoCurrencyCode: transaction.iso_currency_code,
+          paymentChannel: transaction.payment_channel,
+          pending: transaction.pending,
+
+          authorizedDate: transaction.authorized_date
+            ? new Date(transaction.authorized_date)
+            : null,
+          date: new Date(transaction.date),
+          dateTime: transaction.datetime,
+          authorizedDateTime: transaction.authorized_datetime,
+          merchantName: transaction.merchant_name,
+          pendingTransactionId: transaction.pending_transaction_id,
+          personalFinanceCategory: transaction.personal_finance_category as any,
+          personalFinanceCategoryIcon:
+            transaction.personal_finance_category_icon_url,
+          location: transaction.location as unknown as Prisma.InputJsonObject,
+          paymentMeta:
+            transaction.payment_meta as unknown as Prisma.InputJsonObject,
+        };
+      }),
+  });
+}
+
 export async function syncTransactions(plaidItem: PlaidItem) {
   if (!plaidItem) {
     throw new Error('Plaid item not found');
@@ -551,8 +631,6 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   const currentDate = new Date();
   const weekAgo = new Date(currentDate);
   weekAgo.setDate(currentDate.getDate() - 7);
-
-  const endDate = currentDate.toISOString().split('T')[0];
 
   const request: TransactionsSyncRequest = {
     access_token: plaidItem.accessToken,
@@ -573,6 +651,9 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   const addedTransactions = allData.added;
   const modifiedTransactions = allData.modified;
   const removedTransactions = allData.removed;
+  const updatedTransactions = addedTransactions.filter(
+    (x) => x.pending_transaction_id
+  );
 
   await db.plaidItem.update({
     where: {
@@ -586,59 +667,98 @@ export async function syncTransactions(plaidItem: PlaidItem) {
   });
 
   await db.transaction.createMany({
-    data: addedTransactions.map((transaction) => {
-      const date = transaction.authorized_date ?? transaction.date;
-      const read =
-        new Date(date) < weekAgo ||
-        !discretionaryFilter({
-          personalFinanceCategory: transaction.personal_finance_category,
-          recurring: false,
-        });
-      return {
-        userId: plaidItem.userId,
-        read,
-        accountId: transaction.account_id,
+    data: addedTransactions
+      .filter((x) => x.pending_transaction_id === null)
+      .map((transaction) => {
+        const date = transaction.authorized_date ?? transaction.date;
+        const read =
+          new Date(date) < weekAgo ||
+          !discretionaryFilter({
+            personalFinanceCategory: transaction.personal_finance_category,
+            recurring: false,
+          });
+        return {
+          userId: plaidItem.userId,
+          read,
+          accountId: transaction.account_id,
+          transactionId: transaction.transaction_id,
+          institutionId: plaidItem.institutionId,
+          amount: transaction.amount,
+          plaidItemId: plaidItem.itemId,
+          name: transaction.name,
+          isoCurrencyCode: transaction.iso_currency_code,
+          paymentChannel: transaction.payment_channel,
+          pending: transaction.pending,
+
+          authorizedDate: transaction.authorized_date
+            ? new Date(transaction.authorized_date)
+            : null,
+          date: new Date(transaction.date),
+          dateTime: transaction.datetime,
+          authorizedDateTime: transaction.authorized_datetime,
+          merchantName: transaction.merchant_name,
+          pendingTransactionId: transaction.pending_transaction_id,
+          personalFinanceCategory: transaction.personal_finance_category as any,
+          personalFinanceCategoryIcon:
+            transaction.personal_finance_category_icon_url,
+          location: transaction.location as unknown as Prisma.InputJsonObject,
+          paymentMeta:
+            transaction.payment_meta as unknown as Prisma.InputJsonObject,
+        };
+      }),
+  });
+
+  for (const transaction of updatedTransactions) {
+    if (!transaction.pending_transaction_id) continue;
+    await db.transaction.update({
+      where: {
+        transactionId: transaction.pending_transaction_id,
+      },
+      data: {
         transactionId: transaction.transaction_id,
+        accountId: transaction.account_id,
         institutionId: plaidItem.institutionId,
         amount: transaction.amount,
         plaidItemId: plaidItem.itemId,
         name: transaction.name,
+        isoCurrencyCode: transaction.iso_currency_code,
+        paymentChannel: transaction.payment_channel,
         pending: transaction.pending,
+
         authorizedDate: transaction.authorized_date
           ? new Date(transaction.authorized_date)
           : null,
         date: new Date(transaction.date),
         dateTime: transaction.datetime,
         authorizedDateTime: transaction.authorized_datetime,
-        merchantName: transaction.merchant_name,
-        paymentChannel: transaction.payment_channel,
-        isoCurrencyCode: transaction.iso_currency_code,
         pendingTransactionId: transaction.pending_transaction_id,
+        merchantName: transaction.merchant_name,
         personalFinanceCategoryIcon:
           transaction.personal_finance_category_icon_url,
         location: transaction.location as unknown as Prisma.InputJsonObject,
-        personalFinanceCategory:
-          transaction.personal_finance_category as unknown as Prisma.InputJsonObject,
+
         paymentMeta:
           transaction.payment_meta as unknown as Prisma.InputJsonObject,
-      };
-    }),
-  });
+      },
+    });
+  }
 
   for (const transaction of modifiedTransactions) {
     await db.transaction.update({
       where: {
-        transactionId:
-          transaction.pending_transaction_id ?? transaction.transaction_id,
+        transactionId: transaction.transaction_id,
       },
       data: {
         transactionId: transaction.transaction_id,
         accountId: transaction.account_id,
+        institutionId: plaidItem.institutionId,
         amount: transaction.amount,
+        plaidItemId: plaidItem.itemId,
         name: transaction.name,
         isoCurrencyCode: transaction.iso_currency_code,
         paymentChannel: transaction.payment_channel,
         pending: transaction.pending,
+
         authorizedDate: transaction.authorized_date
           ? new Date(transaction.authorized_date)
           : null,
@@ -935,25 +1055,16 @@ export type ItemData = {
   linkText: string;
   accounts: Account[];
   itemId: string;
+  loginRequired: boolean;
 };
 export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   const itemsMeta = await db.plaidItem.findMany({
     where: {
       userId,
-      loginRequired: false,
       deletedAt: null,
     },
   });
 
-  const items = await Promise.all(
-    itemsMeta.map(async (item) => {
-      const itemResponse = await plaidClient.itemGet({
-        access_token: item.accessToken,
-      });
-
-      return itemResponse.data.item;
-    })
-  );
   const itemsData = await Promise.all(
     itemsMeta.map(async (item) => {
       let linkToken = '';
@@ -964,22 +1075,22 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
         const accounts = await db.account.findMany({
           where: { accessToken: item.accessToken },
         });
-        const plaidItem = items.find((x) => x.item_id === item.itemId);
         let institution: Institution | undefined = undefined;
-        if (plaidItem)
-          institution = await getInstitutionById(plaidItem.institution_id!);
+        if (item) institution = await getInstitutionById(item.institutionId!);
         return {
           linkToken,
           institution,
           linkText: 'Reselect Accounts',
           itemId: item.itemId,
           accounts,
+          loginRequired: item.loginRequired,
         };
       } catch (e) {
         console.error(e);
         console.log('Error creating link token. Could be login required');
         return {
           linkToken,
+          loginRequired: item.loginRequired,
           linkText: 'Login required',
           institution: undefined,
           itemId: item.itemId,
@@ -992,6 +1103,25 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
   return itemsData;
 }
 
+export async function getPlaidItemsLoginRequired(userId: string) {
+  const items = await db.plaidItem.findMany({
+    where: {
+      userId,
+      loginRequired: true,
+      deletedAt: null,
+    },
+  });
+
+  const modifiedItems = await Promise.all(
+    items.map(async (item) =>
+      Object.assign(item, {
+        institution: await getInstitutionById(item.institutionId),
+      })
+    )
+  );
+
+  return modifiedItems;
+}
 export async function getRecurringTransactions(userId: string) {
   const plaidItems = await db.plaidItem.findMany({
     where: {
@@ -1055,16 +1185,20 @@ export const getUnreadTransactionCount = async (
       read: false,
       // recurring: false,
     },
+    orderBy: {
+      authorizedDate: 'desc',
+    },
+    take: 150,
   });
   const plaidItem = await db.plaidItem.findFirst({
     where: {
       userId,
-      loginRequired: false,
       deletedAt: null,
     },
   });
   return {
     unreadCount: unreadTransactions.filter(discretionaryFilter).length,
-    plaidItemExist: plaidItem !== null,
+    plaidItemExists: plaidItem !== null,
+    loginRequired: plaidItem?.loginRequired ?? false,
   };
 };

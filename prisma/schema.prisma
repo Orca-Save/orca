@@ -22,6 +22,7 @@ model PlaidWebhook {
   initial     Boolean?
   environment String?
   json        Json?
+  error       Json?
   createdAt   DateTime @default(now()) @db.Timestamptz()
 }
 
@@ -106,7 +107,7 @@ model GoalTransfer {
   categoryId               String?
   goalId                   String?
   category                 GoalCategory?       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  goal                     Goal?               @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  goal                     Goal?               @relation(fields: [goalId], references: [id])
   savingOnboardingProfile  OnboardingProfile[] @relation("savingTransfer")
   initialOnboardingProfile OnboardingProfile[] @relation("initialTransfer")
 }
@@ -168,6 +169,7 @@ model Transaction {
   rating               Int?
   impulse              Boolean?
   impulseReturn        Boolean?
+  note                 String?
 
   logoIcon                    String?
   personalFinanceCategoryIcon String?

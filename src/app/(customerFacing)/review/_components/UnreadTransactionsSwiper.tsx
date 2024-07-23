@@ -11,13 +11,14 @@ import { Title } from '@/app/_components/Typography';
 import { impulseButtonTheme, lightGreenThemeColor } from '@/lib/themeConfig';
 import { currencyFormatter } from '@/lib/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { Liquid } from '@ant-design/plots';
 import {
   Button,
   Card,
   ConfigProvider,
   Flex,
   Modal,
+  Progress,
+  ProgressProps,
   Rate,
   Space,
   Tooltip,
@@ -40,6 +41,11 @@ type UnreadTransactionsSwiperProps = {
   formattedTransactions: FormattedTransaction[];
   userId: string;
   focusGoalImgURL: string;
+};
+
+const twoColors: ProgressProps['strokeColor'] = {
+  '0%': '#108ee9',
+  '100%': '#87d068',
 };
 
 const customIcons: Record<number, React.ReactNode> = {
@@ -247,22 +253,26 @@ export default function UnreadTransactionsSwiper({
           <Flex justify='center'>
             <Text>{transaction?.formattedDate}</Text>
           </Flex>
-          <Text
-            strong
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {transactionName}
-          </Text>
-          <Text
-            type='secondary'
-            ellipsis={{
-              tooltip: true,
-            }}
-          >
-            {transaction?.category ?? 'Unknown'}
-          </Text>
+          <Flex justify='center'>
+            <Text
+              strong
+              ellipsis={{
+                tooltip: true,
+              }}
+            >
+              {transactionName}
+            </Text>
+          </Flex>
+          <Flex justify='center'>
+            <Text
+              type='secondary'
+              ellipsis={{
+                tooltip: true,
+              }}
+            >
+              {transaction?.category ?? 'Unknown'}
+            </Text>
+          </Flex>
           <Flex justify='center'>
             <Text className='ml-4'>
               {transaction?.amount && currencyFormatter(transaction?.amount)}
@@ -322,8 +332,16 @@ export default function UnreadTransactionsSwiper({
               Transactions Left
             </Title>
           </div>
-          <div style={{ height: config.height }}>
-            <Liquid {...config} />
+          <Flex justify='center' className='w-full'>
+            {swipeState.transactions.length}
+          </Flex>
+          <div className='w-4/5 mx-auto'>
+            <Progress
+              percent={config.percent * 100}
+              status='active'
+              showInfo={false}
+              strokeColor={twoColors}
+            />
           </div>
           <div className='flex justify-center text-center'>
             <Text>
@@ -362,7 +380,9 @@ export default function UnreadTransactionsSwiper({
                   No more transactions! You&apos;re all caught up! 🎉
                 </Title>
               </Flex>
-              <img alt='focus-goal-image' src={focusGoalImgURL} />
+              <Flex justify='center' align='center'>
+                <img alt='focus-goal-image' src={focusGoalImgURL} />
+              </Flex>
               <Flex justify='center' align='center' className='text-center m-2'>
                 <Link href='/'>
                   <Button type='primary'>Return Home</Button>
@@ -373,27 +393,25 @@ export default function UnreadTransactionsSwiper({
         />
       </div>
       <Flex justify='center' className='mt-4 w-full'>
-        {swipeState.isEmpty === false ? (
-          <Button
-            data-id='sync-transactions-button'
-            size='large'
-            disabled={swipeState.reviewHistory.length === 0}
-            onClick={async () => {
-              const transaction = swipeState.reviewHistory.at(-1);
-              if (!transaction) return;
-              await markTransactionAsUnread(transaction.id);
+        <Button
+          data-id='sync-transactions-button'
+          size='large'
+          disabled={swipeState.reviewHistory.length === 0}
+          onClick={async () => {
+            const transaction = swipeState.reviewHistory.at(-1);
+            if (!transaction) return;
+            await markTransactionAsUnread(transaction.id);
 
-              setSwipeState((prev) => ({
-                ...prev,
-                transactions: prev.transactions.concat([transaction]),
-                reviewHistory: prev.reviewHistory.slice(0, -1),
-                swiperKey: 'swiper-key-' + Math.random(),
-              }));
-            }}
-          >
-            Undo
-          </Button>
-        ) : null}
+            setSwipeState((prev) => ({
+              ...prev,
+              transactions: prev.transactions.concat([transaction]),
+              reviewHistory: prev.reviewHistory.slice(0, -1),
+              swiperKey: 'swiper-key-' + Math.random(),
+            }));
+          }}
+        >
+          Undo
+        </Button>
       </Flex>
     </div>
   );

@@ -11,6 +11,7 @@ export async function saveTransaction({
   read,
   rating,
   impulseReturn,
+  note,
 }: {
   read: boolean;
   userId: string;
@@ -19,6 +20,7 @@ export async function saveTransaction({
   personalFinanceCategory: Object;
   rating?: number;
   impulseReturn?: boolean;
+  note?: string;
 }) {
   await db.transaction.update({
     where: { userId, transactionId },
@@ -28,6 +30,7 @@ export async function saveTransaction({
       impulseReturn,
       read,
       rating,
+      note,
     },
   });
   revalidatePath('/');
