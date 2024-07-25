@@ -1,5 +1,4 @@
 import { Goal, GoalTransfer } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
 import db from './db/db';
 export const getPinnedUserGoal = (userId: string) => {
   return db.goal.findFirst({
@@ -18,9 +17,6 @@ export async function setGoalPinned(goalId: string, pinned: boolean) {
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/savings');
-  revalidatePath('/goals');
   return goal;
 }
 
@@ -32,9 +28,6 @@ export async function setGoalTransferPinned(goalId: string, pinned: boolean) {
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/savings');
-  revalidatePath('/goals');
   return goalTransfer;
 }
 

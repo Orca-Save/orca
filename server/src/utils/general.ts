@@ -1,7 +1,3 @@
-import { clsx, type ClassValue } from 'clsx';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import { twMerge } from 'tailwind-merge';
-
 export function sendSlackMessage(message: string) {
   if (!process.env.SLACK_WEBHOOK_URL)
     return Promise.resolve(console.log('No Slack webhook URL found'));
@@ -18,10 +14,6 @@ export function sendSlackMessage(message: string) {
 
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
 }
 
 const formatters: { [currency: string]: Intl.NumberFormat } = {
@@ -87,17 +79,6 @@ export const baseURL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
     : process.env.BASE_URL;
-
-export const navigateBack = (router: AppRouterInstance) => {
-  const previousPath = sessionStorage.getItem('previousPath');
-  const currentPath = window.location.pathname;
-
-  if (previousPath && previousPath !== currentPath) {
-    router.back();
-  } else {
-    router.push('/goals');
-  }
-};
 
 export function getPrevPageHref(referer: string | undefined, window: Window) {
   if (!referer) return '/';

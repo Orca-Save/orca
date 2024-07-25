@@ -1,8 +1,4 @@
-'use server';
-
 import { GoalTransfer } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
-import { notFound } from 'next/navigation';
 import { z } from 'zod';
 import db from './db/db';
 
@@ -38,6 +34,24 @@ export type GoalTransferFieldErrors = {
     goalId?: string[];
   };
 };
+export async function getPinnedGoalTransfers(userId: string) {
+  return (
+    await db.goalTransfer.findMany({
+      where: {
+        userId,
+        pinned: true,
+      },
+      include: {
+        category: true,
+      },
+    })
+  ).map((transfer) =>
+    Object.assign(transfer, {
+      category: transfer.category?.name,
+      amount: transfer.amount.toNumber(),
+    })
+  );
+}
 
 export async function addQuickSave(
   goalId: string,
@@ -62,10 +76,6 @@ export async function addQuickSave(
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/savings');
-  revalidatePath('/goals');
-
   return goalTransfer;
 }
 
@@ -85,7 +95,7 @@ export async function updateGoalTransfer(
     where: { id },
   });
 
-  if (!existingTransfer) return notFound();
+  if (!existingTransfer) throw Error('Not found');
 
   const data = result.data;
   let transactedAt: Date | undefined = undefined;
@@ -106,8 +116,6 @@ export async function updateGoalTransfer(
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/savings');
   return updatedTransfer;
 }
 export async function addGoalTransfer(
@@ -141,8 +149,6 @@ export async function addGoalTransfer(
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/savings');
   return goalTransfer;
 }
 
@@ -190,21 +196,14 @@ export async function addQuickGoalTransfer(
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/savings');
   return goalTransfer;
 }
 
-export async function deleteGoalTransfer(
-  id: string
-): Promise<GoalTransfer | typeof notFound> {
+export async function deleteGoalTransfer(id: string): Promise<GoalTransfer> {
   const deletedTransfer = await db.goalTransfer.delete({
     where: { id },
   });
 
-  if (!deletedTransfer) return notFound();
-
-  revalidatePath('/');
-  revalidatePath('/savings');
+  if (!deletedTransfer) throw Error('Not found');
   return deletedTransfer;
 }

@@ -1,19 +1,14 @@
-import { Button, ConfigProvider, Space, Typography } from 'antd';
+import { Button, ConfigProvider, Skeleton, Space, Typography } from 'antd';
 import * as emoji from 'node-emoji';
 
 import { HappyProvider } from '@ant-design/happy-work-theme';
+import { useMsal } from '@azure/msal-react';
 import React from 'react';
-import useFetch from '../../hooks/fetch';
+import useFetch from '../../hooks/useFetch';
 import { greenThemeColors } from '../../utils/themeConfig';
+import QuickSaveButtons from './DashQuickSave';
 
 const { Title } = Typography;
-
-// const DynamicPinnedGoal = dynamic(() => import('/DashGoalCard'), {
-//   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
-// });
-// const DynamicQuickSave = dynamic(() => import('/DashQuickSave'), {
-//   loading: () => <Skeleton paragraph={{ rows: 4 }} />,
-// });
 
 export default function HomePage() {
   // const session = await getServerSession(authOptions);
@@ -31,8 +26,24 @@ export default function HomePage() {
   //   !userProfile?.privacyPolicyAccepted
   // )
   //   redirect('/onboarding');
-  const data = useFetch('/api/user/onboardingProfileCount');
-  console.log(data);
+  // const { error, execute } = useFetchWithMsal();
+
+  // const [todoListData, setTodoListData] = useState(null);
+
+  // useEffect(() => {
+  //   if (!todoListData) {
+  //     execute('GET', 'http://localhost:3001/').then((response) => {
+  //       console.log('response', response);
+  //       // setTodoListData(response);
+  //     });
+  //   }
+  // }, [execute, todoListData]);
+  const { accounts } = useMsal();
+  const userId = accounts[0].localAccountId;
+  const { data } = useFetch('api/pages/dashboardPage', 'POST', {
+    userId,
+  });
+  const { onboardingProfileCount, unreadObj, userProfile } = data;
 
   return (
     <div className='flex justify-center'>
@@ -41,7 +52,9 @@ export default function HomePage() {
         <Title level={4} style={{ margin: 0 }}>
           Focus Goal
         </Title>
-        {/* <DynamicPinnedGoal userId={session.user.id} /> */}
+        <Skeleton paragraph={{ rows: 4 }}>
+          {/* <DynamicPinnedGoal userId={userId} /> */}
+        </Skeleton>
         {/* <Link href='/savings/new'> */}
         <ConfigProvider
           theme={{
@@ -73,8 +86,9 @@ export default function HomePage() {
         <Title level={4} style={{ margin: 0 }}>
           One-Tap Impulse Saves
         </Title>
-
-        {/* <DynamicQuickSave userId={session.user.id} /> */}
+        <Skeleton paragraph={{ rows: 4 }}>
+          <QuickSaveButtons userId={userId} />
+        </Skeleton>
       </Space>
     </div>
   );

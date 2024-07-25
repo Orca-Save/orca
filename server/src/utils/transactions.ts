@@ -1,4 +1,3 @@
-import { revalidatePath } from 'next/cache';
 import db from './db/db';
 
 export async function getTransactions(userId: string) {
@@ -53,6 +52,4 @@ export async function saveTransaction({
       note,
     },
   });
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
 }

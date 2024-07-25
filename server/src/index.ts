@@ -1,37 +1,45 @@
 import express, { Request, Response } from 'express';
-import passport from 'passport';
-import { BearerStrategy } from 'passport-azure-ad';
-import userRoutes from './routes/userRoutes';
-const bearerStrategy = new BearerStrategy(
-  {
-    identityMetadata: `https://${process.env.AZURE_AD_B2C_TENANT_NAME}.b2clogin.com/${process.env.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW}/v2.0/.well-known/openid-configuration`,
-    clientID: '04111cce-6b01-4f79-9767-5769e6a02356',
-    validateIssuer: false, //remove this line in production
-    loggingLevel: 'info',
-  },
-  (token, done) => {
-    return done(null, token, null);
-  }
-);
+import jwt from 'jsonwebtoken';
+import jwksClient from 'jwks-rsa';
+
+import pagesRoutes from './routes/pageRoutes';
+
+const cors = require('cors');
+
+const client = jwksClient({
+  jwksUri:
+    'https://orcanext.b2clogin.com/orcanext.onmicrosoft.com/B2C_1_orca_signin/discovery/v2.0/keys',
+});
+
+function getKey(header: any, callback: any) {
+  client.getSigningKey(header.kid, function (err, key: any) {
+    const signingKey = key.getPublicKey();
+    callback(null, signingKey);
+  });
+}
+
 const app = express();
 const port = 3001;
+app.use(cors());
+app.use(express.json());
+app.use((req: any, res, next) => {
+  if (!req.headers.authorization) return res.status(401).send('Unauthorized');
 
-app.use(passport.initialize());
-passport.use(bearerStrategy);
+  const token = req.headers.authorization.split(' ')[1];
 
-//remove in production
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Authorization, Origin, X-Requested-With, Content-Type, Accept'
-  );
-  next();
+  jwt.verify(token, getKey, {}, (err: any, decoded: any) => {
+    if (err) {
+      return res.status(401).send('Unauthorized');
+    }
+    req.user = decoded;
+    next();
+  });
 });
+
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript with Express!');
 });
-app.use('/api/users', userRoutes);
+app.use('/api/pages', pagesRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

@@ -5,7 +5,6 @@ import {
   Transaction as PrismaTransaction,
 } from '@prisma/client';
 import { format, formatDistanceToNow, formatRelative, isToday } from 'date-fns';
-import { revalidatePath } from 'next/cache';
 
 import {
   Configuration,
@@ -189,10 +188,6 @@ export async function exchangePublicToken(
     )
   );
 
-  revalidatePath('/');
-  revalidatePath('/user');
-  revalidatePath('/review');
-  revalidatePath('/log/transactions');
   return { duplicate: false, existingInstitution: false };
 }
 
@@ -207,9 +202,6 @@ export async function syncItems(userId: string) {
   await Promise.all(plaidItems.map((plaidItem) => syncTransactions(plaidItem)));
   await getRecurringTransactions(userId);
 
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
-  revalidatePath('/review');
   return true;
 }
 
@@ -550,10 +542,6 @@ export async function softSync() {
   await Promise.all(
     plaidItems.map((plaidItem) => softSyncTransactions(plaidItem))
   );
-
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
-  revalidatePath('/review');
 }
 
 export function discretionaryFilter(transaction: {
@@ -802,10 +790,6 @@ export async function syncTransactions(plaidItem: PlaidItem) {
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
-  revalidatePath('/review');
-
   return allData;
 }
 
@@ -828,10 +812,6 @@ export async function refreshUserItems(userId: string) {
     console.error('Error refreshing items. Could be login required.');
     console.error(e);
   }
-
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
-  revalidatePath('/review');
 }
 
 export async function getNextRefreshTime(userId: string) {
@@ -931,8 +911,6 @@ export async function markAllTransactionsAsRead(userId: string, read = true) {
       updatedAt: new Date(),
     },
   });
-  revalidatePath('/review');
-  revalidatePath('/log/transactions');
 }
 
 export async function markTransactionAsUnread(id: string) {
@@ -945,9 +923,6 @@ export async function markTransactionAsUnread(id: string) {
       transactionId: id,
     },
   });
-
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
 }
 
 export async function markTransactionAsRead(
@@ -978,8 +953,6 @@ export async function markTransactionAsRead(
       },
     });
   }
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
 }
 
 export async function removeAllPlaidItems(userId: string) {
@@ -1006,9 +979,6 @@ export async function removeAllPlaidItems(userId: string) {
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/user');
-  revalidatePath('/onboarding');
   return true;
 }
 
@@ -1029,9 +999,6 @@ export async function handleLoginExpiration(
 
 export async function handleUserPermissionRevoked(plaidItem: PlaidItem) {
   removePlaidItem(plaidItem.itemId);
-
-  revalidatePath('/');
-  revalidatePath('/user');
 }
 
 export async function removePlaidItem(itemId: string) {
@@ -1060,8 +1027,6 @@ export async function removePlaidItem(itemId: string) {
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/user');
   return true;
 }
 
@@ -1186,9 +1151,6 @@ export async function getRecurringTransactions(userId: string) {
     })
   );
 
-  revalidatePath('/');
-  revalidatePath('/log/transactions');
-  revalidatePath('/review');
   return true;
 }
 

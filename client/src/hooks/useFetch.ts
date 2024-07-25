@@ -1,22 +1,35 @@
 import { useEffect, useState } from 'react';
 
 // Define the custom hook
-const useFetch = (url: string) => {
+const useFetch = (url: string, method = 'POST', body?: any) => {
   // State for storing data
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   // State for storing loading status
   const [loading, setLoading] = useState(true);
   // State for storing any errors
   const [error, setError] = useState<any>(null);
-
   useEffect(() => {
-    // Function to fetch data
     const fetchData = async () => {
+      console.log('try this');
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) {
+        throw new Error('No access token found');
+      }
+
       try {
         // Start loading
         setLoading(true);
         // Fetch data from the API
-        const response = await fetch('http://localhost:3001/' + url);
+        const response = await fetch('http://localhost:3001/' + url, {
+          method,
+          body: JSON.stringify(body),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log('response', response);
         // Check if the response is ok
         if (!response.ok) {
           throw new Error('Network response was not ok');

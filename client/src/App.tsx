@@ -10,6 +10,7 @@ import '@fontsource/varela-round';
 import './App.css';
 
 const msalInstance = new PublicClientApplication(msalConfig);
+msalInstance.initialize();
 function App() {
   return (
     <MsalProvider instance={msalInstance}>

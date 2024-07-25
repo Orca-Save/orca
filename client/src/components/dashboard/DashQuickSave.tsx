@@ -1,36 +1,17 @@
-import { Text } from '@/app/_components/Typography';
-import { HappyProvider } from '@/components/HappyProvider';
-import { greenThemeColors } from '@/lib/themeConfig';
-import { ConfigProvider, Space } from 'antd';
-import db from '../../../../server/src/db/db';
-import { getPinnedUserGoal } from '../_actions/data';
+import { HappyProvider } from '@ant-design/happy-work-theme';
+import { ConfigProvider, Space, Typography } from 'antd';
+import React from 'react';
+
+import useFetch from '../../hooks/useFetch';
+import { greenThemeColors } from '../../utils/themeConfig';
 import { QuickSaveButton } from './QuickSaveButton';
 
-const getPinnedGoalTransfers = async (userId: string) => {
-  return (
-    await db.goalTransfer.findMany({
-      where: {
-        userId,
-        pinned: true,
-      },
-      include: {
-        category: true,
-      },
-    })
-  ).map((transfer) =>
-    Object.assign(transfer, {
-      category: transfer.category?.name,
-      amount: transfer.amount.toNumber(),
-    })
-  );
-};
+const { Text } = Typography;
 
-export default async function QuickSaveButtons({ userId }: { userId: string }) {
-  const [quickTransfers, goal] = await Promise.all([
-    getPinnedGoalTransfers(userId),
-    getPinnedUserGoal(userId),
-  ]);
+export default function QuickSaveButtons({ userId }: { userId: string }) {
+  const { data } = useFetch('api/pages/quickSaveButtons', 'POST', { userId });
 
+  const { quickTransfers, goal } = data;
   if (!quickTransfers) return <Text>No Pinned One-Tap Saves.</Text>;
   if (!goal) return <Text>No Pinned Goal.</Text>;
 

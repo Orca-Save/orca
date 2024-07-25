@@ -1,9 +1,10 @@
 import express from 'express';
-import * as userController from '../controllers/userController';
+import * as pageController from '../controllers/pageController';
 // const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-router.get('/onboardingProfileCount', userController.getOnboardingProfileCount);
+router.post('/dashboardPage', pageController.dashboardPage);
+router.post('/quickSaveButtons', pageController.quickSaveButtons);
 // router.post('/', userController.createUser);
 // other user routes
 

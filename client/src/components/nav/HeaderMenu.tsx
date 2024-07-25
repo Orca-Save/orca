@@ -1,27 +1,38 @@
 import { useMsal } from '@azure/msal-react';
 import { Button, Menu, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { b2cPolicies, loginRequest } from '../../utils/authConfig';
 
 const { SubMenu } = Menu;
 const { Text } = Typography;
 
-const loginRequest = {
-  scopes: ['User.Read'],
-};
 export default function HeaderMenu({ className }: { className: string }) {
-  const { instance } = useMsal();
+  const { instance, accounts } = useMsal();
+  console.log('accounts', accounts);
+  console.log('instance', instance);
   const pathname = '';
-  const handleLogin = (loginType) => {
-    console.log('hello');
-    if (loginType === 'popup') {
-      instance.loginPopup(loginRequest).catch((e) => {
-        console.log(e);
+  const handleLogout = () => {
+    instance.logoutPopup();
+  };
+  const handleLogin = () => {
+    instance
+      // @ts-ignore
+      .loginPopup({
+        ...loginRequest,
+        authority: b2cPolicies.authorities.signUpSignIn.authority,
+      })
+      .then((res: any) => {
+        console.log('here i am');
+        console.log(res);
+        // instance.acquireTokenSilent({
+        //   scopes: ['https://orcanext.onmicrosoft.com/orca-api/orca.customer'],
+        //   account:
+        // })
+        localStorage.setItem('accessToken', res.accessToken);
+      })
+      .catch((e) => {
+        console.log('error', e);
       });
-    } else if (loginType === 'redirect') {
-      instance.loginRedirect(loginRequest).catch((e) => {
-        console.log(e);
-      });
-    }
   };
 
   const [current, setCurrent] = useState(pathname);
@@ -88,11 +99,11 @@ export default function HeaderMenu({ className }: { className: string }) {
             </Menu.Item>
           </SubMenu> */}
 
-          <Button type='primary' onClick={() => handleLogin('popup')}>
-            Sign in using Popup
-          </Button>
-          <Button type='primary' onClick={() => handleLogin('redirect')}>
+          <Button type='primary' onClick={() => handleLogin()}>
             Sign in using Redirect
+          </Button>
+          <Button type='primary' onClick={() => handleLogout()}>
+            logout
           </Button>
           <Menu.Item eventKey='/user' key='/user'>
             {/* {session ? <UserOutlined /> : <LoginOutlined />} */}
