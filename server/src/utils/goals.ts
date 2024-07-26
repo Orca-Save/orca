@@ -1,6 +1,4 @@
 import { Goal } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
-import { notFound } from 'next/navigation';
 import { z } from 'zod';
 import db from './db/db';
 import { externalAccountId } from './onboarding';
@@ -87,11 +85,8 @@ export async function addQuickGoal(
         transactedAt: new Date(),
       },
     });
-    revalidatePath('/savings');
   }
 
-  revalidatePath('/');
-  revalidatePath('/goals');
   return goal;
 }
 
@@ -152,11 +147,8 @@ export async function addGoal(
       data: { initialTransferId: initialTransfer.id },
       where: { id: goal.id },
     });
-    revalidatePath('/savings');
   }
 
-  revalidatePath('/');
-  revalidatePath('/goals');
   return goal;
 }
 
@@ -179,11 +171,9 @@ export async function updateGoal(
       data: { amount: data.initialAmount },
       where: { id: goal?.initialTransferId },
     });
-
-    revalidatePath('/savings');
   }
 
-  if (goal == null) return notFound();
+  if (goal == null) throw Error('Goal not found');
 
   let imagePath = data.imagePath;
   if (data.image) {
@@ -207,17 +197,13 @@ export async function updateGoal(
     },
   });
 
-  revalidatePath('/');
-  revalidatePath('/goals');
   return updatedGoal;
 }
 
-export async function deleteGoal(id: string) {
+export async function deleteGoalWithId(id: string) {
   const goal = await db.goal.delete({ where: { id } });
 
-  if (goal == null) return notFound();
+  if (goal == null) throw Error('Goal not found');
 
-  revalidatePath('/');
-  revalidatePath('/goals');
   return goal;
 }

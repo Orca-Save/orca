@@ -1,16 +1,21 @@
-import PinSavingButton from '@/app/_components/PinSavingButton';
-import { Text } from '@/app/_components/Typography';
-import { Goal as PrismaGoal } from '@prisma/client';
-import { Card, Col, Row } from 'antd';
-import GoalProgress from '../goals/_components/GoalProgress';
-import PopconfirmDelete from '../goals/_components/PopconfirmDelete';
-import EditAction from './EditAction';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Col, Popconfirm, Row, Typography } from 'antd';
+import React from 'react';
+import GoalProgress from '../goals/GoalProgress';
+import PinSavingButton from '../savings/PinSavingButton';
 
-type Goal = PrismaGoal & {
+const { Text } = Typography;
+
+type Goal = {
+  id: string;
+  name: string;
+  dueAt: Date;
+  targetAmount: number;
   savedItemCount: number;
-  currentBalance: number;
+  currentBalance?: number;
+  pinned: boolean;
+  imagePath?: string;
 };
-
 export default function GoalCard({
   goal,
   userHasPinnedGoal,
@@ -38,13 +43,23 @@ export default function GoalCard({
           hideActions
             ? undefined
             : [
-                <PopconfirmDelete
-                  goalId={goal.id}
-                  key='delete'
+                <Popconfirm
                   title='Delete the goal'
                   description='Are you sure you want to delete this goal?'
-                />,
-                <EditAction route={`/goals/${goal.id}/edit`} key='edit' />,
+                  onConfirm={() =>
+                    fetch(`/api/goal/${goal.id}`, {
+                      method: 'DELETE',
+                    })
+                  }
+                  okText='Yes'
+                  cancelText='No'
+                >
+                  <DeleteOutlined key='delete' />
+                </Popconfirm>,
+                <Link to={`/goals/${goal.id}`} key='view'>
+                  <EditOutlined />
+                </Link>,
+
                 ...(revalidatePath !== '/'
                   ? [
                       <PinSavingButton
@@ -75,7 +90,7 @@ export default function GoalCard({
         </Row>
         <GoalProgress
           currentBalance={goal.currentBalance ?? 0}
-          target={goal.targetAmount.toNumber()}
+          target={goal.targetAmount}
         />
       </Card>
       {goal.imagePath ? (

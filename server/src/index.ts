@@ -1,7 +1,8 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 
+import goalRoutes from './routes/goalRoutes';
 import pagesRoutes from './routes/pageRoutes';
 
 const cors = require('cors');
@@ -32,14 +33,13 @@ app.use((req: any, res, next) => {
       return res.status(401).send('Unauthorized');
     }
     req.user = decoded;
+    console.log('user', req.user);
     next();
   });
 });
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, TypeScript with Express!');
-});
 app.use('/api/pages', pagesRoutes);
+app.use('/api/goals', goalRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

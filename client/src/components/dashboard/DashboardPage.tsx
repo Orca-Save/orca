@@ -4,6 +4,7 @@ import { Button, ConfigProvider, Skeleton, Space, Typography } from 'antd';
 import * as emoji from 'node-emoji';
 import React from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
 import { greenThemeColors } from '../../utils/themeConfig';
 import DashboardSaveButtons from './DashQuickSave';
@@ -14,7 +15,7 @@ export default function HomePage() {
   // const session = await getServerSession(authOptions);
   // if (!session) redirect('/signup');
   // if (!isExtendedSession(session)) redirect('/signup');
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { accounts } = useMsal();
   const userId = accounts[0]?.localAccountId;
@@ -31,8 +32,8 @@ export default function HomePage() {
   } = data;
   console.log('data', data);
   if (onboardingProfileCount === 0 || !userProfile?.privacyPolicyAccepted)
-    console.log('navigate to onboarding');
-  // navigate('/onboarding');
+    // console.log('navigate to onboarding');
+    navigate('/onboarding');
 
   return (
     <div className='flex justify-center'>
@@ -42,7 +43,7 @@ export default function HomePage() {
           Focus Goal
         </Title>
         <Skeleton paragraph={{ rows: 4 }}>
-          {/* <DynamicPinnedGoal userId={userId} /> */}
+          <DynamicPinnedGoal userId={userId} />
         </Skeleton>
         {/* <Link to='/savings/new'> */}
         <ConfigProvider

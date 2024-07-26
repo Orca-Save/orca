@@ -1,13 +1,4 @@
-import { getServerSession } from 'next-auth';
-import { signIn } from 'next-auth/react';
-
-import { Title } from '@/app/_components/Typography';
-import authOptions from '@/lib/nextAuthOptions';
-import { isExtendedSession } from '@/lib/session';
-import { baseURL } from '@/lib/utils';
-import { headers } from 'next/headers';
-import db from '../../../../../server/src/db/db';
-import { GoalTransferForm } from '../../saves/GoalTransferForm';
+import { GoalTransferForm } from '../saves/GoalTransferForm';
 
 const getCategories = () => {
   return db.goalCategory.findMany({
@@ -40,9 +31,6 @@ export default async function GoalTransferPage({
     signIn('azure-ad-b2c', { callbackUrl: baseURL + '/savings' });
     return;
   }
-  const headersList = headers();
-  const referer = headersList.get('referer');
-  if (!isExtendedSession(session)) return;
 
   const [categories, goals, goalTransfer] = await Promise.all([
     getCategories(),

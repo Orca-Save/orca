@@ -1,5 +1,3 @@
-'use client';
-
 import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { setGoalPinned, setGoalTransferPinned } from '../_actions/users';

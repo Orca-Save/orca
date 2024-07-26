@@ -1,16 +1,31 @@
-import PinSavingButton from '@/app/_components/PinSavingButton';
-import { Text, Title } from '@/app/_components/Typography';
-import { greenThemeColors } from '@/lib/themeConfig';
-import { currencyFormatter } from '@/lib/utils';
 import { red } from '@ant-design/colors';
-import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
-import { GoalTransfer } from '@prisma/client';
-import { Avatar, Card, Col, Row, Space } from 'antd';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  FrownOutlined,
+  MehOutlined,
+  SmileOutlined,
+} from '@ant-design/icons';
+import { Avatar, Card, Col, Popconfirm, Row, Space, Typography } from 'antd';
 import Meta from 'antd/es/card/Meta';
-import EditAction from './EditAction';
-import PopconfirmDelete from './PopconfirmDelete';
+import React from 'react';
+import PinSavingButton from './PinSavingButton';
+
+import { currencyFormatter } from '../../utils/general';
+import { greenThemeColors } from '../../utils/themeConfig';
+
+const { Text, Title } = Typography;
 
 export type GoalTransferFilter = 'templates' | 'accounts';
+
+type GoalTransfer = {
+  id: string;
+  itemName: string;
+  amount: number;
+  rating: number | null;
+  pinned: boolean;
+  transactedAt: Date;
+};
 
 export default async function SavingsList({
   filter,
@@ -76,10 +91,10 @@ function GoalTransferCard({
   routeParams: string;
   showPin: boolean;
 }) {
-  const amount = goalTransfer.amount.toNumber();
+  const amount = goalTransfer.amount;
   const rating = goalTransfer.rating;
   let ratingIcon = <MehOutlined />;
-  let ratingColor = undefined;
+  let ratingColor: string | undefined = undefined;
   if (rating !== null) {
     if (rating < 3) {
       ratingIcon = <FrownOutlined />;
@@ -94,18 +109,22 @@ function GoalTransferCard({
     <Card
       key={goalTransfer.id}
       actions={[
-        <PopconfirmDelete
-          goalTransferId={goalTransfer.id}
-          key='delete'
+        <Popconfirm
           title='Delete the saving'
           description='Are you sure you want to delete this saving?'
-        />,
-        <EditAction
-          key='edit'
-          route={
-            `/${goalTransfer.amount.toNumber() > 0 ? 'savings' : 'purchases'}/${
-              goalTransfer.id
-            }/edit` + routeParams
+          onConfirm={() => deleteGoalWithId(goalTransfer.id)}
+          okText='Yes'
+          cancelText='No'
+        >
+          <DeleteOutlined key='delete' />
+        </Popconfirm>,
+        <EditOutlined
+          onClick={() =>
+            router.push(
+              `/${goalTransfer.amount > 0 ? 'savings' : 'purchases'}/${
+                goalTransfer.id
+              }/edit` + routeParams
+            )
           }
         />,
         ...(showPin
