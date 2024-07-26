@@ -7,6 +7,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
 import { greenThemeColors } from '../../utils/themeConfig';
+import DashGoalCard from './DashGoalCard';
 import DashboardSaveButtons from './DashQuickSave';
 
 const { Title } = Typography;
@@ -30,9 +31,7 @@ export default function HomePage() {
     unreadTransactionCount,
     userProfile,
   } = data;
-  console.log('data', data);
   if (onboardingProfileCount === 0 || !userProfile?.privacyPolicyAccepted)
-    // console.log('navigate to onboarding');
     navigate('/onboarding');
 
   return (
@@ -42,9 +41,7 @@ export default function HomePage() {
         <Title level={4} style={{ margin: 0 }}>
           Focus Goal
         </Title>
-        <Skeleton paragraph={{ rows: 4 }}>
-          <DynamicPinnedGoal userId={userId} />
-        </Skeleton>
+        <DashGoalCard />
         {/* <Link to='/savings/new'> */}
         <ConfigProvider
           theme={{

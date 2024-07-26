@@ -1,6 +1,6 @@
-'use client';
-import { currencyFormatter } from '@/lib/utils';
 import { Flex, Progress, ProgressProps } from 'antd';
+import React from 'react';
+import { currencyFormatter } from '../../utils/general';
 
 type GoalProgressProps = {
   target: number;

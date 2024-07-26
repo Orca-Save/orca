@@ -1,6 +1,7 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Card, Col, Popconfirm, Row, Typography } from 'antd';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import GoalProgress from '../goals/GoalProgress';
 import PinSavingButton from '../savings/PinSavingButton';
 
@@ -29,6 +30,7 @@ export default function GoalCard({
 }) {
   let marginTop = goal.pinned ? '-14px' : '-11px';
   if (hideActions) marginTop = '-35px';
+  const duaAt = new Date(goal.dueAt).toLocaleDateString();
   return (
     <div>
       <Card
@@ -79,7 +81,7 @@ export default function GoalCard({
             <Text style={{ fontWeight: 'bold' }}>{goal.name}</Text>
           </Col>
           <Col span={12} style={{ textAlign: 'right' }}>
-            {'by ' + goal.dueAt.toLocaleDateString()}
+            {'by ' + duaAt}
           </Col>
         </Row>
         <Row justify='space-between'>

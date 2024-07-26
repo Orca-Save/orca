@@ -1,15 +1,15 @@
 import { useMsal } from '@azure/msal-react';
 import { Button, Menu, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { b2cPolicies, loginRequest } from '../../utils/authConfig';
 
 const { SubMenu } = Menu;
 const { Text } = Typography;
 
 export default function HeaderMenu({ className }: { className: string }) {
-  const { instance, accounts } = useMsal();
-  console.log('accounts', accounts);
-  console.log('instance', instance);
+  const { instance } = useMsal();
+  const navigate = useNavigate();
   const pathname = '';
   const handleLogout = () => {
     instance.logoutPopup();
@@ -21,12 +21,6 @@ export default function HeaderMenu({ className }: { className: string }) {
         authority: b2cPolicies.authorities.signUpSignIn.authority,
       })
       .then((res: any) => {
-        console.log('here i am');
-        console.log(res);
-        // instance.acquireTokenSilent({
-        //   scopes: ['https://orcanext.onmicrosoft.com/orca-api/orca.customer'],
-        //   account:
-        // })
         localStorage.setItem('accessToken', res.accessToken);
       })
       .catch((e) => {
@@ -43,17 +37,6 @@ export default function HeaderMenu({ className }: { className: string }) {
   if (topPath.includes('/log')) {
     topPath = '/log';
   }
-  const onClick = (key: string) => {
-    if (key === '/user') {
-      // if (session) {
-      //   // router.push(key);
-      // } else {
-      //   signIn('azure-ad-b2c', { callbackUrl: baseURL + '/' });
-      // }
-    } else {
-      // router.push(key);
-    }
-  };
   return (
     <>
       <Menu
@@ -61,7 +44,7 @@ export default function HeaderMenu({ className }: { className: string }) {
         mode='horizontal'
         selectedKeys={[topPath]}
         onSelect={({ key }) => {
-          onClick(key);
+          navigate(key);
         }}
       >
         <Space

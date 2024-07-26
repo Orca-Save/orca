@@ -5,7 +5,7 @@ import { greenCardThemeConfig } from '../../utils/themeConfig';
 
 const { Text } = Typography;
 
-export default async function CompletedCounts({
+export default function CompletedCounts({
   totalSaved,
   goalsCompleted,
 }: {

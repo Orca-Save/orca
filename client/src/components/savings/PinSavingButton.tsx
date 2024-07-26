@@ -1,6 +1,6 @@
 import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { setGoalPinned, setGoalTransferPinned } from '../_actions/users';
+import React from 'react';
 
 type PinSavingButtonProps = {
   pinned: boolean | null;
@@ -15,7 +15,7 @@ export default function PinSavingButton({
   type,
   userHasPinnedGoal,
 }: PinSavingButtonProps) {
-  const setPinned = type === 'Goal' ? setGoalPinned : setGoalTransferPinned;
+  const setPinned = (a, b) => console.log('thing'); //type === 'Goal' ? setGoalPinned : setGoalTransferPinned;
   const onClick = () => setPinned(typeId, !pinned);
 
   if (pinned) return <PushpinFilled onClick={onClick} />;

@@ -20,7 +20,22 @@ const transferSchema = z.object({
   goalId: z.string().uuid().optional(),
   plaidCategory: z.string().optional(),
 });
-
+export const getGoalTransfersSum = (userId: string) => {
+  return db.goalTransfer.groupBy({
+    by: ['goalId'],
+    _sum: {
+      amount: true,
+    },
+    _count: {
+      goalId: true,
+    },
+    where: {
+      goal: {
+        userId: userId,
+      },
+    },
+  });
+};
 export type GoalTransferFieldErrors = {
   fieldErrors: {
     link?: string[];
