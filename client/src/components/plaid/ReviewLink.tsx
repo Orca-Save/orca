@@ -1,12 +1,17 @@
-import { HappyProvider } from '@/components/HappyProvider';
-import { UnreadCountObject } from '@/lib/plaid';
 import { Badge, Button, ConfigProvider, Flex } from 'antd';
-import Link from 'next/link';
-import ItemsLoginRequired from '../user/_components/ItemsLoginRequired';
+import React from 'react';
+
+import { HappyProvider } from '@ant-design/happy-work-theme';
 import ConnectPlaid from './ConnectPlaid';
 import RefreshPlaidItems from './RefreshPlaidItems';
 
-export default async function ReviewLink({
+type UnreadCountObject = {
+  unreadCount: number;
+  plaidItemExists: boolean;
+  loginRequired: boolean;
+};
+
+export default function ReviewLink({
   unreadObj,
   userId,
 }: {

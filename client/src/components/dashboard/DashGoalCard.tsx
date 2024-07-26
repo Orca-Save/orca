@@ -1,8 +1,4 @@
-import { completedUserGoalCount } from '@/app/_actions/users';
-import db from '../../../../server/src/db/db';
-import { getPinnedUserGoal } from '../_actions/data';
 import CompletedCounts from '../shared/CompletedCounts';
-import GoalCard from './GoalCard';
 
 const getGoalTransfersSum = (userId: string) => {
   return db.goalTransfer.groupBy({

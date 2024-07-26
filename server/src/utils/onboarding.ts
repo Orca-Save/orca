@@ -1,5 +1,3 @@
-import { revalidatePath } from 'next/cache';
-
 import dayjs, { Dayjs } from 'dayjs';
 import { z } from 'zod';
 import db from './db/db';
@@ -8,6 +6,14 @@ import { syncItems } from './plaid';
 const zodDay = z.custom<Dayjs>((val) => val instanceof dayjs, 'Invalid date');
 
 export const externalAccountId = 'faed4327-3a9c-4837-a337-c54e9704d60f';
+
+export function getOnboardingProfileCount(userId: string) {
+  return db.onboardingProfile.count({
+    where: {
+      userId: userId,
+    },
+  });
+}
 
 export const onboardingSchema = z.object({
   goalName: z.string().min(1),
@@ -178,7 +184,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
 
   if (process.env.NODE_ENV === 'production') {
     await sendSlackMessage(
-      session?.user?.email +
+      'email' +
         ' has completed onboarding with the goal ' +
         onboardingProfileData.goalName +
         ' for $' +
@@ -189,9 +195,5 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     );
   }
 
-  revalidatePath('/');
-  revalidatePath('/user');
-  revalidatePath('/goals');
-  revalidatePath('/savings');
   return onboardingProfile;
 }

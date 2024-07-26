@@ -1,4 +1,3 @@
-'use client';
 import {
   Button,
   Checkbox,
@@ -11,40 +10,36 @@ import {
   Typography,
 } from 'antd';
 
-import InstitutionCollapses from '@/app/(customerFacing)/user/_components/InstitutionsCollapse';
-import PlaidLink from '@/app/(customerFacing)/user/_components/PlaidLink';
-import { ItemData } from '@/app/_actions/plaid';
-import { Paragraph } from '@/app/_components/Typography';
-import UnsplashForm from '@/app/_components/UnsplashForm';
-import { isFieldErrors } from '@/lib/goals';
-import { isExtendedSession } from '@/lib/session';
-import { applyFormErrors } from '@/lib/utils';
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import { UserOutlined } from '@ant-design/icons';
-import { OnboardingProfile, UserProfile } from '@prisma/client';
 import dayjs from 'dayjs';
-import { useSession } from 'next-auth/react';
-import { Open_Sans, Varela_Round } from 'next/font/google';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
-import CurrencyInput from '../../shared/CurrencyInput';
-import { onboardUser, saveOnboardingProfile } from '../_actions/onboarding';
+import React, { useRef, useState } from 'react';
 
 const { Title, Text } = Typography;
+type UserProfile = {
+  privacyPolicyAccepted: boolean;
+  stripeSubscriptionId: string;
+};
+type OnboardingProfile = {
+  goalName: string;
+  goalAmount: number;
+  goalDueAt: string;
+  imagePath: string;
+  initialAmount: number;
+  saving: string;
+  savingAmount: number;
+  privacyAgreement: boolean;
+};
 
-const varelaRound = Varela_Round({
-  weight: '400',
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-varelaround',
-});
-const openSans = Open_Sans({
-  weight: '400',
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-opensans',
-});
+type ItemData = {
+  id: string;
+  name: string;
+  institutionName: string;
+  logo: string;
+  balance: number;
+  userId: string;
+};
+
 type OnboardingFormProps = {
   userProfile: UserProfile | null;
   linkToken: string;
@@ -67,16 +62,6 @@ export default function OnboardingForm({
   );
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const router = useRouter();
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      router.push('/');
-    },
-  });
-
-  if (!session) return null;
-  if (!isExtendedSession(session)) return null;
   const currentTab = Number(pageState.tabKey);
   const forceRender = true;
   let disableNext = false;

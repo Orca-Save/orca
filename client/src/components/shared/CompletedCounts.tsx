@@ -1,4 +1,6 @@
 import { Card, ConfigProvider, Space, Typography } from 'antd';
+import React from 'react';
+import { currencyFormatter } from '../../utils/general';
 import { greenCardThemeConfig } from '../../utils/themeConfig';
 
 const { Text } = Typography;
@@ -10,10 +12,6 @@ export default async function CompletedCounts({
   totalSaved: number;
   goalsCompleted: number;
 }) {
-  function currencyFormatter(totalSaved: number) {
-    throw new Error('Function not implemented.');
-  }
-
   return (
     <Space
       direction='horizontal'

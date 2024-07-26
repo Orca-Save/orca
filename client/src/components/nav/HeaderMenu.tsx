@@ -16,7 +16,6 @@ export default function HeaderMenu({ className }: { className: string }) {
   };
   const handleLogin = () => {
     instance
-      // @ts-ignore
       .loginPopup({
         ...loginRequest,
         authority: b2cPolicies.authorities.signUpSignIn.authority,
