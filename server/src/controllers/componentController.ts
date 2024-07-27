@@ -6,7 +6,6 @@ import { completedUserGoalCount, getPinnedUserGoal } from '../utils/users';
 export const goalCard = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
-    console.log('user', user);
     let [goal, sums, completedCounts] = await Promise.all([
       getPinnedUserGoal(user.oid),
       getGoalTransfersSum(user.oid),

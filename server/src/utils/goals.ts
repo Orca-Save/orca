@@ -90,6 +90,9 @@ export async function addQuickGoal(
   return goal;
 }
 
+export async function listGoals(userId: string) {
+  return db.goal.findMany({ where: { userId } });
+}
 export async function addGoal(
   userId: string,
   prevState: unknown,

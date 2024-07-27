@@ -1,12 +1,7 @@
-import { getAllLinkedItems } from '@/app/_actions/plaid';
 import { Card } from 'antd';
-import PlaidLink from '../user/components/PlaidLink';
+import React from 'react';
 
-export default async function ItemsLoginRequired({
-  userId,
-}: {
-  userId: string;
-}) {
+export default function ItemsLoginRequired({ userId }: { userId: string }) {
   const items = await getAllLinkedItems(userId);
   const loginRequiredItems = items.filter((x) => x.loginRequired);
   return (

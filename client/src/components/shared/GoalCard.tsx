@@ -2,21 +2,12 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Card, Col, Popconfirm, Row, Typography } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Goal } from '../../types/all';
 import GoalProgress from '../goals/GoalProgress';
 import PinSavingButton from '../savings/PinSavingButton';
 
 const { Text } = Typography;
 
-type Goal = {
-  id: string;
-  name: string;
-  dueAt: Date;
-  targetAmount: number;
-  savedItemCount: number;
-  currentBalance?: number;
-  pinned: boolean;
-  imagePath?: string;
-};
 export default function GoalCard({
   goal,
   userHasPinnedGoal,

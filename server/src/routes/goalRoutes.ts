@@ -4,6 +4,7 @@ import * as goalController from '../controllers/goalController';
 const router = express.Router();
 
 router.delete('/', goalController.deleteGoal);
+router.get('/', goalController.listGoal);
 // router.post('/', userController.createUser);
 // other user routes
 

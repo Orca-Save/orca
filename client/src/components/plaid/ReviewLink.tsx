@@ -2,6 +2,7 @@ import { Badge, Button, ConfigProvider, Flex } from 'antd';
 import React from 'react';
 
 import { HappyProvider } from '@ant-design/happy-work-theme';
+import { Link } from 'react-router-dom';
 import ConnectPlaid from './ConnectPlaid';
 import RefreshPlaidItems from './RefreshPlaidItems';
 
@@ -32,7 +33,7 @@ export default function ReviewLink({
       }}
     >
       <RefreshPlaidItems userId={userId} height={90} />
-      <Link href='/review' className='w-full'>
+      <Link to='/review' className='w-full'>
         <HappyProvider>
           <Button
             size='large'

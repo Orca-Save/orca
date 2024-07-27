@@ -1,40 +1,22 @@
-import { Button, Card, Col, Row, Skeleton, Space } from 'antd';
+import { Button, Col, Row, Space } from 'antd';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import useFetch from '../../hooks/useFetch';
+import CompletedCounts from '../shared/CompletedCounts';
+import GoalList from './GoalList';
 
-import { completedUserGoalCount } from '@/app/_actions/users';
-import authOptions from '@/lib/nextAuthOptions';
-import { isExtendedSession } from '@/lib/session';
-import { getServerSession } from 'next-auth';
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-
-const DynamicGoalList = dynamic(() => import('./GoalList'), {
-  loading: () => (
-    <>
-      <Card>
-        <Skeleton paragraph={{ rows: 3 }} />
-      </Card>
-      <Card>
-        <Skeleton paragraph={{ rows: 3 }} />
-      </Card>
-      <Card>
-        <Skeleton paragraph={{ rows: 3 }} />
-      </Card>
-    </>
-  ),
-});
-export default async function GoalsPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect('/');
-  }
-  if (!isExtendedSession(session)) return null;
-  const completedCounts = await completedUserGoalCount(session.user.id);
+export default function GoalsPage() {
+  const { data } = useFetch('api/components/goalCard', 'GET');
+  const { data: goalsResults } = useFetch('api/goals', 'GET');
+  if (!data) return null;
+  if (!goalsResults) return null;
+  const { goals } = goalsResults;
+  const { completedCounts } = data;
   return (
     <Space direction='vertical' className='w-full'>
       <Row justify='center'>
         <Col>
-          <Link href='/goals/new'>
+          <Link to='/goals/new'>
             <Button data-id='new-goal-button' size='large' type='primary'>
               New Goal
             </Button>
@@ -47,7 +29,7 @@ export default async function GoalsPage() {
           totalSaved={completedCounts.totalSaved}
         />
       </div>
-      <DynamicGoalList />
+      <GoalList goals={goals} />
     </Space>
   );
 }
