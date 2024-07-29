@@ -1,10 +1,4 @@
-import { completedUserGoalCount } from '@/app/_actions/users';
-import authOptions from '@/lib/nextAuthOptions';
-import { isExtendedSession } from '@/lib/session';
 import { Tabs, TabsProps } from 'antd';
-import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
-import db from '../../../../server/src/db/db';
 
 const getGoalTransfers = (userId: string) => {
   return db.goalTransfer.findMany({
@@ -23,9 +17,6 @@ export default async function MySavingsPage({
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const session = await getServerSession(authOptions);
-  if (!session || !isExtendedSession(session)) redirect('/');
-
   const [goalTransfers, completedCounts] = await Promise.all([
     getGoalTransfers(session.user.id),
     completedUserGoalCount(session.user.id),

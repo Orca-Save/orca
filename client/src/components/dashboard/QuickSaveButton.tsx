@@ -1,11 +1,11 @@
 import { Button, Typography } from 'antd';
 import React, { useState } from 'react';
 import Confetti from 'react-confetti';
+import { GoalTransfer } from '../../types/all';
 import { currencyFormatter } from '../../utils/general';
 
 const { Paragraph, Text } = Typography;
 
-export type GoalTransfer = { id: string; itemName: string; amount: number };
 export function QuickSaveButton({
   transfer,
   goalId,

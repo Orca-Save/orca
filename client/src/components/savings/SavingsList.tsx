@@ -11,6 +11,8 @@ import Meta from 'antd/es/card/Meta';
 import React from 'react';
 import PinSavingButton from './PinSavingButton';
 
+import { useNavigate } from 'react-router-dom';
+import { GoalTransfer } from '../../types/all';
 import { currencyFormatter } from '../../utils/general';
 import { greenThemeColors } from '../../utils/themeConfig';
 
@@ -18,16 +20,7 @@ const { Text, Title } = Typography;
 
 export type GoalTransferFilter = 'templates' | 'accounts';
 
-type GoalTransfer = {
-  id: string;
-  itemName: string;
-  amount: number;
-  rating: number | null;
-  pinned: boolean;
-  transactedAt: Date;
-};
-
-export default async function SavingsList({
+export default function SavingsList({
   filter,
   routeParams,
   topGoalTransfers,
@@ -91,6 +84,7 @@ function GoalTransferCard({
   routeParams: string;
   showPin: boolean;
 }) {
+  const navigate = useNavigate();
   const amount = goalTransfer.amount;
   const rating = goalTransfer.rating;
   let ratingIcon = <MehOutlined />;
@@ -120,7 +114,7 @@ function GoalTransferCard({
         </Popconfirm>,
         <EditOutlined
           onClick={() =>
-            router.push(
+            navigate(
               `/${goalTransfer.amount > 0 ? 'savings' : 'purchases'}/${
                 goalTransfer.id
               }/edit` + routeParams

@@ -1,15 +1,14 @@
-'use client';
-
 import { Tabs, TabsProps } from 'antd';
-import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function NavTabs() {
-  const pathname = usePathname();
-  const router = useRouter();
-
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { pathname } = location;
   const items: TabsProps['items'] = [
     {
-      key: '/log/saves',
+      key: '/log/savings',
       label: 'Impulse Saves',
     },
     {
@@ -29,7 +28,7 @@ export default function NavTabs() {
         activeKey={pathname}
         items={items}
         onTabClick={(key) => {
-          router.push(key);
+          navigate(key);
         }}
       />
     </>

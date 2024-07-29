@@ -8,3 +8,11 @@ export type Goal = {
   pinned: boolean;
   imagePath?: string;
 };
+export type GoalTransfer = {
+  id: string;
+  itemName: string;
+  amount: number;
+  rating: number | null;
+  pinned: boolean;
+  transactedAt: Date;
+};

@@ -11,6 +11,7 @@ import {
 
 import HomePage from './components/dashboard';
 import GoalsPage from './components/goals/MainGoalPage';
+import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
 
 import { msalConfig } from './utils/authConfig';
@@ -22,11 +23,21 @@ const LayoutRoute = () => (
     <Outlet />
   </AppLayout>
 );
+
+const LogLayoutRoute = () => (
+  <>
+    <NavTabs />
+    <Outlet />
+  </>
+);
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<LayoutRoute />}>
       <Route index element={<HomePage />} />
       <Route path='goals' element={<GoalsPage />} />
+      <Route path='log' element={<LogLayoutRoute />}>
+        <Route path='savings' element={<GoalsPage />} />
+      </Route>
     </Route>
   )
 );

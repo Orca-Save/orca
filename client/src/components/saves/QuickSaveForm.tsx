@@ -1,17 +1,7 @@
-'use client';
-
 import { Button, Form, Input, Rate, Space, notification } from 'antd';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
-import {
-  isGoalTransferFieldErrors,
-  isPinnedGoalError,
-} from '@/lib/goalTransfers';
-import { isExtendedSession } from '@/lib/session';
-import { getPrevPageHref } from '@/lib/utils';
 import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
-import { addQuickGoalTransfer } from '../../../../src/app/_actions/goalTransfers';
+import React from 'react';
 import CurrencyInput from '../shared/CurrencyInput';
 
 type GoalTransferFormValues = {
@@ -39,18 +29,8 @@ export default function QuickSaveForm({
   itemNamePlaceholder: string;
 }) {
   const [form] = Form.useForm();
-  const router = useRouter();
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      signIn('azure-ad-b2c');
-    },
-  });
   const [api, contextHolder] = notification.useNotification();
   const onFinish = async (values: GoalTransferFormValues) => {
-    if (!session) return;
-    if (!isExtendedSession(session)) return;
-
     const formData = new FormData();
     formData.append('itemName', values.itemName);
     if (values.rating) formData.append('rating', String(values.rating));

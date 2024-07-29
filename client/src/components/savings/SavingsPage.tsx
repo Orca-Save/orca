@@ -1,26 +1,11 @@
-import { greenThemeColors } from '@/lib/themeConfig';
-import { GoalTransfer } from '@prisma/client';
-import { Button, Card, ConfigProvider, Skeleton, Space } from 'antd';
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import CompletedCounts from './CompletedCounts';
-import { GoalTransferFilter } from './SavingsList';
+import { Button, ConfigProvider, Space } from 'antd';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { GoalTransfer } from '../../types/all';
+import { greenThemeColors } from '../../utils/themeConfig';
+import CompletedCounts from '../shared/CompletedCounts';
+import SavingsList, { GoalTransferFilter } from './SavingsList';
 
-const DynamicSavingsList = dynamic(() => import('./SavingsList'), {
-  loading: () => (
-    <>
-      <Card>
-        <Skeleton paragraph={{ rows: 3 }} />
-      </Card>
-      <Card>
-        <Skeleton paragraph={{ rows: 3 }} />
-      </Card>
-      <Card>
-        <Skeleton paragraph={{ rows: 3 }} />
-      </Card>
-    </>
-  ),
-});
 export default async function SavingsPage({
   filter,
   newSaveText,
@@ -52,7 +37,7 @@ export default async function SavingsPage({
           style={{ justifyContent: 'center', width: '100%' }}
         >
           {!hide ? (
-            <Link href={saveHref + routeParams}>
+            <Link to={saveHref + routeParams}>
               <ConfigProvider
                 theme={{
                   components: {
@@ -78,7 +63,7 @@ export default async function SavingsPage({
             goalsCompleted={goalsCompleted}
           />
         </div>
-        <DynamicSavingsList
+        <SavingsList
           bottomGoalTransfers={bottomGoalTransfers}
           topGoalTransfers={topGoalTransfers}
           filter={filter}
