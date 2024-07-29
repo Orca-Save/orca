@@ -4,6 +4,7 @@ import React from 'react';
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import { Link } from 'react-router-dom';
 import ConnectPlaid from './ConnectPlaid';
+import ItemsLoginRequired from './ItemsLoginRequired';
 import RefreshPlaidItems from './RefreshPlaidItems';
 
 type UnreadCountObject = {

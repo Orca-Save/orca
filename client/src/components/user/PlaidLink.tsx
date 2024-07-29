@@ -1,10 +1,9 @@
-'use client';
-import { Paragraph } from '@/app/_components/Typography';
-import { Button, Modal } from 'antd';
-import Link from 'next/link';
-import { useState } from 'react';
+import { Button, Modal, Typography } from 'antd';
+import React, { useState } from 'react';
 import { PlaidLinkOnSuccessMetadata, usePlaidLink } from 'react-plaid-link';
-import { exchangePublicToken } from '../../../_actions/plaid';
+import { Link } from 'react-router-dom';
+
+const { Paragraph } = Typography;
 
 interface LinkProps {
   linkToken: string | null;
@@ -81,7 +80,7 @@ const LinkButton = (props: LinkProps) => {
       >
         <Paragraph>
           We detected a duplicate account. Please modify the existing accounts
-          by managing them in your <Link href='/user'>user profile</Link>.
+          by managing them in your <Link to='/user'>user profile</Link>.
         </Paragraph>
       </Modal>
       <Modal

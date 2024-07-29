@@ -16,7 +16,7 @@ const useFetch = (url: string, method = 'POST', body?: any) => {
         setLoading(true);
         const response = await fetch('http://localhost:3001/' + url, {
           method,
-          body: JSON.stringify(body),
+          body: body ? JSON.stringify(body) : undefined,
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',

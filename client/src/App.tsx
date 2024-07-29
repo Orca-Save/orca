@@ -4,6 +4,7 @@ import React from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  Outlet,
   Route,
   RouterProvider,
 } from 'react-router-dom';
@@ -16,29 +17,17 @@ import { msalConfig } from './utils/authConfig';
 
 import '@fontsource/varela-round';
 import './App.css';
-
+const LayoutRoute = () => (
+  <AppLayout>
+    <Outlet />
+  </AppLayout>
+);
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <>
-      <Route
-        path='/'
-        element={
-          <AppLayout>
-            <HomePage />
-          </AppLayout>
-        }
-        // errorElement={({ children }) => <>{children}</>}
-      />
-      <Route
-        path='/goals'
-        element={
-          <AppLayout>
-            <GoalsPage />
-          </AppLayout>
-        }
-        // errorElement={({ children }) => <>{children}</>}
-      />
-    </>
+    <Route path='/' element={<LayoutRoute />}>
+      <Route index element={<HomePage />} />
+      <Route path='goals' element={<GoalsPage />} />
+    </Route>
   )
 );
 

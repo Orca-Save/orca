@@ -1,10 +1,6 @@
-'use client';
-
-import { refreshUserItems } from '@/app/_actions/plaid';
 import { SyncOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default function RefreshPlaidItems({
   height,
@@ -14,7 +10,6 @@ export default function RefreshPlaidItems({
   userId: string;
 }) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   return (
     <Button
       data-id='refresh-plaid-items'
@@ -25,7 +20,7 @@ export default function RefreshPlaidItems({
         setLoading(true);
         try {
           await refreshUserItems(userId);
-          router.refresh();
+          window.location.reload();
         } catch (error) {}
         setLoading(false);
       }}

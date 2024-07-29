@@ -1,9 +1,7 @@
-'use client';
 import { Card, Tour, TourProps } from 'antd';
 import * as emoji from 'node-emoji';
-import { LinkTokenCreateResponse } from 'plaid';
-import { useEffect, useRef, useState } from 'react';
-import PlaidLink from '../user/_components/PlaidLink';
+import React, { useEffect, useRef, useState } from 'react';
+import PlaidLink from '../user/PlaidLink';
 
 function useBeginTour(setOpen: (open: boolean) => void) {
   useEffect(() => {
@@ -14,6 +12,11 @@ function useBeginTour(setOpen: (open: boolean) => void) {
     return () => clearTimeout(timer);
   }, []);
 }
+
+type LinkTokenCreateResponse = {
+  link_token: string;
+};
+
 export default function ConnectPlaidCard({
   linkToken,
   userId,

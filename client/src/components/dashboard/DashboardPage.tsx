@@ -7,6 +7,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
 import { greenThemeColors } from '../../utils/themeConfig';
+import ReviewLink from '../plaid/ReviewLink';
 import DashGoalCard from './DashGoalCard';
 import DashboardSaveButtons from './DashQuickSave';
 
