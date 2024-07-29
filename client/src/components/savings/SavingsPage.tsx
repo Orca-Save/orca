@@ -6,7 +6,7 @@ import { greenThemeColors } from '../../utils/themeConfig';
 import CompletedCounts from '../shared/CompletedCounts';
 import SavingsList, { GoalTransferFilter } from './SavingsList';
 
-export default async function SavingsPage({
+export default function SavingsPage({
   filter,
   newSaveText,
   saveHref,

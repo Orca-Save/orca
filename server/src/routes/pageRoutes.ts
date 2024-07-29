@@ -4,7 +4,6 @@ import * as pageController from '../controllers/pageController';
 const router = express.Router();
 
 router.post('/dashboardPage', pageController.dashboardPage);
-// router.post('/', userController.createUser);
-// other user routes
+router.get('/savingsPage', pageController.savingsPage);
 
 export default router;

@@ -9,12 +9,12 @@ import {
 import { Avatar, Card, Col, Popconfirm, Row, Space, Typography } from 'antd';
 import Meta from 'antd/es/card/Meta';
 import React from 'react';
-import PinSavingButton from './PinSavingButton';
-
 import { useNavigate } from 'react-router-dom';
+
 import { GoalTransfer } from '../../types/all';
 import { currencyFormatter } from '../../utils/general';
 import { greenThemeColors } from '../../utils/themeConfig';
+import PinSavingButton from './PinSavingButton';
 
 const { Text, Title } = Typography;
 
@@ -99,6 +99,7 @@ function GoalTransferCard({
       ratingColor = greenThemeColors.colorPrimary;
     }
   }
+  const transactedAt = new Date(goalTransfer.transactedAt).toDateString();
   return (
     <Card
       key={goalTransfer.id}
@@ -139,7 +140,7 @@ function GoalTransferCard({
           <Avatar src='https://api.dicebear.com/7.x/miniavs/svg?seed=8' />
         }
         title={goalTransfer.itemName}
-        description={goalTransfer.transactedAt?.toDateString()}
+        description={transactedAt}
       />
       <Row>
         <Col span={12}>

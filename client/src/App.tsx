@@ -13,11 +13,12 @@ import HomePage from './components/dashboard';
 import GoalsPage from './components/goals/MainGoalPage';
 import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
-
+import MySavingsPage from './components/savings/MySavingsPage';
 import { msalConfig } from './utils/authConfig';
 
-import '@fontsource/varela-round';
 import './App.css';
+import '@fontsource/varela-round';
+
 const LayoutRoute = () => (
   <AppLayout>
     <Outlet />
@@ -36,7 +37,7 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path='goals' element={<GoalsPage />} />
       <Route path='log' element={<LogLayoutRoute />}>
-        <Route path='savings' element={<GoalsPage />} />
+        <Route path='savings' element={<MySavingsPage />} />
       </Route>
     </Route>
   )
