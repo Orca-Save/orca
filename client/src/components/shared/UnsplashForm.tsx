@@ -1,6 +1,5 @@
-'use client';
 import { Button, Input, List } from 'antd';
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { createApi } from 'unsplash-js';
 import { ApiResponse } from 'unsplash-js/dist/helpers/response';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';

@@ -4,6 +4,7 @@ import {
   createLinkToken,
   exchangePublicToken,
   getAllLinkedItems,
+  refreshUserItems,
 } from '../utils/plaid';
 
 export const linkedItems = async (req: Request, res: Response) => {
@@ -44,5 +45,16 @@ export const exchangeToken = async (req: Request, res: Response) => {
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error creating link token' });
+  }
+};
+
+export const refreshItems = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    await Promise.all([refreshUserItems(userId)]);
+    res.status(200).send({ message: 'Items refreshed' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error refreshing items' });
   }
 };

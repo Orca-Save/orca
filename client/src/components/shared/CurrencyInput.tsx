@@ -1,5 +1,7 @@
-import { currencyFormatter2 } from '@/lib/utils';
 import { InputNumber, Select } from 'antd';
+import React from 'react';
+
+import { currencyFormatter2 } from '../../utils/general';
 
 const { Option } = Select;
 const selectAfter = (

@@ -55,3 +55,16 @@ export const currencyFormatter = (
     return amount.toString();
   }
 };
+
+export function apiFetch(endpoint: string, method: string, body?: any) {
+  const token = localStorage.getItem('accessToken');
+  console.log(process.env.REACT_APP_API_URL + endpoint);
+  return fetch(process.env.REACT_APP_API_URL + endpoint, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  }).then((res) => res.json());
+}

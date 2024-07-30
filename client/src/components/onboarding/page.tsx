@@ -1,4 +1,5 @@
 import OnboardingForm from './_components/OnboardingForm';
+import React from 'react';
 
 export default function OnboardingPage() {
   const [linkToken, userProfile, linkedItems, onboardingProfile] =

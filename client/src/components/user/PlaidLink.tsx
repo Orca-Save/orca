@@ -2,6 +2,7 @@ import { Button, Modal, Typography } from 'antd';
 import React, { useState } from 'react';
 import { PlaidLinkOnSuccessMetadata, usePlaidLink } from 'react-plaid-link';
 import { Link } from 'react-router-dom';
+import { apiFetch } from '../../utils/general';
 
 const { Paragraph } = Typography;
 
@@ -120,18 +121,9 @@ function exchangePublicToken(
   metadata: PlaidLinkOnSuccessMetadata,
   overrideExistingCheck: boolean
 ) {
-  const token = localStorage.getItem('accessToken');
-  console.log(process.env.REACT_APP_API_URL);
-  return fetch(process.env.REACT_APP_API_URL + '/api/plaid/exchangeToken', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      publicToken,
-      metadata,
-      overrideExistingCheck,
-    }),
-  }).then((res) => res.json());
+  return apiFetch('/api/plaid/exchangeToken', 'POST', {
+    publicToken,
+    metadata,
+    overrideExistingCheck,
+  });
 }

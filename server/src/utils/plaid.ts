@@ -5,7 +5,6 @@ import {
   Transaction as PrismaTransaction,
 } from '@prisma/client';
 import { format, formatDistanceToNow, formatRelative, isToday } from 'date-fns';
-
 import {
   Configuration,
   CountryCode,
@@ -22,6 +21,7 @@ import {
   TransactionsSyncRequest,
 } from 'plaid';
 import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
+
 import db from './db/db';
 import { delay } from './general';
 import { plaidCategories, plaidCategoriesDetail } from './plaidCategories';

@@ -14,14 +14,17 @@ const useFetch = (url: string, method = 'POST', body?: any) => {
 
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3001/' + url, {
-          method,
-          body: body ? JSON.stringify(body) : undefined,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          process.env.REACT_APP_API_URL + '/' + url,
+          {
+            method,
+            body: body ? JSON.stringify(body) : undefined,
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

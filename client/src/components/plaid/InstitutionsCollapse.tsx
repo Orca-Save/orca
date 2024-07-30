@@ -1,21 +1,47 @@
-'use client';
-
-import { ItemData, removePlaidItem } from '@/app/_actions/plaid';
-import { Title } from '@/app/_components/Typography';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Account } from '@prisma/client';
-import { Button, Card, Collapse, List, Popconfirm, Space } from 'antd';
-import { Institution } from 'plaid';
-import PlaidLink from '../user/components/PlaidLink';
+import {
+  Button,
+  Card,
+  Collapse,
+  List,
+  Popconfirm,
+  Space,
+  Typography,
+} from 'antd';
+import React from 'react';
+
+import PlaidLink from '../user/PlaidLink';
 
 const { Panel } = Collapse;
+const { Title } = Typography;
+
+type Account = {
+  account_id: string;
+  mask: string;
+  name: string;
+  official_name: string;
+  subtype: string;
+  type: string;
+};
+
+type Institution = {
+  institution_id: string;
+  name: string;
+};
+
+type ItemData = {
+  institution?: Institution;
+  accounts: Account[];
+  linkToken: string;
+  itemId: string;
+  linkText: string;
+};
 
 type InstitutionProps = {
   institution?: Institution;
   accounts: Account[];
   linkToken: string;
   linkText: string;
-  userId: string;
   itemId: string;
 };
 const InstitutionCollapse = ({
@@ -23,7 +49,6 @@ const InstitutionCollapse = ({
   linkToken,
   accounts,
   linkText,
-  userId,
   itemId,
 }: InstitutionProps) => {
   const handleRemoveInstitution = async () => {
@@ -51,7 +76,6 @@ const InstitutionCollapse = ({
           <Space wrap>
             <PlaidLink
               linkToken={linkToken}
-              userId={userId}
               size='middle'
               text={linkText}
               overrideExistingAccountCheck={true}
@@ -94,13 +118,7 @@ const InstitutionCollapse = ({
   );
 };
 
-const InstitutionCollapses = ({
-  itemsData,
-  userId,
-}: {
-  itemsData: ItemData[];
-  userId: string;
-}) => {
+const InstitutionCollapses = ({ itemsData }: { itemsData: ItemData[] }) => {
   return (
     <div>
       {itemsData.length > 0 && (
@@ -114,7 +132,6 @@ const InstitutionCollapses = ({
             itemId={itemId}
             linkToken={linkToken}
             linkText={linkText}
-            userId={userId}
             accounts={accounts}
           />
         )

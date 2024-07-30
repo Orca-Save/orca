@@ -13,6 +13,7 @@ import HomePage from './components/dashboard';
 import GoalsPage from './components/goals/MainGoalPage';
 import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
+import OnboardingForm from './components/onboarding/OnboardingForm';
 import MySavingsPage from './components/savings/MySavingsPage';
 import OneTapPage from './components/savings/OneTapPage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
@@ -35,15 +36,18 @@ const LogLayoutRoute = () => (
 );
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<LayoutRoute />}>
-      <Route index element={<HomePage />} />
-      <Route path='goals' element={<GoalsPage />} />
-      <Route path='log' element={<LogLayoutRoute />}>
-        <Route path='savings' element={<MySavingsPage />} />
-        <Route path='one-taps' element={<OneTapPage />} />
-        <Route path='transactions' element={<TransactionsPage />} />
+    <>
+      <Route path='onboarding' element={<OnboardingForm />} />
+      <Route path='/' element={<LayoutRoute />}>
+        <Route index element={<HomePage />} />
+        <Route path='goals' element={<GoalsPage />} />
+        <Route path='log' element={<LogLayoutRoute />}>
+          <Route path='savings' element={<MySavingsPage />} />
+          <Route path='one-taps' element={<OneTapPage />} />
+          <Route path='transactions' element={<TransactionsPage />} />
+        </Route>
       </Route>
-    </Route>
+    </>
   )
 );
 

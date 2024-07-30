@@ -1,3 +1,5 @@
+import { HappyProvider } from '@ant-design/happy-work-theme';
+import { UserOutlined } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
@@ -9,58 +11,34 @@ import {
   Tabs,
   Typography,
 } from 'antd';
-
-import { HappyProvider } from '@ant-design/happy-work-theme';
-import { UserOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-const { Title, Text } = Typography;
-type UserProfile = {
-  privacyPolicyAccepted: boolean;
-  stripeSubscriptionId: string;
-};
-type OnboardingProfile = {
-  goalName: string;
-  goalAmount: number;
-  goalDueAt: string;
-  imagePath: string;
-  initialAmount: number;
-  saving: string;
-  savingAmount: number;
-  privacyAgreement: boolean;
-};
+import useFetch from '../../hooks/useFetch';
+import InstitutionCollapses from '../plaid/InstitutionsCollapse';
+import CurrencyInput from '../shared/CurrencyInput';
+import UnsplashForm from '../shared/UnsplashForm';
+import PlaidLink from '../user/PlaidLink';
 
-type ItemData = {
-  id: string;
-  name: string;
-  institutionName: string;
-  logo: string;
-  balance: number;
-  userId: string;
-};
+const { Title, Text, Paragraph } = Typography;
 
-type OnboardingFormProps = {
-  userProfile: UserProfile | null;
-  linkToken: string;
-  itemsData: ItemData[];
-  onboardingProfile: OnboardingProfile | null;
-};
-export default function OnboardingForm({
-  linkToken,
-  userProfile,
-  itemsData,
-  onboardingProfile,
-}: OnboardingFormProps) {
+export default function OnboardingForm() {
+  const navigate = useNavigate();
+  const { data } = useFetch('api/pages/onboardingPage', 'GET');
   const [form] = Form.useForm();
-  const [pageState, setPageState] = useState(
-    initialPageState(onboardingProfile, userProfile)
-  );
   const [loading, setLoading] = useState(false);
+  console.log(data);
+  const { linkToken, userProfile, itemsData, onboardingProfile } = data ?? {};
   const [privacyChecked, setPrivacyChecked] = useState(
     userProfile?.privacyPolicyAccepted ?? false
   );
+  const [pageState, setPageState] = useState(
+    initialPageState(onboardingProfile, userProfile)
+  );
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  if (!data) return null;
 
   const currentTab = Number(pageState.tabKey);
   const forceRender = true;
@@ -76,7 +54,7 @@ export default function OnboardingForm({
     <div>
       <Row justify='center'>
         <h1
-          className={`${varelaRound.className}`}
+          className='varela-round'
           style={{ fontSize: 40, fontWeight: 'bold' }}
         >
           Orca
@@ -119,7 +97,7 @@ export default function OnboardingForm({
                 children: (
                   <div style={{ margin: '15px' }}>
                     <h3
-                      className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                      className={`font-sans text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
                     >
                       {"Let's set up your first goal."}
                     </h3>
@@ -203,7 +181,7 @@ export default function OnboardingForm({
                   <div style={{ margin: '15px' }}>
                     <div style={{ marginBottom: '20px' }}>
                       <h3
-                        className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                        className={`font-sans text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
                       >
                         {"Let's set up a One-Tap save."}
                       </h3>
@@ -234,7 +212,7 @@ export default function OnboardingForm({
                   <div style={{ margin: '15px' }}>
                     <div style={{ marginBottom: '20px' }}>
                       <h3
-                        className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                        className={`font-sans text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
                       >
                         Thank you for choosing Orca!
                       </h3>
@@ -242,11 +220,11 @@ export default function OnboardingForm({
                         To ensure the best experience and keep your data secure,
                         we kindly ask you to review and agree to our privacy
                         policy. Please take a moment to read through{' '}
-                        <Link href='/privacy-policy'>our Privacy Policy</Link>.
+                        <Link to='/privacy-policy'>our Privacy Policy</Link>.
                       </Paragraph>
                       <Paragraph>
                         You are able to manage your data and clear it from your{' '}
-                        <Link href='/user'>user profile page</Link>.
+                        <Link to='/user'>user profile page</Link>.
                       </Paragraph>
                     </div>
                     <Form.Item
@@ -320,7 +298,7 @@ export default function OnboardingForm({
                   <div style={{ margin: '15px' }}>
                     <div style={{ marginBottom: '20px' }}>
                       <h3
-                        className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                        className={`font-sans text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
                       >
                         Seamlessly Connect Your Bank Accounts with Orca!
                       </h3>
@@ -335,20 +313,14 @@ export default function OnboardingForm({
 
                       <Paragraph>
                         You can manage and add more linked accounts in your{' '}
-                        <Link href='/user'>
+                        <Link to='/user'>
                           <UserOutlined />
                           user profile
                         </Link>
                         .
                       </Paragraph>
-                      <PlaidLink
-                        userId={session.user.id}
-                        linkToken={linkToken}
-                      />
-                      <InstitutionCollapses
-                        itemsData={itemsData}
-                        userId={session.user.id}
-                      />
+                      <PlaidLink linkToken={linkToken} />
+                      <InstitutionCollapses itemsData={itemsData} />
                     </div>
                   </div>
                 ),
@@ -400,18 +372,14 @@ export default function OnboardingForm({
                         goalDueAt: form.getFieldValue('goalDueAt')?.format(),
                       };
                       if (currentTab === 4) {
-                        await onboardUser(
-                          session.user.id,
-                          newOnboardingProfile
-                        );
+                        await onboardUser(newOnboardingProfile);
                         setLoading(false);
-                        router.push('/?confetti=true');
+                        navigate('/?confetti=true');
                         return;
                       }
 
                       const nextTab = currentTab + 1;
                       const result = await saveOnboardingProfile(
-                        session.user.id,
                         newOnboardingProfile
                       );
                       setLoading(false);

@@ -1,8 +1,10 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { z } from 'zod';
+
 import db from './db/db';
 import { sendSlackMessage } from './general';
 import { syncItems } from './plaid';
+
 const zodDay = z.custom<Dayjs>((val) => val instanceof dayjs, 'Invalid date');
 
 export const externalAccountId = 'faed4327-3a9c-4837-a337-c54e9704d60f';

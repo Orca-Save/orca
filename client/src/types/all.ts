@@ -27,3 +27,27 @@ export type FormattedTransaction = {
   date: string;
   formattedDate: string;
 };
+
+type UserProfile = {
+  privacyPolicyAccepted: boolean;
+  stripeSubscriptionId: string;
+};
+type OnboardingProfile = {
+  goalName: string;
+  goalAmount: number;
+  goalDueAt: string;
+  imagePath: string;
+  initialAmount: number;
+  saving: string;
+  savingAmount: number;
+  privacyAgreement: boolean;
+};
+
+type ItemData = {
+  id: string;
+  name: string;
+  institutionName: string;
+  logo: string;
+  balance: number;
+  userId: string;
+};

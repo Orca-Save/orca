@@ -2,8 +2,13 @@ import { Request, Response } from 'express';
 
 import { getUserProfile } from '../utils/db/common';
 import { getPinnedGoalTransfers } from '../utils/goalTransfers';
-import { getOnboardingProfileCount } from '../utils/onboarding';
 import {
+  getOnboardingProfile,
+  getOnboardingProfileCount,
+} from '../utils/onboarding';
+import {
+  createLinkToken,
+  getAllLinkedItems,
   getFormattedTransactions,
   getUnreadTransactionCount,
 } from '../utils/plaid';
@@ -62,6 +67,25 @@ export const transactionsPage = async (req: Request, res: Response) => {
       getUnreadTransactionCount(userId),
     ]);
     res.status(200).send({ formattedTransactions, unreadObj });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};
+
+export const onboardingPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const [linkToken, userProfile, itemsData, onboardingProfile] =
+      await Promise.all([
+        createLinkToken(userId),
+        getUserProfile(userId),
+        getAllLinkedItems(userId),
+        getOnboardingProfile(userId),
+      ]);
+    res
+      .status(200)
+      .send({ linkToken, userProfile, itemsData, onboardingProfile });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting data for the page' });
