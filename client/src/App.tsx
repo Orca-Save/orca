@@ -13,14 +13,14 @@ import HomePage from './components/dashboard';
 import GoalsPage from './components/goals/MainGoalPage';
 import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
-import OnboardingForm from './components/onboarding/OnboardingForm';
+import OnboardingPage from './components/onboarding/OnboardingPage';
 import MySavingsPage from './components/savings/MySavingsPage';
 import OneTapPage from './components/savings/OneTapPage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
 import { msalConfig } from './utils/authConfig';
 
-import './App.css';
 import '@fontsource/varela-round';
+import './App.css';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -37,7 +37,7 @@ const LogLayoutRoute = () => (
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path='onboarding' element={<OnboardingForm />} />
+      <Route path='onboarding' element={<OnboardingPage />} />
       <Route path='/' element={<LayoutRoute />}>
         <Route index element={<HomePage />} />
         <Route path='goals' element={<GoalsPage />} />

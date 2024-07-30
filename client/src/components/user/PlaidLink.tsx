@@ -2,6 +2,7 @@ import { Button, Modal, Typography } from 'antd';
 import React, { useState } from 'react';
 import { PlaidLinkOnSuccessMetadata, usePlaidLink } from 'react-plaid-link';
 import { Link } from 'react-router-dom';
+
 import { apiFetch } from '../../utils/general';
 
 const { Paragraph } = Typography;
@@ -31,6 +32,7 @@ const LinkButton = (props: LinkProps) => {
       await exchangePublicToken(publicToken, metadata, true);
       setLoading(false);
       setIsExistingInstitutionModalOpen(false);
+      window.location.reload();
     }
   };
 
@@ -49,6 +51,8 @@ const LinkButton = (props: LinkProps) => {
       setPublicToken(public_token);
       setMetadata(metadata);
       setIsExistingInstitutionModalOpen(true);
+    } else {
+      window.location.reload();
     }
   };
   const config: Parameters<typeof usePlaidLink>[0] = {

@@ -2,7 +2,13 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 
-import { componentRoutes, goalRoutes, pageRoutes, plaidRoutes } from './routes';
+import {
+  componentRoutes,
+  goalRoutes,
+  pageRoutes,
+  plaidRoutes,
+  userRoutes,
+} from './routes';
 
 const cors = require('cors');
 
@@ -40,6 +46,7 @@ app.use('/api/pages', pageRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/components', componentRoutes);
 app.use('/api/plaid', plaidRoutes);
+app.use('/api/users', userRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

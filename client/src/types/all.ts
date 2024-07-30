@@ -28,11 +28,11 @@ export type FormattedTransaction = {
   formattedDate: string;
 };
 
-type UserProfile = {
+export type UserProfile = {
   privacyPolicyAccepted: boolean;
   stripeSubscriptionId: string;
 };
-type OnboardingProfile = {
+export type OnboardingProfile = {
   goalName: string;
   goalAmount: number;
   goalDueAt: string;
@@ -43,11 +43,37 @@ type OnboardingProfile = {
   privacyAgreement: boolean;
 };
 
-type ItemData = {
+export type ItemData = {
   id: string;
   name: string;
   institutionName: string;
   logo: string;
   balance: number;
   userId: string;
+  institution?: Institution;
+  accounts: Account[];
+  linkToken: string;
+  itemId: string;
+  linkText: string;
+};
+export type Institution = {
+  institution_id: string;
+  name: string;
+};
+
+export type Account = {
+  account_id: string;
+  mask: string;
+  name: string;
+  official_name: string;
+  subtype: string;
+  type: string;
+};
+
+export type InstitutionProps = {
+  institution?: Institution;
+  accounts: Account[];
+  linkToken: string;
+  linkText: string;
+  itemId: string;
 };

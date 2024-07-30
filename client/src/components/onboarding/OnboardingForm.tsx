@@ -15,21 +15,31 @@ import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import useFetch from '../../hooks/useFetch';
+import { ItemData, OnboardingProfile, UserProfile } from '../../types/all';
+import { applyFormErrors } from '../../utils/forms';
+import { apiFetch } from '../../utils/general';
+import { isFieldErrors } from '../../utils/goals';
 import InstitutionCollapses from '../plaid/InstitutionsCollapse';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
 import PlaidLink from '../user/PlaidLink';
 
 const { Title, Text, Paragraph } = Typography;
-
-export default function OnboardingForm() {
+type OnboardingFormProps = {
+  userProfile: UserProfile | null;
+  linkToken: string;
+  itemsData: ItemData[];
+  onboardingProfile: OnboardingProfile | null;
+};
+export default function OnboardingForm({
+  linkToken,
+  userProfile,
+  itemsData,
+  onboardingProfile,
+}: OnboardingFormProps) {
   const navigate = useNavigate();
-  const { data } = useFetch('api/pages/onboardingPage', 'GET');
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  console.log(data);
-  const { linkToken, userProfile, itemsData, onboardingProfile } = data ?? {};
   const [privacyChecked, setPrivacyChecked] = useState(
     userProfile?.privacyPolicyAccepted ?? false
   );
@@ -37,8 +47,6 @@ export default function OnboardingForm() {
     initialPageState(onboardingProfile, userProfile)
   );
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  if (!data) return null;
 
   const currentTab = Number(pageState.tabKey);
   const forceRender = true;
@@ -372,15 +380,19 @@ export default function OnboardingForm() {
                         goalDueAt: form.getFieldValue('goalDueAt')?.format(),
                       };
                       if (currentTab === 4) {
-                        await onboardUser(newOnboardingProfile);
+                        await apiFetch('/api/users/onboardUser', 'POST', {
+                          onboardingProfile: newOnboardingProfile,
+                        });
                         setLoading(false);
                         navigate('/?confetti=true');
                         return;
                       }
 
                       const nextTab = currentTab + 1;
-                      const result = await saveOnboardingProfile(
-                        newOnboardingProfile
+                      const result = await apiFetch(
+                        '/api/users/saveOnboardingProfile',
+                        'POST',
+                        { onboardingProfile: newOnboardingProfile }
                       );
                       setLoading(false);
 

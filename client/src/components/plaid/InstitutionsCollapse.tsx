@@ -10,40 +10,12 @@ import {
 } from 'antd';
 import React from 'react';
 
+import { InstitutionProps, ItemData } from '../../types/all';
 import PlaidLink from '../user/PlaidLink';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
 
-type Account = {
-  account_id: string;
-  mask: string;
-  name: string;
-  official_name: string;
-  subtype: string;
-  type: string;
-};
-
-type Institution = {
-  institution_id: string;
-  name: string;
-};
-
-type ItemData = {
-  institution?: Institution;
-  accounts: Account[];
-  linkToken: string;
-  itemId: string;
-  linkText: string;
-};
-
-type InstitutionProps = {
-  institution?: Institution;
-  accounts: Account[];
-  linkToken: string;
-  linkText: string;
-  itemId: string;
-};
 const InstitutionCollapse = ({
   institution,
   linkToken,

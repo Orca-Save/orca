@@ -1,3 +1,7 @@
+import { FormInstance } from 'antd';
+
+import { FieldErrors } from './goals';
+
 export function applyFormErrors(form: FormInstance, result: FieldErrors) {
   Object.entries(result.fieldErrors).forEach(([field, errors]) => {
     errors.forEach((error) => {

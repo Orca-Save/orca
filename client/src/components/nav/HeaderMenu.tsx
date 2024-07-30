@@ -16,7 +16,7 @@ export default function HeaderMenu({ className }: { className: string }) {
   };
   const handleLogin = () => {
     instance
-      .loginPopup({
+      .loginRedirect({
         ...loginRequest,
         authority: b2cPolicies.authorities.signUpSignIn.authority,
       })

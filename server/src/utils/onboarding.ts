@@ -20,7 +20,7 @@ export function getOnboardingProfileCount(userId: string) {
 export const onboardingSchema = z.object({
   goalName: z.string().min(1),
   goalAmount: z.coerce.number().min(0),
-  goalDueAt: zodDay,
+  // goalDueAt: zodDay,
 
   imagePath: z
     .string()
@@ -61,12 +61,12 @@ export async function saveOnboardingProfile(
     where: { userId },
     create: {
       ...onboardingProfileData,
-      goalDueAt: onboardingProfileData.goalDueAt.format(),
+      goalDueAt: onboardingProfileInput.goalDueAt.format(),
       userId: userId,
     },
     update: {
       ...onboardingProfileData,
-      goalDueAt: onboardingProfileData.goalDueAt.format(),
+      goalDueAt: onboardingProfileInput.goalDueAt.format(),
     },
   });
 
@@ -111,7 +111,7 @@ export async function onboardUser(userId: string, onboardingProfileInput: any) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }
 
-  const onboardingProfileData = result.data;
+  const onboardingProfileData = onboardingProfileInput;
   const currentOnboardingProfile = await db.onboardingProfile.findFirst({
     where: { id: onboardingProfileData.id },
   });
