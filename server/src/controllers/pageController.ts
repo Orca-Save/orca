@@ -3,7 +3,10 @@ import { Request, Response } from 'express';
 import { getUserProfile } from '../utils/db/common';
 import { getPinnedGoalTransfers } from '../utils/goalTransfers';
 import { getOnboardingProfileCount } from '../utils/onboarding';
-import { getUnreadTransactionCount } from '../utils/plaid';
+import {
+  getFormattedTransactions,
+  getUnreadTransactionCount,
+} from '../utils/plaid';
 import { getGoalTransfers } from '../utils/transactions';
 import { completedUserGoalCount, getPinnedUserGoal } from '../utils/users';
 
@@ -43,11 +46,22 @@ export const savingsPage = async (req: Request, res: Response) => {
       completedUserGoalCount(userId),
     ]);
     res.status(200).send({
-      goalTransfers: goalTransfers.filter(
-        (transfer) => transfer.goalId !== null || transfer.amount.toNumber() < 0
-      ),
+      goalTransfers,
       completedCounts,
     });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};
+export const transactionsPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const [formattedTransactions, unreadObj] = await Promise.all([
+      getFormattedTransactions(userId),
+      getUnreadTransactionCount(userId),
+    ]);
+    res.status(200).send({ formattedTransactions, unreadObj });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting data for the page' });

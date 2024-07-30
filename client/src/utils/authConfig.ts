@@ -1,4 +1,5 @@
 import { LogLevel } from '@azure/msal-browser';
+
 export const loginRequest = {
   scopes: [
     'openid',
@@ -29,7 +30,7 @@ export const msalConfig = {
     navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
   },
   cache: {
-    cacheLocation: 'sessionStorage', // This configures where your cache will be stored
+    cacheLocation: 'localStorage', // This configures where your cache will be stored
     storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
   },
   system: {

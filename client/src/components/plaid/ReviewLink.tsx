@@ -1,8 +1,8 @@
+import { HappyProvider } from '@ant-design/happy-work-theme';
 import { Badge, Button, ConfigProvider, Flex } from 'antd';
 import React from 'react';
-
-import { HappyProvider } from '@ant-design/happy-work-theme';
 import { Link } from 'react-router-dom';
+
 import ConnectPlaid from './ConnectPlaid';
 import ItemsLoginRequired from './ItemsLoginRequired';
 import RefreshPlaidItems from './RefreshPlaidItems';
@@ -15,15 +15,12 @@ type UnreadCountObject = {
 
 export default function ReviewLink({
   unreadObj,
-  userId,
 }: {
   unreadObj: UnreadCountObject;
-  userId: string;
 }) {
-  if (unreadObj.plaidItemExists === false)
-    return <ConnectPlaid userId={userId} />;
+  if (unreadObj.plaidItemExists === false) return <ConnectPlaid />;
 
-  if (unreadObj.loginRequired) return <ItemsLoginRequired userId={userId} />;
+  if (unreadObj.loginRequired) return <ItemsLoginRequired />;
   return (
     <Flex
       justify='center'
@@ -33,7 +30,7 @@ export default function ReviewLink({
         width: '100%',
       }}
     >
-      <RefreshPlaidItems userId={userId} height={90} />
+      <RefreshPlaidItems height={90} />
       <Link to='/review' className='w-full'>
         <HappyProvider>
           <Button

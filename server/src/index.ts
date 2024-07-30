@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+
 import { componentRoutes, goalRoutes, pageRoutes, plaidRoutes } from './routes';
 
 const cors = require('cors');

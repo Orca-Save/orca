@@ -1,6 +1,7 @@
 import { Card, Tour, TourProps } from 'antd';
 import * as emoji from 'node-emoji';
 import React, { useEffect, useRef, useState } from 'react';
+
 import PlaidLink from '../user/PlaidLink';
 
 function useBeginTour(setOpen: (open: boolean) => void) {
@@ -19,10 +20,8 @@ type LinkTokenCreateResponse = {
 
 export default function ConnectPlaidCard({
   linkToken,
-  userId,
 }: {
   linkToken: LinkTokenCreateResponse;
-  userId: string;
 }) {
   const unreadRef = useRef(null);
   const [open, setOpen] = useState<boolean>(false);
@@ -53,7 +52,7 @@ export default function ConnectPlaidCard({
           fontSize: '2rem',
         }}
       >
-        <PlaidLink linkToken={linkToken.link_token} userId={userId} />
+        <PlaidLink linkToken={linkToken.link_token} />
       </Card>
       <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
     </>

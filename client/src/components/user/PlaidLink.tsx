@@ -7,7 +7,6 @@ const { Paragraph } = Typography;
 
 interface LinkProps {
   linkToken: string | null;
-  userId: string;
   size?: 'small' | 'large' | 'middle';
   text?: string;
   overrideExistingAccountCheck?: boolean;
@@ -27,7 +26,8 @@ const LinkButton = (props: LinkProps) => {
   const handleExistingInstitution = async () => {
     if (publicToken && metadata) {
       setLoading(true);
-      await exchangePublicToken(publicToken, metadata, props.userId, true);
+
+      await exchangePublicToken(publicToken, metadata, true);
       setLoading(false);
       setIsExistingInstitutionModalOpen(false);
     }
@@ -40,8 +40,7 @@ const LinkButton = (props: LinkProps) => {
     const results = await exchangePublicToken(
       public_token,
       metadata,
-      props.userId,
-      props.overrideExistingAccountCheck
+      props.overrideExistingAccountCheck!!
     );
     if (results.duplicate) {
       setIsDuplicateModalOpen(true);
@@ -115,3 +114,24 @@ const LinkButton = (props: LinkProps) => {
 LinkButton.displayName = 'Link';
 
 export default LinkButton;
+
+function exchangePublicToken(
+  publicToken: string,
+  metadata: PlaidLinkOnSuccessMetadata,
+  overrideExistingCheck: boolean
+) {
+  const token = localStorage.getItem('accessToken');
+  console.log(process.env.REACT_APP_API_URL);
+  return fetch(process.env.REACT_APP_API_URL + '/api/plaid/exchangeToken', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      publicToken,
+      metadata,
+      overrideExistingCheck,
+    }),
+  }).then((res) => res.json());
+}

@@ -16,3 +16,14 @@ export type GoalTransfer = {
   pinned: boolean;
   transactedAt: Date;
 };
+
+export type FormattedTransaction = {
+  id: string;
+  name: string;
+  category: string;
+  amount: number;
+  impulse: boolean;
+  read: boolean;
+  date: string;
+  formattedDate: string;
+};

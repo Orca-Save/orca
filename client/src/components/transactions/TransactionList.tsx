@@ -1,9 +1,3 @@
-'use client';
-
-import { FormattedTransaction } from '@/app/_actions/plaid';
-import { discretionaryFilter } from '@/lib/plaid';
-import { antdDefaultButton } from '@/lib/themeConfig';
-import { currencyFormatter } from '@/lib/utils';
 import {
   Badge,
   Col,
@@ -16,8 +10,14 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
 import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import { FormattedTransaction } from '../../types/all';
+import { currencyFormatter } from '../../utils/general';
+import { antdDefaultButton } from '../../utils/themeConfig';
+
 const { Text } = Typography;
 
 type TransactionListProps = {
@@ -30,8 +30,7 @@ type Filter = {
   discretionary: boolean;
 };
 
-function useFilterParams(): Filter {
-  const searchParams = useSearchParams();
+function useFilterParams(searchParams): Filter {
   const filterParams = searchParams.get('filter')?.split(',');
   if (!filterParams) {
     return {
@@ -49,16 +48,16 @@ function useFilterParams(): Filter {
 export default function TransactionList({
   transactions,
 }: TransactionListProps) {
-  const router = useRouter();
-  const params = useParams();
-  const filterParams = useFilterParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filterParams = useFilterParams(searchParams);
+  const navigate = useNavigate();
   const [filter, setFilter] = useState(filterParams);
   const groupedTransactionsArray = groupedTransactions(transactions, filter);
   return (
     <>
       <FilterOptions
         filter={filter}
-        router={router}
+        setSearchParams={setSearchParams}
         setFilterHandler={setFilter}
       />
       <ConfigProvider
@@ -85,7 +84,7 @@ export default function TransactionList({
                   {transactions.map((transaction) => (
                     <Menu.Item
                       onClick={() =>
-                        router.push(`/transactions/${transaction.id}`)
+                        navigate(`/transactions/${transaction.id}`)
                       }
                       key={transaction.id}
                     >
@@ -251,10 +250,10 @@ function groupedTransactions(
 function FilterOptions({
   filter,
   setFilterHandler,
-  router,
+  setSearchParams,
 }: {
   filter: Filter;
-  router: any;
+  setSearchParams: any;
   setFilterHandler: (filter: Filter) => void;
 }) {
   const options: {
@@ -294,15 +293,10 @@ function FilterOptions({
               checked={filter[value]}
               onClick={(checked) => {
                 setFilterHandler({ ...filter, [value]: checked });
-                router.replace(
-                  `/log/transactions?filter=${filterToParams({
-                    ...filter,
-                    [value]: checked,
-                  })}`,
-                  {
-                    shallow: true,
-                  }
-                );
+                setSearchParams({
+                  ...filter,
+                  [value]: checked,
+                });
               }}
             />
           </>

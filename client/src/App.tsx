@@ -14,6 +14,8 @@ import GoalsPage from './components/goals/MainGoalPage';
 import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
 import MySavingsPage from './components/savings/MySavingsPage';
+import OneTapPage from './components/savings/OneTapPage';
+import TransactionsPage from './components/transactions/MainTransactionPage';
 import { msalConfig } from './utils/authConfig';
 
 import './App.css';
@@ -38,6 +40,8 @@ const router = createBrowserRouter(
       <Route path='goals' element={<GoalsPage />} />
       <Route path='log' element={<LogLayoutRoute />}>
         <Route path='savings' element={<MySavingsPage />} />
+        <Route path='one-taps' element={<OneTapPage />} />
+        <Route path='transactions' element={<TransactionsPage />} />
       </Route>
     </Route>
   )

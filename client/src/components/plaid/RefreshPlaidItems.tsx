@@ -2,13 +2,7 @@ import { SyncOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { useState } from 'react';
 
-export default function RefreshPlaidItems({
-  height,
-  userId,
-}: {
-  height: number;
-  userId: string;
-}) {
+export default function RefreshPlaidItems({ height }: { height: number }) {
   const [loading, setLoading] = useState(false);
   return (
     <Button
