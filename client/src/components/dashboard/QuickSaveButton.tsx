@@ -1,8 +1,8 @@
 import { Button, Typography } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Confetti from 'react-confetti';
 import { GoalTransfer } from '../../types/all';
-import { currencyFormatter } from '../../utils/general';
+import { apiFetch, currencyFormatter } from '../../utils/general';
 
 const { Paragraph, Text } = Typography;
 
@@ -19,9 +19,15 @@ export function QuickSaveButton({
       setConfetti({ run: true, count: 0 });
     }, 1500);
   }
-  const onClick = () => {
+  const onClick = async () => {
     setConfetti({ run: true, count: 300 });
-    if (goalId) addQuickSave(goalId, transfer);
+    if (goalId) {
+      await apiFetch('/api/goals/quickSave', 'POST', {
+        goalId,
+        transfer,
+      });
+      window.location.reload();
+    }
   };
 
   return (

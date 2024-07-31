@@ -542,3 +542,27 @@ export const plaidCategoriesDetail = [
     discretionary: false,
   },
 ];
+
+export function discretionaryFilter(transaction: {
+  recurring: boolean;
+  personalFinanceCategory: any;
+}) {
+  const category = transaction.personalFinanceCategory as {
+    detailed: string;
+  } | null;
+  const categoryDetail = plaidCategoriesDetail.find(
+    (x) => x.detailed === category?.detailed
+  );
+  if (categoryDetail?.discretionary) {
+    const exceptions = [
+      'GENERAL_SERVICES_EDUCATION',
+      'PERSONAL_CARE_GYMS_AND_FITNESS_CENTERS',
+      'GENERAL_SERVICES_CHILDCARE',
+    ];
+    if (exceptions.includes(categoryDetail?.detailed) && transaction.recurring)
+      return false;
+
+    return true;
+  }
+  return false;
+}

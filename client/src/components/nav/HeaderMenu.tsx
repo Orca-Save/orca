@@ -2,6 +2,7 @@ import { useMsal } from '@azure/msal-react';
 import { Button, Menu, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { b2cPolicies, loginRequest } from '../../utils/authConfig';
 
 const { SubMenu } = Menu;
@@ -16,7 +17,7 @@ export default function HeaderMenu({ className }: { className: string }) {
   };
   const handleLogin = () => {
     instance
-      .loginRedirect({
+      .loginPopup({
         ...loginRequest,
         authority: b2cPolicies.authorities.signUpSignIn.authority,
       })

@@ -1,4 +1,4 @@
-import { LogLevel } from '@azure/msal-browser';
+import { BrowserCacheLocation, LogLevel } from '@azure/msal-browser';
 
 export const loginRequest = {
   scopes: [
@@ -30,12 +30,12 @@ export const msalConfig = {
     navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
   },
   cache: {
-    cacheLocation: 'localStorage', // This configures where your cache will be stored
+    cacheLocation: BrowserCacheLocation.LocalStorage, // This configures where your cache will be stored
     storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
   },
   system: {
     loggerOptions: {
-      loggerCallback: (level, message, containsPii) => {
+      loggerCallback: (level: any, message: any, containsPii: any) => {
         if (containsPii) {
           return;
         }

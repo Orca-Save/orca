@@ -2,7 +2,6 @@ import { HappyProvider } from '@ant-design/happy-work-theme';
 import { useMsal } from '@azure/msal-react';
 import { Button, ConfigProvider, Skeleton, Space, Typography } from 'antd';
 import * as emoji from 'node-emoji';
-import React from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
@@ -66,7 +65,7 @@ export default function HomePage() {
             </HappyProvider>
           </ConfigProvider>
         </Link>
-        <ReviewLink unreadObj={unreadTransactionCount} userId={userId} />
+        <ReviewLink unreadObj={unreadTransactionCount} />
         <Title level={4} style={{ margin: 0 }}>
           One-Tap Impulse Saves
         </Title>

@@ -22,9 +22,12 @@ import {
 } from 'plaid';
 import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
 
+import {
+  plaidCategories,
+  plaidCategoriesDetail,
+} from '../../../shared-library/src/plaidCategories';
 import db from './db/db';
 import { delay } from './general';
-import { plaidCategories, plaidCategoriesDetail } from './plaidCategories';
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;

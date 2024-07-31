@@ -1,9 +1,8 @@
 import '../main.css';
 
-import { impulseDefaultButtonTheme } from '@/lib/themeConfig';
-import { ConfigProvider, Space } from 'antd';
+import { ConfigProvider, Space, Typography } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { Title } from '../../Typography';
+import { impulseDefaultButtonTheme } from '../../../../utils/themeConfig';
 import { useCardSwiper } from '../hooks/useCardSwiper';
 import { CardSwiperProps, SwipeAction, SwipeDirection } from '../types/types';
 import { Swiper } from '../utils/swiper';
@@ -12,6 +11,8 @@ import CardSwiperEmptyState from './CardSwiperEmptyState';
 import { CardSwiperLeftActionButton } from './CardSwiperLeftActionButton';
 import CardSwiperRibbons from './CardSwiperRibbons';
 import { CardSwiperRightActionButton } from './CardSwiperRightActionButton';
+
+const { Title } = Typography;
 
 export const CardSwiper = (props: CardSwiperProps) => {
   const {

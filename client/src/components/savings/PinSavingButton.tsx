@@ -1,6 +1,6 @@
 import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import React from 'react';
+import { apiFetch } from '../../utils/general';
 
 type PinSavingButtonProps = {
   pinned: boolean | null;
@@ -15,8 +15,17 @@ export default function PinSavingButton({
   type,
   userHasPinnedGoal,
 }: PinSavingButtonProps) {
-  const setPinned = (a, b) => console.log('thing'); //type === 'Goal' ? setGoalPinned : setGoalTransferPinned;
-  const onClick = () => setPinned(typeId, !pinned);
+  const setPinnedURL = `/api/users/${
+    type === 'Goal' ? 'setGoalPinned' : 'setGoalTransferPinned'
+  }`;
+
+  const onClick = async () => {
+    const results = await apiFetch(setPinnedURL, 'POST', {
+      typeId,
+      pinned: !pinned,
+    });
+    window.location.reload();
+  };
 
   if (pinned) return <PushpinFilled onClick={onClick} />;
   return (

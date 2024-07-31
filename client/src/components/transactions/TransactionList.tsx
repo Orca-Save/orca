@@ -10,10 +10,10 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import React from 'react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import { discretionaryFilter } from 'shared-library/dist/plaidCategories';
 import { FormattedTransaction } from '../../types/all';
 import { currencyFormatter } from '../../utils/general';
 import { antdDefaultButton } from '../../utils/themeConfig';
@@ -30,7 +30,7 @@ type Filter = {
   discretionary: boolean;
 };
 
-function useFilterParams(searchParams): Filter {
+function useFilterParams(searchParams: URLSearchParams): Filter {
   const filterParams = searchParams.get('filter')?.split(',');
   if (!filterParams) {
     return {
@@ -221,7 +221,10 @@ function groupedTransactions(
 
     if (filter.reviewed && transaction.read === true) return true;
     if (filter.impulseBuy && transaction.impulse === true) return true;
-    if (filter.discretionary && discretionaryFilter(transaction) === true)
+    if (
+      filter.discretionary &&
+      discretionaryFilter(transaction as any) === true
+    )
       return true;
     return false;
   });

@@ -69,29 +69,42 @@ export async function getPinnedGoalTransfers(userId: string) {
 }
 
 export async function addQuickSave(
+  userId: string,
   goalId: string,
-  transfer: GoalTransfer
+  transferId: string
 ): Promise<GoalTransfer> {
-  const goalTransfer = await db.goalTransfer.create({
+  const goalTransfer = await db.goalTransfer.findUnique({
+    where: { id: transferId },
+  });
+  if (!goalTransfer) throw Error('Goal Transfer not found');
+  if (goalTransfer.userId !== userId) throw Error('Unauthorized');
+
+  const goal = await db.goal.findUnique({
+    where: { id: goalId },
+  });
+  if (!goal) throw Error('Goal not found');
+  if (goal.userId !== userId) throw Error('Unauthorized');
+
+  const newGoalTransfer = await db.goalTransfer.create({
     data: {
       goalId,
       transactedAt: new Date(),
       updatedAt: new Date(),
 
-      userId: transfer.userId,
-      rating: transfer.rating,
-      categoryId: transfer.categoryId,
-      plaidCategory: transfer.plaidCategory,
-      note: transfer.note,
-      link: transfer.link,
-      imagePath: transfer.imagePath,
-      itemName: transfer.itemName,
-      merchantName: transfer.merchantName,
-      amount: transfer.amount,
+      userId: goalTransfer.userId,
+      rating: goalTransfer.rating,
+      categoryId: goalTransfer.categoryId,
+      plaidCategory: goalTransfer.plaidCategory,
+      note: goalTransfer.note,
+      link: goalTransfer.link,
+      imagePath: goalTransfer.imagePath,
+      itemName: goalTransfer.itemName,
+      merchantName: goalTransfer.merchantName,
+      amount: goalTransfer.amount,
     },
   });
 
-  return goalTransfer;
+  return newGoalTransfer;
 }
 
 export async function updateGoalTransfer(

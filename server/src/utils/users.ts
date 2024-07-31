@@ -9,26 +9,45 @@ export const getPinnedUserGoal = (userId: string) => {
   });
 };
 
-export async function setGoalPinned(goalId: string, pinned: boolean) {
-  const goal = await db.goal.update({
+export async function setGoalPinned(
+  userId: string,
+  goalId: string,
+  pinned: boolean
+) {
+  const goal = await db.goal.findUnique({
+    where: { id: goalId },
+  });
+  if (!goal) throw Error('Goal not found');
+  if (goal.userId !== userId) throw Error('Unauthorized');
+  const updatedGoal = await db.goal.update({
     where: { id: goalId },
     data: {
       pinned,
     },
   });
 
-  return goal;
+  return updatedGoal;
 }
 
-export async function setGoalTransferPinned(goalId: string, pinned: boolean) {
-  const goalTransfer = await db.goalTransfer.update({
-    where: { id: goalId },
+export async function setGoalTransferPinned(
+  userId: string,
+  transferId: string,
+  pinned: boolean
+) {
+  const goalTransfer = await db.goalTransfer.findUnique({
+    where: { id: transferId },
+  });
+  if (!goalTransfer) throw Error('Goal Transfer not found');
+  if (goalTransfer.userId !== userId) throw Error('Unauthorized');
+
+  const updatedGoalTransfer = await db.goalTransfer.update({
+    where: { id: transferId },
     data: {
       pinned,
     },
   });
 
-  return goalTransfer;
+  return updatedGoalTransfer;
 }
 
 export const completedUserGoalCount = async (userId: string) => {

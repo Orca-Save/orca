@@ -5,8 +5,6 @@ import {
   syncTransactions,
 } from '@/app/_actions/plaid';
 import { appInsightsClient } from '@/lib/appInsights';
-import { NextResponse } from 'next/server';
-import db from '../../../../../../server/src/db/db';
 
 async function plaidWebhookHandler(req: any) {
   const reqObj = await req.json();

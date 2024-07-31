@@ -1,9 +1,9 @@
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import { ConfigProvider, Space, Typography } from 'antd';
-import React from 'react';
 
+import { GoalTransfer } from '../../types/all';
 import { greenThemeColors } from '../../utils/themeConfig';
-import { GoalTransfer, QuickSaveButton } from './QuickSaveButton';
+import { QuickSaveButton } from './QuickSaveButton';
 
 const { Text } = Typography;
 
