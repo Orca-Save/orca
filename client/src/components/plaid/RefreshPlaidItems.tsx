@@ -1,6 +1,6 @@
 import { SyncOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { apiFetch } from '../../utils/general';
 
 export default function RefreshPlaidItems({ height }: { height: number }) {
@@ -12,7 +12,6 @@ export default function RefreshPlaidItems({ height }: { height: number }) {
       loading={loading}
       icon={<SyncOutlined />}
       onClick={async () => {
-        console.log('first');
         setLoading(true);
         try {
           await apiFetch('/api/plaid/refreshItems', 'GET');

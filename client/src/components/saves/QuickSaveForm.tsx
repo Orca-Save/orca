@@ -19,11 +19,9 @@ const customIcons: Record<number, React.ReactNode> = {
 
 export default function QuickSaveForm({
   isSavings,
-  referer,
   itemNameTitle,
   itemNamePlaceholder,
 }: {
-  referer: string;
   isSavings: boolean;
   itemNameTitle: string;
   itemNamePlaceholder: string;
