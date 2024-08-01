@@ -1,6 +1,5 @@
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
-import React from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -21,6 +20,7 @@ import { msalConfig } from './utils/authConfig';
 
 import '@fontsource/varela-round';
 import './App.css';
+import TransactionPage from './components/transactions/TransactionPage';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -46,6 +46,7 @@ const router = createBrowserRouter(
           <Route path='one-taps' element={<OneTapPage />} />
           <Route path='transactions' element={<TransactionsPage />} />
         </Route>
+        <Route path='transactions/:id' element={<TransactionPage />} />
       </Route>
     </>
   )

@@ -77,3 +77,23 @@ export type InstitutionProps = {
   linkText: string;
   itemId: string;
 };
+
+export type Transaction = {
+  impulse: boolean;
+  authorizedDate: string;
+  date: string;
+  recurring: boolean;
+  name: string;
+  merchantName: string;
+  amount: number;
+  userId: string;
+  transactionId: string;
+  personalFinanceCategory: {
+    primary: string;
+    secondary: string;
+  };
+  rating: number;
+  impulseReturn: boolean;
+  note: string;
+  read: boolean;
+};

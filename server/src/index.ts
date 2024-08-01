@@ -7,6 +7,7 @@ import {
   goalRoutes,
   pageRoutes,
   plaidRoutes,
+  transactionRoutes,
   userRoutes,
 } from './routes';
 
@@ -47,6 +48,7 @@ app.use('/api/goals', goalRoutes);
 app.use('/api/components', componentRoutes);
 app.use('/api/plaid', plaidRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
