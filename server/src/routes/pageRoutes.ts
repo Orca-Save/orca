@@ -8,6 +8,7 @@ router.post('/dashboardPage', pageController.dashboardPage);
 router.get('/savingsPage', pageController.savingsPage);
 router.get('/transactionsPage', pageController.transactionsPage);
 router.post('/transactionPage', pageController.transactionPage);
+router.post('/goalTransferPage', pageController.goalTransferPage);
 router.get('/onboardingPage', pageController.onboardingPage);
 
 export default router;

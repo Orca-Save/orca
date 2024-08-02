@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { User } from '../types/user';
+import db from '../utils/db';
 import { listGoals } from '../utils/goals';
 import {
   addGoalTransfer,
@@ -61,6 +62,21 @@ export const quickGoalTransfer = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteTransfer = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const { id } = req.body;
+
+    const goalTransfer = await db.goalTransfer.delete({
+      where: { id, userId: user.oid },
+    });
+    res.status(200).send({ goalTransfer });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting onboarding profile count' });
+  }
+};
+
 export const updateTransfer = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
@@ -77,9 +93,9 @@ export const updateTransfer = async (req: Request, res: Response) => {
 export const addTransfer = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
-    const { formData } = req.body;
+    const { formData, isTemplate } = req.body;
 
-    const goalTransfer = await addGoalTransfer(user.oid, formData);
+    const goalTransfer = await addGoalTransfer(user.oid, isTemplate, formData);
     res.status(200).send({ goalTransfer });
   } catch (err) {
     console.log(err);

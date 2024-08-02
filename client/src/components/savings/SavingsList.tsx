@@ -12,7 +12,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { GoalTransfer } from '../../types/all';
-import { currencyFormatter } from '../../utils/general';
+import { apiFetch, currencyFormatter } from '../../utils/general';
 import { greenThemeColors } from '../../utils/themeConfig';
 import PinSavingButton from './PinSavingButton';
 
@@ -107,7 +107,12 @@ function GoalTransferCard({
         <Popconfirm
           title='Delete the saving'
           description='Are you sure you want to delete this saving?'
-          onConfirm={() => deleteGoalWithId(goalTransfer.id)}
+          onConfirm={async () => {
+            await apiFetch('/api/goals/deleteGoalTransfer', 'POST', {
+              id: goalTransfer.id,
+            });
+            window.location.reload();
+          }}
           okText='Yes'
           cancelText='No'
         >
@@ -118,7 +123,7 @@ function GoalTransferCard({
             navigate(
               `/${goalTransfer.amount > 0 ? 'savings' : 'purchases'}/${
                 goalTransfer.id
-              }/edit` + routeParams
+              }`
             )
           }
         />,

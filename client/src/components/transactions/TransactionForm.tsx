@@ -11,10 +11,11 @@ import {
   Typography,
 } from 'antd';
 import { format } from 'date-fns';
-
+import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { plaidCategories } from 'shared-library/dist/plaidCategories';
+
 import { Account, Transaction } from '../../types/all';
 import { apiFetch, currencyFormatter } from '../../utils/general';
 

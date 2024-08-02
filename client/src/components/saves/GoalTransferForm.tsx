@@ -14,35 +14,36 @@ import {
   Select,
   Tooltip,
 } from 'antd';
-import dayjs, { Dayjs } from 'dayjs';
-import { useState } from 'react';
+import dayjs from 'dayjs';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { plaidCategories } from 'shared-library/dist/plaidCategories';
 
-import React from 'react';
 import { Goal, GoalTransfer } from '../../types/all';
 import { apiFetch, externalAccountId } from '../../utils/general';
 import CurrencyInput from '../shared/CurrencyInput';
 
-type GoalTransferFormValues = {
-  goalId: string;
-  categoryId: string;
-  link: string;
-  note?: string;
-  itemName: string;
-  merchantName: string;
-  plaidCategory: string;
-  amount: number;
-  rating: number;
-  transactedAt: Dayjs | null;
-};
-const { TextArea } = Input;
 const customIcons: Record<number, React.ReactNode> = {
   1: <FrownOutlined />,
   2: <FrownOutlined />,
   3: <MehOutlined />,
   4: <SmileOutlined />,
   5: <SmileOutlined />,
+};
+
+const { TextArea } = Input;
+
+type GoalTransferFormValues = {
+  itemName: string;
+  amount: number;
+  rating: number;
+  transactedAt: dayjs.Dayjs;
+  note: string;
+  link: string;
+  goalId: string;
+  categoryId: string;
+  plaidCategory: string;
+  merchantName: string;
 };
 
 export function GoalTransferForm({
@@ -69,34 +70,32 @@ export function GoalTransferForm({
   }
 
   const onFinish = async (values: GoalTransferFormValues) => {
-    const formData = new FormData();
-    if (goalTransfer) formData.append('id', goalTransfer?.id);
+    const formData: any = { id: goalTransfer?.id };
     const adjustedAmount = isSavings ? values.amount : -values.amount;
-    formData.append('amount', String(adjustedAmount));
-    formData.append('itemName', values.itemName);
+    formData.amount = String(adjustedAmount);
+    formData.itemName = values.itemName;
 
-    if (values.merchantName)
-      formData.append('merchantName', values.merchantName);
+    if (values.merchantName) formData.merchantName = values.merchantName;
     if (values.transactedAt) {
-      formData.append('transactedAt', values.transactedAt.format());
+      formData.transactedAt = values.transactedAt.format();
     }
 
-    if (values.link) formData.append('link', values.link);
-    if (values.note) formData.append('note', values.note);
-    if (values.rating) formData.append('rating', String(values.rating));
-    if (values.goalId) formData.append('goalId', values.goalId);
-    if (values.categoryId) formData.append('categoryId', values.categoryId);
-    if (values.plaidCategory)
-      formData.append('plaidCategory', values.plaidCategory);
+    if (values.link) formData.link = values.link;
+    if (values.note) formData.note = values.note;
+    if (values.rating) formData.rating = String(values.rating);
+    if (values.goalId) formData.goalId = values.goalId;
+    if (values.categoryId) formData.categoryId = values.categoryId;
+    if (values.plaidCategory) formData.plaidCategory = values.plaidCategory;
 
     setLoading(true);
 
     const endpoint = goalTransfer
       ? '/api/goals/updateGoalTransfer'
-      : '/api/goals/updateGoalTransfer';
+      : '/api/goals/addGoalTransfer';
 
     const result = await apiFetch(endpoint, 'POST', {
-      formData: formData,
+      formData,
+      isTemplate,
     });
     setLoading(false);
 
@@ -112,7 +111,7 @@ export function GoalTransferForm({
         });
       });
     } else {
-      navigate('/?confetti=true');
+      navigate(-1);
     }
   };
   let amount = (goalTransfer?.amount as number | undefined) ?? 0;

@@ -4,13 +4,14 @@ import { useEffect, useRef } from 'react';
 
 import { loginRequest } from '../utils/authConfig';
 
-const REFRESH_THRESHOLD = 300; // 5 minutes in seconds
+const REFRESH_THRESHOLD = 300 * 2 * 8; // 5 minutes in seconds
 const TOKEN_CHECK_INTERVAL = 60000; // 1 minute in milliseconds
 
 export const useTokenRefresh = () => {
   const interval = useRef<any>(null);
   const { instance, accounts } = useMsal();
   const acquireTokenWithRefreshToken = async () => {
+    console.log('Refreshing token');
     try {
       if (accounts.length && instance) {
         const response = await instance.acquireTokenSilent({
@@ -18,11 +19,8 @@ export const useTokenRefresh = () => {
           account: accounts[0],
         });
         const decodeToken = jwtDecode(response.accessToken);
+        console.log('Token refreshed', decodeToken);
         localStorage.setItem('accessToken', response.accessToken);
-        localStorage.getItem('accessToken');
-
-        console.log('Token refreshed');
-        console.log('Token renewed:', decodeToken);
       }
     } catch (error) {
       console.log('Error refreshing token', error); // Handle token refresh error

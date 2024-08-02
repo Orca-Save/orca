@@ -1,10 +1,11 @@
-import { Button, Typography } from 'antd';
+import { Button, Space, Typography } from 'antd';
 import { useState } from 'react';
 import Confetti from 'react-confetti';
+
 import { GoalTransfer } from '../../types/all';
 import { apiFetch, currencyFormatter } from '../../utils/general';
 
-const { Paragraph, Text } = Typography;
+const { Text } = Typography;
 
 export function QuickSaveButton({
   transfer,
@@ -26,7 +27,7 @@ export function QuickSaveButton({
         goalId,
         transfer,
       });
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -44,9 +45,13 @@ export function QuickSaveButton({
         style={{ height: 'auto', width: 'auto' }}
         onClick={onClick}
       >
-        <Paragraph>{transfer.itemName}</Paragraph>
-        <Text style={{ fontWeight: 'bold', marginRight: '0.5rem' }}>Save</Text>
-        <Text>{currencyFormatter(transfer.amount)}</Text>
+        <Space direction='vertical'>
+          <Text>{transfer.itemName}</Text>
+          <Text style={{ fontWeight: 'bold', marginRight: '0.5rem' }}>
+            Save
+          </Text>
+          <Text>{currencyFormatter(transfer.amount)}</Text>
+        </Space>
       </Button>
     </>
   );

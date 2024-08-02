@@ -10,6 +10,8 @@ router.post('/quickSave', goalController.quickSave);
 router.post('/setGoalPinned', goalController.quickSave);
 router.post('/quickGoalTransfer', goalController.quickGoalTransfer);
 router.post('/updateGoalTransfer', goalController.updateTransfer);
+router.post('/addGoalTransfer', goalController.addTransfer);
+router.post('/deleteGoalTransfer', goalController.deleteTransfer);
 router.post('/setGoalTransferPinned', goalController.quickSave);
 
 export default router;

@@ -14,6 +14,7 @@ import GoalsPage from './components/goals/MainGoalPage';
 import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
 import OnboardingPage from './components/onboarding/OnboardingPage';
+import GoalTransferPage from './components/savings/GoalTransferPage';
 import MySavingsPage from './components/savings/MySavingsPage';
 import OneTapPage from './components/savings/OneTapPage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
@@ -49,7 +50,7 @@ const router = createBrowserRouter(
           <Route path='transactions' element={<TransactionsPage />} />
         </Route>
         <Route path='transactions/:id' element={<TransactionPage />} />
-        <Route path='savings/:id' element={<TransactionPage />} />
+        <Route path='savings/:id' element={<GoalTransferPage />} />
       </Route>
     </>
   )

@@ -114,3 +114,28 @@ export const transactionPage = async (req: Request, res: Response) => {
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
+
+export const goalTransferPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const goalTransactionId = req.body.goalTransactionId;
+
+    const [goals, goalTransfer] = await Promise.all([
+      db.goal.findMany({
+        where: {
+          userId,
+        },
+      }),
+      db.goalTransfer.findUnique({
+        where: {
+          userId,
+          id: goalTransactionId,
+        },
+      }),
+    ]);
+    res.status(200).send({ goals, goalTransfer });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};

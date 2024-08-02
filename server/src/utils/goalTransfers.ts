@@ -1,5 +1,6 @@
 import { GoalTransfer } from '@prisma/client';
 import { z } from 'zod';
+
 import db from './db/db';
 
 const dateFormat = z
@@ -109,13 +110,11 @@ export async function addQuickSave(
 
 export async function updateGoalTransfer(
   userId: string,
-  formData: FormData
+  formData: any
 ): Promise<GoalTransfer | GoalTransferFieldErrors> {
-  const id = formData.get('id') as string;
+  const id = formData.id;
   if (!id) throw Error('Missing id');
-  const result = transferSchema.safeParse(
-    Object.fromEntries(formData.entries())
-  );
+  const result = transferSchema.safeParse(formData);
 
   if (!result.success) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
@@ -151,11 +150,9 @@ export async function updateGoalTransfer(
 export async function addGoalTransfer(
   userId: string,
   isTemplate: boolean,
-  formData: FormData
+  formData: any
 ): Promise<GoalTransfer | GoalTransferFieldErrors> {
-  const result = transferSchema.safeParse(
-    Object.fromEntries(formData.entries())
-  );
+  const result = transferSchema.safeParse(formData);
   if (!result.success) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }
