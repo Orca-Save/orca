@@ -67,3 +67,4 @@ export function apiFetch(endpoint: string, method: string, body?: any) {
     body: body ? JSON.stringify(body) : undefined,
   }).then((res) => res.json());
 }
+export const externalAccountId = 'faed4327-3a9c-4837-a337-c54e9704d60f';

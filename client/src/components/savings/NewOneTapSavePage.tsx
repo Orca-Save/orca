@@ -1,4 +1,6 @@
 import { Typography } from 'antd';
+import React from 'react';
+
 import QuickSaveForm from '../saves/QuickSaveForm';
 
 const { Title } = Typography;

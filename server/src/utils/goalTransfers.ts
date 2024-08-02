@@ -108,9 +108,11 @@ export async function addQuickSave(
 }
 
 export async function updateGoalTransfer(
-  id: string,
+  userId: string,
   formData: FormData
 ): Promise<GoalTransfer | GoalTransferFieldErrors> {
+  const id = formData.get('id') as string;
+  if (!id) throw Error('Missing id');
   const result = transferSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
@@ -120,7 +122,7 @@ export async function updateGoalTransfer(
   }
 
   const existingTransfer = await db.goalTransfer.findUnique({
-    where: { id },
+    where: { id, userId },
   });
 
   if (!existingTransfer) throw Error('Not found');

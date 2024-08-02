@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
+
 import { User } from '../types/user';
 import { listGoals } from '../utils/goals';
-import { addQuickSave } from '../utils/goalTransfers';
+import {
+  addGoalTransfer,
+  addQuickGoalTransfer,
+  addQuickSave,
+  updateGoalTransfer,
+} from '../utils/goalTransfers';
 
 export const deleteGoal = async (req: Request, res: Response) => {
   try {
@@ -31,6 +37,49 @@ export const quickSave = async (req: Request, res: Response) => {
     const { goalId, transfer } = req.body;
 
     const goalTransfer = await addQuickSave(user.oid, goalId, transfer);
+    res.status(200).send({ goalTransfer });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting onboarding profile count' });
+  }
+};
+
+export const quickGoalTransfer = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const { goalTransferType, formData } = req.body;
+
+    const goalTransfer = await addQuickGoalTransfer(
+      user.oid,
+      goalTransferType,
+      formData
+    );
+    res.status(200).send({ goalTransfer });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting onboarding profile count' });
+  }
+};
+
+export const updateTransfer = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const { formData } = req.body;
+
+    const goalTransfer = await updateGoalTransfer(user.oid, formData);
+    res.status(200).send({ goalTransfer });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting onboarding profile count' });
+  }
+};
+
+export const addTransfer = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const { formData } = req.body;
+
+    const goalTransfer = await addGoalTransfer(user.oid, formData);
     res.status(200).send({ goalTransfer });
   } catch (err) {
     console.log(err);

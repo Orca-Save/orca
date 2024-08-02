@@ -3,6 +3,7 @@ export type Goal = {
   name: string;
   dueAt: Date;
   targetAmount: number;
+  description: string;
   savedItemCount: number;
   currentBalance?: number;
   pinned: boolean;
@@ -14,7 +15,14 @@ export type GoalTransfer = {
   amount: number;
   rating: number | null;
   pinned: boolean;
+  goalId: string;
+  merchantName: string;
+  plaidCategory: string;
+  note: string;
+  link: string;
+  categoryId: string;
   transactedAt: Date;
+  initialTransfer: boolean;
 };
 
 export type FormattedTransaction = {
@@ -96,4 +104,9 @@ export type Transaction = {
   impulseReturn: boolean;
   note: string;
   read: boolean;
+};
+
+export type GoalCategory = {
+  id: string;
+  name: string;
 };

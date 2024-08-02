@@ -1,7 +1,9 @@
-import { Button, Form, Input, Rate, Space, notification } from 'antd';
-
 import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
+import { Button, Form, Input, notification, Rate, Space } from 'antd';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { apiFetch } from '../../utils/general';
 import CurrencyInput from '../shared/CurrencyInput';
 
 type GoalTransferFormValues = {
@@ -26,6 +28,7 @@ export default function QuickSaveForm({
   itemNameTitle: string;
   itemNamePlaceholder: string;
 }) {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [api, contextHolder] = notification.useNotification();
   const onFinish = async (values: GoalTransferFormValues) => {
@@ -36,16 +39,14 @@ export default function QuickSaveForm({
     formData.append('amount', String(adjustedAmount));
 
     const params = new URLSearchParams(window.location.search);
-    const action = addQuickGoalTransfer.bind(
-      null,
-      session.user.id,
-      params.get('filter')
-    );
-    const result = await action(formData);
+    const result = await apiFetch('/api/goals/quickGoalTransfer', 'POST', {
+      goalTransferType: params.get('filter'),
+      formData: formData,
+    });
 
-    if (isGoalTransferFieldErrors(result)) {
-      Object.entries(result.fieldErrors).forEach(([field, errors]) => {
-        errors.forEach((error) => {
+    if (result.fieldErrors) {
+      Object.entries(result.fieldErrors).forEach(([field, errors]: any) => {
+        errors.forEach((error: any) => {
           form.setFields([
             {
               name: field,
@@ -54,16 +55,14 @@ export default function QuickSaveForm({
           ]);
         });
       });
-    } else if (isPinnedGoalError(result) && result.noPinnedGoal) {
+    } else if (result.noPinnedGoal) {
       api.error({
         message: `No pinned goal to save to`,
         placement: 'top',
         duration: 2,
       });
     }
-    let path = getPrevPageHref(referer, window);
-    if (isSavings) path += '?confetti=true';
-    router.push(path);
+    navigate('/?confetti=true');
   };
   return (
     <>
@@ -104,7 +103,7 @@ export default function QuickSaveForm({
           <Button
             data-id='goal-transfer-form-cancel'
             size='large'
-            onClick={() => router.back()}
+            onClick={() => navigate(-1)}
           >
             Cancel
           </Button>

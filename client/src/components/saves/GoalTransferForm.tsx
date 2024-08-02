@@ -1,6 +1,9 @@
-'use client';
-
-import { Goal, GoalCategory, GoalTransfer } from '@prisma/client';
+import {
+  FrownOutlined,
+  InfoCircleOutlined,
+  MehOutlined,
+  SmileOutlined,
+} from '@ant-design/icons';
 import {
   Button,
   Collapse,
@@ -12,27 +15,13 @@ import {
   Tooltip,
 } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-import {
-  externalAccountId,
-  isGoalTransferFieldErrors,
-} from '@/lib/goalTransfers';
-import { plaidCategories } from '@/lib/plaid';
-import { isExtendedSession } from '@/lib/session';
-import { getPrevPageHref } from '@/lib/utils';
-import {
-  FrownOutlined,
-  InfoCircleOutlined,
-  MehOutlined,
-  SmileOutlined,
-} from '@ant-design/icons';
 import { useState } from 'react';
-import {
-  addGoalTransfer,
-  updateGoalTransfer,
-} from '../../../../src/app/_actions/goalTransfers';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { plaidCategories } from 'shared-library/dist/plaidCategories';
+
+import React from 'react';
+import { Goal, GoalTransfer } from '../../types/all';
+import { apiFetch, externalAccountId } from '../../utils/general';
 import CurrencyInput from '../shared/CurrencyInput';
 
 type GoalTransferFormValues = {
@@ -57,28 +46,18 @@ const customIcons: Record<number, React.ReactNode> = {
 };
 
 export function GoalTransferForm({
-  categories,
   goals,
-  referer,
   goalTransfer,
   isSavings,
 }: {
-  categories: GoalCategory[];
   goals: Goal[];
   isSavings: boolean;
-  referer: string;
-  goalTransfer?: GoalTransfer | null;
+  goalTransfer?: GoalTransfer;
 }) {
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(false); // Add loading state
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      signIn('azure-ad-b2c');
-    },
-  });
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const filterParam = searchParams.get('filter');
   let isTemplate = false;
@@ -90,10 +69,8 @@ export function GoalTransferForm({
   }
 
   const onFinish = async (values: GoalTransferFormValues) => {
-    if (!session) return;
-    if (!isExtendedSession(session)) return;
     const formData = new FormData();
-
+    if (goalTransfer) formData.append('id', goalTransfer?.id);
     const adjustedAmount = isSavings ? values.amount : -values.amount;
     formData.append('amount', String(adjustedAmount));
     formData.append('itemName', values.itemName);
@@ -114,14 +91,17 @@ export function GoalTransferForm({
 
     setLoading(true);
 
-    const action = goalTransfer
-      ? updateGoalTransfer.bind(null, goalTransfer.id)
-      : addGoalTransfer.bind(null, session.user.id, isTemplate);
-    const result = await action(formData);
+    const endpoint = goalTransfer
+      ? '/api/goals/updateGoalTransfer'
+      : '/api/goals/updateGoalTransfer';
+
+    const result = await apiFetch(endpoint, 'POST', {
+      formData: formData,
+    });
     setLoading(false);
 
-    if (isGoalTransferFieldErrors(result)) {
-      Object.entries(result.fieldErrors).forEach(([field, errors]) => {
+    if (result.fieldErrors) {
+      Object.entries(result.fieldErrors).forEach(([field, errors]: any) => {
         errors.forEach((error) => {
           form.setFields([
             {
@@ -132,9 +112,7 @@ export function GoalTransferForm({
         });
       });
     } else {
-      let newPath = getPrevPageHref(referer, window);
-      if (isSavings) newPath += '?confetti=true';
-      router.push(newPath);
+      navigate('/?confetti=true');
     }
   };
   let amount = (goalTransfer?.amount as number | undefined) ?? 0;
@@ -258,7 +236,7 @@ export function GoalTransferForm({
         <Button
           data-id='goal-transfer-form-cancel'
           size='large'
-          onClick={() => router.back()}
+          onClick={() => navigate(-1)}
         >
           Cancel
         </Button>

@@ -1,5 +1,6 @@
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
+import React from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -16,11 +17,12 @@ import OnboardingPage from './components/onboarding/OnboardingPage';
 import MySavingsPage from './components/savings/MySavingsPage';
 import OneTapPage from './components/savings/OneTapPage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
+import TransactionPage from './components/transactions/TransactionPage';
+import { useTokenRefresh } from './hooks/useTokenRefresh';
 import { msalConfig } from './utils/authConfig';
 
-import '@fontsource/varela-round';
 import './App.css';
-import TransactionPage from './components/transactions/TransactionPage';
+import '@fontsource/varela-round';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -56,6 +58,7 @@ const router = createBrowserRouter(
 const msalInstance = new PublicClientApplication(msalConfig);
 msalInstance.initialize();
 function App() {
+  useTokenRefresh();
   return (
     <MsalProvider instance={msalInstance}>
       <RouterProvider router={router} />;
