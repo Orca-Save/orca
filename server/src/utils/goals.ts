@@ -1,5 +1,6 @@
 import { Goal } from '@prisma/client';
 import { z } from 'zod';
+
 import db from './db/db';
 import { externalAccountId } from './onboarding';
 import { uploadFile } from './storage';
@@ -95,10 +96,9 @@ export async function listGoals(userId: string) {
 }
 export async function addGoal(
   userId: string,
-  prevState: unknown,
-  formData: FormData
+  formData: any
 ): Promise<GoalFieldErrors | Goal> {
-  const result = goalSchema.safeParse(Object.fromEntries(formData.entries()));
+  const result = goalSchema.safeParse(formData);
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }
@@ -156,19 +156,20 @@ export async function addGoal(
 }
 
 export async function updateGoal(
-  id: string,
   userId: string,
-  prevState: unknown,
-  formData: FormData
+  formData: any
 ): Promise<GoalFieldErrors | Goal> {
-  const result = goalSchema.safeParse(Object.fromEntries(formData.entries()));
+  const id = formData.id;
+  const result = goalSchema.safeParse(formData);
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
   }
 
   const data = result.data;
 
-  const goal = await db.goal.findUnique({ where: { id } });
+  const goal = await db.goal.findUnique({ where: { id, userId } });
+  if (!goal) throw Error('Goal not found');
+
   if (goal?.initialTransferId) {
     await db.goalTransfer.update({
       data: { amount: data.initialAmount },

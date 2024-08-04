@@ -22,8 +22,9 @@ import TransactionPage from './components/transactions/TransactionPage';
 import { useTokenRefresh } from './hooks/useTokenRefresh';
 import { msalConfig } from './utils/authConfig';
 
-import './App.css';
 import '@fontsource/varela-round';
+import './App.css';
+import EditGoalPage from './components/goals/EditGoalPage';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -51,6 +52,7 @@ const router = createBrowserRouter(
         </Route>
         <Route path='transactions/:id' element={<TransactionPage />} />
         <Route path='savings/:id' element={<GoalTransferPage />} />
+        <Route path='goals/:id' element={<EditGoalPage />} />
       </Route>
     </>
   )

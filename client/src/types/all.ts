@@ -7,6 +7,9 @@ export type Goal = {
   savedItemCount: number;
   currentBalance?: number;
   pinned: boolean;
+  note: string;
+  categoryId: string;
+  plaidCategory: string;
   imagePath?: string;
 };
 export type GoalTransfer = {

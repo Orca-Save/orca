@@ -1,6 +1,4 @@
-'use client';
-
-import { Goal } from '@prisma/client';
+import { UploadOutlined } from '@ant-design/icons';
 import {
   Button,
   Collapse,
@@ -11,16 +9,12 @@ import {
   Upload,
 } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { plaidCategories } from 'shared-library/dist/plaidCategories';
 
-import { isFieldErrors } from '@/lib/goals';
-import { isExtendedSession } from '@/lib/session';
-import { getPrevPageHref } from '@/lib/utils';
-import { UploadOutlined } from '@ant-design/icons';
-import CollapsePanel from 'antd/es/collapse/CollapsePanel';
-import { useState } from 'react';
-import { addGoal, updateGoal } from '../../../../src/app/_actions/goals';
+import { Goal } from '../../types/all';
+import { apiFetch } from '../../utils/general';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
 
@@ -45,75 +39,58 @@ const { TextArea } = Input;
 
 export function GoalForm({
   goal,
-  categories,
-  referer,
   initialAmount,
 }: {
   goal?: Goal | null;
-  categories: {
-    label: string;
-    value: string;
-  }[];
   initialAmount?: number;
-  referer: string;
 }) {
   const [form] = Form.useForm();
-  const router = useRouter();
   const [loading, setLoading] = useState(false); // Add loading state
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      signIn('azure-ad-b2c');
-    },
-  });
+  const navigate = useNavigate();
   const onFinish = async (values: GoalFormValues) => {
-    if (!session) return null;
+    const formData: any = { id: goal?.id };
+    formData.name = values.name;
+    formData.targetAmount = String(values.targetAmount);
 
-    const formData = new FormData();
-    formData.append('name', values.name);
-    formData.append('targetAmount', String(values.targetAmount));
-
-    if (values.description) formData.append('description', values.description);
-    if (values.note) formData.append('note', values.note);
+    if (values.description) formData.description = values.description;
+    if (values.note) formData.note = values.note;
     if (values.categoryId) {
-      formData.append('categoryId', values.categoryId);
+      formData.categoryId = values.categoryId;
     }
     if (values.plaidCategory) {
-      formData.append('plaidCategory', values.plaidCategory);
+      formData.plaidCategory = values.plaidCategory;
     }
     if (values.dueAt) {
-      formData.append('dueAt', values.dueAt.format()); // Assuming moment.js for date formatting
+      formData.dueAt = values.dueAt.format(); // Assuming moment.js for date formattig
     }
     if (values.initialAmount) {
-      formData.append('initialAmount', String(values.initialAmount));
+      formData.initialAmount = String(values.initialAmount);
     }
-    formData.append('imagePath', values.imagePath!);
+    formData.imagePath = values.imagePath!;
 
     if (values.image)
-      formData.append('image', form.getFieldValue('image').file.originFileObj);
+      formData.image = form.getFieldValue('image').file.originFileObj;
 
-    if (isExtendedSession(session)) {
-      setLoading(true);
-      const action = goal
-        ? updateGoal.bind(null, goal.id, session.user.id)
-        : addGoal.bind(null, session.user.id);
-      const result = await action(undefined, formData);
-      setLoading(false);
+    setLoading(true);
+    const endpoint = goal ? '/api/goals/updateGoal' : '/api/goals/createGoal';
+    const result = await apiFetch(endpoint, 'POST', {
+      formData,
+    });
+    setLoading(false);
 
-      if (isFieldErrors(result)) {
-        Object.entries(result.fieldErrors).forEach(([field, errors]) => {
-          errors.forEach((error) => {
-            form.setFields([
-              {
-                name: field,
-                errors: [error],
-              },
-            ]);
-          });
+    if (result.fieldErrors) {
+      Object.entries(result.fieldErrors).forEach(([field, errors]: any) => {
+        errors.forEach((error) => {
+          form.setFields([
+            {
+              name: field,
+              errors: [error],
+            },
+          ]);
         });
-      } else {
-        router.push(getPrevPageHref(referer, window) + '?confetti=true');
-      }
+      });
+    } else {
+      navigate(-1);
     }
   };
 
@@ -178,9 +155,12 @@ export function GoalForm({
           />
         </Form.Item>
         <Collapse>
-          <CollapsePanel header='Optional Fields' key='1' forceRender>
+          <Collapse.Panel header='Optional Fields' key='1' forceRender>
             <Form.Item name='plaidCategory' label='Category'>
-              <Select placeholder='Select a category' options={categories} />
+              <Select
+                placeholder='Select a category'
+                options={plaidCategories}
+              />
             </Form.Item>
             <Form.Item name='description' label='Description'>
               <TextArea placeholder='Description' />
@@ -193,14 +173,14 @@ export function GoalForm({
             >
               <TextArea placeholder='Additional notes about the goal' />
             </Form.Item>
-          </CollapsePanel>
+          </Collapse.Panel>
         </Collapse>
 
         <div className='flex justify-end mt-5 space-x-4'>
           <Button
             data-id='goal-form-cancel'
             size='large'
-            onClick={() => router.back()}
+            onClick={() => navigate(-1)}
           >
             Cancel
           </Button>

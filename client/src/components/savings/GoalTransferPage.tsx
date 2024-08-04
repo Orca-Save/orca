@@ -10,7 +10,6 @@ export default function GoalTransferPage() {
     goalTransactionId: id,
   });
   if (!data) return null;
-  console.log(data);
   const { goals, goalTransfer } = data;
 
   return (

@@ -1,22 +1,15 @@
-import { GoalForm } from '@/app/_components/GoalForm';
-import { Title } from '@/app/_components/Typography';
-import { plaidCategories } from '@/lib/plaid';
-import { headers } from 'next/headers';
-import db from '../../../../../server/src/db/db';
+import { Typography } from 'antd';
+import React from 'react';
 
-const getCategories = () => {
-  return db.goalCategory.findMany({
-    orderBy: { name: 'asc' },
-  });
-};
+import { GoalForm } from './GoalForm';
 
-export default async function NewGoalPage() {
-  const headersList = headers();
-  const referer = headersList.get('referer');
+const { Title } = Typography;
+
+export default function NewGoalPage() {
   return (
     <>
       <Title>Add Goal</Title>
-      <GoalForm referer={referer!} categories={plaidCategories} />
+      <GoalForm />
     </>
   );
 }

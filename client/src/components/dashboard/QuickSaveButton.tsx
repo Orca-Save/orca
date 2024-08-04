@@ -25,7 +25,7 @@ export function QuickSaveButton({
     if (goalId) {
       await apiFetch('/api/goals/quickSave', 'POST', {
         goalId,
-        transfer,
+        transferId: transfer.id,
       });
       // window.location.reload();
     }

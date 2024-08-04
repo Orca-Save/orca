@@ -139,3 +139,28 @@ export const goalTransferPage = async (req: Request, res: Response) => {
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
+
+export const editGoalPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const goalId = req.body.goalId;
+
+    const goal = await db.goal.findUnique({
+      where: {
+        userId,
+        id: goalId,
+      },
+    });
+    let initialAmount: number | undefined = undefined;
+    if (goal?.initialTransferId)
+      initialAmount = (
+        await db.goalTransfer.findFirst({
+          where: { id: goal.initialTransferId },
+        })
+      )?.amount.toNumber();
+    res.status(200).send({ goal, initialAmount });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};

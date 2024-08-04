@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.delete('/', goalController.deleteGoal);
 router.get('/', goalController.listGoal);
+router.post('/createGoal', goalController.createGoal);
+router.post('/updateGoal', goalController.updateGoalRecord);
 router.post('/quickSave', goalController.quickSave);
 router.post('/setGoalPinned', goalController.quickSave);
 router.post('/quickGoalTransfer', goalController.quickGoalTransfer);

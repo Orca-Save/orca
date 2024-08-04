@@ -8,7 +8,7 @@ import { Photos } from 'unsplash-js/dist/methods/search/types/response';
 const { Search } = Input;
 
 const api = createApi({
-  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY!,
+  accessKey: process.env.REACT_APP_UNSPLASH_ACCESS_KEY!,
 });
 
 const PhotoComp = ({ photo }: { photo: Basic }) => {
