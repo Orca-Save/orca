@@ -4,22 +4,21 @@ import { useEffect, useRef } from 'react';
 
 import { loginRequest } from '../utils/authConfig';
 
-const REFRESH_THRESHOLD = 300 * 2 * 8; // 5 minutes in seconds
+const REFRESH_THRESHOLD = 300; // 5 minutes in seconds
 const TOKEN_CHECK_INTERVAL = 60000; // 1 minute in milliseconds
 
 export const useTokenRefresh = () => {
   const interval = useRef<any>(null);
   const { instance, accounts } = useMsal();
   const acquireTokenWithRefreshToken = async () => {
-    console.log('Refreshing token');
+    const account = instance.getAllAccounts()[0];
     try {
-      if (accounts.length && instance) {
+      if (account && instance) {
         const response = await instance.acquireTokenSilent({
           ...loginRequest,
-          account: accounts[0],
+          account,
         });
-        const decodeToken = jwtDecode(response.accessToken);
-        console.log('Token refreshed', decodeToken);
+        // const decodeToken = jwtDecode(response.accessToken);
         localStorage.setItem('accessToken', response.accessToken);
       }
     } catch (error) {
@@ -28,6 +27,7 @@ export const useTokenRefresh = () => {
   };
   useEffect(() => {
     const checkTokenExpiry = () => {
+      // console.log('checking');
       const backendAccessToken = localStorage.getItem('accessToken');
       if (backendAccessToken) {
         const decodeToken = jwtDecode(backendAccessToken);
@@ -44,6 +44,6 @@ export const useTokenRefresh = () => {
     interval.current = setInterval(checkTokenExpiry, TOKEN_CHECK_INTERVAL);
     checkTokenExpiry(); // Check token expiry immediately after mounting
     return () => clearInterval(interval.current);
-  }, []);
+  }, [instance, accounts]);
   return null; // You might not need to return anything from this hook
 };

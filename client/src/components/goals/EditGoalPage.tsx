@@ -12,7 +12,6 @@ export default function EditGoalPage() {
   const { data } = useFetch('api/pages/editGoalPage', 'POST', {
     goalId: id,
   });
-  console.log(data);
   if (!data) return null;
   const { goal, initialAmount } = data;
 

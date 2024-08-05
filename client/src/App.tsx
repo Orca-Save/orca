@@ -1,5 +1,3 @@
-import { PublicClientApplication } from '@azure/msal-browser';
-import { MsalProvider } from '@azure/msal-react';
 import React from 'react';
 import {
   createBrowserRouter,
@@ -10,6 +8,7 @@ import {
 } from 'react-router-dom';
 
 import HomePage from './components/dashboard';
+import EditGoalPage from './components/goals/EditGoalPage';
 import GoalsPage from './components/goals/MainGoalPage';
 import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
@@ -20,11 +19,9 @@ import OneTapPage from './components/savings/OneTapPage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
 import TransactionPage from './components/transactions/TransactionPage';
 import { useTokenRefresh } from './hooks/useTokenRefresh';
-import { msalConfig } from './utils/authConfig';
 
 import '@fontsource/varela-round';
 import './App.css';
-import EditGoalPage from './components/goals/EditGoalPage';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -58,15 +55,9 @@ const router = createBrowserRouter(
   )
 );
 
-const msalInstance = new PublicClientApplication(msalConfig);
-msalInstance.initialize();
 function App() {
   useTokenRefresh();
-  return (
-    <MsalProvider instance={msalInstance}>
-      <RouterProvider router={router} />;
-    </MsalProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
