@@ -1,7 +1,16 @@
-export default async function PrivacyPolicyPage() {
+import React from 'react';
+
+export default function PrivacyPolicyPage() {
   return (
     <div
-      className="content"
+      className='content'
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+      }}
       dangerouslySetInnerHTML={{
         __html: `
       <style>

@@ -3,6 +3,7 @@ import { Button, Menu, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { UserOutlined } from '@ant-design/icons';
 import { b2cPolicies, loginRequest } from '../../utils/authConfig';
 
 const { SubMenu } = Menu;
@@ -81,15 +82,11 @@ export default function HeaderMenu({ className }: { className: string }) {
               Transactions
             </Menu.Item>
           </SubMenu> */}
-
-          <Button type='primary' onClick={() => handleLogin()}>
-            Sign in using Redirect
-          </Button>
           <Button type='primary' onClick={() => handleLogout()}>
             logout
           </Button>
           <Menu.Item eventKey='/user' key='/user'>
-            {/* {session ? <UserOutlined /> : <LoginOutlined />} */}
+            <UserOutlined />
           </Menu.Item>
         </Space>
       </Menu>

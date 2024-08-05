@@ -1,10 +1,6 @@
-'use client';
-
-import { Title } from '@/app/_components/Typography';
 import { Button, Popconfirm } from 'antd';
-import { clearUserData } from '../../../../../server/src/utils/_actions/userActions';
 
-export default function ClearUserData({ userId }: { userId: string }) {
+export default function ClearUserData() {
   return (
     <div>
       <Title level={4}>Clear all data</Title>

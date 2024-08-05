@@ -1,18 +1,11 @@
-import SignIn from '@/app/_components/SignIn';
-import { Text, Title } from '@/app/_components/Typography';
-import authOptions from '@/lib/nextAuthOptions';
-import { isExtendedSession } from '@/lib/session';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { getServerSession } from 'next-auth';
-import Link from 'next/link';
+
 import React from 'react';
-import { getSubscription } from '../../../../../server/src/utils/_actions/stripe';
-import { getUserProfile } from '../../../../../server/src/utils/db/common';
 import UpdateSubscriptionForm from './UpdateSubscriptionForm';
 
-export default async function Subscription() {
+export default function Subscription() {
   const session = await getServerSession(authOptions);
   if (!session) return <SignIn />;
   if (!isExtendedSession(session)) return <React.Fragment />;

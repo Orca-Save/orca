@@ -1,30 +1,20 @@
-import { createLinkToken } from '@/app/_actions/plaid';
-import SignIn from '@/app/_components/SignIn';
-import { Title } from '@/app/_components/Typography';
-import authOptions from '@/lib/nextAuthOptions';
-import { isExtendedSession } from '@/lib/session';
-import { Button, Space } from 'antd';
-import { getServerSession } from 'next-auth/next';
-import Link from 'next/link';
+import { Button, Space, Typography } from 'antd';
+import React from 'react';
 import ClearUserData from './ClearUserData';
 import ListItems from './ListItems';
 import PlaidLink from './PlaidLink';
-import Subscription from './Subscription';
 
-export default async function UserPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) return <SignIn />;
-  if (!isExtendedSession(session)) return <SignIn />;
+const { Title } = Typography;
+
+export default function UserPage() {
   const linkToken = await createLinkToken(session.user.id);
   return (
     <>
       <Title>User Profile</Title>
       <Space direction='vertical' size='large'>
-        <div>
-          <Subscription />
-        </div>
+        <div>{/* <Subscription /> */}</div>
 
-        <ClearUserData userId={session.user.id} />
+        <ClearUserData />
         <div>
           <Title level={4}>Connect your banks with Plaid</Title>
           <PlaidLink
