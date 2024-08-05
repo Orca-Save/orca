@@ -8,5 +8,6 @@ router.post('/saveOnboardingProfile', userController.saveOnboardingProfile);
 router.post('/onboardUser', userController.onboardUser);
 router.post('/setGoalPinned', userController.goalPinned);
 router.post('/setGoalTransferPinned', userController.goalTransferPinned);
+router.get('/clearAllUserData', userController.clearAllUserData);
 
 export default router;

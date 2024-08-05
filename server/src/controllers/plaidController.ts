@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 
+import { User } from '../types/user';
 import {
   createLinkToken,
   exchangePublicToken,
   getAllLinkedItems,
   refreshUserItems,
+  removePlaidItem,
 } from '../utils/plaid';
 
 export const linkedItems = async (req: Request, res: Response) => {
@@ -56,5 +58,29 @@ export const refreshItems = async (req: Request, res: Response) => {
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error refreshing items' });
+  }
+};
+
+export const removeItem = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const itemId = req.body.itemId;
+    const success = await removePlaidItem(userId, itemId);
+    res.status(200).send({ success });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error refreshing items' });
+  }
+};
+
+export const listAllLinkedItems = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const itemsData = await getAllLinkedItems(user.oid);
+
+    res.status(200).send({ itemsData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting linked items' });
   }
 };

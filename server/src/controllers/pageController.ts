@@ -93,6 +93,18 @@ export const onboardingPage = async (req: Request, res: Response) => {
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
+
+export const userPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const [linkToken] = await Promise.all([createLinkToken(userId)]);
+    res.status(200).send({ linkToken });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};
+
 export const transactionPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;

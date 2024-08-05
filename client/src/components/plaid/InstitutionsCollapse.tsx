@@ -11,6 +11,7 @@ import {
 import React from 'react';
 
 import { InstitutionProps, ItemData } from '../../types/all';
+import { apiFetch } from '../../utils/general';
 import PlaidLink from '../user/PlaidLink';
 
 const { Panel } = Collapse;
@@ -24,7 +25,9 @@ const InstitutionCollapse = ({
   itemId,
 }: InstitutionProps) => {
   const handleRemoveInstitution = async () => {
-    await removePlaidItem(itemId);
+    const results = await apiFetch('/api/plaid/removeItem', 'POST', {
+      itemId,
+    });
   };
   return (
     <Collapse>

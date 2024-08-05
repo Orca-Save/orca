@@ -1001,12 +1001,12 @@ export async function handleLoginExpiration(
 }
 
 export async function handleUserPermissionRevoked(plaidItem: PlaidItem) {
-  removePlaidItem(plaidItem.itemId);
+  removePlaidItem(plaidItem.userId, plaidItem.itemId);
 }
 
-export async function removePlaidItem(itemId: string) {
+export async function removePlaidItem(userId: string, itemId: string) {
   const plaidItem = await db.plaidItem.findFirst({
-    where: { itemId },
+    where: { itemId, userId },
   });
 
   if (!plaidItem) {

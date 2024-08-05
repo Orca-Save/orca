@@ -1,4 +1,9 @@
-import { Button, Popconfirm } from 'antd';
+import { Button, Popconfirm, Typography } from 'antd';
+import React from 'react';
+
+import { apiFetch } from '../../utils/general';
+
+const { Title } = Typography;
 
 export default function ClearUserData() {
   return (
@@ -11,7 +16,10 @@ export default function ClearUserData() {
       <Popconfirm
         title='Delete the task'
         description='Are you sure you want to delete your user data?'
-        onConfirm={() => () => clearUserData(userId)}
+        onConfirm={() => async () => {
+          await apiFetch('/api/user/clearUserData', 'GET');
+          window.location.reload();
+        }}
         okText='Yes'
         cancelText='No'
       >

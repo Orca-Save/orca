@@ -2,6 +2,7 @@ import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { Button, Space, Typography } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { b2cPolicies, loginRequest } from '../../utils/authConfig';
 
 const { Text } = Typography;
@@ -13,7 +14,7 @@ export default function SignUpPage() {
   if (isAuthenticated) navigate('/');
   const handleLogin = () => {
     instance
-      .loginRedirect({
+      .loginPopup({
         ...loginRequest,
         authority: b2cPolicies.authorities.signUpSignIn.authority,
       })

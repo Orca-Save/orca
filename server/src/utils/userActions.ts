@@ -1,9 +1,6 @@
-'use server';
+import db from './db';
+import { removeAllPlaidItems } from './plaid';
 
-import { removeAllPlaidItems } from '@/app/_actions/plaid';
-import db from '../db/db';
-
-// function clears all user data
 export async function clearUserData(userId: string) {
   await removeAllPlaidItems(userId);
 

@@ -5,6 +5,7 @@ import {
   onboardUser as onboard,
   saveOnboardingProfile as saveProfile,
 } from '../utils/onboarding';
+import { clearUserData } from '../utils/userActions';
 import { setGoalPinned, setGoalTransferPinned } from '../utils/users';
 
 export const saveOnboardingProfile = async (req: Request, res: Response) => {
@@ -54,5 +55,16 @@ export const goalTransferPinned = async (req: Request, res: Response) => {
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting onboarding profile count' });
+  }
+};
+
+export const clearAllUserData = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const success = await clearUserData(userId);
+    res.status(200).send({ success });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error refreshing items' });
   }
 };

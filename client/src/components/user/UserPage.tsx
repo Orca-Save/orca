@@ -1,5 +1,8 @@
+import { useMsal } from '@azure/msal-react';
 import { Button, Space, Typography } from 'antd';
 import React from 'react';
+
+import useFetch from '../../hooks/useFetch';
 import ClearUserData from './ClearUserData';
 import ListItems from './ListItems';
 import PlaidLink from './PlaidLink';
@@ -7,7 +10,13 @@ import PlaidLink from './PlaidLink';
 const { Title } = Typography;
 
 export default function UserPage() {
-  const linkToken = await createLinkToken(session.user.id);
+  const { instance } = useMsal();
+  const { data } = useFetch('api/pages/userPage', 'GET');
+  if (!data) return null;
+  const { linkToken } = data;
+  const handleLogout = () => {
+    instance.logoutPopup();
+  };
   return (
     <>
       <Title>User Profile</Title>
@@ -17,17 +26,12 @@ export default function UserPage() {
         <ClearUserData />
         <div>
           <Title level={4}>Connect your banks with Plaid</Title>
-          <PlaidLink
-            linkToken={linkToken.link_token}
-            userId={session.user.id}
-          />
-          <ListItems userId={session.user.id} />
+          <PlaidLink linkToken={linkToken.link_token} />
+          <ListItems />
         </div>
-        <Link href='/api/auth/signout'>
-          <Button data-id='sign-out-button' size='large'>
-            Logout
-          </Button>
-        </Link>
+        <Button type='primary' onClick={() => handleLogout()} size='large'>
+          Logout
+        </Button>
       </Space>
     </>
   );

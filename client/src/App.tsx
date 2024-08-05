@@ -14,17 +14,18 @@ import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
 import OnboardingPage from './components/onboarding/OnboardingPage';
 import PrivacyPolicyPage from './components/privacy-policy';
+import ProtectedRoute from './components/routing/ProtectedRoute';
 import GoalTransferPage from './components/savings/GoalTransferPage';
 import MySavingsPage from './components/savings/MySavingsPage';
 import OneTapPage from './components/savings/OneTapPage';
+import SignUpPage from './components/signup/SignUpPage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
 import TransactionPage from './components/transactions/TransactionPage';
+import UserPage from './components/user/UserPage';
 import { useTokenRefresh } from './hooks/useTokenRefresh';
 
-import '@fontsource/varela-round';
 import './App.css';
-import ProtectedRoute from './components/routing/ProtectedRoute';
-import SignUpPage from './components/signup/SignUpPage';
+import '@fontsource/varela-round';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -41,12 +42,13 @@ const LogLayoutRoute = () => (
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path='onboarding' element={<OnboardingPage />} />
       <Route path='privacy-policy' element={<PrivacyPolicyPage />} />
       <Route path='sign-in' element={<SignUpPage />} />
       <Route path='/' element={<LayoutRoute />}>
         <Route element={<ProtectedRoute />}>
           <Route index element={<HomePage />} />
+          <Route path='onboarding' element={<OnboardingPage />} />
+          <Route path='user' element={<UserPage />} />
           <Route path='goals' element={<GoalsPage />} />
           <Route path='log' element={<LogLayoutRoute />}>
             <Route path='savings' element={<MySavingsPage />} />

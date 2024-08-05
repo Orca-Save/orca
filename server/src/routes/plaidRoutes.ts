@@ -8,5 +8,6 @@ router.get('/linkedItems', plaidController.linkedItems);
 router.get('/linkToken', plaidController.linkToken);
 router.get('/refreshItems', plaidController.refreshItems);
 router.post('/exchangeToken', plaidController.exchangeToken);
+router.get('/listAllLinkedItems', plaidController.listAllLinkedItems);
 
 export default router;
