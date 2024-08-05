@@ -4,7 +4,7 @@ import * as goalController from '../controllers/goalController';
 
 const router = express.Router();
 
-router.delete('/', goalController.deleteGoal);
+router.post('/deleteGoal', goalController.deleteGoal);
 router.get('/', goalController.listGoal);
 router.post('/createGoal', goalController.createGoal);
 router.post('/updateGoal', goalController.updateGoalRecord);

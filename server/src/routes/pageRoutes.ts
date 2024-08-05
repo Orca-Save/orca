@@ -10,6 +10,7 @@ router.get('/transactionsPage', pageController.transactionsPage);
 router.post('/transactionPage', pageController.transactionPage);
 router.post('/goalTransferPage', pageController.goalTransferPage);
 router.get('/onboardingPage', pageController.onboardingPage);
+router.get('/reviewPage', pageController.reviewPage);
 router.get('/userPage', pageController.userPage);
 router.post('/editGoalPage', pageController.editGoalPage);
 

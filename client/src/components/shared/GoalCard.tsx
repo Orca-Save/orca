@@ -1,8 +1,9 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Card, Col, Popconfirm, Row, Typography } from 'antd';
-import React from 'react';
 import { Link } from 'react-router-dom';
+
 import { Goal } from '../../types/all';
+import { apiFetch } from '../../utils/general';
 import GoalProgress from '../goals/GoalProgress';
 import PinSavingButton from '../savings/PinSavingButton';
 
@@ -39,11 +40,12 @@ export default function GoalCard({
                 <Popconfirm
                   title='Delete the goal'
                   description='Are you sure you want to delete this goal?'
-                  onConfirm={() =>
-                    fetch(`/api/goal/${goal.id}`, {
-                      method: 'DELETE',
-                    })
-                  }
+                  onConfirm={async () => {
+                    await apiFetch(`/api/goals/deleteGoal`, 'POST', {
+                      goalId: goal.id,
+                    });
+                    window.location.reload();
+                  }}
                   okText='Yes'
                   cancelText='No'
                 >

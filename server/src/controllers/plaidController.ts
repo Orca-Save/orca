@@ -10,6 +10,9 @@ import {
   getRecurringTransactions,
   handleLoginExpiration,
   handleUserPermissionRevoked,
+  markAllTransactionsAsRead,
+  markTransactionAsRead,
+  markTransactionAsUnread,
   refreshUserItems,
   removePlaidItem,
   syncTransactions,
@@ -67,6 +70,17 @@ export const refreshItems = async (req: Request, res: Response) => {
   }
 };
 
+export const markAllTransactionsRead = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    await markAllTransactionsAsRead(userId, false);
+    res.status(200).send({ message: 'Transactions marked as read' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error marking transactions as read' });
+  }
+};
+
 export const removeItem = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
@@ -75,7 +89,34 @@ export const removeItem = async (req: Request, res: Response) => {
     res.status(200).send({ success });
   } catch (err) {
     console.log(err);
-    res.status(500).send({ message: 'Error refreshing items' });
+    res.status(500).send({ message: 'Error removing item' });
+  }
+};
+
+export const readTransaction = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    await markTransactionAsRead(
+      userId,
+      req.body.transactionId,
+      req.body.impulse,
+      req.body.impulseRating
+    );
+    res.status(200).send({ success: true });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error marking transaction as read' });
+  }
+};
+
+export const unreadTransaction = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    await markTransactionAsUnread(userId, req.body.transactionId);
+    res.status(200).send({ success: true });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error marking transaction as unread' });
   }
 };
 

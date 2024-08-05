@@ -105,6 +105,20 @@ export const userPage = async (req: Request, res: Response) => {
   }
 };
 
+export const reviewPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const [formattedTransactions, pinnedUserGoal] = await Promise.all([
+      getFormattedTransactions(userId, false),
+      getPinnedUserGoal(userId),
+    ]);
+    res.status(200).send({ formattedTransactions, pinnedUserGoal });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};
+
 export const transactionPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;

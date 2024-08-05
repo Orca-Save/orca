@@ -1,25 +1,18 @@
-'use client';
-
-import {
-  getRecurringTransactions,
-  markAllTransactionsAsRead,
-} from '@/app/_actions/plaid';
 import { Button } from 'antd';
 
-export default function UnreadButton({ userId }: { userId: string }) {
+import { apiFetch } from '../../utils/general';
+
+export default function UnreadButton() {
   return (
     <>
       <Button
         data-id='mark-all-unread'
-        onClick={async () => await markAllTransactionsAsRead(userId, false)}
+        onClick={async () => {
+          await apiFetch('/api/plaid/markAllUnread', 'GET');
+          window.location.reload();
+        }}
       >
         Mark all unread
-      </Button>
-      <Button
-        data-id='get-recurring-transactions'
-        onClick={async () => await getRecurringTransactions(userId)}
-      >
-        Get recurring
       </Button>
     </>
   );

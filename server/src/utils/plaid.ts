@@ -386,8 +386,8 @@ export type FormattedTransaction = {
   recurring: boolean;
   date: Date;
   personalFinanceCategory: PersonalFinanceCategory;
-  friendlyDistanceDate: string;
-  friendlyRelativeDate: string;
+  // friendlyDistanceDate: string;
+  // friendlyRelativeDate: string;
   formattedDate: string;
 };
 export type PersonalFinanceCategory = {
@@ -414,8 +414,9 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
       read,
     },
     orderBy: {
-      date: 'asc',
+      authorizedDate: 'desc',
     },
+    take: 200,
   });
 
   const accounts = await db.account.findMany({
@@ -448,11 +449,11 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
         formattedDate: isToday(date)
           ? 'TODAY'
           : format(date, 'EEE, MMMM dd').toUpperCase(),
-        friendlyDistanceDate: formatDistanceToNow(date, {
-          addSuffix: true,
-        }),
+        // friendlyDistanceDate: formatDistanceToNow(date, {
+        //   addSuffix: true,
+        // }),
         name: transaction.merchantName ?? transaction.name,
-        friendlyRelativeDate: formatRelative(date, new Date()),
+        // friendlyRelativeDate: formatRelative(date, new Date()),
         merchantName: transaction.merchantName ?? '',
         amount: parseFloat(transaction.amount.toFixed(2)),
         category,
@@ -916,9 +917,9 @@ export async function markAllTransactionsAsRead(userId: string, read = true) {
   });
 }
 
-export async function markTransactionAsUnread(id: string) {
+export async function markTransactionAsUnread(userId: string, id: string) {
   await db.transaction.update({
-    where: { transactionId: id },
+    where: { transactionId: id, userId },
     data: { read: false, rating: null, impulse: false },
   });
   await db.goalTransfer.deleteMany({
@@ -929,13 +930,16 @@ export async function markTransactionAsUnread(id: string) {
 }
 
 export async function markTransactionAsRead(
+  userId: string,
   id: string,
   impulse: boolean,
   rating?: number
 ) {
   const transaction = await db.transaction.findFirst({
-    where: { transactionId: id },
+    where: { transactionId: id, userId },
   });
+  if (!transaction) throw new Error('Transaction not found');
+
   await db.transaction.update({
     where: { transactionId: id },
     data: { read: true, rating, impulse },
@@ -1172,6 +1176,10 @@ export const getUnreadTransactionCount = async (
       read: false,
       // recurring: false,
     },
+    orderBy: {
+      authorizedDate: 'desc',
+    },
+    take: 150,
   });
   const plaidItem = await db.plaidItem.findFirst({
     where: {

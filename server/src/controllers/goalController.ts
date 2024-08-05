@@ -2,7 +2,12 @@ import { Request, Response } from 'express';
 
 import { User } from '../types/user';
 import db from '../utils/db';
-import { addGoal, listGoals, updateGoal } from '../utils/goals';
+import {
+  addGoal,
+  deleteGoalWithId,
+  listGoals,
+  updateGoal,
+} from '../utils/goals';
 import {
   addGoalTransfer,
   addQuickGoalTransfer,
@@ -12,9 +17,10 @@ import {
 
 export const deleteGoal = async (req: Request, res: Response) => {
   try {
-    // const goalId = req.body.id;
-    // const goal = await deleteGoalWithId(goalId);
-    res.status(200).send({});
+    const user = (req as any).user as User;
+    const goalId = req.body.goalId;
+    const goal = await deleteGoalWithId(user.oid, goalId);
+    res.status(200).send({ goal });
   } catch (err: any) {
     console.log(err);
     res.status(500).send({ message: err.message });

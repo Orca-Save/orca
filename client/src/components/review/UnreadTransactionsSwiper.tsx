@@ -1,4 +1,27 @@
-'use client';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Card,
+  ConfigProvider,
+  Flex,
+  Modal,
+  Progress,
+  ProgressProps,
+  Rate,
+  Space,
+  Tooltip,
+  Typography,
+} from 'antd';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+
+import { FormattedTransaction } from '../../types/all';
+import { apiFetch, currencyFormatter } from '../../utils/general';
+import {
+  impulseButtonTheme,
+  lightGreenThemeColor,
+} from '../../utils/themeConfig';
+import ConfettiComp from '../shared/Confetti';
 import {
   CardData,
   CardId,
@@ -6,39 +29,19 @@ import {
   CardSwiper,
   SwipeAction,
   SwipeOperation,
-} from '@/app/_components/CardSwiper';
-import { Title } from '@/app/_components/Typography';
-import { impulseButtonTheme, lightGreenThemeColor } from '@/lib/themeConfig';
-import { currencyFormatter } from '@/lib/utils';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { Liquid } from '@ant-design/plots';
-import {
-  Button,
-  Card,
-  ConfigProvider,
-  Flex,
-  Modal,
-  Rate,
-  Space,
-  Tooltip,
-  Typography,
-} from 'antd';
-import Link from 'next/link';
-import { useState } from 'react';
-import {
-  FormattedTransaction,
-  markTransactionAsRead,
-  markTransactionAsUnread,
-  syncItems,
-} from '../../../_actions/plaid';
-import ConfettiComp from '../../_components/Confetti';
+} from './CardSwiper';
 import UnreadButton from './UnreadButton';
 import useRatingInput from './useRatingInput';
-const { Text, Paragraph } = Typography;
+
+const { Text, Paragraph, Title } = Typography;
 const { Meta } = Card;
+
+const twoColors: ProgressProps['strokeColor'] = {
+  '0%': '#108ee9',
+  '100%': '#87d068',
+};
 type UnreadTransactionsSwiperProps = {
   formattedTransactions: FormattedTransaction[];
-  userId: string;
   focusGoalImgURL: string;
 };
 
@@ -101,7 +104,6 @@ function removeCardById(prev: SwipeState, id: string) {
 
 export default function UnreadTransactionsSwiper({
   formattedTransactions,
-  userId,
   focusGoalImgURL,
 }: UnreadTransactionsSwiperProps) {
   const initialTransactions = formattedTransactions;
@@ -118,10 +120,14 @@ export default function UnreadTransactionsSwiper({
 
   const rateImpulseBuy = async (value: number) => {
     setRating(value);
-    await markTransactionAsRead(swipeState.selectedTransactionId, true, value);
-    const transaction = swipeState.transactions.find(
-      (x) => x.id === swipeState.selectedTransactionId
-    )!;
+    await apiFetch('/api/plaid/readTransaction', 'POST', {
+      transactionId: swipeState.selectedTransactionId,
+      impulseRating: value,
+      impulse: true,
+    });
+    // const transaction = swipeState.transactions.find(
+    //   (x) => x.id === swipeState.selectedTransactionId
+    // )!;
     setSwipeState((prev) =>
       removeCardById(prev, swipeState.selectedTransactionId)
     );
@@ -153,7 +159,10 @@ export default function UnreadTransactionsSwiper({
       }));
       return;
     }
-    await markTransactionAsRead(id as string, isDislike);
+    await apiFetch('/api/plaid/readTransaction', 'POST', {
+      transactionId: id as string,
+      impulse: isDislike,
+    });
     setSwipeState((prev) => removeCardById(prev, id as string));
   }
 
@@ -311,11 +320,11 @@ export default function UnreadTransactionsSwiper({
         <div className='flex justify-center'>
           <Button
             data-id='sync-transactions-button'
-            onClick={() => syncItems(userId)}
+            // onClick={() => syncItems(userId)}
           >
             Sync Transactions
           </Button>
-          <UnreadButton userId={userId} />
+          <UnreadButton />
         </div>
       )}
 
@@ -326,8 +335,16 @@ export default function UnreadTransactionsSwiper({
               Transactions Left
             </Title>
           </div>
-          <div style={{ height: config.height }}>
-            <Liquid {...config} />
+          <Flex justify='center' className='w-full'>
+            {swipeState.transactions.length}
+          </Flex>
+          <div className='w-4/5 mx-auto'>
+            <Progress
+              percent={config.percent * 100}
+              status='active'
+              showInfo={false}
+              strokeColor={twoColors}
+            />
           </div>
           <div className='flex justify-center text-center'>
             <Text>
@@ -366,9 +383,11 @@ export default function UnreadTransactionsSwiper({
                   No more transactions! You&apos;re all caught up! 🎉
                 </Title>
               </Flex>
-              <img alt='focus-goal-image' src={focusGoalImgURL} />
+              <Flex justify='center' align='center'>
+                <img alt='focus-goal-image' src={focusGoalImgURL} />
+              </Flex>
               <Flex justify='center' align='center' className='text-center m-2'>
-                <Link href='/'>
+                <Link to='/'>
                   <Button type='primary'>Return Home</Button>
                 </Link>
               </Flex>
@@ -377,27 +396,28 @@ export default function UnreadTransactionsSwiper({
         />
       </div>
       <Flex justify='center' className='mt-4 w-full'>
-        {swipeState.isEmpty === false ? (
-          <Button
-            data-id='sync-transactions-button'
-            size='large'
-            disabled={swipeState.reviewHistory.length === 0}
-            onClick={async () => {
-              const transaction = swipeState.reviewHistory.at(-1);
-              if (!transaction) return;
-              await markTransactionAsUnread(transaction.id);
+        <Button
+          data-id='sync-transactions-button'
+          size='large'
+          disabled={swipeState.reviewHistory.length === 0}
+          onClick={async () => {
+            const transaction = swipeState.reviewHistory.at(-1);
+            if (!transaction) return;
 
-              setSwipeState((prev) => ({
-                ...prev,
-                transactions: prev.transactions.concat([transaction]),
-                reviewHistory: prev.reviewHistory.slice(0, -1),
-                swiperKey: 'swiper-key-' + Math.random(),
-              }));
-            }}
-          >
-            Undo
-          </Button>
-        ) : null}
+            await apiFetch('/api/plaid/unreadTransaction', 'POST', {
+              transactionId: transaction.id,
+            });
+
+            setSwipeState((prev) => ({
+              ...prev,
+              transactions: prev.transactions.concat([transaction]),
+              reviewHistory: prev.reviewHistory.slice(0, -1),
+              swiperKey: 'swiper-key-' + Math.random(),
+            }));
+          }}
+        >
+          Undo
+        </Button>
       </Flex>
     </div>
   );

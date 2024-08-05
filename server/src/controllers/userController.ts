@@ -24,7 +24,10 @@ export const onboardUser = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
     const onboardingProfile = req.body.onboardingProfile;
-    const [items] = await Promise.all([onboard(userId, onboardingProfile)]);
+    const skipSync = req.body.skipSync;
+    const [items] = await Promise.all([
+      onboard(userId, onboardingProfile, skipSync),
+    ]);
     res.status(200).send({ items });
   } catch (err) {
     console.log(err);

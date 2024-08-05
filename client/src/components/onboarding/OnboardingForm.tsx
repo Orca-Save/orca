@@ -12,7 +12,7 @@ import {
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { ItemData, OnboardingProfile, UserProfile } from '../../types/all';
@@ -301,7 +301,7 @@ export default function OnboardingForm({
                 label: '4 Connect Accounts',
                 key: '4',
                 forceRender,
-                disabled: !privacyChecked || !userProfile?.stripeSubscriptionId,
+                disabled: !privacyChecked, // || !userProfile?.stripeSubscriptionId,
                 children: (
                   <div style={{ margin: '15px' }}>
                     <div style={{ marginBottom: '20px' }}>
@@ -356,6 +356,32 @@ export default function OnboardingForm({
                   Back
                 </Button>
               </Form.Item>
+              {currentTab === 4 && (
+                <Form.Item>
+                  <Button
+                    size='large'
+                    onClick={async () => {
+                      setLoading(true);
+                      if (currentTab === 4) {
+                        const newOnboardingProfile = {
+                          ...onboardingProfile,
+                          ...form.getFieldsValue(),
+                          privacyAgreement: privacyChecked,
+                          goalDueAt: form.getFieldValue('goalDueAt')?.format(),
+                        };
+                        await apiFetch('/api/users/onboardUser', 'POST', {
+                          onboardingProfile: newOnboardingProfile,
+                          skipSync: true,
+                        });
+                        navigate('/?confetti=true');
+                      }
+                      setLoading(false);
+                    }}
+                  >
+                    Skip
+                  </Button>
+                </Form.Item>
+              )}
               <Form.Item>
                 <HappyProvider>
                   <Button

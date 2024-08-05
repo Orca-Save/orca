@@ -30,6 +30,7 @@ export type GoalTransfer = {
 
 export type FormattedTransaction = {
   id: string;
+  merchantName: string;
   name: string;
   category: string;
   amount: number;

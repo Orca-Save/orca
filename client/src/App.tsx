@@ -14,6 +14,7 @@ import NavTabs from './components/log/NavTabs';
 import AppLayout from './components/nav/AppLayout';
 import OnboardingPage from './components/onboarding/OnboardingPage';
 import PrivacyPolicyPage from './components/privacy-policy';
+import ReviewPage from './components/review/ReviewPage';
 import ProtectedRoute from './components/routing/ProtectedRoute';
 import GoalTransferPage from './components/savings/GoalTransferPage';
 import MySavingsPage from './components/savings/MySavingsPage';
@@ -49,6 +50,7 @@ const router = createBrowserRouter(
           <Route index element={<HomePage />} />
           <Route path='onboarding' element={<OnboardingPage />} />
           <Route path='user' element={<UserPage />} />
+          <Route path='review' element={<ReviewPage />} />
           <Route path='goals' element={<GoalsPage />} />
           <Route path='log' element={<LogLayoutRoute />}>
             <Route path='savings' element={<MySavingsPage />} />

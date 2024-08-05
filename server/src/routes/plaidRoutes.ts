@@ -7,7 +7,10 @@ const router = express.Router();
 router.get('/linkedItems', plaidController.linkedItems);
 router.get('/linkToken', plaidController.linkToken);
 router.get('/refreshItems', plaidController.refreshItems);
+router.get('/markAllUnread', plaidController.markAllTransactionsRead);
 router.post('/exchangeToken', plaidController.exchangeToken);
+router.post('/readTransaction', plaidController.readTransaction);
+router.post('/unreadTransaction', plaidController.unreadTransaction);
 router.get('/listAllLinkedItems', plaidController.listAllLinkedItems);
 
 export default router;
