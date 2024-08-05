@@ -1,18 +1,18 @@
-import { Button } from 'antd';
+import { Button, Typography } from 'antd';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import React from 'react';
+import { Link } from 'react-router-dom';
 
+import useFetch from '../../hooks/useFetch';
 import UpdateSubscriptionForm from './UpdateSubscriptionForm';
+
+const { Title, Text } = Typography;
 
 export default function Subscription() {
   dayjs.extend(localizedFormat);
-
-  const [userProfile, subscription] = await Promise.all([
-    getUserProfile(session.user.id),
-    getSubscription(session.user.id),
-  ]);
-
+  const { data } = useFetch('api/components/subscription', 'GET');
+  if (!data) return null;
+  const { userProfile, subscription } = data;
   if (userProfile?.stripeSubscriptionId) {
     return (
       <>
@@ -35,7 +35,6 @@ export default function Subscription() {
           </Text>
         </div>
         <UpdateSubscriptionForm
-          userId={session.user.id}
           cancel={!subscription?.cancel_at_period_end}
           actionText={
             subscription?.cancel_at_period_end
@@ -56,7 +55,7 @@ export default function Subscription() {
         </Text>
       </div>
 
-      <Link href='/subscribe'>
+      <Link to='/subscribe'>
         <Button data-id='subscription-nav-button' type='primary' size='large'>
           Begin Subscription
         </Button>

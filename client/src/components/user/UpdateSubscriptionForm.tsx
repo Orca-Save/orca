@@ -1,26 +1,25 @@
-'use client';
-
 import { Button } from 'antd';
-import { useRouter } from 'next/navigation';
-import { updateSubscription } from '../../../../../server/src/utils/_actions/stripe';
+import { useNavigate } from 'react-router-dom';
+
+import { apiFetch } from '../../utils/general';
 
 export default function UpdateSubscriptionForm({
-  userId,
   cancel,
   actionText,
 }: {
-  userId: string;
   actionText: string;
   cancel: boolean;
 }) {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return (
     <Button
       data-id='update-subscription-button'
       onClick={async () => {
-        await updateSubscription(userId, cancel);
-        router.push('/user');
+        await apiFetch('/api/stripe/updateSubscription', 'POST', {
+          cancel,
+        });
+        navigate('/user');
       }}
     >
       {actionText}

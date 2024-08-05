@@ -1,11 +1,11 @@
 import { useMsal } from '@azure/msal-react';
 import { Button, Space, Typography } from 'antd';
-import React from 'react';
 
 import useFetch from '../../hooks/useFetch';
 import ClearUserData from './ClearUserData';
 import ListItems from './ListItems';
 import PlaidLink from './PlaidLink';
+import Subscription from './Subscription';
 
 const { Title } = Typography;
 
@@ -21,7 +21,7 @@ export default function UserPage() {
     <>
       <Title>User Profile</Title>
       <Space direction='vertical' size='large'>
-        <div>{/* <Subscription /> */}</div>
+        <Subscription />
 
         <ClearUserData />
         <div>
