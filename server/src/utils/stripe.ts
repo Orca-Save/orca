@@ -1,6 +1,5 @@
-'use server';
-import { revalidatePath } from 'next/cache';
 import Stripe from 'stripe';
+
 import db from './db/db';
 
 if (!process.env.STRIPE_SECRET_KEY)
@@ -94,7 +93,6 @@ export async function addSubscriptionId(
       userId,
     },
   });
-  revalidatePath('/user');
 }
 
 export async function updateSubscription(
@@ -116,7 +114,6 @@ export async function updateSubscription(
       cancel_at_period_end,
     }
   );
-  revalidatePath('/user');
   return {
     message: 'Cancel success!',
   };

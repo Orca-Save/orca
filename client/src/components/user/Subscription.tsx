@@ -1,14 +1,11 @@
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-
 import React from 'react';
+
 import UpdateSubscriptionForm from './UpdateSubscriptionForm';
 
 export default function Subscription() {
-  const session = await getServerSession(authOptions);
-  if (!session) return <SignIn />;
-  if (!isExtendedSession(session)) return <React.Fragment />;
   dayjs.extend(localizedFormat);
 
   const [userProfile, subscription] = await Promise.all([

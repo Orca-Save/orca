@@ -7,6 +7,7 @@ import {
   goalRoutes,
   pageRoutes,
   plaidRoutes,
+  stripeRoutes,
   transactionRoutes,
   userRoutes,
 } from './routes';
@@ -30,6 +31,9 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 app.use((req: any, res, next) => {
+  if (req.url.startsWith('/api/plaid/webhook')) {
+    return next();
+  }
   if (!req.headers.authorization) return res.status(401).send('Unauthorized');
 
   const token = req.headers.authorization.split(' ')[1];
@@ -49,6 +53,7 @@ app.use('/api/components', componentRoutes);
 app.use('/api/plaid', plaidRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
