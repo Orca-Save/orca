@@ -10,8 +10,10 @@ const { Text } = Typography;
 export default function DashboardSaveButtons({
   quickTransfers,
   goalId,
+  addGoalCurrentBalance,
 }: {
   quickTransfers: GoalTransfer[];
+  addGoalCurrentBalance: (amount: number) => void;
   goalId: string;
 }) {
   if (!quickTransfers) return <Text>No Pinned One-Tap Saves.</Text>;
@@ -28,7 +30,11 @@ export default function DashboardSaveButtons({
       <Space wrap>
         {quickTransfers.map((transfer) => (
           <HappyProvider key={transfer.id}>
-            <QuickSaveButton transfer={transfer} goalId={goalId} />
+            <QuickSaveButton
+              transfer={transfer}
+              addGoalCurrentBalance={addGoalCurrentBalance}
+              goalId={goalId}
+            />
           </HappyProvider>
         ))}
       </Space>

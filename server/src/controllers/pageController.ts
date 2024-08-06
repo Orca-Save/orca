@@ -2,7 +2,10 @@ import { Request, Response } from 'express';
 
 import db from '../utils/db';
 import { getUserProfile } from '../utils/db/common';
-import { getPinnedGoalTransfers } from '../utils/goalTransfers';
+import {
+  getGoalTransfersSum,
+  getPinnedGoalTransfers,
+} from '../utils/goalTransfers';
 import {
   getOnboardingProfile,
   getOnboardingProfileCount,
@@ -25,19 +28,37 @@ export const dashboardPage = async (req: Request, res: Response) => {
       goal,
       unreadTransactionCount,
       userProfile,
+      sums,
+      completedCounts,
     ] = await Promise.all([
       getOnboardingProfileCount(userId),
       getPinnedGoalTransfers(userId),
       getPinnedUserGoal(userId),
       getUnreadTransactionCount(userId),
       getUserProfile(userId),
+      getGoalTransfersSum(userId),
+      completedUserGoalCount(userId),
     ]);
+
+    if (goal) {
+      const goalSumMap = new Map(
+        sums.map((item) => [
+          item.goalId,
+          { amount: item._sum.amount, count: item._count.goalId },
+        ])
+      );
+      Object.assign(goal, {
+        currentBalance: goalSumMap.get(goal.id)?.amount?.toNumber() || 0,
+        savedItemCount: goalSumMap.get(goal.id)?.count || 0,
+      });
+    }
     res.status(200).send({
       onboardingProfileCount,
       quickTransfers,
       goal,
       unreadTransactionCount,
       userProfile,
+      completedCounts,
     });
   } catch (err) {
     console.log(err);

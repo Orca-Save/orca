@@ -41,9 +41,9 @@ export const listGoal = async (req: Request, res: Response) => {
 export const quickSave = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
-    const { goalId, transfer } = req.body;
+    const { goalId, transferId } = req.body;
 
-    const goalTransfer = await addQuickSave(user.oid, goalId, transfer);
+    const goalTransfer = await addQuickSave(user.oid, goalId, transferId);
     res.status(200).send({ goalTransfer });
   } catch (err: any) {
     console.log(err);

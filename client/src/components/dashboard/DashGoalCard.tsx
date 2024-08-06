@@ -1,12 +1,14 @@
-import React from 'react';
-import useFetch from '../../hooks/useFetch';
+import { Goal } from '../../types/all';
 import CompletedCounts from '../shared/CompletedCounts';
 import GoalCard from '../shared/GoalCard';
 
-export default function DashGoalCard() {
-  const { data } = useFetch('api/components/goalCard', 'GET');
-  if (!data) return null;
-  const { goal, completedCounts } = data;
+export default function DashGoalCard({
+  completedCounts,
+  goal,
+}: {
+  goal: Goal | null;
+  completedCounts: { totalSaved: number; goalsCompleted: number };
+}) {
   if (!goal)
     return (
       <CompletedCounts

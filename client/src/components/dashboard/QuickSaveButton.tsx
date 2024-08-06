@@ -1,6 +1,7 @@
 import { Button, Space, Typography } from 'antd';
 import { useState } from 'react';
 import Confetti from 'react-confetti';
+import { useNavigate } from 'react-router-dom';
 
 import { GoalTransfer } from '../../types/all';
 import { apiFetch, currencyFormatter } from '../../utils/general';
@@ -10,11 +11,14 @@ const { Text } = Typography;
 export function QuickSaveButton({
   transfer,
   goalId,
+  addGoalCurrentBalance,
 }: {
   transfer: GoalTransfer;
+  addGoalCurrentBalance: (amount: number) => void;
   goalId?: string;
 }) {
   const [confetti, setConfetti] = useState({ run: false, count: 0 });
+  const navigate = useNavigate();
   if (confetti.run) {
     setTimeout(() => {
       setConfetti({ run: true, count: 0 });
@@ -27,7 +31,8 @@ export function QuickSaveButton({
         goalId,
         transferId: transfer.id,
       });
-      // window.location.reload();
+      addGoalCurrentBalance(transfer.amount);
+      navigate('/?confetti=true');
     }
   };
 

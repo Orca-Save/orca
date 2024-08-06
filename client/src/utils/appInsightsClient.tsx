@@ -1,9 +1,9 @@
-'use client';
 import { ClickAnalyticsPlugin } from '@microsoft/applicationinsights-clickanalytics-js';
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { createBrowserHistory } from 'history';
 import { useEffect } from 'react';
+
 const reactPlugin = new ReactPlugin();
 let appInsights: ApplicationInsights | undefined;
 var clickPluginInstance = new ClickAnalyticsPlugin();
@@ -15,8 +15,7 @@ const initializeAppInsights = () => {
     const customHistory = createBrowserHistory();
     appInsights = new ApplicationInsights({
       config: {
-        connectionString:
-          process.env.NEXT_PUBLIC_APP_INSIGHTS_CONNECTION_STRING,
+        connectionString: process.env.REACT_APP_INSIGHTS_CONNECTION_STRING,
         extensions: [reactPlugin, clickPluginInstance],
         namePrefix: 'local-web',
         extensionConfig: {

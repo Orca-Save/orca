@@ -1,21 +1,26 @@
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
+import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { reactPlugin } from './utils/appInsightsClient';
 import { msalConfig } from './utils/authConfig';
+
+import './index.css';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 msalInstance.initialize();
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <App />
-    </MsalProvider>
+    <AppInsightsContext.Provider value={reactPlugin}>
+      <MsalProvider instance={msalInstance}>
+        <App />
+      </MsalProvider>
+    </AppInsightsContext.Provider>
   </React.StrictMode>
 );
 

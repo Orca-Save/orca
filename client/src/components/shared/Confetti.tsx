@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Confetti from 'react-confetti';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function ConfettiComp({
   run,
@@ -14,6 +15,8 @@ export default function ConfettiComp({
   timer?: number;
   redirect?: boolean;
 }) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [confetti, setConfetti] = useState({
     run,
     count: 0,
@@ -26,7 +29,8 @@ export default function ConfettiComp({
   if (confetti.run && !confetti.firstRun) {
     if (redirect) {
       setTimeout(() => {
-        // router.replace(path, undefined);
+        const currentPath = location.pathname;
+        navigate(currentPath, { replace: true });
       }, timer ?? 500);
     }
     setTimeout(() => {

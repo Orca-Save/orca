@@ -22,6 +22,8 @@ export const useTokenRefresh = () => {
         localStorage.setItem('accessToken', response.accessToken);
       }
     } catch (error) {
+      localStorage.removeItem('accessToken');
+      instance.logout();
       console.log('Error refreshing token', error); // Handle token refresh error
     }
   };

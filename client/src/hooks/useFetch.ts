@@ -9,7 +9,8 @@ const useFetch = (url: string, method = 'POST', body?: any) => {
       const token = localStorage.getItem('accessToken');
 
       if (!token) {
-        throw new Error('No access token found');
+        setError('No token found');
+        return;
       }
 
       try {

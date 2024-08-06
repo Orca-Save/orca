@@ -1,34 +1,14 @@
-import { useMsal } from '@azure/msal-react';
-import { Button, Menu, Space, Typography } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { Menu, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { UserOutlined } from '@ant-design/icons';
-import { b2cPolicies, loginRequest } from '../../utils/authConfig';
 
 const { SubMenu } = Menu;
 const { Text } = Typography;
 
 export default function HeaderMenu({ className }: { className: string }) {
-  const { instance } = useMsal();
   const navigate = useNavigate();
   const pathname = '';
-  const handleLogout = () => {
-    instance.logoutPopup();
-  };
-  const handleLogin = () => {
-    instance
-      .loginPopup({
-        ...loginRequest,
-        authority: b2cPolicies.authorities.signUpSignIn.authority,
-      })
-      .then((res: any) => {
-        localStorage.setItem('accessToken', res.accessToken);
-      })
-      .catch((e) => {
-        console.log('error', e);
-      });
-  };
 
   const [current, setCurrent] = useState(pathname);
   useEffect(() => {
@@ -82,9 +62,6 @@ export default function HeaderMenu({ className }: { className: string }) {
               Transactions
             </Menu.Item>
           </SubMenu> */}
-          <Button type='primary' onClick={() => handleLogout()}>
-            logout
-          </Button>
           <Menu.Item eventKey='/user' key='/user'>
             <UserOutlined />
           </Menu.Item>
