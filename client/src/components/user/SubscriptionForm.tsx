@@ -1,6 +1,3 @@
-'use client';
-
-import { currencyFormatter } from '@/lib/utils';
 import {
   ExpressCheckoutElement,
   PaymentElement,
@@ -12,48 +9,35 @@ import {
   StripeExpressCheckoutElementConfirmEvent,
 } from '@stripe/stripe-js';
 import { Button, notification } from 'antd';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Stripe from 'stripe';
-import { addSubscriptionId } from '../../../../../server/src/utils/_actions/stripe';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import useFetch from '../../hooks/useFetch';
+import { apiFetch, currencyFormatter } from '../../utils/general';
 
-function useStripePrice() {
-  const [price, setPrice] = useState<Stripe.Price | undefined>();
-
-  useEffect(() => {
-    fetch('/api/stripe/product', {
-      method: 'GET',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setPrice(data);
-      });
-  }, []);
-
-  return price;
-}
 function SubscriptionForm({
   clientSecret,
-  userId,
   subscriptionId,
   redirect,
 }: {
   redirect: boolean;
   clientSecret: string;
-  userId: string;
   subscriptionId: string;
 }) {
   const stripe = useStripe();
   const elements = useElements();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
-  const price = useStripePrice();
+  const { data } = useFetch('api/stripe/productPrice', 'GET');
+  if (!data) return null;
+  const { price } = data;
   const onFinish = async () => {
     try {
       if (!stripe || !elements) return;
 
       const results = await elements.submit();
-      const addResponse = await addSubscriptionId(userId, subscriptionId);
+      await apiFetch('/api/stripe/addSubscription', 'POST', {
+        subscriptionId,
+      });
       if (results.error) {
         return;
       }
@@ -87,7 +71,7 @@ function SubscriptionForm({
           placement: 'top',
           duration: 3,
         });
-        if (redirect) router.push('/user');
+        if (redirect) navigate('/user');
       }
     } catch (error) {
       api.error({

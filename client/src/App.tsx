@@ -25,8 +25,9 @@ import TransactionPage from './components/transactions/TransactionPage';
 import UserPage from './components/user/UserPage';
 import { useTokenRefresh } from './hooks/useTokenRefresh';
 
-import './App.css';
 import '@fontsource/varela-round';
+import './App.css';
+import SubscribePage from './components/subscribe/SubscribePage';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -52,6 +53,7 @@ const router = createBrowserRouter(
           <Route path='user' element={<UserPage />} />
           <Route path='review' element={<ReviewPage />} />
           <Route path='goals' element={<GoalsPage />} />
+          <Route path='subscribe' element={<SubscribePage />} />
           <Route path='log' element={<LogLayoutRoute />}>
             <Route path='savings' element={<MySavingsPage />} />
             <Route path='one-taps' element={<OneTapPage />} />

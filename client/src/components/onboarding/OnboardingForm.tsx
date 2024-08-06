@@ -15,6 +15,8 @@ import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { useMsal } from '@azure/msal-react';
+import React from 'react';
 import { ItemData, OnboardingProfile, UserProfile } from '../../types/all';
 import { applyFormErrors } from '../../utils/forms';
 import { apiFetch } from '../../utils/general';
@@ -23,6 +25,7 @@ import InstitutionCollapses from '../plaid/InstitutionsCollapse';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
 import PlaidLink from '../user/PlaidLink';
+import StripeForm from '../user/StripeForm';
 
 const { Title, Text, Paragraph } = Typography;
 type OnboardingFormProps = {
@@ -38,6 +41,7 @@ export default function OnboardingForm({
   onboardingProfile,
 }: OnboardingFormProps) {
   const navigate = useNavigate();
+  const { accounts } = useMsal();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [privacyChecked, setPrivacyChecked] = useState(
@@ -48,6 +52,7 @@ export default function OnboardingForm({
   );
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  const account = accounts[0];
   const currentTab = Number(pageState.tabKey);
   const forceRender = true;
   let disableNext = false;
@@ -249,54 +254,54 @@ export default function OnboardingForm({
                   </div>
                 ),
               },
-              // {
-              //   label: '4 Subscription',
-              //   key: '3',
-              //   disabled: !privacyChecked && !userProfile?.stripeSubscriptionId,
-              //   children: (
-              //     <div style={{ margin: '15px' }}>
-              //       <div style={{ marginBottom: '20px' }}>
-              //         <h3
-              //           className={`${openSans.className} text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
-              //         >
-              //           Transform Your Finances with Orca!
-              //         </h3>
-              //         <Paragraph>
-              //           Join Orca&apos;s subscription service to effortlessly
-              //           save money and manage your spending. Enjoy personalized
-              //           insights, real-time alerts, and user-friendly tools
-              //           designed to help you achieve your financial goals.
-              //           Subscribe now and take control of your financial future!
-              //         </Paragraph>
-              //         {userProfile?.stripeSubscriptionId ? (
-              //           <>
-              //             <Text>
-              //               You are subscribed.{' '}
-              //               <Link href='/user'>View your subscription</Link>
-              //             </Text>
-              //           </>
-              //         ) : (
-              //           <Paragraph>
-              //             Sign up and cancel anytime at your{' '}
-              //             <Link href='/user'>
-              //               <UserOutlined /> user profile
-              //             </Link>
-              //             .
-              //           </Paragraph>
-              //         )}
+              {
+                label: '4 Subscription',
+                key: '3',
+                disabled: !privacyChecked && !userProfile?.stripeSubscriptionId,
+                children: (
+                  <div style={{ margin: '15px' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                      <h3
+                        className={`font-sans text-center decoration-clone pb-3 text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                      >
+                        Transform Your Finances with Orca!
+                      </h3>
+                      <Paragraph>
+                        Join Orca&apos;s subscription service to effortlessly
+                        save money and manage your spending. Enjoy personalized
+                        insights, real-time alerts, and user-friendly tools
+                        designed to help you achieve your financial goals.
+                        Subscribe now and take control of your financial future!
+                      </Paragraph>
+                      {userProfile?.stripeSubscriptionId ? (
+                        <>
+                          <Text>
+                            You are subscribed.{' '}
+                            <Link to='/user'>View your subscription</Link>
+                          </Text>
+                        </>
+                      ) : (
+                        <Paragraph>
+                          Sign up and cancel anytime at your{' '}
+                          <Link to='/user'>
+                            <UserOutlined /> user profile
+                          </Link>
+                          .
+                        </Paragraph>
+                      )}
 
-              //         {currentTab === 3 &&
-              //         !userProfile?.stripeSubscriptionId ? (
-              //           <StripeForm
-              //             email={session?.user.email ?? ''}
-              //             userId={session?.user.id}
-              //             redirect={false}
-              //           />
-              //         ) : null}
-              //       </div>
-              //     </div>
-              //   ),
-              // },
+                      {currentTab === 3 &&
+                      !userProfile?.stripeSubscriptionId ? (
+                        <StripeForm
+                          email={account.idTokenClaims?.emails?.[0] ?? ''}
+                          userId={account.localAccountId}
+                          redirect={false}
+                        />
+                      ) : null}
+                    </div>
+                  </div>
+                ),
+              },
               {
                 label: '4 Connect Accounts',
                 key: '4',

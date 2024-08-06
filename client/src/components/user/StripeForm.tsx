@@ -1,37 +1,13 @@
-'use client';
-
 import { Elements } from '@stripe/react-stripe-js';
-import { useEffect, useState } from 'react';
-
 import { loadStripe } from '@stripe/stripe-js';
 import { Skeleton, Spin } from 'antd';
+import React from 'react';
+
+import useFetch from '../../hooks/useFetch';
 import SubscriptionForm from './SubscriptionForm';
-
-if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+if (!process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY)
   console.error('Stripe is not setup properly!');
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
-
-function useSubscription(userId: string, email: string) {
-  const [subscription, setSubscription] = useState<{
-    clientSecret?: string;
-    subscriptionId?: string;
-  }>({});
-
-  useEffect(() => {
-    fetch('/api/stripe/createSubscription', {
-      method: 'POST',
-      body: JSON.stringify({ userId, email }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setSubscription(data);
-      });
-  }, []);
-
-  return subscription;
-}
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY!);
 
 export default function StripeForm({
   userId,
@@ -42,7 +18,9 @@ export default function StripeForm({
   userId: string;
   redirect: boolean;
 }) {
-  const { clientSecret, subscriptionId } = useSubscription(userId, email);
+  const { data } = useFetch('api/stripe/createSubscription', 'GET');
+  if (!data) return null;
+  const { clientSecret, subscriptionId } = data;
   if (!clientSecret || !subscriptionId)
     return (
       <div>
@@ -58,7 +36,6 @@ export default function StripeForm({
         <SubscriptionForm
           clientSecret={clientSecret}
           redirect={redirect}
-          userId={userId}
           subscriptionId={subscriptionId}
         />
       </Elements>

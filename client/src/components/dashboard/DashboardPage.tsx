@@ -25,7 +25,7 @@ export default function HomePage() {
 
   const { accounts } = useMsal();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  console.log(accounts);
   const userId = accounts[0]?.localAccountId;
   const { data } = useFetch('api/pages/dashboardPage', 'POST', {
     userId,

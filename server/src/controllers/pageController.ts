@@ -82,6 +82,20 @@ export const savingsPage = async (req: Request, res: Response) => {
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
+
+export const subscriptionPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const userProfile = await getUserProfile(userId);
+    res.status(200).send({
+      userProfile,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};
+
 export const transactionsPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
