@@ -1,7 +1,7 @@
 const appInsights = require('applicationinsights');
 if (process.env.NODE_ENV === 'production') {
   appInsights
-    .setup(process.env.NEXT_PUBLIC_APP_INSIGHTS_CONNECTION_STRING)
+    .setup(process.env.APP_INSIGHTS_CONNECTION_STRING)
     .setAutoCollectConsole(true)
     .setAutoCollectDependencies(true)
     .setAutoCollectExceptions(true)
