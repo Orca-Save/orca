@@ -27,8 +27,13 @@ function getKey(header: any, callback: any) {
 }
 
 const app = express();
-const port = 3001;
-app.use(cors());
+const port = process.env.PORT || 5000;
+// Configure CORS
+const corsOptions = {
+  origin: process.env.BASE_URL, //'https://orca-staging.azurewebsites.net', // Your frontend origin
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use((req: any, res, next) => {
   if (req.url.startsWith('/api/plaid/webhook')) {

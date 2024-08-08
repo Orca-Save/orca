@@ -1,0 +1,30 @@
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+RUN mkdir ./client
+RUN mkdir ./shared-library
+
+COPY ./client ./client
+COPY ./shared-library ./shared-library
+
+WORKDIR /usr/src/app/shared-library
+
+RUN npm install
+RUN npm run build
+RUN npm link
+
+WORKDIR /usr/src/app/client
+RUN npm install --legacy-peer-deps
+RUN npm link shared-library --legacy-peer-deps
+
+COPY ./client/.env.production .env
+
+RUN npm run build
+
+RUN rm .env.*
+RUN rm .env
+
+EXPOSE 8080
+
+CMD ["npm", "start"] 

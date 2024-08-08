@@ -1,0 +1,35 @@
+FROM node:20-alpine
+
+RUN apk add --no-cache postgresql-client
+
+WORKDIR /usr/src/app
+
+RUN mkdir ./server
+RUN mkdir ./shared-library
+
+COPY ./server ./server
+COPY ./shared-library ./shared-library
+
+WORKDIR /usr/src/app/shared-library
+
+RUN npm install
+RUN npm run build
+RUN npm link
+
+WORKDIR /usr/src/app/server
+RUN npm install
+RUN npm link shared-library
+
+COPY ./server/.env.production .env
+
+RUN npx prisma generate
+RUN npm run build
+
+RUN rm .env.*
+RUN rm .env
+
+EXPOSE 8080
+RUN npm install pm2 -g
+
+# CMD ["npm", "run", "pm2"]
+CMD ["pm2-runtime", "npm", "--", "start"]

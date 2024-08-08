@@ -4,8 +4,8 @@ param(
 
 Write-Host "Logging in to Docker Hub..."
 docker login
-$dockerfile = "Dockerfile"
-$dockerHubRepository = "reharly20/orca-api"
+$dockerfile = "Dockerfile.client"
+$dockerHubRepository = "reharly20/orca-staging"
 $dockerTag = "latest"
 
 if ($LASTEXITCODE -ne 0) {

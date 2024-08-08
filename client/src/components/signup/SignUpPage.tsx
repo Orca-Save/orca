@@ -40,8 +40,12 @@ export default function SignUpPage() {
         <h1
           className={`font-sans text-center decoration-clone pb-3 text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
         >
-          Ready to save an extra $3,800 a year?
+          Impulse saving.
         </h1>
+        <p className=' text-3xl px-4' style={{ textAlign: 'center' }}>
+          Stop buying what you don&apos;t need, so you can save for what you
+          really want.
+        </p>
 
         <div className='w-100 flex flex-col space-y-4'>
           <Button
@@ -51,7 +55,7 @@ export default function SignUpPage() {
             className='w-full'
             onClick={handleLogin}
           >
-            Sign Up / Login
+            Lets go!
           </Button>
         </div>
       </Space>

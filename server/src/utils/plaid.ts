@@ -4,7 +4,7 @@ import {
   Prisma,
   Transaction as PrismaTransaction,
 } from '@prisma/client';
-import { format, formatDistanceToNow, formatRelative, isToday } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import {
   Configuration,
   CountryCode,
@@ -43,7 +43,6 @@ const PLAID_COUNTRY_CODES = (process.env.PLAID_COUNTRY_CODES || 'US').split(
   ','
 );
 
-const PLAID_REDIRECT_URI = process.env.PLAID_REDIRECT_URI || '';
 const configuration = new Configuration({
   basePath: PlaidEnvironments[plaidEnv],
   baseOptions: {

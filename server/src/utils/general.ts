@@ -15,17 +15,3 @@ export function sendSlackMessage(message: string) {
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-export const baseURL =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000'
-    : process.env.BASE_URL;
-
-export function getPrevPageHref(referer: string | undefined, window: Window) {
-  if (!referer) return '/';
-  const prevURL = new URL(referer);
-  return prevURL.origin !== window.location.origin ||
-    prevURL.pathname === window.location.pathname
-    ? '/'
-    : prevURL.pathname;
-}
