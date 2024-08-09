@@ -19,6 +19,10 @@ export default function NavTabs() {
       key: '/log/transactions',
       label: 'Transactions',
     },
+    {
+      key: '/log/charts',
+      label: 'Charts',
+    },
   ];
   return (
     <>

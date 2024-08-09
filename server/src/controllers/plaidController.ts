@@ -15,6 +15,7 @@ import {
   markTransactionAsUnread,
   refreshUserItems,
   removePlaidItem,
+  syncItems,
   syncTransactions,
 } from '../utils/plaid';
 
@@ -126,6 +127,18 @@ export const listAllLinkedItems = async (req: Request, res: Response) => {
     const itemsData = await getAllLinkedItems(user.oid);
 
     res.status(200).send({ itemsData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting linked items' });
+  }
+};
+
+export const syncUserItems = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const success = await syncItems(user.oid);
+
+    res.status(200).send({ success });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting linked items' });

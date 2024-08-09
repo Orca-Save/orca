@@ -7,6 +7,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
+import ChartPage from './components/charts/ChartPage';
 import HomePage from './components/dashboard';
 import EditGoalPage from './components/goals/EditGoalPage';
 import GoalsPage from './components/goals/MainGoalPage';
@@ -20,6 +21,7 @@ import GoalTransferPage from './components/savings/GoalTransferPage';
 import MySavingsPage from './components/savings/MySavingsPage';
 import OneTapPage from './components/savings/OneTapPage';
 import SignUpPage from './components/signup/SignUpPage';
+import SubscribePage from './components/subscribe/SubscribePage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
 import TransactionPage from './components/transactions/TransactionPage';
 import UserPage from './components/user/UserPage';
@@ -27,7 +29,6 @@ import { useTokenRefresh } from './hooks/useTokenRefresh';
 
 import '@fontsource/varela-round';
 import './App.css';
-import SubscribePage from './components/subscribe/SubscribePage';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -58,6 +59,7 @@ const router = createBrowserRouter(
             <Route path='savings' element={<MySavingsPage />} />
             <Route path='one-taps' element={<OneTapPage />} />
             <Route path='transactions' element={<TransactionsPage />} />
+            <Route path='charts' element={<ChartPage />} />
           </Route>
           <Route path='transactions/:id' element={<TransactionPage />} />
           <Route path='savings/:id' element={<GoalTransferPage />} />

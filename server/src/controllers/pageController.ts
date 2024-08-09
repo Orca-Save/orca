@@ -1,5 +1,10 @@
 import { Request, Response } from 'express';
 
+import {
+  getCurrentMonthDailySums,
+  getLastMonthDiscretionaryTotal,
+  getWeekChartData,
+} from '../utils/chart';
 import db from '../utils/db';
 import { getUserProfile } from '../utils/db/common';
 import {
@@ -77,6 +82,24 @@ export const savingsPage = async (req: Request, res: Response) => {
       goalTransfers,
       completedCounts,
     });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting data for the page' });
+  }
+};
+
+export const chartPage = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const lastMonthDiscretionary = await getLastMonthDiscretionaryTotal(userId);
+    const [weekChartData, currentMonthDailySums] = await Promise.all([
+      getWeekChartData(userId),
+      getCurrentMonthDailySums(userId, lastMonthDiscretionary),
+    ]);
+
+    res
+      .status(200)
+      .send({ weekChartData, currentMonthDailySums, lastMonthDiscretionary });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting data for the page' });

@@ -15,6 +15,7 @@ import {
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import React from 'react';
 import { FormattedTransaction } from '../../types/all';
 import { apiFetch, currencyFormatter } from '../../utils/general';
 import {
@@ -320,7 +321,10 @@ export default function UnreadTransactionsSwiper({
         <div className='flex justify-center'>
           <Button
             data-id='sync-transactions-button'
-            // onClick={() => syncItems(userId)}
+            onClick={async () => {
+              await apiFetch('/api/plaid/syncUserItems', 'GET');
+              window.location.reload();
+            }}
           >
             Sync Transactions
           </Button>

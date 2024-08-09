@@ -1,10 +1,8 @@
-import { Typography } from 'antd';
+import React from 'react';
 import { discretionaryFilter } from 'shared-library/dist/plaidCategories';
 
 import useFetch from '../../hooks/useFetch';
 import UnreadTransactionsSwiper from './UnreadTransactionsSwiper';
-
-const { Title } = Typography;
 
 export default function ReviewPage() {
   const { data } = useFetch('api/pages/reviewPage', 'GET');
