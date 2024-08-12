@@ -14,7 +14,7 @@ export default function SignUpPage() {
   if (isAuthenticated) navigate('/');
   const handleLogin = () => {
     instance
-      .loginPopup({
+      .loginRedirect({
         ...loginRequest,
         authority: b2cPolicies.authorities.signUpSignIn.authority,
       })
