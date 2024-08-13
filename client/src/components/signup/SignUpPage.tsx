@@ -1,4 +1,5 @@
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { Capacitor } from '@capacitor/core';
 import { Button, Space, Typography } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,17 +14,33 @@ export default function SignUpPage() {
   const navigate = useNavigate();
   if (isAuthenticated) navigate('/');
   const handleLogin = () => {
-    instance
-      .loginRedirect({
-        ...loginRequest,
-        authority: b2cPolicies.authorities.signUpSignIn.authority,
-      })
-      .then((res: any) => {
-        localStorage.setItem('accessToken', res.accessToken);
-      })
-      .catch((e) => {
-        console.log('error', e);
-      });
+    if (Capacitor.getPlatform() !== 'web') {
+      instance
+        .loginRedirect({
+          ...loginRequest,
+          authority: b2cPolicies.authorities.signUpSignIn.authority,
+        })
+        .then((res: any) => {
+          console.log('login redirect', res);
+          localStorage.setItem('accessToken', res.accessToken);
+        })
+        .catch((e) => {
+          console.log('error', e);
+        });
+    } else {
+      instance
+        .loginPopup({
+          ...loginRequest,
+          authority: b2cPolicies.authorities.signUpSignIn.authority,
+        })
+        .then((res: any) => {
+          console.log('login redirect', res);
+          localStorage.setItem('accessToken', res.accessToken);
+        })
+        .catch((e) => {
+          console.log('error', e);
+        });
+    }
   };
   return (
     <div className='bg-color-black mg-5 flex justify-center items-center h-screen'>

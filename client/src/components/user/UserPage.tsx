@@ -1,5 +1,6 @@
 import { useMsal } from '@azure/msal-react';
 import { Button, Space, Typography } from 'antd';
+import React from 'react';
 
 import useFetch from '../../hooks/useFetch';
 import ClearUserData from './ClearUserData';
@@ -12,7 +13,14 @@ const { Title } = Typography;
 export default function UserPage() {
   const { instance } = useMsal();
   const { data } = useFetch('api/pages/userPage', 'GET');
-  if (!data) return null;
+  if (!data)
+    return (
+      <>
+        <Button type='primary' onClick={() => handleLogout()} size='large'>
+          Logout
+        </Button>
+      </>
+    );
   const { linkToken } = data;
   const handleLogout = () => {
     instance.logoutPopup();

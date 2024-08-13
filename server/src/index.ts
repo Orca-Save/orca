@@ -29,8 +29,22 @@ function getKey(header: any, callback: any) {
 const app = express();
 const port = process.env.PORT || 5000;
 // Configure CORS
+const allowedOrigins = [
+  process.env.BASE_URL,
+  'http://localhost:3000',
+  'https://localhost',
+];
 const corsOptions = {
-  origin: process.env.BASE_URL, //'https://orca-staging.azurewebsites.net', // Your frontend origin
+  origin: function (origin: string, callback: Function) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));

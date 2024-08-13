@@ -1,47 +1,44 @@
-import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser';
-
-import type { IPublicClientApplication } from '@azure/msal-browser';
 import { NavigationClient } from '@azure/msal-browser';
-import { Capacitor } from '@capacitor/core';
+import { App as CapacitorApp } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
 
-export class NavigationAuthenticationClient extends NavigationClient {
-  constructor(private msalInstance: IPublicClientApplication) {
+export class CustomNavigationClient extends NavigationClient {
+  msalInstance: any;
+  constructor(msalInstance: any) {
     super();
+    this.msalInstance = msalInstance;
   }
+  async navigateExternal(url: string, options: any) {
+    // @ts-ignore
+    if (window.Capacitor) {
+      await Browser.open({ url });
 
-  async navigateExternal(url: string, options: any): Promise<boolean> {
-    if (Capacitor.isNativePlatform()) {
-      const browser = InAppBrowser.create(url, '_blank', {
-        location: 'yes',
-        hidenavigationbuttons: 'yes',
-        clearcache: 'yes',
-        clearsessioncache: 'yes',
-        hideurlbar: 'yes',
-        fullscreen: 'yes',
-      });
-      browser.on('loadstart').subscribe((event: any) => {
-        if (event.url.includes('#code')) {
-          browser.close();
-          const domain = event.url.split('#')[0];
-          const url = event.url.replace(domain, 'http://localhost/home');
+      const appUrlOpenListener = (data: any) => {
+        if (data.url && data.url.includes('#state')) {
+          Browser.close();
 
-          this.msalInstance
-            .handleRedirectPromise(url)
-            .then((res) => {
-              console.log(res?.account?.name + ' has authenticated');
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          const hashIndex = data.url.indexOf('#');
+
+          if (hashIndex === -1) {
+            return null;
+          }
+
+          const hash = data.url.substring(hashIndex);
+          this.msalInstance.handleRedirectPromise(hash).then((res: any) => {
+            localStorage.setItem('accessToken', res.accessToken);
+          });
         }
-      });
+      };
+      CapacitorApp.addListener('appUrlOpen', appUrlOpenListener);
+
+      return true;
     } else {
       if (options.noHistory) {
         window.location.replace(url);
       } else {
         window.location.assign(url);
       }
+      return true;
     }
-    return true;
   }
 }
