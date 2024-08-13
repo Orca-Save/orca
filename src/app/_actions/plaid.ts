@@ -425,7 +425,7 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
       read,
     },
     orderBy: {
-      authorizedDate: 'desc',
+      date: 'desc',
     },
     take: 200,
   });
@@ -1186,7 +1186,7 @@ export const getUnreadTransactionCount = async (
       // recurring: false,
     },
     orderBy: {
-      authorizedDate: 'desc',
+      date: 'desc',
     },
     take: 150,
   });
