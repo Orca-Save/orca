@@ -15,7 +15,6 @@ import { CustomNavigationClient } from './utils/navigationClient';
 //@ts-ignore
 const msalInstance = new PublicClientApplication(msalConfig);
 if (Capacitor.getPlatform() !== 'web') {
-  console.log('Using Capacitor');
   const navigationClient = new CustomNavigationClient(msalInstance);
   msalInstance.setNavigationClient(navigationClient);
 }

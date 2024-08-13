@@ -6,9 +6,7 @@ const useFetch = (url: string, method = 'POST', body?: any) => {
   const [error, setError] = useState<any>(null);
   useEffect(() => {
     const fetchData = async () => {
-      console.log('fetching data', process.env.REACT_APP_API_URL + '/' + url);
       const token = localStorage.getItem('accessToken');
-      console.log('token', token);
 
       if (!token) {
         setError('No token found');
@@ -28,7 +26,6 @@ const useFetch = (url: string, method = 'POST', body?: any) => {
             },
           }
         );
-        console.log('done data', process.env.REACT_APP_API_URL + '/' + url);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

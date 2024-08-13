@@ -29,7 +29,6 @@ export const useTokenRefresh = () => {
   };
   useEffect(() => {
     const checkTokenExpiry = () => {
-      // console.log('checking');
       const backendAccessToken = localStorage.getItem('accessToken');
       if (backendAccessToken) {
         const decodeToken = jwtDecode(backendAccessToken);

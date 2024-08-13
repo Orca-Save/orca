@@ -21,7 +21,6 @@ export default function SignUpPage() {
           authority: b2cPolicies.authorities.signUpSignIn.authority,
         })
         .then((res: any) => {
-          console.log('login redirect', res);
           localStorage.setItem('accessToken', res.accessToken);
         })
         .catch((e) => {
@@ -34,7 +33,6 @@ export default function SignUpPage() {
           authority: b2cPolicies.authorities.signUpSignIn.authority,
         })
         .then((res: any) => {
-          console.log('login redirect', res);
           localStorage.setItem('accessToken', res.accessToken);
         })
         .catch((e) => {
