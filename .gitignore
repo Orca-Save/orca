@@ -41,3 +41,7 @@ next-env.d.ts
 .env.production
 /prisma/dev.db
 /pgdata
+
+/client
+/server
+/shared-library
