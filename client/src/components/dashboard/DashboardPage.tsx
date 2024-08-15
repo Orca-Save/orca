@@ -85,7 +85,7 @@ export default function HomePage() {
         </Title>
         <DashboardSaveButtons
           addGoalCurrentBalance={addGoalCurrentBalance}
-          goalId={goal.id}
+          goalId={goal?.id}
           quickTransfers={quickTransfers}
         />
       </Space>

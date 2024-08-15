@@ -14,7 +14,7 @@ export default function DashboardSaveButtons({
 }: {
   quickTransfers: GoalTransfer[];
   addGoalCurrentBalance: (amount: number) => void;
-  goalId: string;
+  goalId?: string;
 }) {
   if (!quickTransfers) return <Text>No Pinned One-Tap Saves.</Text>;
   if (!goalId) return <Text>No Pinned Goal.</Text>;
