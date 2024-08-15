@@ -29,7 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className='w-full md:w-4/5 lg:w-3/5'>{children}</div>
         </div>
       </Content>
-      <Footer
+      <div
         className='sm:hidden'
         style={{
           position: 'sticky',
@@ -39,7 +39,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }}
       >
         <HeaderMenu className='' />
-      </Footer>
+      </div>
     </Layout>
   );
 }

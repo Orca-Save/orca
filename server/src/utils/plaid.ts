@@ -28,6 +28,7 @@ import {
 } from '../../../shared-library/src/plaidCategories';
 import db from './db/db';
 import { delay } from './general';
+import { notifyUserUnreadTransactions } from './notifications';
 
 const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
 const PLAID_SECRET = process.env.PLAID_SECRET;
@@ -793,6 +794,7 @@ export async function syncTransactions(plaidItem: PlaidItem) {
     },
   });
 
+  await notifyUserUnreadTransactions(plaidItem.userId);
   return allData;
 }
 

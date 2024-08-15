@@ -1,4 +1,5 @@
 import admin from 'firebase-admin';
+import db from './db';
 
 const private_key = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
@@ -29,5 +30,35 @@ export const sendNotification = async (title: string, body: string) => {
       'e8LNuu-BSiCq8_sB1gSwsG:APA91bF3m3jsBTK6EHM6BWj_5xWSfw61l-TdjBZRI2S2jcabPIaoaB88Xq-ek7JC1GP39-yuUIX-ct7xSx4lr8S2ZwICJIhYy8PZ7I96DLDn5W2J9FONZR2tuiqJrHoHCkmHuBgxmPFR',
   };
 
+  return await admin.messaging().send(message);
+};
+
+export const notifyUserUnreadTransactions = async (userId: string) => {
+  const userProfile = await db.userProfile.findFirst({
+    where: { userId },
+  });
+  if (!userProfile) {
+    console.error('User not found');
+    return;
+  } else if (!userProfile.notificationToken) {
+    console.log('User does not have a notification token');
+    return;
+  }
+
+  const unreadTransactionCount = await db.transaction.count({
+    where: {
+      userId,
+      read: false,
+    },
+  });
+  const title = `${unreadTransactionCount} Unread Transactions`;
+  const body = `You have ${unreadTransactionCount} unread transactions to review.`;
+  const message: admin.messaging.Message = {
+    notification: {
+      title,
+      body,
+    },
+    token: userProfile.notificationToken,
+  };
   return await admin.messaging().send(message);
 };

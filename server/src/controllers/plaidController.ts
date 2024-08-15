@@ -147,7 +147,6 @@ export const syncUserItems = async (req: Request, res: Response) => {
 
 export const webhook = async (req: Request, res: Response) => {
   try {
-    const user = (req as any).user as User;
     appInsightsClient.trackEvent({
       name: 'PlaidWebhookReceived',
       properties: req.body,

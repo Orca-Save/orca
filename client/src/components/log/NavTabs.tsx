@@ -8,6 +8,10 @@ export default function NavTabs() {
   const { pathname } = location;
   const items: TabsProps['items'] = [
     {
+      key: '/log/charts',
+      label: 'Charts',
+    },
+    {
       key: '/log/savings',
       label: 'Impulse Saves',
     },
@@ -18,10 +22,6 @@ export default function NavTabs() {
     {
       key: '/log/transactions',
       label: 'Transactions',
-    },
-    {
-      key: '/log/charts',
-      label: 'Charts',
     },
   ];
   return (
