@@ -118,6 +118,7 @@ model UserProfile {
   stripeCustomerId      String?
   stripeSubscriptionId  String?
   privacyPolicyAccepted Boolean @default(false)
+  notificationToken     String?
 
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime  @updatedAt @db.Timestamptz()

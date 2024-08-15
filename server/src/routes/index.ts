@@ -1,5 +1,6 @@
 import componentRoutes from './componentRoutes';
 import goalRoutes from './goalRoutes';
+import notificationRoutes from './notificationRoutes';
 import pageRoutes from './pageRoutes';
 import plaidRoutes from './plaidRoutes';
 import stripeRoutes from './stripeRoutes';
@@ -8,10 +9,11 @@ import userRoutes from './userRoutes';
 
 export {
   componentRoutes,
-  stripeRoutes,
   goalRoutes,
+  notificationRoutes,
   pageRoutes,
   plaidRoutes,
+  stripeRoutes,
   transactionRoutes,
   userRoutes,
 };

@@ -21,3 +21,5 @@ Thumbs.db
 # IDE specific
 .vscode/
 .idea/
+
+**/serviceAccountKey.json

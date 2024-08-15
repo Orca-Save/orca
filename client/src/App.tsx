@@ -25,6 +25,7 @@ import SubscribePage from './components/subscribe/SubscribePage';
 import TransactionsPage from './components/transactions/MainTransactionPage';
 import TransactionPage from './components/transactions/TransactionPage';
 import UserPage from './components/user/UserPage';
+import { usePushNotifications } from './hooks/usePushNotifications';
 import { useTokenRefresh } from './hooks/useTokenRefresh';
 
 import '@fontsource/varela-round';
@@ -72,6 +73,7 @@ const router = createBrowserRouter(
 
 function App() {
   useTokenRefresh();
+  usePushNotifications();
   return <RouterProvider router={router} />;
 }
 

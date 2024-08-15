@@ -5,6 +5,7 @@ import jwksClient from 'jwks-rsa';
 import {
   componentRoutes,
   goalRoutes,
+  notificationRoutes,
   pageRoutes,
   plaidRoutes,
   stripeRoutes,
@@ -73,6 +74,7 @@ app.use('/api/plaid', plaidRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
