@@ -1,11 +1,6 @@
 import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-import {
-  EmbeddedCheckout,
-  EmbeddedCheckoutProvider,
-} from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { Skeleton, Spin } from 'antd';
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -13,7 +8,6 @@ import { useSearchParams } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
 if (!process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY)
   console.error('Stripe is not setup properly!');
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY!);
 
 export default function CheckoutForm({ redirect }: { redirect: string }) {
   const platform = Capacitor.getPlatform();
@@ -27,15 +21,8 @@ export default function CheckoutForm({ redirect }: { redirect: string }) {
         : 'orcamoney://' + redirect,
   });
 
-  console.log('data', data);
   if (!data) return null;
   const { redirectUri } = data;
-
-  return (
-    <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-      <EmbeddedCheckout />
-    </EmbeddedCheckoutProvider>
-  );
   if (sessionId) return <>Subscription successful!</>;
   else {
     console.log('redirecting');
