@@ -39,7 +39,11 @@ export default function HomePage() {
     userProfile,
     completedCounts,
   } = data;
-  if (onboardingProfileCount === 0 || !userProfile?.privacyPolicyAccepted)
+  if (
+    onboardingProfileCount === 0 ||
+    !userProfile?.privacyPolicyAccepted ||
+    !userProfile?.stripeSubscriptionId
+  )
     navigate('/onboarding');
   const addGoalCurrentBalance = (amount: number) => {
     goal.currentBalance += amount;

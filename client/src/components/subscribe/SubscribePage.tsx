@@ -3,7 +3,7 @@ import { Typography } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
-import StripeForm from '../user/StripeForm';
+import CheckoutForm from '../stripe/CheckoutForm';
 
 const { Text } = Typography;
 
@@ -22,11 +22,5 @@ export default function SubscribePage() {
         </Text>
       </>
     );
-  return (
-    <StripeForm
-      email={account.idTokenClaims?.emails?.[0] ?? ''}
-      userId={account.localAccountId}
-      redirect={true}
-    />
-  );
+  return <CheckoutForm redirect='user' />;
 }

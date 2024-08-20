@@ -35,9 +35,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npx serve -s build",
+    "start": "npx serve -c serve.json build",
     "dev": "react-scripts start",
     "build": "react-scripts build",
+    "buildm": "react-scripts build & cap sync",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

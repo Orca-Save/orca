@@ -27,6 +27,9 @@ export class CustomNavigationClient extends NavigationClient {
           this.msalInstance.handleRedirectPromise(hash).then((res: any) => {
             localStorage.setItem('accessToken', res.accessToken);
           });
+        } else if (data.url && data.url.includes('onboarding')) {
+          Browser.close();
+          console.log('onboarding', data.url);
         }
       };
       CapacitorApp.addListener('appUrlOpen', appUrlOpenListener);

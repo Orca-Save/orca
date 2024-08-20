@@ -6,6 +6,50 @@ if (!process.env.STRIPE_SECRET_KEY)
   console.error('MISSING STRIPE_SECRET_KEY!!!');
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
+export async function createCheckoutSession(
+  userId: string,
+  sessionId: string,
+  email: string,
+  redirectUrl: string
+) {
+  if (sessionId) {
+    const sessionDetails = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (sessionDetails.subscription && sessionDetails.customer) {
+      const stripeSubscriptionId = sessionDetails.subscription as string;
+      const stripeCustomerId = sessionDetails.customer as string;
+      await db.userProfile.update({
+        data: {
+          stripeSubscriptionId,
+          stripeCustomerId,
+          updatedAt: new Date(),
+        },
+        where: {
+          userId,
+        },
+      });
+    }
+    return { success: true };
+  } else {
+    const results = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer_email: email,
+      ui_mode: 'embedded',
+      subscription_data: {
+        trial_period_days: 7,
+      },
+      line_items: [
+        {
+          price: process.env.STRIPE_PRICE_SUBSCRIPTION_ID,
+          quantity: 1,
+        },
+      ],
+      success_url: redirectUrl + '?session_id={CHECKOUT_SESSION_ID}',
+    });
+    return results.url;
+  }
+}
+
 export async function createSubscription(
   userId: string,
   email: string

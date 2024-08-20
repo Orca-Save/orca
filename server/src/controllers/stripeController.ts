@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { User } from '../types/user';
 import {
   addSubscriptionId,
+  createCheckoutSession,
   createSubscription,
   getPrice,
   updateSubscription,
@@ -27,6 +28,23 @@ export const createSub = async (req: Request, res: Response) => {
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting price' });
+  }
+};
+
+export const createCheckout = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const { redirectUrl, sessionId } = req.body;
+    const redirectUri = await createCheckoutSession(
+      user.oid,
+      sessionId,
+      user.emails[0],
+      redirectUrl
+    );
+    res.status(200).send({ redirectUri });
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).send({ message: err.message });
   }
 };
 

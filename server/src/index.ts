@@ -1,7 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
-
 import {
   componentRoutes,
   goalRoutes,
@@ -12,6 +11,7 @@ import {
   transactionRoutes,
   userRoutes,
 } from './routes';
+import './utils/appInsights';
 
 const cors = require('cors');
 
@@ -30,17 +30,13 @@ function getKey(header: any, callback: any) {
 const app = express();
 const port = process.env.PORT || 5000;
 // Configure CORS
-const allowedOrigins = [
-  process.env.BASE_URL,
-  'http://localhost:3000',
-  'https://localhost',
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',');
 const corsOptions = {
   origin: function (origin: string, callback: Function) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (allowedOrigins?.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

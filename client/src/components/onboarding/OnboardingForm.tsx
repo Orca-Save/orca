@@ -24,8 +24,8 @@ import { isFieldErrors } from '../../utils/goals';
 import InstitutionCollapses from '../plaid/InstitutionsCollapse';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
+import CheckoutForm from '../stripe/CheckoutForm';
 import PlaidLink from '../user/PlaidLink';
-import StripeForm from '../user/StripeForm';
 
 const { Title, Text, Paragraph } = Typography;
 type OnboardingFormProps = {
@@ -279,11 +279,7 @@ export default function OnboardingForm({
                     )}
 
                     {currentTab === 4 && !userProfile?.stripeSubscriptionId ? (
-                      <StripeForm
-                        email={account.idTokenClaims?.emails?.[0] ?? ''}
-                        userId={account.localAccountId}
-                        redirect={false}
-                      />
+                      <CheckoutForm redirect='onboarding' />
                     ) : null}
                   </div>
                 </div>
