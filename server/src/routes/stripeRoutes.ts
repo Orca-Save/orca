@@ -6,7 +6,9 @@ const router = express.Router();
 
 router.get('/productPrice', stripeController.productPrice);
 router.get('/createSubscription', stripeController.createSub);
-router.post('/createCheckout', stripeController.createCheckout);
+router.get('/createCheckout', stripeController.createCheckout);
+router.get('/paymentIntent', stripeController.paymentIntent);
+router.post('/completeCheckout', stripeController.completeCheckout);
 router.post('/updateSubscription', stripeController.updateSub);
 router.post('/addSubscription', stripeController.addSubscription);
 

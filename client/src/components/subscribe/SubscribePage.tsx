@@ -22,5 +22,5 @@ export default function SubscribePage() {
         </Text>
       </>
     );
-  return <CheckoutForm redirect='user' />;
+  return <CheckoutForm />;
 }

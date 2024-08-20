@@ -6,48 +6,78 @@ if (!process.env.STRIPE_SECRET_KEY)
   console.error('MISSING STRIPE_SECRET_KEY!!!');
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-export async function createCheckoutSession(
+export async function completeCheckoutSession(
   userId: string,
-  sessionId: string,
-  email: string,
-  redirectUrl: string
+  sessionId: string
 ) {
-  if (sessionId) {
-    const sessionDetails = await stripe.checkout.sessions.retrieve(sessionId);
+  const sessionDetails = await stripe.checkout.sessions.retrieve(sessionId);
 
-    if (sessionDetails.subscription && sessionDetails.customer) {
-      const stripeSubscriptionId = sessionDetails.subscription as string;
-      const stripeCustomerId = sessionDetails.customer as string;
-      await db.userProfile.update({
-        data: {
-          stripeSubscriptionId,
-          stripeCustomerId,
-          updatedAt: new Date(),
-        },
-        where: {
-          userId,
-        },
-      });
-    }
-    return { success: true };
-  } else {
-    const results = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      customer_email: email,
-      ui_mode: 'embedded',
-      subscription_data: {
-        trial_period_days: 7,
+  const stripeSubscriptionId = sessionDetails.subscription as string;
+  const stripeCustomerId = sessionDetails.customer as string;
+  await db.userProfile.update({
+    data: {
+      stripeSubscriptionId,
+      stripeCustomerId,
+      updatedAt: new Date(),
+    },
+    where: {
+      userId,
+    },
+  });
+  return { stripeSubscriptionId };
+}
+
+export async function createCheckoutSession(email: string) {
+  const results = await stripe.checkout.sessions.create({
+    mode: 'subscription',
+    customer_email: email,
+    ui_mode: 'embedded',
+    subscription_data: {
+      trial_period_days: 7,
+    },
+    // payment_method_types: []
+    redirect_on_completion: 'never',
+    line_items: [
+      {
+        price: process.env.STRIPE_PRICE_SUBSCRIPTION_ID,
+        quantity: 1,
       },
-      line_items: [
-        {
-          price: process.env.STRIPE_PRICE_SUBSCRIPTION_ID,
-          quantity: 1,
-        },
-      ],
-      success_url: redirectUrl + '?session_id={CHECKOUT_SESSION_ID}',
+    ],
+  });
+  return { client_secret: results.client_secret, sessionId: results.id };
+}
+
+export async function createPaymentIntent(userId: string, email: string) {
+  const price = await getPrice();
+  if (!price?.unit_amount) throw Error('MISSING PRICE UNIT AMOUNT!');
+  // get user profile and assign customer id to const variable
+  let userProfile = await db.userProfile.findFirst({
+    where: {
+      userId,
+    },
+  });
+  if (!userProfile?.stripeCustomerId) {
+    // create customer and store it in userProfile
+    const customer = await stripe.customers.create({
+      email,
     });
-    return results.url;
+    userProfile = await db.userProfile.update({
+      data: {
+        stripeCustomerId: customer.id,
+        updatedAt: new Date(),
+      },
+      where: {
+        userId,
+      },
+    });
   }
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: price?.unit_amount,
+    currency: 'usd',
+    customer: userProfile.stripeCustomerId!,
+  });
+  return { paymentIntent };
 }
 
 export async function createSubscription(
@@ -181,8 +211,7 @@ export async function getSubscription(userId: string) {
 
 export async function getPrice() {
   if (!process.env.STRIPE_PRICE_SUBSCRIPTION_ID) {
-    console.error('MISSING STRIPE_PRODUCT_ID!');
-    return;
+    throw Error('MISSING STRIPE_PRODUCT_ID!');
   }
   const price = await stripe.prices.retrieve(
     process.env.STRIPE_PRICE_SUBSCRIPTION_ID

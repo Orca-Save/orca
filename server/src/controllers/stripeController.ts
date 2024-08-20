@@ -3,7 +3,9 @@ import { Request, Response } from 'express';
 import { User } from '../types/user';
 import {
   addSubscriptionId,
+  completeCheckoutSession,
   createCheckoutSession,
+  createPaymentIntent,
   createSubscription,
   getPrice,
   updateSubscription,
@@ -31,17 +33,34 @@ export const createSub = async (req: Request, res: Response) => {
   }
 };
 
+export const completeCheckout = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const sessionId: string = req.body.sessionId;
+    const data = await completeCheckoutSession(user.oid, sessionId);
+    res.status(200).send(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting price' });
+  }
+};
+
+export const paymentIntent = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user as User;
+    const data = await createPaymentIntent(user.oid, user.emails[0]);
+    res.status(200).send(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting price' });
+  }
+};
+
 export const createCheckout = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
-    const { redirectUrl, sessionId } = req.body;
-    const redirectUri = await createCheckoutSession(
-      user.oid,
-      sessionId,
-      user.emails[0],
-      redirectUrl
-    );
-    res.status(200).send({ redirectUri });
+    const result = await createCheckoutSession(user.emails[0]);
+    res.status(200).send(result);
   } catch (err: any) {
     console.error(err);
     res.status(500).send({ message: err.message });

@@ -279,7 +279,12 @@ export default function OnboardingForm({
                     )}
 
                     {currentTab === 4 && !userProfile?.stripeSubscriptionId ? (
-                      <CheckoutForm redirect='onboarding' />
+                      <CheckoutForm
+                        setSubscriptionId={(id) => {
+                          if (userProfile)
+                            userProfile.stripeSubscriptionId = id;
+                        }}
+                      />
                     ) : null}
                   </div>
                 </div>
@@ -378,12 +383,10 @@ export default function OnboardingForm({
                   disabled={disableNext}
                   loading={loading}
                   onClick={async () => {
+                    console.log('next');
                     if (currentTab === 3 && !privacyChecked) return;
-                    // if (
-                    //   currentTab === 3 &&
-                    //   !userProfile?.stripeSubscriptionId
-                    // )
-                    //   return;
+                    if (currentTab === 4 && !userProfile?.stripeSubscriptionId)
+                      return;
 
                     setLoading(true);
                     const newOnboardingProfile = {
@@ -399,25 +402,27 @@ export default function OnboardingForm({
                       setLoading(false);
                       navigate('/?confetti=true');
                       return;
+                    } else if (currentTab !== 4) {
+                      const result = await apiFetch(
+                        '/api/users/saveOnboardingProfile',
+                        'POST',
+                        { onboardingProfile: newOnboardingProfile }
+                      );
+                      if (isFieldErrors(result)) {
+                        console.log('field errors', result);
+                        applyFormErrors(form, result);
+                        setPageState({ tabKey: '1' });
+                        return;
+                      }
                     }
-
-                    const nextTab = currentTab + 1;
-                    const result = await apiFetch(
-                      '/api/users/saveOnboardingProfile',
-                      'POST',
-                      { onboardingProfile: newOnboardingProfile }
-                    );
                     setLoading(false);
 
-                    if (isFieldErrors(result)) {
-                      console.log('field errors', result);
-                      applyFormErrors(form, result);
-                      setPageState({ tabKey: '1' });
-                    } else if (nextTab <= 4)
+                    const nextTab = currentTab + 1;
+                    if (nextTab <= 5)
                       setPageState({ tabKey: nextTab.toString() });
                   }}
                 >
-                  {currentTab === 4 ? 'Done' : 'Next'}
+                  {currentTab === 5 ? 'Done' : 'Next'}
                 </Button>
               </HappyProvider>
             </Form.Item>
