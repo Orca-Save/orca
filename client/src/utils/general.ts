@@ -57,7 +57,6 @@ export const currencyFormatter = (
 };
 
 export function apiFetch(endpoint: string, method: string, body?: any) {
-  console.log('fetching data', process.env.REACT_APP_API_URL + endpoint);
   const token = localStorage.getItem('accessToken');
   return fetch(process.env.REACT_APP_API_URL + endpoint, {
     method,
