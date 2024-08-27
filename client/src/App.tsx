@@ -56,11 +56,11 @@ const router = createBrowserRouter(
           <Route path='review' element={<ReviewPage />} />
           <Route path='goals' element={<GoalsPage />} />
           <Route path='subscribe' element={<SubscribePage />} />
+          <Route path='charts' element={<ChartPage />} />
           <Route path='log' element={<LogLayoutRoute />}>
             <Route path='savings' element={<MySavingsPage />} />
             <Route path='one-taps' element={<OneTapPage />} />
             <Route path='transactions' element={<TransactionsPage />} />
-            <Route path='charts' element={<ChartPage />} />
           </Route>
           <Route path='transactions/:id' element={<TransactionPage />} />
           <Route path='savings/:id' element={<GoalTransferPage />} />

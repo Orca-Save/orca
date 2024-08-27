@@ -62,7 +62,7 @@ export default function SignUpPage() {
           really want.
         </p>
 
-        <div className='w-100 flex flex-col space-y-4'>
+        <div className='w-100 flex flex-col space-y-4 px-12'>
           <Button
             data-id='sign-up-button'
             type='primary'

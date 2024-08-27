@@ -48,7 +48,10 @@ export default function HeaderMenu({ className }: { className: string }) {
           <Menu.Item eventKey='/goals' key='/goals'>
             Goals
           </Menu.Item>
-          <Menu.Item eventKey='/log/charts' key='/log'>
+          <Menu.Item eventKey='/charts' key='/goals'>
+            Charts
+          </Menu.Item>
+          <Menu.Item eventKey='/log/transactions' key='/log'>
             Log
           </Menu.Item>
           {/* <SubMenu key='/log' title='Log' onTitleClick={() => onClick('/log')}>
