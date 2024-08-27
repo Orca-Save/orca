@@ -11,7 +11,8 @@ export default function GoalsPage() {
   if (!data) return null;
   if (!goalsResults) return null;
   const { goals } = goalsResults;
-  const { completedCounts } = data;
+  const { completedCounts, userTour } = data;
+  console.log('pinnedgoal', userTour?.pinnedGoal);
   return (
     <Space direction='vertical' className='w-full'>
       <Row justify='center'>
@@ -29,7 +30,7 @@ export default function GoalsPage() {
           totalSaved={completedCounts.totalSaved}
         />
       </div>
-      <GoalList goals={goals} />
+      <GoalList goals={goals} userTour={userTour?.pinnedGoal} />
     </Space>
   );
 }

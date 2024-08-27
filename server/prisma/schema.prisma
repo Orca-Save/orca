@@ -59,6 +59,19 @@ model GoalCategory {
   GoalTransfer GoalTransfer[]
 }
 
+model UserTour {
+  userId    String    @id
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+
+  dashQuickSave       Boolean @default(false)
+  impulseSave         Boolean @default(false)
+  reviewTransactions  Boolean @default(false)
+  transactionListItem Boolean @default(false)
+  pinnedGoal          Boolean @default(false)
+}
+
 model OnboardingProfile {
   id        String    @id @default(uuid())
   userId    String    @unique

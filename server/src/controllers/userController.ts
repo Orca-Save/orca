@@ -6,7 +6,11 @@ import {
   saveOnboardingProfile as saveProfile,
 } from '../utils/onboarding';
 import { clearUserData } from '../utils/userActions';
-import { setGoalPinned, setGoalTransferPinned } from '../utils/users';
+import {
+  setGoalPinned,
+  setGoalTransferPinned,
+  updateTour,
+} from '../utils/users';
 
 export const saveOnboardingProfile = async (req: Request, res: Response) => {
   try {
@@ -29,6 +33,18 @@ export const onboardUser = async (req: Request, res: Response) => {
       onboard(userId, onboardingProfile, skipSync),
     ]);
     res.status(200).send({ items });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Error getting linked items' });
+  }
+};
+
+export const updateUserTour = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const tour = req.body.tour;
+    const updatedTour = await updateTour(userId, tour);
+    res.status(200).send({ updatedTour });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting linked items' });

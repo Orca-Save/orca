@@ -7,3 +7,11 @@ export const getUserProfile = (userId: string) => {
     },
   });
 };
+
+export const getUserTour = (userId: string) => {
+  return db.userTour.findUnique({
+    where: {
+      userId,
+    },
+  });
+};

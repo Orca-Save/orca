@@ -7,8 +7,9 @@ const { Title } = Typography;
 
 type GoalListProps = {
   goals: Goal[];
+  userTour?: boolean;
 };
-export default function GoalsList({ goals }: GoalListProps) {
+export default function GoalsList({ goals, userTour }: GoalListProps) {
   const pinnedGoals = goals.filter((x) => x.pinned);
   const userHasPinnedGoal = pinnedGoals.length > 0;
   return (
@@ -21,6 +22,7 @@ export default function GoalsList({ goals }: GoalListProps) {
       {pinnedGoals.map((goal) => (
         <GoalCard
           key={goal.id}
+          userTour={userTour}
           revalidatePath='/goals'
           userHasPinnedGoal={userHasPinnedGoal}
           goal={goal}

@@ -7,12 +7,15 @@ import TransactionList from './TransactionList';
 export default function TransactionsPage() {
   const { data } = useFetch('api/pages/transactionsPage', 'GET');
   if (!data) return null;
-  const { unreadObj, formattedTransactions } = data;
+  const { unreadObj, formattedTransactions, userTour } = data;
 
   return (
     <>
       <ReviewLink unreadObj={unreadObj} />
-      <TransactionList transactions={formattedTransactions} />
+      <TransactionList
+        transactions={formattedTransactions}
+        userTour={userTour}
+      />
     </>
   );
 }

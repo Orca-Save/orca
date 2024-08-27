@@ -8,20 +8,23 @@ import {
   Row,
   Space,
   Switch,
+  Tour,
+  TourProps,
   Typography,
 } from 'antd';
-import { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { discretionaryFilter } from 'shared-library/dist/plaidCategories';
 
 import { FormattedTransaction } from '../../types/all';
-import { currencyFormatter } from '../../utils/general';
+import { apiFetch, currencyFormatter } from '../../utils/general';
 import { antdDefaultButton } from '../../utils/themeConfig';
 
 const { Text } = Typography;
 
 type TransactionListProps = {
   transactions: FormattedTransaction[];
+  userTour: any;
 };
 type FilterType = 'reviewed' | 'impulseBuy' | 'discretionary';
 type Filter = {
@@ -47,12 +50,34 @@ function useFilterParams(searchParams: URLSearchParams): Filter {
 }
 export default function TransactionList({
   transactions,
+  userTour,
 }: TransactionListProps) {
+  const firstItemRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const filterParams = useFilterParams(searchParams);
   const navigate = useNavigate();
   const [filter, setFilter] = useState(filterParams);
   const groupedTransactionsArray = groupedTransactions(transactions, filter);
+  const [open, setOpen] = useState<boolean>(
+    !!userTour?.transactionListItem == false
+  );
+  const tourClose = () => {
+    setOpen(false);
+    const tour = {
+      transactionListItem: true,
+    };
+    apiFetch('/api/users/updateTour', 'POST', {
+      tour,
+    });
+  };
+
+  const steps: TourProps['steps'] = [
+    {
+      title: 'Transaction History',
+      description: 'Tap on transaction to see more detail, and make any edits.',
+      target: () => firstItemRef.current,
+    },
+  ];
   return (
     <>
       <FilterOptions
@@ -72,7 +97,7 @@ export default function TransactionList({
         <List
           dataSource={groupedTransactionsArray}
           split={false}
-          renderItem={({ formattedDate, transactions }) => (
+          renderItem={({ formattedDate, transactions }, dayIdx) => (
             <List.Item>
               <Space direction='vertical' className='w-full'>
                 <Text type='secondary'>{formattedDate}</Text>
@@ -81,14 +106,17 @@ export default function TransactionList({
                     .filter((x) => x.read === false)
                     .map((x) => x.id)}
                 >
-                  {transactions.map((transaction) => (
+                  {transactions.map((transaction, idx) => (
                     <Menu.Item
                       onClick={() =>
                         navigate(`/transactions/${transaction.id}`)
                       }
                       key={transaction.id}
                     >
-                      <Row className='w-full h-full'>
+                      <Row
+                        ref={dayIdx === 0 && idx === 0 ? firstItemRef : null}
+                        className='w-full h-full'
+                      >
                         <Col span={9} className='h-full w-full'>
                           <Flex align='center' className='h-full w-full'>
                             <Text
@@ -107,9 +135,7 @@ export default function TransactionList({
                               ellipsis={{
                                 tooltip: true,
                               }}
-                              // color='orange'
                               style={{
-                                // border: '1px solid rgba(251,188,5, 0.2)',
                                 borderRadius: '0.25rem',
                                 backgroundColor: 'rgba(251,188,5, 0.2)',
                                 padding: '0 0.25rem',
@@ -196,6 +222,7 @@ export default function TransactionList({
           )}
         />
       </ConfigProvider>
+      <Tour open={open} onClose={tourClose} steps={steps} />
     </>
   );
 }

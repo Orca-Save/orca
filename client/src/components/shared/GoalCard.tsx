@@ -14,11 +14,13 @@ export default function GoalCard({
   userHasPinnedGoal,
   revalidatePath,
   hideActions,
+  userTour,
 }: {
   goal: Goal;
   userHasPinnedGoal: boolean;
   revalidatePath: string;
   hideActions?: boolean;
+  userTour?: boolean;
 }) {
   let marginTop = goal.pinned ? '-14px' : '-11px';
   if (hideActions) marginTop = '-35px';
@@ -54,12 +56,12 @@ export default function GoalCard({
                 <Link to={`/goals/${goal.id}`} key='view'>
                   <EditOutlined />
                 </Link>,
-
                 ...(revalidatePath !== '/'
                   ? [
                       <PinSavingButton
                         key='pin'
                         type='Goal'
+                        userTour={userTour}
                         typeId={goal.id}
                         pinned={goal.pinned}
                         userHasPinnedGoal={userHasPinnedGoal}

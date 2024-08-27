@@ -6,7 +6,7 @@ import {
   getWeekChartData,
 } from '../utils/chart';
 import db from '../utils/db';
-import { getUserProfile } from '../utils/db/common';
+import { getUserProfile, getUserTour } from '../utils/db/common';
 import {
   getGoalTransfersSum,
   getPinnedGoalTransfers,
@@ -33,6 +33,7 @@ export const dashboardPage = async (req: Request, res: Response) => {
       goal,
       unreadTransactionCount,
       userProfile,
+      userTour,
       sums,
       completedCounts,
     ] = await Promise.all([
@@ -41,6 +42,7 @@ export const dashboardPage = async (req: Request, res: Response) => {
       getPinnedUserGoal(userId),
       getUnreadTransactionCount(userId),
       getUserProfile(userId),
+      getUserTour(userId),
       getGoalTransfersSum(userId),
       completedUserGoalCount(userId),
     ]);
@@ -61,6 +63,7 @@ export const dashboardPage = async (req: Request, res: Response) => {
       onboardingProfileCount,
       quickTransfers,
       goal,
+      userTour,
       unreadTransactionCount,
       userProfile,
       completedCounts,
@@ -122,11 +125,12 @@ export const subscriptionPage = async (req: Request, res: Response) => {
 export const transactionsPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
-    const [formattedTransactions, unreadObj] = await Promise.all([
+    const [formattedTransactions, unreadObj, userTour] = await Promise.all([
       getFormattedTransactions(userId),
       getUnreadTransactionCount(userId),
+      getUserTour(userId),
     ]);
-    res.status(200).send({ formattedTransactions, unreadObj });
+    res.status(200).send({ formattedTransactions, userTour, unreadObj });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting data for the page' });

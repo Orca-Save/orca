@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { User } from '../types/user';
-import { getUserProfile } from '../utils/db/common';
+import { getUserProfile, getUserTour } from '../utils/db/common';
 import { getGoalTransfersSum } from '../utils/goalTransfers';
 import { getSubscription } from '../utils/stripe';
 import { completedUserGoalCount, getPinnedUserGoal } from '../utils/users';
@@ -9,9 +9,10 @@ import { completedUserGoalCount, getPinnedUserGoal } from '../utils/users';
 export const goalCard = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
-    let [goal, sums, completedCounts] = await Promise.all([
+    let [goal, sums, userTour, completedCounts] = await Promise.all([
       getPinnedUserGoal(user.oid),
       getGoalTransfersSum(user.oid),
+      getUserTour(user.oid),
       completedUserGoalCount(user.oid),
     ]);
     const goalSumMap = new Map(
@@ -26,7 +27,7 @@ export const goalCard = async (req: Request, res: Response) => {
         savedItemCount: goalSumMap.get(goal.id)?.count || 0,
       });
     }
-    res.status(200).send({ completedCounts, goal });
+    res.status(200).send({ completedCounts, userTour, goal });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting onboarding profile count' });

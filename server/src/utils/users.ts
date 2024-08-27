@@ -1,4 +1,4 @@
-import { Goal, GoalTransfer } from '@prisma/client';
+import { Goal, GoalTransfer, UserTour } from '@prisma/client';
 import db from './db/db';
 export const getPinnedUserGoal = (userId: string) => {
   return db.goal.findFirst({
@@ -27,6 +27,22 @@ export async function setGoalPinned(
   });
 
   return updatedGoal;
+}
+
+export async function updateTour(userId: string, tour: UserTour) {
+  const updatedTour = await db.userTour.upsert({
+    where: { userId },
+    update: {
+      ...tour,
+      updatedAt: new Date(),
+    },
+    create: {
+      ...tour,
+      userId,
+    },
+  });
+
+  return updatedTour;
 }
 
 export async function setGoalTransferPinned(
