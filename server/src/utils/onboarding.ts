@@ -2,7 +2,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import { z } from 'zod';
 
 import db from './db/db';
-import { sendSlackMessage } from './general';
 import { syncItems } from './plaid';
 
 const zodDay = z.custom<Dayjs>((val) => val instanceof dayjs, 'Invalid date');
@@ -189,16 +188,16 @@ export async function onboardUser(
   if (!skipSync) await syncItems(userId);
 
   if (process.env.NODE_ENV === 'production') {
-    await sendSlackMessage(
-      'email' +
-        ' has completed onboarding with the goal ' +
-        onboardingProfileData.goalName +
-        ' for $' +
-        onboardingProfileData.goalAmount.toFixed(2) +
-        ' by ' +
-        onboardingProfileData.goalDueAt.locale() +
-        '.'
-    );
+    // await sendSlackMessage(
+    //   'email' +
+    //     ' has completed onboarding with the goal ' +
+    //     onboardingProfileData.goalName +
+    //     ' for $' +
+    //     onboardingProfileData.goalAmount.toFixed(2) +
+    //     ' by ' +
+    //     onboardingProfileData.goalDueAt.locale() +
+    //     '.'
+    // );
   }
 
   return onboardingProfile;
