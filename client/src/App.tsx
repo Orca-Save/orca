@@ -48,10 +48,10 @@ const router = createBrowserRouter(
     <>
       <Route path='privacy-policy' element={<PrivacyPolicyPage />} />
       <Route path='sign-in' element={<SignUpPage />} />
-      <Route path='/' element={<LayoutRoute />}>
-        <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute />}>
+        <Route path='onboarding' element={<OnboardingPage />} />
+        <Route path='/' element={<LayoutRoute />}>
           <Route index element={<HomePage />} />
-          <Route path='onboarding' element={<OnboardingPage />} />
           <Route path='user' element={<UserPage />} />
           <Route path='review' element={<ReviewPage />} />
           <Route path='goals' element={<GoalsPage />} />
