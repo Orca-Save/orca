@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 
 import db from './db/db';
+import { createLinkToken, removePlaidItemsForUser } from './plaid';
 
 if (!process.env.STRIPE_SECRET_KEY)
   console.error('MISSING STRIPE_SECRET_KEY!!!');
@@ -45,6 +46,176 @@ export async function createCheckoutSession(email: string) {
     ],
   });
   return { client_secret: results.client_secret, sessionId: results.id };
+}
+
+export async function stripeWebhook(body: any, signature: string) {
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+  } catch (err: any) {
+    throw Error(`Webhook Error: ${err.message}`);
+  }
+
+  switch (event.type) {
+    case 'customer.subscription.deleted': {
+      const subscription = event.data.object as Stripe.Subscription;
+      await handleSubscriptionDeleted(subscription);
+      break;
+    }
+    case 'customer.subscription.paused': {
+      const subscription = event.data.object as Stripe.Subscription;
+      await handleSubscriptionPaused(subscription);
+      break;
+    }
+    case 'customer.subscription.resumed': {
+      const subscription = event.data.object as Stripe.Subscription;
+      await handleSubscriptionResumed(subscription);
+      break;
+    }
+    case 'invoice.payment_failed': {
+      const invoice = event.data.object as Stripe.Invoice;
+      await handlePaymentFailed(invoice);
+      break;
+    }
+    case 'invoice.payment_action_required': {
+      const invoice = event.data.object as Stripe.Invoice;
+      await handlePaymentActionRequired(invoice);
+      break;
+    }
+    case 'invoice.finalization_failed': {
+      const invoice = event.data.object as Stripe.Invoice;
+      await handleFinalizationFailed(invoice);
+      break;
+    }
+    case 'customer.subscription.updated': {
+      const subscription = event.data.object as Stripe.Subscription;
+      await handleSubscriptionUpdated(subscription);
+      break;
+    }
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+}
+
+async function handlePaymentActionRequired(invoice: Stripe.Invoice) {
+  const subscription = invoice.subscription as string;
+
+  const userProfile = await db.userProfile.findFirst({
+    where: { stripeSubscriptionId: subscription },
+  });
+
+  if (userProfile) {
+    await removePlaidItemsForUser(userProfile.userId);
+    console.log(
+      `Payment action required: Plaid items removed for user ${userProfile.userId}`
+    );
+  }
+}
+
+async function handleFinalizationFailed(invoice: Stripe.Invoice) {
+  const subscription = invoice.subscription as string;
+
+  const userProfile = await db.userProfile.findFirst({
+    where: { stripeSubscriptionId: subscription },
+  });
+
+  if (userProfile) {
+    await removePlaidItemsForUser(userProfile.userId);
+    console.log(
+      `Finalization failed: Plaid items removed for user ${userProfile.userId}`
+    );
+  }
+}
+
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  const userProfile = await db.userProfile.findFirst({
+    where: { stripeSubscriptionId: subscription.id },
+  });
+
+  if (userProfile) {
+    await removePlaidItemsForUser(userProfile.userId);
+    console.log(
+      `Subscription deleted: Plaid items removed for user ${userProfile.userId}`
+    );
+  }
+}
+
+async function handleSubscriptionPaused(subscription: Stripe.Subscription) {
+  const userProfile = await db.userProfile.findFirst({
+    where: { stripeSubscriptionId: subscription.id },
+  });
+
+  if (userProfile) {
+    await removePlaidItemsForUser(userProfile.userId);
+    console.log(
+      `Subscription paused: Plaid items removed for user ${userProfile.userId}`
+    );
+  }
+}
+
+async function handleSubscriptionResumed(subscription: Stripe.Subscription) {
+  const userProfile = await db.userProfile.findFirst({
+    where: { stripeSubscriptionId: subscription.id },
+  });
+
+  if (userProfile) {
+    await enablePlaidItemsForUser(userProfile.userId);
+    console.log(
+      `Subscription resumed: Plaid items enabled for user ${userProfile.userId}`
+    );
+  }
+}
+
+async function handlePaymentFailed(invoice: Stripe.Invoice) {
+  const subscription = invoice.subscription as string;
+
+  const userProfile = await db.userProfile.findFirst({
+    where: { stripeSubscriptionId: subscription },
+  });
+
+  if (userProfile) {
+    await removePlaidItemsForUser(userProfile.userId);
+    console.log(
+      `Payment failed: Plaid items removed for user ${userProfile.userId}`
+    );
+  }
+}
+
+async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+  const userProfile = await db.userProfile.findFirst({
+    where: { stripeSubscriptionId: subscription.id },
+  });
+
+  if (userProfile) {
+    console.log(`Subscription updated for user ${userProfile.userId}`);
+  }
+}
+
+async function enablePlaidItemsForUser(userId: string) {
+  const plaidItems = await db.plaidItem.findMany({
+    where: { userId, deletedAt: { not: null } },
+  });
+
+  for (const item of plaidItems) {
+    // Recreate Plaid items by either refreshing or re-linking as necessary
+    const linkToken = await createLinkToken(userId);
+    // Assuming a frontend flow where the user relinks their account using the new link token.
+    // You'd need to handle this part in the frontend and exchange the token afterward.
+  }
+
+  await db.plaidItem.updateMany({
+    where: { userId },
+    data: {
+      deletedAt: null,
+      updatedAt: new Date(),
+    },
+  });
+
+  console.log(`Plaid items re-enabled for user ${userId}`);
 }
 
 export async function createPaymentIntent(userId: string, email: string) {
@@ -188,6 +359,8 @@ export async function updateSubscription(
       cancel_at_period_end,
     }
   );
+
+  await removePlaidItemsForUser(userId);
   return {
     message: 'Cancel success!',
   };

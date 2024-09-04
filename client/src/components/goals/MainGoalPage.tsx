@@ -12,7 +12,6 @@ export default function GoalsPage() {
   if (!goalsResults) return null;
   const { goals } = goalsResults;
   const { completedCounts, userTour } = data;
-  console.log('pinnedgoal', userTour?.pinnedGoal);
   return (
     <Space direction='vertical' className='w-full'>
       <Row justify='center'>

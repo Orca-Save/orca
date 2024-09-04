@@ -41,3 +41,5 @@ next-env.d.ts
 .env.production
 /prisma/dev.db
 /pgdata
+
+**/keystore

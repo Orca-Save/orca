@@ -14,7 +14,7 @@ import {
   markTransactionAsRead,
   markTransactionAsUnread,
   refreshUserItems,
-  removePlaidItem,
+  removePlaidItemData,
   syncItems,
   syncTransactions,
 } from '../utils/plaid';
@@ -86,7 +86,7 @@ export const removeItem = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
     const itemId = req.body.itemId;
-    const success = await removePlaidItem(userId, itemId);
+    const success = await removePlaidItemData(userId, itemId);
     res.status(200).send({ success });
   } catch (err) {
     console.log(err);

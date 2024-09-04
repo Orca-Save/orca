@@ -126,11 +126,12 @@ model GoalTransfer {
 }
 
 model UserProfile {
-  id                    String  @id @default(uuid())
-  userId                String  @unique
+  id                    String    @id @default(uuid())
+  userId                String    @unique
   stripeCustomerId      String?
   stripeSubscriptionId  String?
-  privacyPolicyAccepted Boolean @default(false)
+  stripeSubscriptionEnd DateTime?
+  privacyPolicyAccepted Boolean   @default(false)
   notificationToken     String?
 
   createdAt DateTime  @default(now()) @db.Timestamptz()
@@ -143,7 +144,7 @@ model PlaidItem {
   userId        String
   itemId        String    @unique
   institutionId String
-  accessToken   String    @unique
+  accessToken   String?   @unique
   loginRequired Boolean   @default(false)
   lastRefresh   DateTime? @db.Timestamptz()
   lastSync      DateTime? @db.Timestamptz()

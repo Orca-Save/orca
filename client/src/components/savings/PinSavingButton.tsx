@@ -51,7 +51,6 @@ export default function PinSavingButton({
   };
 
   if (pinned) {
-    console.log('userTour', typeId, userTour);
     return (
       <>
         <PushpinFilled ref={buttonRef} onClick={onClick} />

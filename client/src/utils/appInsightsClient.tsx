@@ -2,7 +2,6 @@ import { ClickAnalyticsPlugin } from '@microsoft/applicationinsights-clickanalyt
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { createBrowserHistory } from 'history';
-import { useEffect } from 'react';
 
 const reactPlugin = new ReactPlugin();
 let appInsights: ApplicationInsights | undefined;
@@ -17,7 +16,7 @@ const initializeAppInsights = () => {
       config: {
         connectionString: process.env.REACT_APP_INSIGHTS_CONNECTION_STRING,
         extensions: [reactPlugin, clickPluginInstance],
-        namePrefix: 'local-web',
+        namePrefix: process.env.REACT_APP_INSIGHTS_NAME,
         extensionConfig: {
           [reactPlugin.identifier]: {
             history: customHistory,
@@ -32,25 +31,7 @@ const initializeAppInsights = () => {
     appInsights.loadAppInsights();
   }
 };
-const logMessageToAppInsights = (message: string) => {
-  if (appInsights) {
-    appInsights.trackTrace({ message });
-  }
-};
-const AppInsightService: React.FC = () => {
-  useEffect(() => {
-    if (
-      typeof window !== 'undefined' &&
-      !appInsights &&
-      process.env.NODE_ENV === 'production'
-    ) {
-      initializeAppInsights();
-    }
-  }, []);
-  useEffect(() => {
-    logMessageToAppInsights('AppInsightService component mounted');
-  }, []);
 
-  return null;
-};
-export { AppInsightService, reactPlugin };
+if (process.env.NODE_ENV === 'production') initializeAppInsights();
+
+export { reactPlugin };

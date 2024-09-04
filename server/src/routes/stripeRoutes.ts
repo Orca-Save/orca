@@ -8,6 +8,7 @@ router.get('/productPrice', stripeController.productPrice);
 router.get('/createSubscription', stripeController.createSub);
 router.get('/createCheckout', stripeController.createCheckout);
 router.get('/paymentIntent', stripeController.paymentIntent);
+router.get('/webhook', stripeController.handleStripeWebhook);
 router.post('/completeCheckout', stripeController.completeCheckout);
 router.post('/updateSubscription', stripeController.updateSub);
 router.post('/addSubscription', stripeController.addSubscription);

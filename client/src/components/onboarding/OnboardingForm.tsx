@@ -53,7 +53,6 @@ export default function OnboardingForm({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const account = accounts[0];
   const currentTab = Number(pageState.tabKey);
-  console.log(currentTab, userProfile);
   const forceRender = true;
   let disableNext = false;
   if (currentTab === 3 && !privacyChecked) disableNext = true;
@@ -380,7 +379,6 @@ export default function OnboardingForm({
                 disabled={disableNext}
                 loading={loading}
                 onClick={async () => {
-                  console.log('next');
                   if (currentTab === 3 && !privacyChecked) return;
                   if (currentTab === 4 && !userProfile?.stripeSubscriptionId)
                     return;

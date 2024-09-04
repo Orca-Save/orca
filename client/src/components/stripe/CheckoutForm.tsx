@@ -38,7 +38,6 @@ export default function CheckoutForm({
       options={{
         ...options,
         onComplete: async () => {
-          console.log('onComplete');
           const results = await apiFetch(
             '/api/stripe/completeCheckout',
             'POST',
@@ -46,7 +45,6 @@ export default function CheckoutForm({
               sessionId: data.sessionId,
             }
           );
-          console.log('results', results);
           setSubscriptionId?.(results.stripeSubscriptionId);
         },
       }}

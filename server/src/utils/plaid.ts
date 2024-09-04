@@ -61,6 +61,7 @@ export async function checkPlaidItemStatus(
 ): Promise<{ status: string; error: string | null }> {
   try {
     // Get item status from Plaid
+    if (!plaidItem.accessToken) throw new Error('Access token not found');
     const itemResponse = await plaidClient.itemGet({
       access_token: plaidItem.accessToken,
     });
@@ -270,6 +271,9 @@ export async function getItemTransactions(
   start_date: string,
   end_date: string
 ) {
+  if (!plaidItem.accessToken)
+    throw new Error('Plaid item access token not found');
+
   const request: TransactionsGetRequest = {
     access_token: plaidItem.accessToken,
     start_date,
@@ -572,6 +576,7 @@ export function discretionaryFilter(transaction: {
 }
 
 export async function softSyncTransactions(plaidItem: PlaidItem) {
+  if (!plaidItem.accessToken) return;
   plaidItem.cursor = null;
   const allData = await fetchAllSyncData(plaidItem.accessToken);
 
@@ -634,6 +639,9 @@ export async function softSyncTransactions(plaidItem: PlaidItem) {
 export async function syncTransactions(plaidItem: PlaidItem) {
   if (!plaidItem) {
     throw new Error('Plaid item not found');
+  }
+  if (!plaidItem.accessToken) {
+    throw new Error('Plaid item access token not found');
   }
 
   const currentDate = new Date();
@@ -854,6 +862,7 @@ export async function getNextRefreshTime(userId: string) {
 }
 
 async function refreshItem(plaidItem: PlaidItem) {
+  if (!plaidItem.accessToken) return;
   // check if last refresh happened more than 12 hours ago
   if (plaidItem.lastRefresh) {
     const difference =
@@ -974,6 +983,7 @@ export async function removeAllPlaidItems(userId: string) {
 
   await Promise.all(
     plaidItems.map(async (item) => {
+      if (!item.accessToken) return;
       await plaidClient.itemRemove({
         access_token: item.accessToken,
       });
@@ -984,6 +994,7 @@ export async function removeAllPlaidItems(userId: string) {
     where: { userId },
     data: {
       deletedAt: new Date(),
+      accessToken: null,
     },
   });
 
@@ -1006,10 +1017,10 @@ export async function handleLoginExpiration(
 }
 
 export async function handleUserPermissionRevoked(plaidItem: PlaidItem) {
-  removePlaidItem(plaidItem.userId, plaidItem.itemId);
+  removePlaidItemData(plaidItem.userId, plaidItem.itemId);
 }
 
-export async function removePlaidItem(userId: string, itemId: string) {
+export async function removePlaidItemData(userId: string, itemId: string) {
   const plaidItem = await db.plaidItem.findFirst({
     where: { itemId, userId },
   });
@@ -1017,6 +1028,7 @@ export async function removePlaidItem(userId: string, itemId: string) {
   if (!plaidItem) {
     return false;
   }
+  if (!plaidItem.accessToken) return false;
 
   await plaidClient.itemRemove({
     access_token: plaidItem.accessToken,
@@ -1036,6 +1048,35 @@ export async function removePlaidItem(userId: string, itemId: string) {
   });
 
   return true;
+}
+
+export async function removePlaidItemsForUser(userId: string) {
+  const plaidItems = await db.plaidItem.findMany({
+    where: { userId, deletedAt: null },
+  });
+
+  for (const item of plaidItems) {
+    try {
+      if (!item.accessToken) continue;
+      await plaidClient.itemRemove({ access_token: item.accessToken });
+      console.log(
+        `Successfully removed Plaid item with ID: ${item.itemId} for user: ${userId}`
+      );
+
+      await db.plaidItem.update({
+        where: { itemId: item.itemId },
+        data: {
+          deletedAt: new Date(),
+          accessToken: null,
+        },
+      });
+    } catch (error) {
+      console.error(
+        `Error removing Plaid item with ID: ${item.itemId} for user: ${userId}`,
+        error
+      );
+    }
+  }
 }
 
 export type ItemData = {
@@ -1058,8 +1099,10 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
     itemsMeta.map(async (item) => {
       let linkToken = '';
       try {
-        linkToken = (await createLinkToken(userId, item.accessToken))
-          .link_token;
+        if (!item.accessToken) throw new Error('Access token not found');
+        linkToken = (
+          await createLinkToken(userId, item.accessToken ?? undefined)
+        ).link_token;
 
         const accounts = await db.account.findMany({
           where: { accessToken: item.accessToken },
@@ -1125,16 +1168,19 @@ export async function getRecurringTransactions(userId: string) {
   }
 
   const recurringStreams = await Promise.all(
-    plaidItems.map(async (plaidItem) => {
-      const request = {
-        access_token: plaidItem.accessToken,
-      };
-      const response = await plaidClient.transactionsRecurringGet(request);
-      return [
-        ...response.data.inflow_streams,
-        ...response.data.outflow_streams,
-      ];
-    })
+    plaidItems
+      .filter((x) => x.accessToken)
+      .map(async (plaidItem) => {
+        if (!plaidItem.accessToken) return [];
+        const request = {
+          access_token: plaidItem.accessToken,
+        };
+        const response = await plaidClient.transactionsRecurringGet(request);
+        return [
+          ...response.data.inflow_streams,
+          ...response.data.outflow_streams,
+        ];
+      })
   );
   const allRecurringTransactionsIds = recurringStreams
     .flat()

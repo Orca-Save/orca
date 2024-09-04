@@ -8,6 +8,7 @@ import {
   createPaymentIntent,
   createSubscription,
   getPrice,
+  stripeWebhook,
   updateSubscription,
 } from '../utils/stripe';
 
@@ -64,6 +65,18 @@ export const createCheckout = async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error(err);
     res.status(500).send({ message: err.message });
+  }
+};
+
+export const handleStripeWebhook = async (req: Request, res: Response) => {
+  const signature = req.headers['stripe-signature'] as string;
+
+  try {
+    await stripeWebhook(req.body, signature);
+    res.status(200).send({ message: 'Webhook handled successfully' });
+  } catch (err: any) {
+    console.error('Webhook error:', err);
+    res.status(400).send({ message: `Webhook Error: ${err.message}` });
   }
 };
 

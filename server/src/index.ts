@@ -47,7 +47,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use((req: any, res, next) => {
-  if (req.url.startsWith('/api/plaid/webhook')) {
+  if (
+    req.url.startsWith('/api/plaid/webhook') ||
+    req.url.startsWith('/api/stripe/webhook')
+  ) {
     return next();
   }
   if (!req.headers.authorization) return res.status(401).send('Unauthorized');

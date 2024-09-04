@@ -1,5 +1,5 @@
 import { Button, Modal, Typography } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PlaidLinkOnSuccessMetadata, usePlaidLink } from 'react-plaid-link';
 import { Link } from 'react-router-dom';
 
