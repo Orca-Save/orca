@@ -24,8 +24,8 @@ android {
         applicationId "com.orcamoney.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "1.0.5"
         buildConfigField "String", "STRIPE_PUBLISHABLE_KEY", "\"${stripePublishableKey}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -63,6 +63,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.1.2')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.android.gms:play-services-wallet:19.4.0'
+    implementation 'com.android.billingclient:billing:7.0.0'
 }
 
 apply from: 'capacitor.build.gradle'
