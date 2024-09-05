@@ -9,6 +9,7 @@ import { clearUserData } from '../utils/userActions';
 import {
   setGoalPinned,
   setGoalTransferPinned,
+  setGooglePaySubscriptionToken,
   updateTour,
 } from '../utils/users';
 
@@ -61,6 +62,23 @@ export const goalPinned = async (req: Request, res: Response) => {
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: 'Error getting onboarding profile count' });
+  }
+};
+
+export const setGoogleSubscriptionToken = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = (req as any).user.oid;
+    const token = req.body.token;
+    const success = await setGooglePaySubscriptionToken(userId, token);
+    res.status(200).send({ success });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .send({ message: 'Error setting Google Pay subscription token' });
   }
 };
 

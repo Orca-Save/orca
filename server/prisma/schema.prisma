@@ -126,13 +126,14 @@ model GoalTransfer {
 }
 
 model UserProfile {
-  id                    String    @id @default(uuid())
-  userId                String    @unique
-  stripeCustomerId      String?
-  stripeSubscriptionId  String?
-  stripeSubscriptionEnd DateTime?
-  privacyPolicyAccepted Boolean   @default(false)
-  notificationToken     String?
+  id                         String    @id @default(uuid())
+  userId                     String    @unique
+  stripeCustomerId           String?
+  stripeSubscriptionId       String?
+  googlePaySubscriptionToken String?
+  subscriptionEnd            DateTime?
+  privacyPolicyAccepted      Boolean   @default(false)
+  notificationToken          String?
 
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime  @updatedAt @db.Timestamptz()

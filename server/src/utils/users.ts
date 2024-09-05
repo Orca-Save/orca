@@ -29,6 +29,20 @@ export async function setGoalPinned(
   return updatedGoal;
 }
 
+export async function setGooglePaySubscriptionToken(
+  userId: string,
+  token: string
+) {
+  const updatedUser = await db.userProfile.update({
+    where: { id: userId },
+    data: {
+      googlePaySubscriptionToken: token,
+    },
+  });
+
+  return updatedUser;
+}
+
 export async function updateTour(userId: string, tour: UserTour) {
   const updatedTour = await db.userTour.upsert({
     where: { userId },
