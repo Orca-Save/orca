@@ -5,3 +5,7 @@
 .varela-round {
     font-family: 'Varela Round';
 }
+
+.ant-tour {
+    max-width: fit-content
+}
