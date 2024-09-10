@@ -10,6 +10,7 @@ import {
 } from 'antd';
 import * as emoji from 'node-emoji';
 import { Link, useSearchParams } from 'react-router-dom';
+import Pay from '../../plugins/payPlugin';
 
 import { useRef, useState } from 'react';
 import { apiFetch } from '../../utils/general';
@@ -67,21 +68,25 @@ export default function Dashboard({
       tour,
     });
   };
+  const style = { maxWidth: '100vw' };
   const steps: TourProps['steps'] = [
     {
       title: 'One-Tap Saves',
+      style,
       description:
         "Here's the One-Tap button you just created. Tap it and you'll see the progress bar on your goal fill up.",
       target: () => oneTapSaves.current,
     },
     {
       title: 'Impulse Saves',
+      style,
       description:
         'Tap here to record a unique would be purchase, and instead set aside that money for your goal.',
       target: () => impulseSaves.current,
     },
     {
       title: 'Review Transactions',
+      style,
       description:
         'Tap here to review your transactions and quickly mark which were impulse buys. This helps us find what to work on to meet your goals, and you only review what you have control over, no rent payments in here.',
       target: () => reviewTransactions.current,
@@ -91,6 +96,16 @@ export default function Dashboard({
     <div className='flex justify-center'>
       <ConfettiComp run={searchParams.get('confetti') === 'true'} path='/' />
       <Space direction='vertical' style={{ width: '100%' }}>
+        <Button
+          onClick={() =>
+            Pay.subscribe({
+              productId: 'main_sub',
+              accessToken: localStorage.getItem('accessToken')!,
+            }).then(console.log)
+          }
+        >
+          Echoooo
+        </Button>
         <Title level={4} style={{ margin: 0 }}>
           Focus Goal
         </Title>

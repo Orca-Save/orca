@@ -12,11 +12,10 @@ import {
   Typography,
 } from 'antd';
 import dayjs from 'dayjs';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useMsal } from '@azure/msal-react';
-import React from 'react';
 import { ItemData, OnboardingProfile, UserProfile } from '../../types/all';
 import { applyFormErrors } from '../../utils/forms';
 import { apiFetch } from '../../utils/general';
