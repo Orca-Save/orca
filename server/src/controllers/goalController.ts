@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { User } from '../types/user';
+import { appInsightsClient } from '../utils/appInsights';
 import db from '../utils/db';
 import {
   addGoal,
@@ -22,7 +23,7 @@ export const deleteGoal = async (req: Request, res: Response) => {
     const goal = await deleteGoalWithId(user.oid, goalId);
     res.status(200).send({ goal });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -33,7 +34,7 @@ export const listGoal = async (req: Request, res: Response) => {
     const goals = await listGoals(user.oid);
     res.status(200).send({ goals });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -46,7 +47,7 @@ export const quickSave = async (req: Request, res: Response) => {
     const goalTransfer = await addQuickSave(user.oid, goalId, transferId);
     res.status(200).send({ goalTransfer });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -63,7 +64,7 @@ export const quickGoalTransfer = async (req: Request, res: Response) => {
     );
     res.status(200).send({ goalTransfer });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -78,7 +79,7 @@ export const deleteTransfer = async (req: Request, res: Response) => {
     });
     res.status(200).send({ goalTransfer });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -91,7 +92,7 @@ export const updateTransfer = async (req: Request, res: Response) => {
     const goalTransfer = await updateGoalTransfer(user.oid, formData);
     res.status(200).send({ goalTransfer });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -104,7 +105,7 @@ export const addTransfer = async (req: Request, res: Response) => {
     const goalTransfer = await addGoalTransfer(user.oid, isTemplate, formData);
     res.status(200).send({ goalTransfer });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -117,7 +118,7 @@ export const createGoal = async (req: Request, res: Response) => {
     const goal = await addGoal(user.oid, formData);
     res.status(200).send({ goal });
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -130,7 +131,7 @@ export const updateGoalRecord = async (req: Request, res: Response) => {
     const goal = await updateGoal(user.oid, formData);
     res.status(200).send(goal);
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { User } from '../types/user';
+import { appInsightsClient } from '../utils/appInsights';
 import { getUserProfile, getUserTour } from '../utils/db/common';
 import { getGoalTransfersSum } from '../utils/goalTransfers';
 import { getSubscription } from '../utils/stripe';
@@ -29,7 +30,7 @@ export const goalCard = async (req: Request, res: Response) => {
     }
     res.status(200).send({ completedCounts, userTour, goal });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
 };
@@ -44,7 +45,7 @@ export const subscription = async (req: Request, res: Response) => {
     ]);
     res.status(200).send({ userProfile, subscription });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
 };

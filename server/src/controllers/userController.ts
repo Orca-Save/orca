@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { User } from '../types/user';
+import { appInsightsClient } from '../utils/appInsights';
 import {
   onboardUser as onboard,
   saveOnboardingProfile as saveProfile,
@@ -20,7 +21,7 @@ export const saveOnboardingProfile = async (req: Request, res: Response) => {
     const [items] = await Promise.all([saveProfile(userId, onboardingProfile)]);
     res.status(200).send({ items });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };
@@ -35,7 +36,7 @@ export const onboardUser = async (req: Request, res: Response) => {
     ]);
     res.status(200).send({ items });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };
@@ -47,7 +48,7 @@ export const updateUserTour = async (req: Request, res: Response) => {
     const updatedTour = await updateTour(userId, tour);
     res.status(200).send({ updatedTour });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };
@@ -60,7 +61,7 @@ export const goalPinned = async (req: Request, res: Response) => {
     const goalTransfer = await setGoalPinned(user.oid, typeId, pinned);
     res.status(200).send({ goalTransfer });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
 };
@@ -75,7 +76,7 @@ export const setGoogleSubscriptionToken = async (
     const success = await setGooglePaySubscriptionToken(userId, token);
     res.status(200).send({ success });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res
       .status(500)
       .send({ message: 'Error setting Google Pay subscription token' });
@@ -90,7 +91,7 @@ export const goalTransferPinned = async (req: Request, res: Response) => {
     const goalTransfer = await setGoalTransferPinned(user.oid, typeId, pinned);
     res.status(200).send({ goalTransfer });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
 };
@@ -101,7 +102,7 @@ export const clearAllUserData = async (req: Request, res: Response) => {
     const success = await clearUserData(userId);
     res.status(200).send({ success });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error refreshing items' });
   }
 };

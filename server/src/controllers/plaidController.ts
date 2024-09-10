@@ -25,7 +25,7 @@ export const linkedItems = async (req: Request, res: Response) => {
     const [items] = await Promise.all([getAllLinkedItems(userId)]);
     res.status(200).send({ items });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };
@@ -36,7 +36,7 @@ export const linkToken = async (req: Request, res: Response) => {
     const [linkToken] = await Promise.all([createLinkToken(userId)]);
     res.status(200).send({ linkToken });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error creating link token' });
   }
 };
@@ -55,7 +55,7 @@ export const exchangeToken = async (req: Request, res: Response) => {
     ]);
     res.status(200).send(results);
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error creating link token' });
   }
 };
@@ -66,7 +66,7 @@ export const refreshItems = async (req: Request, res: Response) => {
     await Promise.all([refreshUserItems(userId)]);
     res.status(200).send({ message: 'Items refreshed' });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error refreshing items' });
   }
 };
@@ -77,7 +77,7 @@ export const markAllTransactionsRead = async (req: Request, res: Response) => {
     await markAllTransactionsAsRead(userId, false);
     res.status(200).send({ message: 'Transactions marked as read' });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error marking transactions as read' });
   }
 };
@@ -89,7 +89,7 @@ export const removeItem = async (req: Request, res: Response) => {
     const success = await removePlaidItemData(userId, itemId);
     res.status(200).send({ success });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error removing item' });
   }
 };
@@ -105,7 +105,7 @@ export const readTransaction = async (req: Request, res: Response) => {
     );
     res.status(200).send({ success: true });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error marking transaction as read' });
   }
 };
@@ -116,7 +116,7 @@ export const unreadTransaction = async (req: Request, res: Response) => {
     await markTransactionAsUnread(userId, req.body.transactionId);
     res.status(200).send({ success: true });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error marking transaction as unread' });
   }
 };
@@ -128,7 +128,7 @@ export const listAllLinkedItems = async (req: Request, res: Response) => {
 
     res.status(200).send({ itemsData });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };
@@ -140,7 +140,7 @@ export const syncUserItems = async (req: Request, res: Response) => {
 
     res.status(200).send({ success });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };
@@ -241,7 +241,7 @@ export const webhook = async (req: Request, res: Response) => {
 
     res.status(200).send({ message: 'Webhook received' });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };

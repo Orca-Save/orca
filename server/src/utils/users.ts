@@ -33,8 +33,10 @@ export async function setGooglePaySubscriptionToken(
   userId: string,
   token: string
 ) {
+  if (!token) throw Error('Token is required');
+
   const updatedUser = await db.userProfile.update({
-    where: { id: userId },
+    where: { userId },
     data: {
       googlePaySubscriptionToken: token,
     },

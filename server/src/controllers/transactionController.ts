@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { appInsightsClient } from '../utils/appInsights';
 import { saveTransaction } from '../utils/transactions';
 
 export const save = async (req: Request, res: Response) => {
@@ -13,7 +14,7 @@ export const save = async (req: Request, res: Response) => {
     ]);
     res.status(200).send({ transaction });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }
 };

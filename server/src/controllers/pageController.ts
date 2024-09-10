@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { appInsightsClient } from '../utils/appInsights';
 import {
   getCurrentMonthDailySums,
   getLastMonthDiscretionaryTotal,
@@ -69,7 +70,7 @@ export const dashboardPage = async (req: Request, res: Response) => {
       completedCounts,
     });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -86,7 +87,7 @@ export const savingsPage = async (req: Request, res: Response) => {
       completedCounts,
     });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -104,7 +105,7 @@ export const chartPage = async (req: Request, res: Response) => {
       .status(200)
       .send({ weekChartData, currentMonthDailySums, lastMonthDiscretionary });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -117,7 +118,7 @@ export const subscriptionPage = async (req: Request, res: Response) => {
       userProfile,
     });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -132,7 +133,7 @@ export const transactionsPage = async (req: Request, res: Response) => {
     ]);
     res.status(200).send({ formattedTransactions, userTour, unreadObj });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -151,7 +152,7 @@ export const onboardingPage = async (req: Request, res: Response) => {
       .status(200)
       .send({ linkToken, userProfile, itemsData, onboardingProfile });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -162,7 +163,7 @@ export const userPage = async (req: Request, res: Response) => {
     const [linkToken] = await Promise.all([createLinkToken(userId)]);
     res.status(200).send({ linkToken });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -176,7 +177,7 @@ export const reviewPage = async (req: Request, res: Response) => {
     ]);
     res.status(200).send({ formattedTransactions, pinnedUserGoal });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -198,7 +199,7 @@ export const transactionPage = async (req: Request, res: Response) => {
     });
     res.status(200).send({ transaction, account });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -223,7 +224,7 @@ export const goalTransferPage = async (req: Request, res: Response) => {
     ]);
     res.status(200).send({ goals, goalTransfer });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };
@@ -248,7 +249,7 @@ export const editGoalPage = async (req: Request, res: Response) => {
       )?.amount.toNumber();
     res.status(200).send({ goal, initialAmount });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
 };

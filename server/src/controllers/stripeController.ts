@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { User } from '../types/user';
+import { appInsightsClient } from '../utils/appInsights';
 import {
   addSubscriptionId,
   completeCheckoutSession,
@@ -18,7 +19,7 @@ export const productPrice = async (req: Request, res: Response) => {
     const price = await getPrice();
     res.status(200).send({ price });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -29,7 +30,7 @@ export const createSub = async (req: Request, res: Response) => {
     const data = await createSubscription(user.oid, user.emails[0]);
     res.status(200).send(data);
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -41,7 +42,7 @@ export const completeCheckout = async (req: Request, res: Response) => {
     const data = await completeCheckoutSession(user.oid, sessionId);
     res.status(200).send(data);
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -52,7 +53,7 @@ export const paymentIntent = async (req: Request, res: Response) => {
     const data = await createPaymentIntent(user.oid, user.emails[0]);
     res.status(200).send(data);
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -63,7 +64,7 @@ export const createCheckout = async (req: Request, res: Response) => {
     const result = await createCheckoutSession(user.emails[0]);
     res.status(200).send(result);
   } catch (err: any) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: err.message });
   }
 };
@@ -87,7 +88,7 @@ export const updateSub = async (req: Request, res: Response) => {
     const message = await updateSubscription(user.oid, cancel);
     res.status(200).send({ message });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error updating subscription' });
   }
 };
@@ -99,7 +100,7 @@ export const addSubscription = async (req: Request, res: Response) => {
     const results = await addSubscriptionId(user.oid, subscriptionId);
     res.status(200).send({ results });
   } catch (err) {
-    console.error(err);
+    appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error updating subscription' });
   }
 };
