@@ -1,6 +1,9 @@
 import { ClickAnalyticsPlugin } from '@microsoft/applicationinsights-clickanalytics-js';
 import { ReactPlugin } from '@microsoft/applicationinsights-react-js';
-import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import {
+  ApplicationInsights,
+  DistributedTracingModes,
+} from '@microsoft/applicationinsights-web';
 import { createBrowserHistory } from 'history';
 
 const reactPlugin = new ReactPlugin();
@@ -24,6 +27,7 @@ const initializeAppInsights = () => {
           [clickPluginInstance.identifier]: clickPluginConfig,
         },
         enableAutoRouteTracking: true,
+        distributedTracingMode: DistributedTracingModes.AI_AND_W3C,
         disableTelemetry: false,
       },
     });
