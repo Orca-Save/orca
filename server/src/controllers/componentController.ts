@@ -29,7 +29,7 @@ export const goalCard = async (req: Request, res: Response) => {
     }
     res.status(200).send({ completedCounts, userTour, goal });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
 };
@@ -44,7 +44,7 @@ export const subscription = async (req: Request, res: Response) => {
     ]);
     res.status(200).send({ userProfile, subscription });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
 };

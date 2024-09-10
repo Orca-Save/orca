@@ -18,7 +18,7 @@ export const productPrice = async (req: Request, res: Response) => {
     const price = await getPrice();
     res.status(200).send({ price });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -29,7 +29,7 @@ export const createSub = async (req: Request, res: Response) => {
     const data = await createSubscription(user.oid, user.emails[0]);
     res.status(200).send(data);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -41,7 +41,7 @@ export const completeCheckout = async (req: Request, res: Response) => {
     const data = await completeCheckoutSession(user.oid, sessionId);
     res.status(200).send(data);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -52,7 +52,7 @@ export const paymentIntent = async (req: Request, res: Response) => {
     const data = await createPaymentIntent(user.oid, user.emails[0]);
     res.status(200).send(data);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error getting price' });
   }
 };
@@ -87,7 +87,7 @@ export const updateSub = async (req: Request, res: Response) => {
     const message = await updateSubscription(user.oid, cancel);
     res.status(200).send({ message });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error updating subscription' });
   }
 };
@@ -99,7 +99,7 @@ export const addSubscription = async (req: Request, res: Response) => {
     const results = await addSubscriptionId(user.oid, subscriptionId);
     res.status(200).send({ results });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).send({ message: 'Error updating subscription' });
   }
 };
