@@ -11,6 +11,7 @@ router.post(
   '/setGoogleSubscriptionToken',
   userController.setGoogleSubscriptionToken
 );
+router.get('/cancelGoogleSub', userController.cancelGoogleSub);
 router.post('/setGoalPinned', userController.goalPinned);
 router.post('/setGoalTransferPinned', userController.goalTransferPinned);
 router.get('/clearAllUserData', userController.clearAllUserData);

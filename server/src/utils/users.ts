@@ -1,5 +1,6 @@
 import { Goal, GoalTransfer, UserTour } from '@prisma/client';
 import db from './db/db';
+import { cancelSubscription } from './googleCloud';
 export const getPinnedUserGoal = (userId: string) => {
   return db.goal.findFirst({
     where: {
@@ -43,6 +44,16 @@ export async function setGooglePaySubscriptionToken(
   });
 
   return updatedUser;
+}
+
+export async function cancelGoogleSubscription(userId: string) {
+  const userProfile = await db.userProfile.findUnique({
+    where: { userId },
+  });
+  if (!userProfile) throw Error('User not found');
+  if (!userProfile.googlePaySubscriptionToken) throw Error('Token is required');
+
+  await cancelSubscription(userProfile.googlePaySubscriptionToken);
 }
 
 export async function updateTour(userId: string, tour: UserTour) {

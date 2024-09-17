@@ -21,7 +21,6 @@ export default function CheckoutForm({
   setSubscriptionId?: (id: string) => void;
 }) {
   const { data } = useFetch('api/stripe/createCheckout', 'GET');
-  // check capacitor getPlatform
   const platform = Capacitor.getPlatform();
   if (platform !== 'web') {
     return null;

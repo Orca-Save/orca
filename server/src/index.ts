@@ -4,6 +4,7 @@ import jwksClient from 'jwks-rsa';
 import {
   componentRoutes,
   goalRoutes,
+  googleRoutes,
   notificationRoutes,
   pageRoutes,
   plaidRoutes,
@@ -46,11 +47,13 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+const webhooks = [
+  '/api/plaid/webhook',
+  '/api/stripe/webhook',
+  '/api/google/webhook',
+];
 app.use((req: any, res, next) => {
-  if (
-    req.url.startsWith('/api/plaid/webhook') ||
-    req.url.startsWith('/api/stripe/webhook')
-  ) {
+  if (webhooks.includes(req.url)) {
     return next();
   }
   if (!req.headers.authorization) return res.status(401).send('Unauthorized');
@@ -73,6 +76,7 @@ app.use('/api/plaid', plaidRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/google', googleRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 app.listen(port, () => {

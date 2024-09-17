@@ -1,5 +1,6 @@
 import componentRoutes from './componentRoutes';
 import goalRoutes from './goalRoutes';
+import googleRoutes from './googleRoutes';
 import notificationRoutes from './notificationRoutes';
 import pageRoutes from './pageRoutes';
 import plaidRoutes from './plaidRoutes';
@@ -10,6 +11,7 @@ import userRoutes from './userRoutes';
 export {
   componentRoutes,
   goalRoutes,
+  googleRoutes,
   notificationRoutes,
   pageRoutes,
   plaidRoutes,

@@ -15,6 +15,7 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.BillingResult;
@@ -68,56 +69,29 @@ public class PayPlugin extends Plugin {
         }
         accessToken = call.getString("accessToken");
         if (billingClient.isReady()) {
-            List<String> productIdList = new ArrayList<>();
-            productIdList.add(call.getString("productId"));  // Pass product ID from JS
-
-            // Create a ProductDetails query
-            QueryProductDetailsParams.Product product = QueryProductDetailsParams.Product.newBuilder()
-                    .setProductId(call.getString("productId"))
-                    .setProductType(BillingClient.ProductType.SUBS)
-                    .build();
-
-            QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
-                    .setProductList(List.of(product))
-                    .build();
-
-            billingClient.queryProductDetailsAsync(params, (billingResult, productDetailsList) -> {
-                try {
-
-                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
-                        for (ProductDetails productDetails : productDetailsList) {
-                            // Get available subscription offers
-                            List<SubscriptionOfferDetails> offerDetailsList = productDetails.getSubscriptionOfferDetails();
-                            if (offerDetailsList != null && !offerDetailsList.isEmpty()) {
-                                // Get the first available offer and its offerToken
-                                SubscriptionOfferDetails offerDetails = offerDetailsList.get(0);
-                                String offerToken = offerDetails.getOfferToken();
-
-                                // Create the billing flow params with product details and offerToken
-                                BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
-                                        .setProductDetailsParamsList(
-                                                List.of(BillingFlowParams.ProductDetailsParams.newBuilder()
-                                                        .setProductDetails(productDetails)
-                                                        .setOfferToken(offerToken)  // Required for subscription
-                                                        .build()
-                                                )
-                                        )
-                                        .build();
-
-                                // Launch the billing flow
-                                billingClient.launchBillingFlow(activity, billingFlowParams);
-                            } else {
-                                // Handle no available offers
-                                call.reject("No subscription offers available");
+            // Query existing purchases
+            billingClient.queryPurchasesAsync(BillingClient.ProductType.SUBS, new PurchasesResponseListener() {
+                @Override
+                public void onQueryPurchasesResponse(BillingResult billingResult, List<Purchase> purchases) {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        if (purchases != null && !purchases.isEmpty()) {
+                            // Existing purchase found
+                            for (Purchase purchase : purchases) {
+                                String purchaseToken = purchase.getPurchaseToken();
+                                // Send the existing purchaseToken to the backend
+                                sendPurchaseTokenToBackend(purchaseToken);
+                                // Notify the user or handle as needed
+                                call.reject("Existing subscription detected");
+                                return; // Exit the method to prevent starting a new purchase flow
                             }
+                        } else {
+                            // No existing purchases, proceed to purchase
+                            proceedToPurchase(call);
                         }
                     } else {
-                        // Handle errors in querying product details
-                        call.reject("Failed to query subscription details");
+                        // Handle error in querying purchases
+                        call.reject("Failed to query existing purchases");
                     }
-                } catch (Exception e) {
-                    System.out.println("Error" + e.getMessage());
-                    call.reject("Failed to query subscription details");
                 }
             });
         } else {
@@ -141,10 +115,65 @@ public class PayPlugin extends Plugin {
         }
     }
 
+    private void proceedToPurchase(PluginCall call) {
+        List<String> productIdList = new ArrayList<>();
+        productIdList.add(call.getString("productId"));  // Pass product ID from JS
+
+        // Create a ProductDetails query
+        QueryProductDetailsParams.Product product = QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(call.getString("productId"))
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build();
+
+        QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
+                .setProductList(List.of(product))
+                .build();
+
+        billingClient.queryProductDetailsAsync(params, (billingResult, productDetailsList) -> {
+            try {
+
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
+                    for (ProductDetails productDetails : productDetailsList) {
+                        // Get available subscription offers
+                        List<SubscriptionOfferDetails> offerDetailsList = productDetails.getSubscriptionOfferDetails();
+                        if (offerDetailsList != null && !offerDetailsList.isEmpty()) {
+                            // Get the first available offer and its offerToken
+                            SubscriptionOfferDetails offerDetails = offerDetailsList.get(0);
+                            String offerToken = offerDetails.getOfferToken();
+
+                            // Create the billing flow params with product details and offerToken
+                            BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                                    .setProductDetailsParamsList(
+                                            List.of(BillingFlowParams.ProductDetailsParams.newBuilder()
+                                                    .setProductDetails(productDetails)
+                                                    .setOfferToken(offerToken)  // Required for subscription
+                                                    .build()
+                                            )
+                                    )
+                                    .build();
+
+                            // Launch the billing flow
+                            billingClient.launchBillingFlow(activity, billingFlowParams);
+                        } else {
+                            // Handle no available offers
+                            call.reject("No subscription offers available");
+                        }
+                    }
+                } else {
+                    // Handle errors in querying product details
+                    call.reject("Failed to query subscription details");
+                }
+            } catch (Exception e) {
+                System.out.println("Error" + e.getMessage());
+                call.reject("Failed to query subscription details");
+            }
+        });
+    }
+
     private void sendPurchaseTokenToBackend(String purchaseToken) {
         new Thread(() -> {
             if (accessToken == null) {
-                Log.e("GooglePayPlugin", "Access token not found");
+                Log.e("PayPlugin", "Access token not found");
                 return;
             }
 
@@ -172,14 +201,14 @@ public class PayPlugin extends Plugin {
                 // Check the response
                 int responseCode = urlConnection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    Log.i("GooglePayPlugin", "Purchase token sent successfully");
+                    Log.i("PayPlugin", "Purchase token sent successfully");
                 } else {
-                    Log.e("GooglePayPlugin", "Failed to send purchase token. Response code: " + responseCode);
+                    Log.e("PayPlugin", "Failed to send purchase token. Response code: " + responseCode);
                 }
 
                 urlConnection.disconnect();
             } catch (Exception e) {
-                Log.e("GooglePayPlugin", "Error sending purchase token to backend", e);
+                Log.e("PayPlugin", "Error sending purchase token to backend", e);
             }
         }).start();
     }

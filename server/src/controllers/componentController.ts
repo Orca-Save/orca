@@ -4,7 +4,8 @@ import { User } from '../types/user';
 import { appInsightsClient } from '../utils/appInsights';
 import { getUserProfile, getUserTour } from '../utils/db/common';
 import { getGoalTransfersSum } from '../utils/goalTransfers';
-import { getSubscription } from '../utils/stripe';
+import { getGoogleSubscriptionStatus } from '../utils/googleCloud';
+import { getStripeSubscription } from '../utils/stripe';
 import { completedUserGoalCount, getPinnedUserGoal } from '../utils/users';
 
 export const goalCard = async (req: Request, res: Response) => {
@@ -39,11 +40,15 @@ export const subscription = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
     const userId = user.oid;
-    let [userProfile, subscription] = await Promise.all([
-      getUserProfile(userId),
-      getSubscription(userId),
-    ]);
-    res.status(200).send({ userProfile, subscription });
+    let [userProfile, stripeSubscription, googleSubscription] =
+      await Promise.all([
+        getUserProfile(userId),
+        getStripeSubscription(userId),
+        getGoogleSubscriptionStatus(userId),
+      ]);
+    res
+      .status(200)
+      .send({ userProfile, stripeSubscription, googleSubscription });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });

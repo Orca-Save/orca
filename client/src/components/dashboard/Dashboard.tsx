@@ -10,7 +10,6 @@ import {
 } from 'antd';
 import * as emoji from 'node-emoji';
 import { Link, useSearchParams } from 'react-router-dom';
-import Pay from '../../plugins/payPlugin';
 
 import { useRef, useState } from 'react';
 import { apiFetch } from '../../utils/general';
@@ -38,7 +37,7 @@ export default function Dashboard({
   const oneTapSaves = useRef(null);
   const impulseSaves = useRef(null);
   const reviewTransactions = useRef(null);
-
+  console.log('env', process.env.NODE_ENV);
   const { accounts } = useMsal();
   const [searchParams, setSearchParams] = useSearchParams();
   const userId = accounts[0]?.localAccountId;
@@ -96,16 +95,6 @@ export default function Dashboard({
     <div className='flex justify-center'>
       <ConfettiComp run={searchParams.get('confetti') === 'true'} path='/' />
       <Space direction='vertical' style={{ width: '100%' }}>
-        <Button
-          onClick={() =>
-            Pay.subscribe({
-              productId: 'main_sub',
-              accessToken: localStorage.getItem('accessToken')!,
-            }).then(console.log)
-          }
-        >
-          Echoooo
-        </Button>
         <Title level={4} style={{ margin: 0 }}>
           Focus Goal
         </Title>

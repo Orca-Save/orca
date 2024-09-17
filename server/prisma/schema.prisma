@@ -26,6 +26,20 @@ model PlaidWebhook {
   createdAt   DateTime @default(now()) @db.Timestamptz()
 }
 
+model GoogleWebhook {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String?
+  code        String?
+  historical  Boolean?
+  initial     Boolean?
+  environment String?
+  rawJson     Json?
+  json        Json?
+  error       Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+}
+
 model Goal {
   id           String   @id @default(uuid())
   userId       String

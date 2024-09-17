@@ -8,6 +8,7 @@ import {
 } from '../utils/onboarding';
 import { clearUserData } from '../utils/userActions';
 import {
+  cancelGoogleSubscription,
   setGoalPinned,
   setGoalTransferPinned,
   setGooglePaySubscriptionToken,
@@ -74,6 +75,19 @@ export const setGoogleSubscriptionToken = async (
     const userId = (req as any).user.oid;
     const token = req.body.token;
     const success = await setGooglePaySubscriptionToken(userId, token);
+    res.status(200).send({ success });
+  } catch (err) {
+    appInsightsClient.trackException({ exception: err });
+    res
+      .status(500)
+      .send({ message: 'Error setting Google Pay subscription token' });
+  }
+};
+
+export const cancelGoogleSub = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.oid;
+    const success = await cancelGoogleSubscription(userId);
     res.status(200).send({ success });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });

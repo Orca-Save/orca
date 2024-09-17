@@ -366,7 +366,7 @@ export async function updateSubscription(
   };
 }
 
-export async function getSubscription(userId: string) {
+export async function getStripeSubscription(userId: string) {
   const userProfile = await db.userProfile.findUnique({
     where: {
       userId,

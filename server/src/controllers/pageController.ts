@@ -12,6 +12,7 @@ import {
   getGoalTransfersSum,
   getPinnedGoalTransfers,
 } from '../utils/goalTransfers';
+import { getGoogleSubscriptionStatus } from '../utils/googleCloud';
 import {
   getOnboardingProfile,
   getOnboardingProfileCount,
@@ -37,6 +38,7 @@ export const dashboardPage = async (req: Request, res: Response) => {
       userTour,
       sums,
       completedCounts,
+      subscriptionPrice,
     ] = await Promise.all([
       getOnboardingProfileCount(userId),
       getPinnedGoalTransfers(userId),
@@ -46,8 +48,11 @@ export const dashboardPage = async (req: Request, res: Response) => {
       getUserTour(userId),
       getGoalTransfersSum(userId),
       completedUserGoalCount(userId),
+      getGoogleSubscriptionStatus(userId),
+      // getSubscriptionPriceById(),
     ]);
 
+    console.log(subscriptionPrice);
     if (goal) {
       const goalSumMap = new Map(
         sums.map((item) => [
