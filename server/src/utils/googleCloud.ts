@@ -76,6 +76,21 @@ export async function getGoogleSubscriptionStatus(userId: string) {
   }
 }
 
+export async function getVoidedPurchases(
+  startTimeMillis: number,
+  endTimeMillis: number
+) {
+  const playDeveloperApi = await getPlayDeveloperApi();
+  const voidedPurchasesResponse =
+    await playDeveloperApi.purchases.voidedpurchases.list({
+      packageName,
+      startTime: startTimeMillis.toString(),
+      endTime: endTimeMillis.toString(),
+    });
+
+  return voidedPurchasesResponse.data.voidedPurchases || [];
+}
+
 export async function isSubscriptionExpired(
   subscriptionStatus?: androidpublisher_v3.Schema$SubscriptionPurchase
 ) {

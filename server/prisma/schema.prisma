@@ -149,9 +149,21 @@ model UserProfile {
   privacyPolicyAccepted      Boolean   @default(false)
   notificationToken          String?
 
-  createdAt DateTime  @default(now()) @db.Timestamptz()
-  updatedAt DateTime  @updatedAt @db.Timestamptz()
-  deletedAt DateTime? @db.Timestamptz()
+  createdAt         DateTime            @default(now()) @db.Timestamptz()
+  updatedAt         DateTime            @updatedAt @db.Timestamptz()
+  deletedAt         DateTime?           @db.Timestamptz()
+  UserPurchaseToken UserPurchaseToken[]
+}
+
+model UserPurchaseToken {
+  id                   String    @id @default(uuid())
+  userId               String
+  token                String    @unique
+  createdAt            DateTime  @default(now()) @db.Timestamptz()
+  subscriptionVoidedAt DateTime?
+  subscriptionActive   Boolean   @default(true)
+
+  user UserProfile @relation(fields: [userId], references: [userId])
 }
 
 model PlaidItem {

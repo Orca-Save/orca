@@ -42,6 +42,16 @@ export async function setGooglePaySubscriptionToken(
       googlePaySubscriptionToken: token,
     },
   });
+  await db.userPurchaseToken.upsert({
+    where: { userId, token },
+    update: {
+      token,
+    },
+    create: {
+      token,
+      userId,
+    },
+  });
 
   return updatedUser;
 }
