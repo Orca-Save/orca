@@ -76,6 +76,20 @@ export async function getGoogleSubscriptionStatus(userId: string) {
   }
 }
 
+export async function isSubscriptionExpired(
+  subscriptionStatus?: androidpublisher_v3.Schema$SubscriptionPurchase
+) {
+  if (!subscriptionStatus || !subscriptionStatus.expiryTimeMillis) {
+    console.log('Subscription status or expiry time is not available.');
+    return true;
+  }
+
+  const expiryDate = new Date(parseInt(subscriptionStatus.expiryTimeMillis));
+  const currentDate = new Date();
+  if (expiryDate < currentDate) return true;
+  return false;
+}
+
 export async function getGoogleSubscriptionStatusByToken(
   purchaseToken: string
 ) {
