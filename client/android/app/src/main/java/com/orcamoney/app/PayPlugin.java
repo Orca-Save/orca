@@ -35,6 +35,7 @@ public class PayPlugin extends Plugin {
     private BillingClient billingClient;
     private Activity activity;
     private String accessToken;
+    private String backendURL;
 
     @Override
     public void load() {
@@ -67,6 +68,7 @@ public class PayPlugin extends Plugin {
             call.reject("Missing accessToken");
             return;
         }
+        backendURL = call.getString("backendURL");
         accessToken = call.getString("accessToken");
         if (billingClient.isReady()) {
             // Query existing purchases
@@ -179,7 +181,7 @@ public class PayPlugin extends Plugin {
 
             try {
                 // Define the API endpoint (replace with your actual endpoint)
-                URL url = new URL("https://orca-back-api.azurewebsites.net/api/users/setGoogleSubscriptionToken");
+                URL url = new URL(backendURL);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
                 // Configure the connection

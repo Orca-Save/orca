@@ -40,15 +40,20 @@ export default function Subscription() {
           Subscribe to link your bank
           <GooglePay
             style={{ height: 70 }}
-            onClick={() =>
-              Pay.subscribe({
-                // @ts-ignore
-                productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
-                accessToken: localStorage.getItem('accessToken')!,
-              })
-                .then(() => window.location.reload())
-                .catch((err) => console.error(err))
-            }
+            onClick={async () => {
+              try {
+                await Pay.subscribe({
+                  // @ts-ignore
+                  productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
+                  // @ts-ignore
+                  backendURL: process.env.REACT_APP_API_URL!,
+                  accessToken: localStorage.getItem('accessToken')!,
+                });
+                window.location.reload();
+              } catch (err) {
+                console.error(err);
+              }
+            }}
           />
         </div>
       );
