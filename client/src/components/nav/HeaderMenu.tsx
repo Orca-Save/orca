@@ -1,21 +1,18 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Menu, Space, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const { SubMenu } = Menu;
 const { Text } = Typography;
 
 export default function HeaderMenu({ className }: { className: string }) {
   const navigate = useNavigate();
-  const pathname = '';
+  const location = useLocation();
 
-  const [current, setCurrent] = useState(pathname);
-  useEffect(() => {
-    setCurrent(pathname);
-  }, [pathname]);
+  const pathname = location.pathname;
 
-  let topPath = current;
+  let topPath = pathname;
   if (topPath.includes('/log')) {
     topPath = '/log';
   }
@@ -51,7 +48,7 @@ export default function HeaderMenu({ className }: { className: string }) {
           <Menu.Item eventKey='/charts' key='/goals'>
             Charts
           </Menu.Item>
-          <Menu.Item eventKey='/log/transactions' key='/log'>
+          <Menu.Item eventKey='/log' key='/log'>
             Log
           </Menu.Item>
           {/* <SubMenu key='/log' title='Log' onTitleClick={() => onClick('/log')}>
