@@ -40,6 +40,7 @@ export async function setGooglePaySubscriptionToken(
     where: { userId },
     data: {
       googlePaySubscriptionToken: token,
+      subscriptionEnd: null,
     },
   });
   await db.userPurchaseToken.upsert({
