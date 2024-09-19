@@ -36,6 +36,7 @@ public class PayPlugin extends Plugin {
     private Activity activity;
     private String accessToken;
     private String backendURL;
+    private PluginCall pluginCall;
 
     @Override
     public void load() {
@@ -51,11 +52,16 @@ public class PayPlugin extends Plugin {
 
                                 // Send the purchaseToken to the backend
                                 sendPurchaseTokenToBackend(purchaseToken);
+                                pluginCall.resolve();
                             }
                         } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
                             // Handle user cancellation
+                            pluginCall.reject("User Cancelled");
+
                         } else {
                             // Handle other errors
+                            pluginCall.reject("Error");
+
                         }
                     }
                 })
@@ -68,6 +74,7 @@ public class PayPlugin extends Plugin {
             call.reject("Missing accessToken");
             return;
         }
+        pluginCall = call;
         backendURL = call.getString("backendURL");
         accessToken = call.getString("accessToken");
         if (billingClient.isReady()) {
