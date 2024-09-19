@@ -13,27 +13,29 @@ var clickPluginConfig = {
   autoCapture: true,
 };
 const initializeAppInsights = () => {
-  if (typeof window !== 'undefined') {
-    const customHistory = createBrowserHistory();
-    appInsights = new ApplicationInsights({
-      config: {
-        connectionString: process.env.REACT_APP_INSIGHTS_CONNECTION_STRING,
-        extensions: [reactPlugin, clickPluginInstance],
-        namePrefix: process.env.REACT_APP_INSIGHTS_NAME,
-        extensionConfig: {
-          [reactPlugin.identifier]: {
-            history: customHistory,
-          },
-          [clickPluginInstance.identifier]: clickPluginConfig,
+  const customHistory = createBrowserHistory();
+  appInsights = new ApplicationInsights({
+    config: {
+      connectionString: process.env.REACT_APP_INSIGHTS_CONNECTION_STRING,
+      extensions: [reactPlugin, clickPluginInstance],
+      namePrefix: process.env.REACT_APP_INSIGHTS_NAME,
+      extensionConfig: {
+        [reactPlugin.identifier]: {
+          history: customHistory,
         },
-        enableAutoRouteTracking: true,
-        distributedTracingMode: DistributedTracingModes.AI_AND_W3C,
-        disableTelemetry: false,
+        [clickPluginInstance.identifier]: clickPluginConfig,
       },
-    });
+      enableAutoRouteTracking: true,
+      enableCorsCorrelation: true,
+      correlationHeaderExcludedDomains: [
+        'https://orca-back-api.azurewebsites.net',
+      ],
+      distributedTracingMode: DistributedTracingModes.AI_AND_W3C,
+      disableTelemetry: false,
+    },
+  });
 
-    appInsights.loadAppInsights();
-  }
+  appInsights.loadAppInsights();
 };
 
 if (process.env.NODE_ENV === 'production') initializeAppInsights();
