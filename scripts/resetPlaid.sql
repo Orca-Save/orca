@@ -6,4 +6,4 @@ delete
 	FROM public."PlaidItem";
 
 UPDATE "UserProfile"
-SET "stripeCustomerId" = NULL,  "stripeSubscriptionId" = NULL, "privacyPolicyAccepted" = false;
+SET "stripeCustomerId" = NULL,  "stripeSubscriptionId" = NULL, "privacyPolicyAccepted" = false, "googlePaySubscriptionToken" = NULL;

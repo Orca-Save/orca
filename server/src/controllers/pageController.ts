@@ -147,16 +147,29 @@ export const transactionsPage = async (req: Request, res: Response) => {
 export const onboardingPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
-    const [linkToken, userProfile, itemsData, onboardingProfile] =
-      await Promise.all([
-        createLinkToken(userId),
-        getUserProfile(userId),
-        getAllLinkedItems(userId),
-        getOnboardingProfile(userId),
-      ]);
-    res
-      .status(200)
-      .send({ linkToken, userProfile, itemsData, onboardingProfile });
+    const [
+      linkToken,
+      userProfile,
+      itemsData,
+      onboardingProfile,
+      stripeSubscription,
+      googleSubscription,
+    ] = await Promise.all([
+      createLinkToken(userId),
+      getUserProfile(userId),
+      getAllLinkedItems(userId),
+      getOnboardingProfile(userId),
+      getStripeSubscription(userId),
+      getGoogleSubscriptionStatus(userId),
+    ]);
+    res.status(200).send({
+      linkToken,
+      userProfile,
+      itemsData,
+      onboardingProfile,
+      stripeSubscription,
+      googleSubscription,
+    });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
@@ -185,10 +198,12 @@ export const userPage = async (req: Request, res: Response) => {
 export const reviewPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
-    const [formattedTransactions, pinnedUserGoal] = await Promise.all([
-      getFormattedTransactions(userId, false),
-      getPinnedUserGoal(userId),
-    ]);
+    const [formattedTransactionsUnfiltered, pinnedUserGoal] = await Promise.all(
+      [getFormattedTransactions(userId, false), getPinnedUserGoal(userId)]
+    );
+    const formattedTransactions = formattedTransactionsUnfiltered.filter(
+      (t) => t.amount > 0
+    );
     res.status(200).send({ formattedTransactions, pinnedUserGoal });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });

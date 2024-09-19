@@ -1,5 +1,4 @@
 import { HappyProvider } from '@ant-design/happy-work-theme';
-import { useMsal } from '@azure/msal-react';
 import {
   Button,
   ConfigProvider,
@@ -37,9 +36,7 @@ export default function Dashboard({
   const oneTapSaves = useRef(null);
   const impulseSaves = useRef(null);
   const reviewTransactions = useRef(null);
-  const { accounts } = useMsal();
   const [searchParams, setSearchParams] = useSearchParams();
-  const userId = accounts[0]?.localAccountId;
 
   const [open, setOpen] = useState<boolean>(!!userTour?.dashQuickSave == false);
 

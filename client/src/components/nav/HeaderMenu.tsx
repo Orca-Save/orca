@@ -23,7 +23,9 @@ export default function HeaderMenu({ className }: { className: string }) {
         mode='horizontal'
         selectedKeys={[topPath]}
         onSelect={({ key }) => {
-          navigate(key);
+          console.log('key', key);
+          if (key === '/log') navigate('/log/transactions');
+          else navigate(key);
         }}
       >
         <Space

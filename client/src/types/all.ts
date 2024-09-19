@@ -42,6 +42,7 @@ export type FormattedTransaction = {
 
 export type UserProfile = {
   privacyPolicyAccepted: boolean;
+  googlePaySubscriptionToken: string;
   stripeSubscriptionId: string;
 };
 export type OnboardingProfile = {

@@ -1223,6 +1223,9 @@ export const getUnreadTransactionCount = async (
     where: {
       userId,
       read: false,
+      amount: {
+        gt: 0,
+      },
       // recurring: false,
     },
     orderBy: {

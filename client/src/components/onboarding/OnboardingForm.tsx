@@ -16,6 +16,7 @@ import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useMsal } from '@azure/msal-react';
+import { Capacitor } from '@capacitor/core';
 import { ItemData, OnboardingProfile, UserProfile } from '../../types/all';
 import { applyFormErrors } from '../../utils/forms';
 import { apiFetch } from '../../utils/general';
@@ -25,12 +26,15 @@ import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
 import CheckoutForm from '../stripe/CheckoutForm';
 import PlaidLink from '../user/PlaidLink';
+import Subscription from '../user/Subscription';
 
 const { Title, Text, Paragraph } = Typography;
 type OnboardingFormProps = {
   userProfile: UserProfile | null;
   linkToken: string;
   itemsData: ItemData[];
+  stripeSubscription: any;
+  googleSubscription: any;
   onboardingProfile: OnboardingProfile | null;
 };
 export default function OnboardingForm({
@@ -38,6 +42,8 @@ export default function OnboardingForm({
   userProfile,
   itemsData,
   onboardingProfile,
+  stripeSubscription,
+  googleSubscription,
 }: OnboardingFormProps) {
   const navigate = useNavigate();
   const { accounts } = useMsal();
@@ -49,6 +55,7 @@ export default function OnboardingForm({
   const [pageState, setPageState] = useState(
     initialPageState(onboardingProfile, userProfile)
   );
+  const platform = Capacitor.getPlatform();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const account = accounts[0];
   const currentTab = Number(pageState.tabKey);
@@ -59,6 +66,13 @@ export default function OnboardingForm({
     disableNext = true;
   if (currentTab === 5 && itemsData.length === 0) disableNext = true;
 
+  console.log(
+    'tests',
+    currentTab,
+    platform,
+    userProfile,
+    !userProfile?.googlePaySubscriptionToken
+  );
   return (
     <Form
       form={form}
@@ -275,11 +289,21 @@ export default function OnboardingForm({
                     </Paragraph>
                   )}
 
-                  {currentTab === 4 && !userProfile?.stripeSubscriptionId ? (
+                  {currentTab === 4 &&
+                  platform === 'web' &&
+                  !userProfile?.stripeSubscriptionId ? (
                     <CheckoutForm
                       setSubscriptionId={(id) => {
                         if (userProfile) userProfile.stripeSubscriptionId = id;
                       }}
+                    />
+                  ) : null}
+
+                  {currentTab === 4 && platform === 'android' && userProfile ? (
+                    <Subscription
+                      userProfile={userProfile}
+                      stripeSubscription={stripeSubscription}
+                      googleSubscription={googleSubscription}
                     />
                   ) : null}
                 </div>
@@ -435,7 +459,11 @@ function initialPageState(
     if (onboardingProfile.goalName) tabKey = '2';
     if (onboardingProfile.saving) tabKey = '3';
     if (userProfile?.privacyPolicyAccepted) tabKey = '4';
-    if (userProfile?.stripeSubscriptionId) tabKey = '5';
+    if (
+      userProfile?.stripeSubscriptionId ||
+      userProfile?.googlePaySubscriptionToken
+    )
+      tabKey = '5';
   }
   return {
     tabKey,

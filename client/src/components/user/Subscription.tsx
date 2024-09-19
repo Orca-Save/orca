@@ -27,7 +27,7 @@ export default function Subscription({
   const platform = Capacitor.getPlatform();
 
   if (platform === 'android') {
-    if (googleSubscription?.cancelReason === undefined)
+    if (googleSubscription && googleSubscription?.cancelReason === undefined)
       return (
         <Button
           onClick={async () => {

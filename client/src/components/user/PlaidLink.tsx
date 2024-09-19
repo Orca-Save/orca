@@ -79,7 +79,7 @@ const LinkButton = (props: LinkProps) => {
     onLoad: () => {
       console.log('Plaid Link has loaded.');
     },
-    // oauthRedirectUri: 'com.orcamoney.app://user',
+    oauthRedirectUri: 'com.orcamoney.app://onboarding',
     // platform !== 'web' ? 'com.orcamoney.app://user' : undefined,
   };
   const { open, ready } = usePlaidLink(config);
