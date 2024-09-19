@@ -5,8 +5,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { Capacitor } from '@capacitor/core';
-import useFetch from '../../hooks/useFetch';
 import Pay from '../../plugins/payPlugin';
+import { UserProfile } from '../../types/all';
 import { apiFetch } from '../../utils/general';
 import UpdateSubscriptionForm from './UpdateSubscriptionForm';
 //@ts-ignore
@@ -14,11 +14,16 @@ import { ReactComponent as GooglePay } from './googlePay.svg';
 
 const { Title, Text } = Typography;
 
-export default function Subscription() {
+export default function Subscription({
+  userProfile,
+  stripeSubscription,
+  googleSubscription,
+}: {
+  userProfile: UserProfile;
+  stripeSubscription: any;
+  googleSubscription: any;
+}) {
   dayjs.extend(localizedFormat);
-  const { data } = useFetch('api/components/subscription', 'GET');
-  if (!data) return null;
-  const { userProfile, stripeSubscription, googleSubscription } = data;
   const platform = Capacitor.getPlatform();
 
   if (platform === 'android') {
@@ -45,8 +50,10 @@ export default function Subscription() {
                 await Pay.subscribe({
                   // @ts-ignore
                   productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
-                  // @ts-ignore
-                  backendURL: process.env.REACT_APP_API_URL!,
+                  backendURL:
+                    // @ts-ignore
+                    process.env.REACT_APP_API_URL! +
+                    '/api/users/setGoogleSubscriptionToken',
                   accessToken: localStorage.getItem('accessToken')!,
                 });
                 window.location.reload();

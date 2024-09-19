@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { Button, Modal, Typography } from 'antd';
 import { useState } from 'react';
 import { PlaidLinkOnSuccessMetadata, usePlaidLink } from 'react-plaid-link';
@@ -25,6 +26,8 @@ const LinkButton = (props: LinkProps) => {
     null
   );
 
+  const platform = Capacitor.getPlatform();
+
   const handleExistingInstitution = async () => {
     if (publicToken && metadata) {
       setLoading(true);
@@ -40,11 +43,13 @@ const LinkButton = (props: LinkProps) => {
     public_token: string,
     metadata: PlaidLinkOnSuccessMetadata
   ) => {
-    const results = await exchangePublicToken(
-      public_token,
+    console.log('success plaid link');
+    const results = await apiFetch('/api/plaid/exchangeToken', 'POST', {
+      publicToken: public_token,
       metadata,
-      props.overrideExistingAccountCheck!!
-    );
+      overrideExistingCheck: props.overrideExistingAccountCheck!!,
+    });
+    console.log('results', results);
     if (results.duplicate) {
       setIsDuplicateModalOpen(true);
     } else if (results.existingInstitution) {
@@ -58,6 +63,24 @@ const LinkButton = (props: LinkProps) => {
   const config: Parameters<typeof usePlaidLink>[0] = {
     token: props.linkToken!,
     onSuccess,
+    onExit: (error, metadata) => {
+      console.log('plaid link exit');
+      if (error) {
+        console.error('Link session encountered an error:', error);
+      }
+      // Redirect to the URL when the user exits the Link flow.
+      // if (metadata && metadata.link_session_id) {
+      //   window.location.href = 'https://your-redirect-url.com';
+      // }
+    },
+    onEvent: (eventName, metadata) => {
+      console.log('Link Event:', eventName, metadata);
+    },
+    onLoad: () => {
+      console.log('Plaid Link has loaded.');
+    },
+    // oauthRedirectUri: 'com.orcamoney.app://user',
+    // platform !== 'web' ? 'com.orcamoney.app://user' : undefined,
   };
   const { open, ready } = usePlaidLink(config);
   return (
@@ -125,9 +148,5 @@ function exchangePublicToken(
   metadata: PlaidLinkOnSuccessMetadata,
   overrideExistingCheck: boolean
 ) {
-  return apiFetch('/api/plaid/exchangeToken', 'POST', {
-    publicToken,
-    metadata,
-    overrideExistingCheck,
-  });
+  return;
 }

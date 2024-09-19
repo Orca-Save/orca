@@ -154,12 +154,14 @@ export async function exchangePublicToken(
       institutionId,
       loginRequired: false,
       updatedAt: new Date(),
+      deletedAt: null,
     },
     create: {
       userId,
       institutionId,
       accessToken,
       itemId,
+      deletedAt: null,
       updatedAt: new Date(),
     },
   });

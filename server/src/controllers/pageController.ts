@@ -23,6 +23,7 @@ import {
   getFormattedTransactions,
   getUnreadTransactionCount,
 } from '../utils/plaid';
+import { getStripeSubscription } from '../utils/stripe';
 import { getGoalTransfers } from '../utils/transactions';
 import { completedUserGoalCount, getPinnedUserGoal } from '../utils/users';
 
@@ -165,8 +166,16 @@ export const onboardingPage = async (req: Request, res: Response) => {
 export const userPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
-    const [linkToken] = await Promise.all([createLinkToken(userId)]);
-    res.status(200).send({ linkToken });
+    const [linkToken, userProfile, stripeSubscription, googleSubscription] =
+      await Promise.all([
+        createLinkToken(userId),
+        getUserProfile(userId),
+        getStripeSubscription(userId),
+        getGoogleSubscriptionStatus(userId),
+      ]);
+    res
+      .status(200)
+      .send({ linkToken, userProfile, stripeSubscription, googleSubscription });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });

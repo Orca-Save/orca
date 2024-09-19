@@ -21,7 +21,8 @@ export default function UserPage() {
         </Button>
       </>
     );
-  const { linkToken } = data;
+  const { linkToken, userProfile, stripeSubscription, googleSubscription } =
+    data;
   const handleLogout = () => {
     instance.logoutPopup();
   };
@@ -29,7 +30,11 @@ export default function UserPage() {
     <>
       <Title>User Profile</Title>
       <Space direction='vertical' size='large'>
-        <Subscription />
+        <Subscription
+          userProfile={userProfile}
+          stripeSubscription={stripeSubscription}
+          googleSubscription={googleSubscription}
+        />
 
         <ClearUserData />
         <div>

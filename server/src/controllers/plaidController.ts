@@ -45,14 +45,12 @@ export const exchangeToken = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
     const { publicToken, metadata } = req.body;
-    const results = await Promise.all([
-      exchangePublicToken(
-        publicToken,
-        metadata,
-        userId,
-        req.body.overrideExistingCheck
-      ),
-    ]);
+    const results = await exchangePublicToken(
+      publicToken,
+      metadata,
+      userId,
+      req.body.overrideExistingCheck
+    );
     res.status(200).send(results);
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
