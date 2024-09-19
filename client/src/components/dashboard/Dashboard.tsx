@@ -37,7 +37,6 @@ export default function Dashboard({
   const oneTapSaves = useRef(null);
   const impulseSaves = useRef(null);
   const reviewTransactions = useRef(null);
-  console.log('env', process.env.NODE_ENV);
   const { accounts } = useMsal();
   const [searchParams, setSearchParams] = useSearchParams();
   const userId = accounts[0]?.localAccountId;

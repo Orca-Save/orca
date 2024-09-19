@@ -29,7 +29,6 @@ export class CustomNavigationClient extends NavigationClient {
           });
         } else if (data.url && data.url.includes('onboarding')) {
           Browser.close();
-          console.log('onboarding', data.url);
         }
       };
       CapacitorApp.addListener('appUrlOpen', appUrlOpenListener);

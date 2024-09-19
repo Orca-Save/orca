@@ -15,7 +15,6 @@ import { CustomNavigationClient } from './utils/navigationClient';
 //@ts-ignore
 const msalInstance = new PublicClientApplication(msalConfig);
 if (Capacitor.getPlatform() !== 'web') {
-  console.log('running on mobile');
   const navigationClient = new CustomNavigationClient(msalInstance);
   msalInstance.setNavigationClient(navigationClient);
 }
