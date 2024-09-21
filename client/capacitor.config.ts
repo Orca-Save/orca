@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.orcamoney.app',
-  appName: 'client2',
+  appName: 'Orca',
   webDir: 'build',
   android: { allowMixedContent: true },
   plugins: {
