@@ -57,9 +57,12 @@ export default function SignUpPage() {
         >
           Impulse saving.
         </h1>
-        <p className=' text-3xl px-4' style={{ textAlign: 'center' }}>
-          Stop buying what you don&apos;t need, so you can save for what you
-          really want.
+        <p className='text-3xl px-4' style={{ textAlign: 'center' }}>
+          Transform impulse spending into impulse saving by setting aside money
+          from unnecessary purchases for meaningful goals with just a tap.
+        </p>
+        <p className='text-3xl px-4' style={{ textAlign: 'center' }}>
+          Join the pod saving $35 a week.
         </p>
 
         <div className='w-100 flex flex-col space-y-4 px-12'>
@@ -70,7 +73,7 @@ export default function SignUpPage() {
             className='w-full'
             onClick={handleLogin}
           >
-            Lets go!
+            Lets do this.
           </Button>
         </div>
       </Space>
