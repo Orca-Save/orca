@@ -135,7 +135,6 @@ export async function getGoogleSubscriptionStatus(userId: string) {
       token: purchaseToken,
     });
 
-    console.log('Subscription status:', response.data);
     return await getSubscriptionStatus(response.data);
   } catch (err: any) {
     console.error('Failed to get subscription status:', err.message);
@@ -190,7 +189,6 @@ export async function getGoogleSubscriptionStatusByToken(
       token: purchaseToken,
     });
 
-    console.log('Subscription status:', response.data);
     return response.data;
   } catch (err: any) {
     console.error('Failed to get subscription status:', err.message);
