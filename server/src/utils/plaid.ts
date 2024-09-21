@@ -1101,14 +1101,15 @@ export async function getAllLinkedItems(userId: string): Promise<ItemData[]> {
     itemsMeta.map(async (item) => {
       let linkToken = '';
       try {
-        if (!item.accessToken) throw new Error('Access token not found');
         linkToken = (
           await createLinkToken(userId, item.accessToken ?? undefined)
         ).link_token;
 
-        const accounts = await db.account.findMany({
-          where: { accessToken: item.accessToken },
-        });
+        let accounts: Account[] = [];
+        if (item.accessToken)
+          accounts = await db.account.findMany({
+            where: { accessToken: item.accessToken },
+          });
         let institution: Institution | undefined = undefined;
         if (item) institution = await getInstitutionById(item.institutionId!);
         return {

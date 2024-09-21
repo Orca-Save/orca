@@ -8,7 +8,6 @@ import { Capacitor } from '@capacitor/core';
 import Pay from '../../plugins/payPlugin';
 import { UserProfile } from '../../types/all';
 import { apiFetch } from '../../utils/general';
-import UpdateSubscriptionForm from './UpdateSubscriptionForm';
 //@ts-ignore
 import { ReactComponent as GooglePay } from './googlePay.svg';
 
@@ -26,45 +25,7 @@ export default function Subscription({
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
 
-  if (platform === 'android') {
-    if (googleSubscription && googleSubscription?.cancelReason === undefined)
-      return (
-        <Button
-          onClick={async () => {
-            await apiFetch('/api/users/cancelGoogleSub', 'GET');
-            window.location.reload();
-          }}
-        >
-          Cancel
-        </Button>
-      );
-    else
-      return (
-        <div>
-          <Title level={4}>Subscription</Title>
-          Subscribe to link your bank
-          <GooglePay
-            style={{ height: 70 }}
-            onClick={async () => {
-              try {
-                await Pay.subscribe({
-                  // @ts-ignore
-                  productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
-                  backendURL:
-                    // @ts-ignore
-                    process.env.REACT_APP_API_URL! +
-                    '/api/users/setGoogleSubscriptionToken',
-                  accessToken: localStorage.getItem('accessToken')!,
-                });
-                window.location.reload();
-              } catch (err) {
-                console.error(err);
-              }
-            }}
-          />
-        </div>
-      );
-  } else if (userProfile?.stripeSubscriptionId) {
+  if (userProfile?.stripeSubscriptionId && stripeSubscription) {
     return (
       <>
         <Title level={4}>Subscription</Title>
@@ -85,17 +46,104 @@ export default function Subscription({
               : 'Active'}
           </Text>
         </div>
-        <UpdateSubscriptionForm
-          cancel={!stripeSubscription?.cancel_at_period_end}
-          actionText={
-            stripeSubscription?.cancel_at_period_end
-              ? 'Continue Subscription'
-              : 'Stop Subscription'
-          }
-        />
+        <Button
+          data-id='update-subscription-button'
+          onClick={async () => {
+            await apiFetch('/api/stripe/updateSubscription', 'POST', {
+              cancel: !stripeSubscription?.cancel_at_period_end,
+            });
+            window.location.reload();
+          }}
+        >
+          {stripeSubscription?.cancel_at_period_end
+            ? 'Continue Subscription'
+            : 'Stop Subscription'}
+        </Button>
       </>
     );
   }
+
+  if (platform === 'android' && googleSubscription)
+    return (
+      <div>
+        <Title level={4}>Subscription</Title>
+        {googleSubscription ? (
+          <>
+            <div>
+              <Text>
+                Next Bill Date:{' '}
+                {googleSubscription?.expiryTimeMillis
+                  ? dayjs(googleSubscription.expiryTimeMillis).format('LL')
+                  : 'N/A'}
+              </Text>
+            </div>
+            <div>
+              <Text>
+                Rate:{' '}
+                {googleSubscription?.priceAmountMicros
+                  ? `${(googleSubscription.priceAmountMicros / 1e6).toFixed(
+                      2
+                    )} ${googleSubscription.priceCurrencyCode}/month`
+                  : 'N/A'}
+              </Text>
+            </div>
+            <div>
+              <Text>
+                Status:{' '}
+                {googleSubscription
+                  ? googleSubscription.isActive
+                    ? 'Active'
+                    : googleSubscription.subscriptionStatus.replaceAll('_', ' ')
+                  : 'Unknown'}
+              </Text>
+            </div>
+            <div>
+              <Text>
+                Manage your subscription in the Google Play Store below
+              </Text>
+            </div>
+          </>
+        ) : (
+          <Text>Subscribe to link your bank</Text>
+        )}
+        {platform === 'android' ? (
+          <GooglePay
+            style={{ height: 70 }}
+            onClick={async () => {
+              try {
+                if (
+                  !googleSubscription ||
+                  googleSubscription?.isActive === false
+                ) {
+                  await Pay.subscribe({
+                    // @ts-ignore
+                    productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
+                    backendURL:
+                      // @ts-ignore
+                      process.env.REACT_APP_API_URL!,
+                    accessToken: localStorage.getItem('accessToken')!,
+                  });
+                } else {
+                  await Pay.manageSubscription();
+                }
+                window.location.reload();
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+          />
+        ) : (
+          <Button
+            onClick={async () => {
+              await apiFetch('/api/users/cancelGoogleSub', 'GET');
+              window.location.reload();
+            }}
+          >
+            Cancel
+          </Button>
+        )}
+      </div>
+    );
 
   return (
     <>

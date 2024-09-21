@@ -36,6 +36,7 @@ type OnboardingFormProps = {
   stripeSubscription: any;
   googleSubscription: any;
   onboardingProfile: OnboardingProfile | null;
+  isActiveSubscription: boolean;
 };
 export default function OnboardingForm({
   linkToken,
@@ -44,6 +45,7 @@ export default function OnboardingForm({
   onboardingProfile,
   stripeSubscription,
   googleSubscription,
+  isActiveSubscription,
 }: OnboardingFormProps) {
   const navigate = useNavigate();
   const { accounts } = useMsal();
@@ -66,13 +68,6 @@ export default function OnboardingForm({
     disableNext = true;
   if (currentTab === 5 && itemsData.length === 0) disableNext = true;
 
-  console.log(
-    'tests',
-    currentTab,
-    platform,
-    userProfile,
-    !userProfile?.googlePaySubscriptionToken
-  );
   return (
     <Form
       form={form}

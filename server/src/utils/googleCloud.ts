@@ -36,6 +36,72 @@ async function getPlayDeveloperApi() {
   return playDeveloperApi;
 }
 
+export async function getSubscriptionStatus(
+  subscription: androidpublisher_v3.Schema$SubscriptionPurchase
+) {
+  if (!subscription.expiryTimeMillis)
+    throw Error('Invalid subscription data: expiryTimeMillis is missing');
+  const currentTimeMillis = Date.now();
+  const expiryTimeMillis = parseInt(subscription.expiryTimeMillis, 10);
+
+  if (isNaN(expiryTimeMillis)) throw Error('Invalid expiryTimeMillis value');
+
+  const paymentState =
+    subscription.paymentState !== undefined ? subscription.paymentState : -1;
+  const cancelReason = subscription.cancelReason;
+
+  let isActive = false;
+  let subscriptionStatus = 'UNKNOWN';
+
+  if (expiryTimeMillis > currentTimeMillis) {
+    if (paymentState === 1) {
+      isActive = true;
+      subscriptionStatus = 'ACTIVE';
+    } else if (paymentState === 0) {
+      isActive = false;
+      subscriptionStatus = 'PAYMENT_PENDING';
+    } else if (paymentState === 2) {
+      isActive = true;
+      subscriptionStatus = 'ACTIVE_FREE_TRIAL';
+    } else {
+      isActive = false;
+      subscriptionStatus = 'UNKNOWN_PAYMENT_STATE';
+    }
+  } else {
+    isActive = false;
+    subscriptionStatus = 'EXPIRED';
+  }
+
+  if (cancelReason !== undefined && cancelReason !== null) {
+    switch (cancelReason) {
+      case 0:
+        subscriptionStatus = 'CANCELED_BY_USER';
+        break;
+      case 1:
+        subscriptionStatus = 'CANCELED_BY_SYSTEM';
+        break;
+      case 2:
+        subscriptionStatus = 'REPLACED';
+        break;
+      case 3:
+        subscriptionStatus = 'CANCELED_BY_DEVELOPER';
+        break;
+      default:
+        subscriptionStatus = 'CANCELED';
+    }
+    isActive = false;
+  }
+
+  return {
+    ...subscription,
+    subscriptionStatus,
+    isActive,
+    expiryTimeMillis,
+    paymentState,
+    cancelReason,
+  };
+}
+
 export async function cancelSubscription(purchaseToken: string) {
   try {
     const playDeveloperApi = await getPlayDeveloperApi();
@@ -70,7 +136,7 @@ export async function getGoogleSubscriptionStatus(userId: string) {
     });
 
     console.log('Subscription status:', response.data);
-    return response.data;
+    return await getSubscriptionStatus(response.data);
   } catch (err: any) {
     console.error('Failed to get subscription status:', err.message);
   }
@@ -91,7 +157,15 @@ export async function getVoidedPurchases(
   return voidedPurchasesResponse.data.voidedPurchases || [];
 }
 
-export async function isSubscriptionExpired(
+export async function isSubscriptionExpired(subscriptionToken: string) {
+  const subscriptionStatus = await getGoogleSubscriptionStatusByToken(
+    subscriptionToken
+  );
+  // check if expiry time is in the future
+  return !isSubscriptionStatusExpired(subscriptionStatus);
+}
+
+export async function isSubscriptionStatusExpired(
   subscriptionStatus?: androidpublisher_v3.Schema$SubscriptionPurchase
 ) {
   if (!subscriptionStatus || !subscriptionStatus.expiryTimeMillis) {

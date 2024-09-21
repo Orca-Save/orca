@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { PlaidLinkOnSuccessMetadata, usePlaidLink } from 'react-plaid-link';
 import { Link } from 'react-router-dom';
 
+import useFetch from '../../hooks/useFetch';
 import { apiFetch } from '../../utils/general';
 
-const { Paragraph } = Typography;
+const { Paragraph, Text } = Typography;
 
 interface LinkProps {
   linkToken: string | null;
@@ -16,6 +17,8 @@ interface LinkProps {
 }
 
 const LinkButton = (props: LinkProps) => {
+  const { data } = useFetch('api/components/plaidLink', 'GET');
+
   const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
   const [isExistingInstitutionModalOpen, setIsExistingInstitutionModalOpen] =
     useState(false);
@@ -26,30 +29,16 @@ const LinkButton = (props: LinkProps) => {
     null
   );
 
-  const platform = Capacitor.getPlatform();
-
-  const handleExistingInstitution = async () => {
-    if (publicToken && metadata) {
-      setLoading(true);
-
-      await exchangePublicToken(publicToken, metadata, true);
-      setLoading(false);
-      setIsExistingInstitutionModalOpen(false);
-      window.location.reload();
-    }
-  };
-
   const onSuccess = async (
     public_token: string,
     metadata: PlaidLinkOnSuccessMetadata
   ) => {
-    console.log('success plaid link');
-    const results = await apiFetch('/api/plaid/exchangeToken', 'POST', {
-      publicToken: public_token,
+    const results = await exchangePublicToken(
+      public_token,
       metadata,
-      overrideExistingCheck: props.overrideExistingAccountCheck!!,
-    });
-    console.log('results', results);
+      props.overrideExistingAccountCheck!!
+    );
+
     if (results.duplicate) {
       setIsDuplicateModalOpen(true);
     } else if (results.existingInstitution) {
@@ -64,36 +53,44 @@ const LinkButton = (props: LinkProps) => {
     token: props.linkToken!,
     onSuccess,
     onExit: (error, metadata) => {
-      console.log('plaid link exit');
       if (error) {
         console.error('Link session encountered an error:', error);
       }
-      // Redirect to the URL when the user exits the Link flow.
-      // if (metadata && metadata.link_session_id) {
-      //   window.location.href = 'https://your-redirect-url.com';
-      // }
     },
-    onEvent: (eventName, metadata) => {
-      console.log('Link Event:', eventName, metadata);
-    },
-    onLoad: () => {
-      console.log('Plaid Link has loaded.');
-    },
-    oauthRedirectUri: 'com.orcamoney.app://onboarding',
-    // platform !== 'web' ? 'com.orcamoney.app://user' : undefined,
+    // onEvent: (eventName, metadata) => {},
+    // onLoad: () => {},
   };
   const { open, ready } = usePlaidLink(config);
+  if (!data) return null;
+  const { isActiveSubscription } = data;
+  const platform = Capacitor.getPlatform();
+  const handleExistingInstitution = async () => {
+    if (publicToken && metadata) {
+      setLoading(true);
+
+      await exchangePublicToken(publicToken, metadata, true);
+      setLoading(false);
+      setIsExistingInstitutionModalOpen(false);
+      window.location.reload();
+    }
+  };
+
   return (
     <>
-      <Button
-        data-id='plaid-link-button'
-        type='primary'
-        size={props.size ?? 'large'}
-        onClick={() => open()}
-        disabled={!ready}
-      >
-        {props.text ?? 'Link New Bank'}
-      </Button>
+      {isActiveSubscription ? (
+        <Button
+          data-id='plaid-link-button'
+          type='primary'
+          size={props.size ?? 'large'}
+          onClick={() => open()}
+          disabled={!ready}
+        >
+          {props.text ?? 'Link New Bank'}
+        </Button>
+      ) : (
+        <Text>You must be subscribed to link a bank account.</Text>
+      )}
+
       <Modal
         title='Duplicate Account Detected'
         open={isDuplicateModalOpen}
@@ -148,5 +145,9 @@ function exchangePublicToken(
   metadata: PlaidLinkOnSuccessMetadata,
   overrideExistingCheck: boolean
 ) {
-  return;
+  return apiFetch('/api/plaid/exchangeToken', 'POST', {
+    publicToken,
+    metadata,
+    overrideExistingCheck,
+  });
 }

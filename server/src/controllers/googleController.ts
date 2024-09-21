@@ -4,8 +4,9 @@ import { appInsightsClient } from '../utils/appInsights';
 import db from '../utils/db';
 import {
   getGoogleSubscriptionStatusByToken,
+  getSubscriptionStatus,
   getVoidedPurchases,
-  isSubscriptionExpired,
+  isSubscriptionStatusExpired,
 } from '../utils/googleCloud';
 import { removePlaidItemsForUser } from '../utils/plaid';
 
@@ -64,7 +65,7 @@ export async function webhookHandler(req: Request, res: Response) {
         purchaseToken
       );
 
-      const expired = await isSubscriptionExpired(purchaseToken);
+      const expired = await isSubscriptionStatusExpired(purchaseToken);
 
       const userProfile = await db.userProfile.findFirst({
         where: { googlePaySubscriptionToken: purchaseToken },
@@ -232,5 +233,44 @@ export async function webhookHandler(req: Request, res: Response) {
       exception: error,
     });
     res.status(401).send('Unauthorized: Token verification failed');
+  }
+}
+
+export async function verifySubscriptionStatus(req: Request, res: Response) {
+  try {
+    const userId = (req as any).user.oid;
+    const token = req.body.token;
+
+    const userProfile = await db.userProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!userProfile) {
+      res.status(404).send({ message: 'User not found' });
+      return;
+    } else if (userProfile.googlePaySubscriptionToken !== token) {
+      res.status(401).send({ message: 'Unauthorized' });
+      return;
+    } else {
+      const subscription = await getGoogleSubscriptionStatusByToken(token);
+
+      // Check if subscription is undefined
+      if (!subscription) {
+        res.status(404).send({ message: 'Subscription not found' });
+        return;
+      }
+
+      // Ensure that expiryTimeMillis is defined and is a string
+
+      const response = await getSubscriptionStatus(subscription);
+
+      res.status(200).send(response);
+    }
+  } catch (error) {
+    console.error('Error verifying subscription status:', error);
+    appInsightsClient.trackException({
+      exception: error,
+    });
+    res.status(500).send({ message: 'Error verifying subscription status' });
   }
 }

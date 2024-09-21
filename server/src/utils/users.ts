@@ -1,6 +1,10 @@
 import { Goal, GoalTransfer, UserTour } from '@prisma/client';
 import db from './db/db';
-import { cancelSubscription } from './googleCloud';
+import {
+  cancelSubscription,
+  isSubscriptionExpired as isGoogleSubscriptionExpired,
+} from './googleCloud';
+import { isSubscriptionExpired as isStripeSubscriptionExpired } from './stripe';
 export const getPinnedUserGoal = (userId: string) => {
   return db.goal.findFirst({
     where: {
@@ -55,6 +59,29 @@ export async function setGooglePaySubscriptionToken(
   });
 
   return updatedUser;
+}
+
+export async function isActiveSubscriber(userId: string) {
+  const userProfile = await db.userProfile.findUnique({
+    where: { userId },
+  });
+  if (!userProfile) throw Error('User not found');
+  let active = false;
+  if (
+    userProfile.googlePaySubscriptionToken &&
+    (await isGoogleSubscriptionExpired(
+      userProfile.googlePaySubscriptionToken
+    )) === false
+  )
+    active = true;
+  if (
+    userProfile.stripeSubscriptionId &&
+    (await isStripeSubscriptionExpired(userProfile.stripeSubscriptionId)) ===
+      false
+  )
+    active = true;
+
+  return active;
 }
 
 export async function cancelGoogleSubscription(userId: string) {

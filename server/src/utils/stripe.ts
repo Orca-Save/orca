@@ -251,6 +251,15 @@ export async function createPaymentIntent(userId: string, email: string) {
   return { paymentIntent };
 }
 
+export async function isSubscriptionExpired(subscriptionId: string) {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const isCancelled =
+    subscription.status === 'canceled' || subscription.status === 'unpaid';
+  // Convert subscription current_period_end to milliseconds
+  const isExpired = subscription.current_period_end * 1000 < Date.now();
+  return isCancelled || isExpired;
+}
+
 export async function createSubscription(
   userId: string,
   email: string
@@ -360,7 +369,6 @@ export async function updateSubscription(
     }
   );
 
-  await removePlaidItemsForUser(userId);
   return {
     message: 'Cancel success!',
   };

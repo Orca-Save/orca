@@ -25,7 +25,11 @@ import {
 } from '../utils/plaid';
 import { getStripeSubscription } from '../utils/stripe';
 import { getGoalTransfers } from '../utils/transactions';
-import { completedUserGoalCount, getPinnedUserGoal } from '../utils/users';
+import {
+  completedUserGoalCount,
+  getPinnedUserGoal,
+  isActiveSubscriber,
+} from '../utils/users';
 
 export const dashboardPage = async (req: Request, res: Response) => {
   try {
@@ -39,7 +43,6 @@ export const dashboardPage = async (req: Request, res: Response) => {
       userTour,
       sums,
       completedCounts,
-      subscriptionPrice,
     ] = await Promise.all([
       getOnboardingProfileCount(userId),
       getPinnedGoalTransfers(userId),
@@ -50,10 +53,8 @@ export const dashboardPage = async (req: Request, res: Response) => {
       getGoalTransfersSum(userId),
       completedUserGoalCount(userId),
       getGoogleSubscriptionStatus(userId),
-      // getSubscriptionPriceById(),
     ]);
 
-    console.log(subscriptionPrice);
     if (goal) {
       const goalSumMap = new Map(
         sums.map((item) => [
@@ -179,16 +180,26 @@ export const onboardingPage = async (req: Request, res: Response) => {
 export const userPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
-    const [linkToken, userProfile, stripeSubscription, googleSubscription] =
-      await Promise.all([
-        createLinkToken(userId),
-        getUserProfile(userId),
-        getStripeSubscription(userId),
-        getGoogleSubscriptionStatus(userId),
-      ]);
-    res
-      .status(200)
-      .send({ linkToken, userProfile, stripeSubscription, googleSubscription });
+    const [
+      linkToken,
+      userProfile,
+      isActiveSubscription,
+      stripeSubscription,
+      googleSubscription,
+    ] = await Promise.all([
+      createLinkToken(userId),
+      getUserProfile(userId),
+      isActiveSubscriber(userId),
+      getStripeSubscription(userId),
+      getGoogleSubscriptionStatus(userId),
+    ]);
+    res.status(200).send({
+      linkToken,
+      userProfile,
+      isActiveSubscription,
+      stripeSubscription,
+      googleSubscription,
+    });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });

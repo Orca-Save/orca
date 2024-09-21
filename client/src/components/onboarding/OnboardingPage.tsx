@@ -12,6 +12,7 @@ export default function OnboardingPage() {
     itemsData,
     onboardingProfile,
     stripeSubscription,
+    isActiveSubscription,
     googleSubscription,
   } = data ?? {};
   if (!data) return null;
@@ -19,6 +20,7 @@ export default function OnboardingPage() {
     <Flex justify='center' className='w-full'>
       <OnboardingForm
         linkToken={linkToken.link_token}
+        isActiveSubscription={isActiveSubscription}
         userProfile={userProfile}
         itemsData={itemsData}
         stripeSubscription={stripeSubscription}

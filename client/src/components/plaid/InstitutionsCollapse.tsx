@@ -32,6 +32,7 @@ const InstitutionCollapse = ({
   return (
     <Collapse>
       <Panel
+        forceRender
         header={
           <div
             style={{
@@ -41,7 +42,8 @@ const InstitutionCollapse = ({
             }}
           >
             <span>
-              {institution?.name ?? 'Login required. Expand to complete login.'}
+              {institution?.name ??
+                'Login or subscription required. Expand to complete login.'}
             </span>
           </div>
         }
@@ -94,6 +96,7 @@ const InstitutionCollapse = ({
 };
 
 const InstitutionCollapses = ({ itemsData }: { itemsData: ItemData[] }) => {
+  console.log({ itemsData });
   return (
     <div>
       {itemsData.length > 0 && (

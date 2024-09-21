@@ -1,5 +1,5 @@
 import { useMsal } from '@azure/msal-react';
-import { Button, Space, Typography } from 'antd';
+import { Button, Skeleton, Space, Typography } from 'antd';
 import React from 'react';
 
 import useFetch from '../../hooks/useFetch';
@@ -19,6 +19,7 @@ export default function UserPage() {
         <Button type='primary' onClick={() => handleLogout()} size='large'>
           Logout
         </Button>
+        <Skeleton active />
       </>
     );
   const { linkToken, userProfile, stripeSubscription, googleSubscription } =

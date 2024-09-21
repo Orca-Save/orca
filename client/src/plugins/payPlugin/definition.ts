@@ -6,6 +6,7 @@ export interface PayPlugin {
     backendURL: string;
     accessToken: string;
   }): Promise<string>;
+  manageSubscription(): Promise<void>;
 }
 
 const Pay = registerPlugin<PayPlugin>('PayPlugin');
