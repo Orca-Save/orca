@@ -64,7 +64,11 @@ export default function OnboardingForm({
   const forceRender = true;
   let disableNext = false;
   if (currentTab === 3 && !privacyChecked) disableNext = true;
-  if (currentTab === 4 && !privacyChecked && !userProfile?.stripeSubscriptionId)
+  if (
+    currentTab === 4 &&
+    (!userProfile?.stripeSubscriptionId ||
+      !userProfile?.googlePaySubscriptionToken)
+  )
     disableNext = true;
   if (currentTab === 5 && itemsData.length === 0) disableNext = true;
 

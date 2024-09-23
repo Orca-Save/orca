@@ -63,7 +63,7 @@ export default function Subscription({
     );
   }
 
-  if (platform === 'android' && googleSubscription)
+  if (platform === 'android')
     return (
       <div>
         <Title level={4}>Subscription</Title>
