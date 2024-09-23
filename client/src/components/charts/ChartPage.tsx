@@ -1,3 +1,4 @@
+import { Skeleton } from 'antd';
 import React from 'react';
 import {
   Bar,
@@ -11,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+
 import useFetch from '../../hooks/useFetch';
 
 const data = [
