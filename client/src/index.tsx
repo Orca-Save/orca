@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { reactPlugin } from './utils/appInsightsClient';
+import { reactPlugin } from './utils/appInsights';
 import { msalConfig } from './utils/authConfig';
 import { CustomNavigationClient } from './utils/navigationClient';
 

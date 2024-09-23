@@ -8,10 +8,11 @@ import { createBrowserHistory } from 'history';
 
 const reactPlugin = new ReactPlugin();
 let appInsights: ApplicationInsights | undefined;
-var clickPluginInstance = new ClickAnalyticsPlugin();
-var clickPluginConfig = {
+const clickPluginInstance = new ClickAnalyticsPlugin();
+const clickPluginConfig = {
   autoCapture: true,
 };
+
 const initializeAppInsights = () => {
   const customHistory = createBrowserHistory();
   appInsights = new ApplicationInsights({
@@ -40,4 +41,4 @@ const initializeAppInsights = () => {
 
 if (process.env.NODE_ENV === 'production') initializeAppInsights();
 
-export { reactPlugin };
+export { appInsights, reactPlugin };
