@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
+import { Skeleton } from 'antd';
 import useFetch from '../../hooks/useFetch';
 import { GoalTransferForm } from '../saves/GoalTransferForm';
 
@@ -9,7 +10,7 @@ export default function GoalTransferPage() {
   const { data } = useFetch('api/pages/goalTransferPage', 'POST', {
     goalTransactionId: id,
   });
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   const { goals, goalTransfer } = data;
 
   return (

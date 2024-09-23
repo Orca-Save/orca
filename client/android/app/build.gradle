@@ -24,8 +24,8 @@ android {
         applicationId "com.orcamoney.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
-        versionName "1.0.7"
+        versionCode 8
+        versionName "1.0.8"
         buildConfigField "String", "STRIPE_PUBLISHABLE_KEY", "\"${stripePublishableKey}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

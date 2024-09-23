@@ -1,4 +1,4 @@
-import { Flex } from 'antd';
+import { Flex, Skeleton } from 'antd';
 import React from 'react';
 import useFetch from '../../hooks/useFetch';
 import OnboardingForm from './OnboardingForm';
@@ -15,7 +15,7 @@ export default function OnboardingPage() {
     isActiveSubscription,
     googleSubscription,
   } = data ?? {};
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   return (
     <Flex justify='center' className='w-full'>
       <OnboardingForm

@@ -59,7 +59,7 @@ const data = [
 ];
 export default function ChartPage() {
   const { data: data2 } = useFetch('api/pages/chartPage', 'GET');
-  if (!data2) return null;
+  if (!data2) return <Skeleton active />;
   const { weekChartData, currentMonthDailySums, lastMonthDiscretionary } =
     data2;
   const { chartDataWithSum, chartData } = weekChartData;

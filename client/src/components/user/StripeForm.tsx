@@ -19,7 +19,7 @@ export default function StripeForm({
   redirect: boolean;
 }) {
   const { data } = useFetch('api/stripe/createSubscription', 'GET');
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   const { clientSecret, subscriptionId } = data;
   if (!clientSecret || !subscriptionId)
     return (

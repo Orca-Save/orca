@@ -1,4 +1,4 @@
-import { Typography } from 'antd';
+import { Skeleton, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ export default function EditGoalPage() {
   const { data } = useFetch('api/pages/editGoalPage', 'POST', {
     goalId: id,
   });
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   const { goal, initialAmount } = data;
 
   return (

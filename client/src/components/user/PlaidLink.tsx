@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Button, Modal, Typography } from 'antd';
+import { Button, Modal, Skeleton, Typography } from 'antd';
 import { useState } from 'react';
 import { PlaidLinkOnSuccessMetadata, usePlaidLink } from 'react-plaid-link';
 import { Link } from 'react-router-dom';
@@ -61,7 +61,7 @@ const LinkButton = (props: LinkProps) => {
     // onLoad: () => {},
   };
   const { open, ready } = usePlaidLink(config);
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   const { isActiveSubscription } = data;
   const platform = Capacitor.getPlatform();
   const handleExistingInstitution = async () => {

@@ -1,4 +1,4 @@
-import { Button, Col, Row, Space } from 'antd';
+import { Button, Col, Row, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
@@ -8,7 +8,7 @@ import GoalList from './GoalList';
 export default function GoalsPage() {
   const { data } = useFetch('api/components/goalCard', 'GET');
   const { data: goalsResults } = useFetch('api/goals', 'GET');
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   if (!goalsResults) return null;
   const { goals } = goalsResults;
   const { completedCounts, userTour } = data;

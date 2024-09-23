@@ -1,3 +1,4 @@
+import { Skeleton } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -9,7 +10,7 @@ export default function TransactionPage() {
   const { data } = useFetch('api/pages/transactionPage', 'POST', {
     transactionId: id,
   });
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   const { transaction, account } = data;
 
   return <TransactionForm transaction={transaction} account={account} />;

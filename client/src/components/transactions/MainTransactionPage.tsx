@@ -1,3 +1,4 @@
+import { Skeleton } from 'antd';
 import React from 'react';
 
 import useFetch from '../../hooks/useFetch';
@@ -6,7 +7,7 @@ import TransactionList from './TransactionList';
 
 export default function TransactionsPage() {
   const { data } = useFetch('api/pages/transactionsPage', 'GET');
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   const { unreadObj, formattedTransactions, userTour } = data;
 
   return (

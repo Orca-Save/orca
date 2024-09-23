@@ -8,7 +8,7 @@ import {
   StripeError,
   StripeExpressCheckoutElementConfirmEvent,
 } from '@stripe/stripe-js';
-import { Button, notification } from 'antd';
+import { Button, notification, Skeleton } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
@@ -28,7 +28,7 @@ function SubscriptionForm({
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
   const { data } = useFetch('api/stripe/productPrice', 'GET');
-  if (!data) return null;
+  if (!data) return <Skeleton active />;
   const { price } = data;
   const onFinish = async () => {
     try {
