@@ -3,7 +3,7 @@ import { Skeleton } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 import useFetch from '../../hooks/useFetch';
-import { UserProfile } from '../../types/all';
+import { UserProfile, UserTour } from '../../types/all';
 import Dashboard from './Dashboard';
 
 export default function HomePage() {
@@ -20,10 +20,13 @@ export default function HomePage() {
   const {
     onboardingProfileCount,
     userProfile,
+    userTour,
   }: {
     onboardingProfileCount: number;
     userProfile: UserProfile;
+    userTour?: UserTour;
   } = data;
+  console.log(userProfile);
   if (
     onboardingProfileCount === 0 ||
     !userProfile?.privacyPolicyAccepted ||
@@ -35,7 +38,7 @@ export default function HomePage() {
     <Dashboard
       goal={data.goal}
       quickTransfers={data.quickTransfers}
-      userTour={data.userTour}
+      userTour={userTour}
       unreadTransactionCount={data.unreadTransactionCount}
       completedCounts={data.completedCounts}
     />

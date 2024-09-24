@@ -115,3 +115,15 @@ export type GoalCategory = {
   id: string;
   name: string;
 };
+
+export type UserTour = {
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+  dashQuickSave: boolean;
+  impulseSave: boolean;
+  reviewTransactions: boolean;
+  transactionListItem: boolean;
+  pinnedGoal: boolean;
+};

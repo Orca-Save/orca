@@ -8,9 +8,10 @@ import {
   Typography,
 } from 'antd';
 import * as emoji from 'node-emoji';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useRef, useState } from 'react';
+import { UserTour } from '../../types/all';
 import { apiFetch } from '../../utils/general';
 import { greenThemeColors } from '../../utils/themeConfig';
 import ReviewLink from '../plaid/ReviewLink';
@@ -29,13 +30,14 @@ export default function Dashboard({
 }: {
   goal: any;
   quickTransfers: any;
-  userTour: any;
+  userTour?: UserTour;
   unreadTransactionCount: any;
   completedCounts: any;
 }) {
   const oneTapSaves = useRef(null);
   const impulseSaves = useRef(null);
   const reviewTransactions = useRef(null);
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [open, setOpen] = useState<boolean>(!!userTour?.dashQuickSave == false);
@@ -85,6 +87,10 @@ export default function Dashboard({
       description:
         'Tap here to review your transactions and quickly mark which were impulse buys. This helps us find what to work on to meet your goals, and you only review what you have control over, no rent payments in here.',
       target: () => reviewTransactions.current,
+      nextButtonProps: {
+        onClick: () => navigate('/goals'),
+        children: 'Next',
+      },
     },
   ];
   return (

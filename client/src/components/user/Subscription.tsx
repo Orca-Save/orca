@@ -18,50 +18,12 @@ export default function Subscription({
   stripeSubscription,
   googleSubscription,
 }: {
-  userProfile: UserProfile;
+  userProfile?: UserProfile;
   stripeSubscription: any;
   googleSubscription: any;
 }) {
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
-
-  if (userProfile?.stripeSubscriptionId && stripeSubscription) {
-    return (
-      <>
-        <Title level={4}>Subscription</Title>
-        <div>
-          <Text>
-            Next Bill Date:{' '}
-            {dayjs(stripeSubscription!.current_period_end * 1000).format('ll')}
-          </Text>
-        </div>
-        <div>
-          <Text>Rate: $4/month</Text>
-        </div>
-        <div>
-          <Text>
-            Status:{' '}
-            {stripeSubscription?.cancel_at_period_end
-              ? 'Cancel at end of period'
-              : 'Active'}
-          </Text>
-        </div>
-        <Button
-          data-id='update-subscription-button'
-          onClick={async () => {
-            await apiFetch('/api/stripe/updateSubscription', 'POST', {
-              cancel: !stripeSubscription?.cancel_at_period_end,
-            });
-            window.location.reload();
-          }}
-        >
-          {stripeSubscription?.cancel_at_period_end
-            ? 'Continue Subscription'
-            : 'Stop Subscription'}
-        </Button>
-      </>
-    );
-  }
 
   if (platform === 'android')
     return (
@@ -144,6 +106,44 @@ export default function Subscription({
         )}
       </div>
     );
+
+  if (userProfile?.stripeSubscriptionId && stripeSubscription) {
+    return (
+      <>
+        <Title level={4}>Subscription</Title>
+        <div>
+          <Text>
+            Next Bill Date:{' '}
+            {dayjs(stripeSubscription!.current_period_end * 1000).format('ll')}
+          </Text>
+        </div>
+        <div>
+          <Text>Rate: $4/month</Text>
+        </div>
+        <div>
+          <Text>
+            Status:{' '}
+            {stripeSubscription?.cancel_at_period_end
+              ? 'Cancel at end of period'
+              : 'Active'}
+          </Text>
+        </div>
+        <Button
+          data-id='update-subscription-button'
+          onClick={async () => {
+            await apiFetch('/api/stripe/updateSubscription', 'POST', {
+              cancel: !stripeSubscription?.cancel_at_period_end,
+            });
+            window.location.reload();
+          }}
+        >
+          {stripeSubscription?.cancel_at_period_end
+            ? 'Continue Subscription'
+            : 'Stop Subscription'}
+        </Button>
+      </>
+    );
+  }
 
   return (
     <>

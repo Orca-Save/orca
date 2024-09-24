@@ -1,18 +1,8 @@
-import { Card, Tour, TourProps } from 'antd';
+import { Card } from 'antd';
 import * as emoji from 'node-emoji';
-import React, { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import PlaidLink from '../user/PlaidLink';
-
-function useBeginTour(setOpen: (open: boolean) => void) {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setOpen(true);
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, []);
-}
 
 type LinkTokenCreateResponse = {
   link_token: string;
@@ -24,17 +14,6 @@ export default function ConnectPlaidCard({
   linkToken: LinkTokenCreateResponse;
 }) {
   const unreadRef = useRef(null);
-  const [open, setOpen] = useState<boolean>(false);
-  useBeginTour(setOpen);
-  const steps: TourProps['steps'] = [
-    {
-      title: 'Review Transactions',
-      description:
-        'Connect your account now and begin reviewing your purchases here. Go to your profile page to connect more accounts.',
-
-      target: () => unreadRef.current,
-    },
-  ];
   return (
     <>
       <Card
@@ -54,7 +33,6 @@ export default function ConnectPlaidCard({
       >
         <PlaidLink linkToken={linkToken.link_token} />
       </Card>
-      <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
     </>
   );
 }

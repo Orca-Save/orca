@@ -1,6 +1,8 @@
 import { PushpinFilled, PushpinOutlined } from '@ant-design/icons';
 import { Button, Tour, TourProps } from 'antd';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { apiFetch } from '../../utils/general';
 
 type PinSavingButtonProps = {
@@ -19,6 +21,7 @@ export default function PinSavingButton({
   userHasPinnedGoal,
 }: PinSavingButtonProps) {
   const buttonRef = useRef(null);
+  const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(userTour !== true);
   const tourClose = () => {
     setOpen(false);
@@ -30,17 +33,25 @@ export default function PinSavingButton({
     });
   };
 
-  const steps: TourProps['steps'] = [
-    {
-      title: 'Pinned Goal',
-      description:
-        'Ready to start saving for a new goal? Tap the pin icon to remove this one from focus, and tap the pin on a another to set it as your new focus goal, where impulse saves will automatically go from now on.',
-      target: () => buttonRef.current,
-    },
-  ];
   const setPinnedURL = `/api/users/${
     type === 'Goal' ? 'setGoalPinned' : 'setGoalTransferPinned'
   }`;
+
+  const steps: TourProps['steps'] = [
+    {
+      title: type === 'Goal' ? 'Pinned Goal' : 'Pinned One-Tap Save',
+      description:
+        type === 'Goal'
+          ? 'Ready to start saving for a new goal? Tap the pin icon to remove this one from focus, and tap the pin on a another to set it as your new focus goal, where impulse saves will automatically go from now on.'
+          : 'Pinned one-tap saves appear on the dashboard for quick saves. Tap the pin icon to remove this one from focus, and tap the pin on another to set it as your new focus one-tap save.',
+      target: () => buttonRef.current,
+      nextButtonProps: {
+        onClick: () =>
+          navigate(type === 'Goal' ? '/log/one-taps' : '/log/transactions'),
+        children: 'Next',
+      },
+    },
+  ];
 
   const onClick = async () => {
     const results = await apiFetch(setPinnedURL, 'POST', {

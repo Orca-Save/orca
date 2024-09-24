@@ -43,12 +43,13 @@ export default function SavingsList({
             <Title level={4}>{pinnedTitle}</Title>
           </Space>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {topGoalTransfers?.map((goalTransfer) => (
+            {topGoalTransfers?.map((goalTransfer, idx) => (
               <GoalTransferCard
                 key={goalTransfer.id}
                 routeParams={routeParams}
                 goalTransfer={goalTransfer}
                 showPin={filter === 'templates'}
+                userTour={idx === 0}
               />
             ))}
           </div>
@@ -79,10 +80,12 @@ function GoalTransferCard({
   goalTransfer,
   routeParams,
   showPin,
+  userTour,
 }: {
   goalTransfer: GoalTransfer;
   routeParams: string;
   showPin: boolean;
+  userTour?: boolean;
 }) {
   const navigate = useNavigate();
   const amount = goalTransfer.amount;
@@ -135,6 +138,7 @@ function GoalTransferCard({
                 typeId={goalTransfer.id}
                 userHasPinnedGoal={false}
                 pinned={goalTransfer.pinned}
+                userTour={userTour}
               />,
             ]
           : []),
