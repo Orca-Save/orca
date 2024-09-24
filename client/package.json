@@ -1,6 +1,6 @@
 {
-  "name": "client2",
-  "version": "0.1.0",
+  "name": "orca-client",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@ant-design/happy-work-theme": "^1.0.0",
