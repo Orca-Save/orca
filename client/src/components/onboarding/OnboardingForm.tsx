@@ -30,7 +30,7 @@ import Subscription from '../user/Subscription';
 
 const { Title, Text, Paragraph } = Typography;
 type OnboardingFormProps = {
-  userProfile: UserProfile | null;
+  userProfile: UserProfile | undefined;
   linkToken: string;
   itemsData: ItemData[];
   stripeSubscription: any;
@@ -51,12 +51,16 @@ export default function OnboardingForm({
   const { accounts } = useMsal();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [stripeSubscriptionId, setStripeSubscriptionId] = useState<
+    string | undefined
+  >(userProfile?.stripeSubscriptionId);
   const [privacyChecked, setPrivacyChecked] = useState(
     userProfile?.privacyPolicyAccepted ?? false
   );
   const [pageState, setPageState] = useState(
     initialPageState(onboardingProfile, userProfile)
   );
+  const googlePaySubscriptionToken = userProfile?.googlePaySubscriptionToken;
   const platform = Capacitor.getPlatform();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const account = accounts[0];
@@ -66,8 +70,7 @@ export default function OnboardingForm({
   if (currentTab === 3 && !privacyChecked) disableNext = true;
   if (
     currentTab === 4 &&
-    (!userProfile?.stripeSubscriptionId ||
-      !userProfile?.googlePaySubscriptionToken)
+    (!stripeSubscriptionId || !googlePaySubscriptionToken)
   )
     disableNext = true;
   if (currentTab === 5 && itemsData.length === 0) disableNext = true;
@@ -271,34 +274,16 @@ export default function OnboardingForm({
                     you achieve your financial goals. Subscribe now and take
                     control of your financial future!
                   </Paragraph>
-                  {userProfile?.stripeSubscriptionId ? (
-                    <>
-                      <Text>
-                        You are subscribed.{' '}
-                        <Link to='/user'>View your subscription</Link>
-                      </Text>
-                    </>
-                  ) : (
-                    <Paragraph>
-                      Sign up and cancel anytime at your{' '}
-                      <Link to='/user'>
-                        <UserOutlined /> user profile
-                      </Link>
-                      .
-                    </Paragraph>
-                  )}
+                  <Paragraph>
+                    Sign up and cancel anytime at your <UserOutlined /> user
+                    profile.
+                  </Paragraph>
 
-                  {currentTab === 4 &&
-                  platform === 'web' &&
-                  !userProfile?.stripeSubscriptionId ? (
-                    <CheckoutForm
-                      setSubscriptionId={(id) => {
-                        if (userProfile) userProfile.stripeSubscriptionId = id;
-                      }}
-                    />
+                  {currentTab === 4 && platform === 'web' ? (
+                    <CheckoutForm setSubscriptionId={setStripeSubscriptionId} />
                   ) : null}
 
-                  {currentTab === 4 && platform === 'android' && userProfile ? (
+                  {currentTab === 4 && platform === 'android' ? (
                     <Subscription
                       userProfile={userProfile}
                       stripeSubscription={stripeSubscription}
@@ -451,7 +436,7 @@ export default function OnboardingForm({
 
 function initialPageState(
   onboardingProfile: OnboardingProfile | null,
-  userProfile: UserProfile | null
+  userProfile?: UserProfile
 ) {
   let tabKey = '1';
   if (onboardingProfile) {
