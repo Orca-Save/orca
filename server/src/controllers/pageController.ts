@@ -52,7 +52,6 @@ export const dashboardPage = async (req: Request, res: Response) => {
       getUserTour(userId),
       getGoalTransfersSum(userId),
       completedUserGoalCount(userId),
-      getGoogleSubscriptionStatus(userId),
     ]);
 
     if (goal) {
