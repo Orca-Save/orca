@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Orca2</string>
+    <string name="app_name">Orca</string>
     <string name="title_activity_main">Orca</string>
     <string name="package_name">com.orcamoney.app</string>
     <string name="custom_url_scheme">com.orcamoney.app</string>
