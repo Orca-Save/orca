@@ -11,7 +11,7 @@ import ChartPage from './components/charts/ChartPage';
 import HomePage from './components/dashboard';
 import EditGoalPage from './components/goals/EditGoalPage';
 import GoalsPage from './components/goals/MainGoalPage';
-import NavTabs from './components/log/NavTabs';
+import LogNavTabs from './components/log/LogNavTabs';
 import AppLayout from './components/nav/AppLayout';
 import OnboardingPage from './components/onboarding/OnboardingPage';
 import PrivacyPolicyPage from './components/privacy-policy';
@@ -39,7 +39,7 @@ const LayoutRoute = () => (
 
 const LogLayoutRoute = () => (
   <>
-    <NavTabs />
+    <LogNavTabs />
     <Outlet />
   </>
 );
