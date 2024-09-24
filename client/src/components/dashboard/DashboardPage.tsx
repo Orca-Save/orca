@@ -26,7 +26,6 @@ export default function HomePage() {
     userProfile: UserProfile;
     userTour?: UserTour;
   } = data;
-  console.log(userProfile);
   if (
     onboardingProfileCount === 0 ||
     !userProfile?.privacyPolicyAccepted ||

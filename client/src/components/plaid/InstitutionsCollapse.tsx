@@ -96,7 +96,6 @@ const InstitutionCollapse = ({
 };
 
 const InstitutionCollapses = ({ itemsData }: { itemsData: ItemData[] }) => {
-  console.log({ itemsData });
   return (
     <div>
       {itemsData.length > 0 && (
