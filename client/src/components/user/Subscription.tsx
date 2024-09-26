@@ -1,4 +1,3 @@
-import { LoginOutlined } from '@ant-design/icons';
 import { Capacitor } from '@capacitor/core';
 import { Button, Typography } from 'antd';
 import dayjs from 'dayjs';
@@ -152,7 +151,9 @@ export default function Subscription({
           <Text>Subscribe to link your bank</Text>
         )}
         {platform === 'ios' ? (
-          <LoginOutlined
+          <img
+            src='https://applepay.cdn-apple.com/images/apple-pay-mark-logo.png'
+            alt='Apple Pay'
             style={{ height: 70 }}
             onClick={async () => {
               try {
