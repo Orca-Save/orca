@@ -9,6 +9,9 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
+    CapacitorHttp: {
+      enabled: true,
+    },
     Stripe: {
       publishableKey: process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY,
       googlePay: {

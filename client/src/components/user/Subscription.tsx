@@ -25,7 +25,7 @@ export default function Subscription({
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
 
-  if (platform === 'android')
+  if (platform === 'android' || googleSubscription?.autoRenewing)
     return (
       <div>
         <Title level={4}>Subscription</Title>
