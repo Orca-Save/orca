@@ -30,6 +30,7 @@ import { useTokenRefresh } from './hooks/useTokenRefresh';
 
 import '@fontsource/varela-round';
 import './App.css';
+import SupportPage from './components/support/SupportPage';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -48,6 +49,7 @@ const router = createBrowserRouter(
     <>
       <Route path='privacy-policy' element={<PrivacyPolicyPage />} />
       <Route path='sign-in' element={<SignUpPage />} />
+      <Route path='support' element={<SupportPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path='onboarding' element={<OnboardingPage />} />
         <Route path='/' element={<LayoutRoute />}>
