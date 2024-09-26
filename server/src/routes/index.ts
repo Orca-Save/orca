@@ -6,6 +6,7 @@ import notificationRoutes from './notificationRoutes';
 import pageRoutes from './pageRoutes';
 import plaidRoutes from './plaidRoutes';
 import stripeRoutes from './stripeRoutes';
+import supportRoutes from './supportRoutes';
 import transactionRoutes from './transactionRoutes';
 import userRoutes from './userRoutes';
 
@@ -18,6 +19,7 @@ export {
   pageRoutes,
   plaidRoutes,
   stripeRoutes,
+  supportRoutes,
   transactionRoutes,
   userRoutes,
 };

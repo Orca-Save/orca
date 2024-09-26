@@ -10,6 +10,7 @@ import {
   pageRoutes,
   plaidRoutes,
   stripeRoutes,
+  supportRoutes,
   transactionRoutes,
   userRoutes,
 } from './routes';
@@ -52,6 +53,7 @@ const webhooks = [
   '/api/plaid/webhook',
   '/api/stripe/webhook',
   '/api/google/webhook',
+  '/api/support/submitTicket',
 ];
 app.use((req: any, res, next) => {
   if (webhooks.includes(req.url)) {
@@ -71,6 +73,7 @@ app.use((req: any, res, next) => {
 });
 
 app.use('/api/pages', pageRoutes);
+app.use('/api/support', supportRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/components', componentRoutes);
 app.use('/api/plaid', plaidRoutes);
