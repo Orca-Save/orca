@@ -1,10 +1,11 @@
+import { LoginOutlined } from '@ant-design/icons';
+import { Capacitor } from '@capacitor/core';
 import { Button, Typography } from 'antd';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { Capacitor } from '@capacitor/core';
 import Pay from '../../plugins/payPlugin';
 import { UserProfile } from '../../types/all';
 import { apiFetch } from '../../utils/general';
@@ -17,10 +18,12 @@ export default function Subscription({
   userProfile,
   stripeSubscription,
   googleSubscription,
+  appleSubscription,
 }: {
   userProfile?: UserProfile;
   stripeSubscription: any;
   googleSubscription: any;
+  appleSubscription: any;
 }) {
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
@@ -70,6 +73,86 @@ export default function Subscription({
         )}
         {platform === 'android' ? (
           <GooglePay
+            style={{ height: 70 }}
+            onClick={async () => {
+              try {
+                if (
+                  !googleSubscription ||
+                  googleSubscription?.isActive === false
+                ) {
+                  await Pay.subscribe({
+                    // @ts-ignore
+                    productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
+                    backendURL:
+                      // @ts-ignore
+                      process.env.REACT_APP_API_URL!,
+                    accessToken: localStorage.getItem('accessToken')!,
+                  });
+                } else {
+                  await Pay.manageSubscription();
+                }
+                window.location.reload();
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+          />
+        ) : (
+          <Button
+            onClick={async () => {
+              await apiFetch('/api/users/cancelGoogleSub', 'GET');
+              window.location.reload();
+            }}
+          >
+            Cancel
+          </Button>
+        )}
+      </div>
+    );
+
+  if (platform === 'ios')
+    return (
+      <div>
+        <Title level={4}>Subscription</Title>
+        {googleSubscription ? (
+          <>
+            <div>
+              <Text>
+                Next Bill Date:{' '}
+                {appleSubscription?.expiryTimeMillis
+                  ? dayjs(appleSubscription.expiryTimeMillis).format('LL')
+                  : 'N/A'}
+              </Text>
+            </div>
+            <div>
+              <Text>
+                Rate:{' '}
+                {appleSubscription?.priceAmountMicros
+                  ? `${(appleSubscription.priceAmountMicros / 1e6).toFixed(
+                      2
+                    )} ${appleSubscription.priceCurrencyCode}/month`
+                  : 'N/A'}
+              </Text>
+            </div>
+            <div>
+              <Text>
+                Status:{' '}
+                {appleSubscription
+                  ? appleSubscription.isActive
+                    ? 'Active'
+                    : appleSubscription.subscriptionStatus.replaceAll('_', ' ')
+                  : 'Unknown'}
+              </Text>
+            </div>
+            <div>
+              <Text>Manage your subscription in the App Store below</Text>
+            </div>
+          </>
+        ) : (
+          <Text>Subscribe to link your bank</Text>
+        )}
+        {platform === 'ios' ? (
+          <LoginOutlined
             style={{ height: 70 }}
             onClick={async () => {
               try {
