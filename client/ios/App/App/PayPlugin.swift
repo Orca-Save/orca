@@ -4,7 +4,6 @@ import StoreKit
 
 @objc(PayPlugin)
 public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransactionObserver {
-
     private var accessToken: String?
     private var backendURL: String?
     private var productId: String?
