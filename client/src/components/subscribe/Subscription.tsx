@@ -8,8 +8,11 @@ import { Link } from 'react-router-dom';
 import Pay from '../../plugins/payPlugin';
 import { UserProfile } from '../../types/all';
 import { apiFetch } from '../../utils/general';
+
 //@ts-ignore
 import { ReactComponent as GooglePay } from './googlePay.svg';
+//@ts-ignore
+import { ReactComponent as ApplePay } from './applePay.svg';
 
 const { Title, Text } = Typography;
 
@@ -151,8 +154,7 @@ export default function Subscription({
           <Text>Subscribe to link your bank</Text>
         )}
         {platform === 'ios' ? (
-          <img
-            src='https://applepay.cdn-apple.com/images/apple-pay-mark-logo.png'
+          <ApplePay
             alt='Apple Pay'
             style={{ height: 70 }}
             onClick={async () => {

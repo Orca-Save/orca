@@ -3,10 +3,10 @@ import { Button, Skeleton, Space, Typography } from 'antd';
 import React from 'react';
 
 import useFetch from '../../hooks/useFetch';
+import Subscription from '../subscribe/Subscription';
 import ClearUserData from './ClearUserData';
 import ListItems from './ListItems';
 import PlaidLink from './PlaidLink';
-import Subscription from './Subscription';
 
 const { Title } = Typography;
 
