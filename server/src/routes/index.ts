@@ -1,3 +1,4 @@
+import appleRoutes from './appleRoutes';
 import componentRoutes from './componentRoutes';
 import goalRoutes from './goalRoutes';
 import googleRoutes from './googleRoutes';
@@ -9,6 +10,7 @@ import transactionRoutes from './transactionRoutes';
 import userRoutes from './userRoutes';
 
 export {
+  appleRoutes,
   componentRoutes,
   goalRoutes,
   googleRoutes,

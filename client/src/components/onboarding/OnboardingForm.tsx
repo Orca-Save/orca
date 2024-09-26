@@ -25,8 +25,8 @@ import InstitutionCollapses from '../plaid/InstitutionsCollapse';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
 import CheckoutForm from '../stripe/CheckoutForm';
+import Subscription from '../subscribe/Subscription';
 import PlaidLink from '../user/PlaidLink';
-import Subscription from '../user/Subscription';
 
 const { Title, Text, Paragraph } = Typography;
 type OnboardingFormProps = {

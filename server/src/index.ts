@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import {
+  appleRoutes,
   componentRoutes,
   goalRoutes,
   googleRoutes,
@@ -78,6 +79,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/google', googleRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/apple', appleRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
