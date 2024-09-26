@@ -43,14 +43,7 @@ export default function SignUpPage() {
   return (
     <div className='bg-color-black mg-5 flex justify-center items-center h-screen'>
       <Space direction='vertical' size={50}>
-        <h1
-          style={{
-            marginBottom: '80px',
-          }}
-          className='varela-round text-center text-4xl'
-        >
-          Orca
-        </h1>
+        <h1 className='varela-round text-center text-4xl mb-2'>Orca</h1>
 
         <h1
           className={`font-sans text-center decoration-clone pb-3 text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
@@ -70,10 +63,11 @@ export default function SignUpPage() {
             data-id='sign-up-button'
             type='primary'
             size='large'
+            style={{ height: '60px' }}
             className='w-full'
             onClick={handleLogin}
           >
-            Lets do this.
+            <span className='font-bold text-3xl'>Lets do this.</span>
           </Button>
         </div>
       </Space>
