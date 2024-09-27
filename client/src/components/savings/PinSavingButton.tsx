@@ -23,15 +23,16 @@ export default function PinSavingButton({
   const buttonRef = useRef(null);
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(userTour !== true);
-  const tourClose = () => {
+  const tour: any = {};
+  if (type === 'Goal') tour.pinnedGoal = true;
+  else tour.pinnedOneTap = true;
+  const tourClose = async () => {
     setOpen(false);
-    const tour = {
-      pinnedGoal: true,
-    };
-    apiFetch('/api/users/updateTour', 'POST', {
+    await apiFetch('/api/users/updateTour', 'POST', {
       tour,
     });
   };
+  console.log(tour);
 
   const setPinnedURL = `/api/users/${
     type === 'Goal' ? 'setGoalPinned' : 'setGoalTransferPinned'
@@ -46,8 +47,12 @@ export default function PinSavingButton({
           : 'Pinned one-tap saves appear on the dashboard for quick saves. Tap the pin icon to remove this one from focus, and tap the pin on another to set it as your new focus one-tap save.',
       target: () => buttonRef.current,
       nextButtonProps: {
-        onClick: () =>
-          navigate(type === 'Goal' ? '/log/one-taps' : '/log/transactions'),
+        onClick: async () => {
+          await apiFetch('/api/users/updateTour', 'POST', {
+            tour,
+          });
+          // navigate(type === 'Goal' ? '/log/one-taps' : '/log/transactions');
+        },
         children: 'Next',
       },
     },

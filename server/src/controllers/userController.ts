@@ -23,7 +23,7 @@ export const saveOnboardingProfile = async (req: Request, res: Response) => {
     res.status(200).send({ items });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
-    res.status(500).send({ message: 'Error getting linked items' });
+    res.status(500).send({ message: 'Error saving onboarding profile' });
   }
 };
 
@@ -38,7 +38,7 @@ export const onboardUser = async (req: Request, res: Response) => {
     res.status(200).send({ items });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
-    res.status(500).send({ message: 'Error getting linked items' });
+    res.status(500).send({ message: 'Error onboarding user' });
   }
 };
 
@@ -50,7 +50,7 @@ export const updateUserTour = async (req: Request, res: Response) => {
     res.status(200).send({ updatedTour });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });
-    res.status(500).send({ message: 'Error getting linked items' });
+    res.status(500).send({ message: 'Error updating user tour' });
   }
 };
 

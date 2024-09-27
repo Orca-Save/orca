@@ -61,11 +61,11 @@ export default function TransactionList({
   const [open, setOpen] = useState<boolean>(
     !!userTour?.transactionListItem == false
   );
+  const tour = {
+    transactionListItem: true,
+  };
   const tourClose = () => {
     setOpen(false);
-    const tour = {
-      transactionListItem: true,
-    };
     apiFetch('/api/users/updateTour', 'POST', {
       tour,
     });
@@ -76,6 +76,14 @@ export default function TransactionList({
       title: 'Transaction History',
       description: 'Tap on transaction to see more detail, and make any edits.',
       target: () => firstItemRef.current,
+      nextButtonProps: {
+        onClick: async () => {
+          await apiFetch('/api/users/updateTour', 'POST', {
+            tour,
+          });
+          navigate('/');
+        },
+      },
     },
   ];
   return (

@@ -84,6 +84,7 @@ model UserTour {
   reviewTransactions  Boolean @default(false)
   transactionListItem Boolean @default(false)
   pinnedGoal          Boolean @default(false)
+  pinnedOneTap        Boolean @default(false)
 }
 
 model OnboardingProfile {
