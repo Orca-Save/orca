@@ -46,6 +46,10 @@ export const updateUserTour = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
     const tour = req.body.tour;
+    appInsightsClient.trackEvent({
+      name: 'UpdateUserTour',
+      properties: { userId, ...tour },
+    });
     const updatedTour = await updateTour(userId, tour);
     res.status(200).send({ updatedTour });
   } catch (err) {

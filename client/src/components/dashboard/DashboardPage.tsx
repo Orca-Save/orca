@@ -7,7 +7,6 @@ import { UserProfile, UserTour } from '../../types/all';
 import Dashboard from './Dashboard';
 
 export default function HomePage() {
-  console.log('window', window.location.origin)
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
 

@@ -45,14 +45,15 @@ export default function Dashboard({
   const addGoalCurrentBalance = (amount: number) => {
     goal.currentBalance += amount;
   };
-  const tourChange = (step: number) => {
+  const tourChange = async (step: number) => {
     const tour: any = {};
     if (step === 1) tour.dashQuickSave = true;
     if (step === 2) tour.impulseSave = true;
     if (step === 3) tour.reviewTransactions = true;
-    apiFetch('/api/users/updateTour', 'POST', {
+    await apiFetch('/api/users/updateTour', 'POST', {
       tour,
     });
+    if (step === 3) navigate('/goals');
   };
   const tourClose = () => {
     setOpen(false);
@@ -88,7 +89,6 @@ export default function Dashboard({
         'Tap here to review your transactions and quickly mark which were impulse buys. This helps us find what to work on to meet your goals, and you only review what you have control over, no rent payments in here.',
       target: () => reviewTransactions.current,
       nextButtonProps: {
-        onClick: () => navigate('/goals'),
         children: 'Next',
       },
     },

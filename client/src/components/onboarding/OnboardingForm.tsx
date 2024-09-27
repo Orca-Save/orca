@@ -18,6 +18,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { Capacitor } from '@capacitor/core';
 import { ItemData, OnboardingProfile, UserProfile } from '../../types/all';
+import { appInsights } from '../../utils/appInsights';
 import { applyFormErrors } from '../../utils/forms';
 import { apiFetch } from '../../utils/general';
 import { isFieldErrors } from '../../utils/goals';
@@ -294,7 +295,6 @@ export default function OnboardingForm({
           {
             label: '5 Connect Accounts',
             key: '5',
-            forceRender,
             disabled: !privacyChecked, // || !userProfile?.stripeSubscriptionId,
             children: (
               <div style={{ margin: '15px' }}>
@@ -352,6 +352,7 @@ export default function OnboardingForm({
             <Form.Item>
               <Button
                 size='large'
+                data-id='onboarding-form-skip'
                 onClick={async () => {
                   setLoading(true);
                   if (currentTab === 5) {
@@ -384,7 +385,19 @@ export default function OnboardingForm({
                 loading={loading}
                 onClick={async () => {
                   if (currentTab === 3 && !privacyChecked) return;
-                  if (currentTab === 4 && !userProfile?.stripeSubscriptionId)
+                  console.log(
+                    'currentTab',
+                    currentTab,
+                    'stripeSubscriptionId',
+                    stripeSubscriptionId,
+                    'googlePaySubscriptionToken',
+                    googlePaySubscriptionToken
+                  );
+                  if (
+                    currentTab === 4 &&
+                    !stripeSubscriptionId &&
+                    !googlePaySubscriptionToken
+                  )
                     return;
 
                   setLoading(true);
@@ -399,6 +412,7 @@ export default function OnboardingForm({
                       onboardingProfile: newOnboardingProfile,
                     });
                     setLoading(false);
+                    trackProgress(currentTab);
                     navigate('/?confetti=true');
                     return;
                   } else if (currentTab !== 4) {
@@ -417,6 +431,7 @@ export default function OnboardingForm({
                   setLoading(false);
 
                   const nextTab = currentTab + 1;
+                  trackProgress(currentTab);
                   if (nextTab <= 5)
                     setPageState({ tabKey: nextTab.toString() });
                 }}
@@ -449,4 +464,13 @@ function initialPageState(
   return {
     tabKey,
   };
+}
+
+function trackProgress(currentTab: number) {
+  appInsights?.trackEvent({
+    name: 'Onboarding Progress',
+    properties: {
+      currentTab,
+    },
+  });
 }

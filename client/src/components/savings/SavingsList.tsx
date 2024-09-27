@@ -35,7 +35,6 @@ export default function SavingsList({
   const pinnedTitle = isTemplates ? 'Pinned to Home' : '';
   const otherTitle = isTemplates ? 'One-Tap Saves' : '';
   let showTour = false;
-  console.log(userTour);
   if (isTemplates && userTour?.pinnedOneTap === false) {
     showTour = true;
   }

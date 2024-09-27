@@ -32,7 +32,6 @@ export default function PinSavingButton({
       tour,
     });
   };
-  console.log(tour);
 
   const setPinnedURL = `/api/users/${
     type === 'Goal' ? 'setGoalPinned' : 'setGoalTransferPinned'
