@@ -1,6 +1,5 @@
 import { HappyProvider } from '@ant-design/happy-work-theme';
 import { Badge, Button, ConfigProvider, Flex } from 'antd';
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 import ConnectPlaid from './ConnectPlaid';

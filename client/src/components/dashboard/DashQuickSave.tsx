@@ -22,8 +22,8 @@ export default function DashboardSaveButtons({
   return (
     <ConfigProvider
       theme={{
-        token: {
-          colorPrimary: greenThemeColors.colorPrimary,
+        components: {
+          Button: greenThemeColors,
         },
       }}
     >
