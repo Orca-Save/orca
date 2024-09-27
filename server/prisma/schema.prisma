@@ -74,10 +74,9 @@ model GoalCategory {
 }
 
 model UserTour {
-  userId    String    @id
-  createdAt DateTime  @default(now()) @db.Timestamptz()
-  updatedAt DateTime  @updatedAt @db.Timestamptz()
-  deletedAt DateTime? @db.Timestamptz()
+  userId    String   @id
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
 
   dashQuickSave       Boolean @default(false)
   impulseSave         Boolean @default(false)

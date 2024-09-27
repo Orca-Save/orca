@@ -22,7 +22,7 @@ export default function PinSavingButton({
 }: PinSavingButtonProps) {
   const buttonRef = useRef(null);
   const navigate = useNavigate();
-  const [open, setOpen] = useState<boolean>(userTour !== true);
+  const [open, setOpen] = useState<boolean>(userTour === true);
   const tour: any = {};
   if (type === 'Goal') tour.pinnedGoal = true;
   else tour.pinnedOneTap = true;
@@ -51,7 +51,7 @@ export default function PinSavingButton({
           await apiFetch('/api/users/updateTour', 'POST', {
             tour,
           });
-          // navigate(type === 'Goal' ? '/log/one-taps' : '/log/transactions');
+          navigate(type === 'Goal' ? '/log/one-taps' : '/log/transactions');
         },
         children: 'Next',
       },

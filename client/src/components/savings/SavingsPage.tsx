@@ -1,7 +1,7 @@
 import { Button, ConfigProvider, Space } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GoalTransfer } from '../../types/all';
+import { GoalTransfer, UserTour } from '../../types/all';
 import { greenThemeColors } from '../../utils/themeConfig';
 import CompletedCounts from '../shared/CompletedCounts';
 import SavingsList, { GoalTransferFilter } from './SavingsList';
@@ -15,6 +15,7 @@ export default function SavingsPage({
   topGoalTransfers,
   goalsCompleted,
   totalSaved,
+  userTour,
 }: {
   filter?: GoalTransferFilter;
   newSaveText: string;
@@ -23,6 +24,7 @@ export default function SavingsPage({
   saveHref: string;
   bottomGoalTransfers: GoalTransfer[];
   topGoalTransfers?: GoalTransfer[];
+  userTour: UserTour;
   hide?: boolean;
 }) {
   let routeParams = '';
@@ -67,7 +69,7 @@ export default function SavingsPage({
           bottomGoalTransfers={bottomGoalTransfers}
           topGoalTransfers={topGoalTransfers}
           filter={filter}
-          routeParams={routeParams}
+          userTour={userTour}
         />
       </Space>
     </>

@@ -11,7 +11,7 @@ import Meta from 'antd/es/card/Meta';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { GoalTransfer } from '../../types/all';
+import { GoalTransfer, UserTour } from '../../types/all';
 import { apiFetch, currencyFormatter } from '../../utils/general';
 import { greenThemeColors } from '../../utils/themeConfig';
 import PinSavingButton from './PinSavingButton';
@@ -22,19 +22,23 @@ export type GoalTransferFilter = 'templates' | 'accounts';
 
 export default function SavingsList({
   filter,
-  routeParams,
   topGoalTransfers,
   bottomGoalTransfers,
+  userTour,
 }: {
   filter?: GoalTransferFilter;
-  routeParams: string;
   topGoalTransfers?: GoalTransfer[];
   bottomGoalTransfers: GoalTransfer[];
+  userTour: UserTour;
 }) {
   const isTemplates = filter === 'templates';
   const pinnedTitle = isTemplates ? 'Pinned to Home' : '';
   const otherTitle = isTemplates ? 'One-Tap Saves' : '';
-
+  let showTour = false;
+  console.log(userTour);
+  if (isTemplates && userTour?.pinnedOneTap === false) {
+    showTour = true;
+  }
   return (
     <>
       {isTemplates ? (
@@ -46,10 +50,9 @@ export default function SavingsList({
             {topGoalTransfers?.map((goalTransfer, idx) => (
               <GoalTransferCard
                 key={goalTransfer.id}
-                routeParams={routeParams}
                 goalTransfer={goalTransfer}
                 showPin={filter === 'templates'}
-                userTour={idx === 0}
+                userTour={idx === 0 && showTour}
               />
             ))}
           </div>
@@ -66,7 +69,6 @@ export default function SavingsList({
         {bottomGoalTransfers.map((goalTransfer) => (
           <GoalTransferCard
             key={goalTransfer.id}
-            routeParams={routeParams}
             goalTransfer={goalTransfer}
             showPin={filter === 'templates'}
           />
@@ -78,12 +80,10 @@ export default function SavingsList({
 
 function GoalTransferCard({
   goalTransfer,
-  routeParams,
   showPin,
   userTour,
 }: {
   goalTransfer: GoalTransfer;
-  routeParams: string;
   showPin: boolean;
   userTour?: boolean;
 }) {

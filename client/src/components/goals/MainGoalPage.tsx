@@ -29,7 +29,7 @@ export default function GoalsPage() {
           totalSaved={completedCounts.totalSaved}
         />
       </div>
-      <GoalList goals={goals} userTour={userTour?.pinnedGoal} />
+      <GoalList goals={goals} userTour={userTour?.pinnedGoal === false} />
     </Space>
   );
 }

@@ -7,7 +7,7 @@ import SavingsPage from './SavingsPage';
 export default function OneTapPage() {
   const { data } = useFetch('api/pages/savingsPage', 'GET');
   if (!data) return <Skeleton active />;
-  const { goalTransfers, completedCounts } = data;
+  const { goalTransfers, completedCounts, userTour } = data;
   return (
     <SavingsPage
       totalSaved={completedCounts.totalSaved}
@@ -22,6 +22,7 @@ export default function OneTapPage() {
       saveHref='/savings/new'
       newSaveText='Add One-Tap Save'
       filter='templates'
+      userTour={userTour}
     />
   );
 }

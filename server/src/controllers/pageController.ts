@@ -84,13 +84,15 @@ export const dashboardPage = async (req: Request, res: Response) => {
 export const savingsPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
-    const [goalTransfers, completedCounts] = await Promise.all([
+    const [goalTransfers, completedCounts, userTour] = await Promise.all([
       getGoalTransfers(userId),
       completedUserGoalCount(userId),
+      getUserTour(userId),
     ]);
     res.status(200).send({
       goalTransfers,
       completedCounts,
+      userTour,
     });
   } catch (err) {
     appInsightsClient.trackException({ exception: err });

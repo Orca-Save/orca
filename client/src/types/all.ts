@@ -126,4 +126,5 @@ export type UserTour = {
   reviewTransactions: boolean;
   transactionListItem: boolean;
   pinnedGoal: boolean;
+  pinnedOneTap: boolean;
 };
