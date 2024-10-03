@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+import path from 'path';
 import {
   appleRoutes,
   componentRoutes,
@@ -32,6 +33,11 @@ function getKey(header: any, callback: any) {
 
 const app = express();
 const port = process.env.PORT || 5000;
+app.use(
+  '/.well-known',
+  express.static(path.join(__dirname, 'public/.well-known'))
+);
+
 // Configure CORS
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',');
 const corsOptions = {
@@ -54,6 +60,7 @@ const webhooks = [
   '/api/stripe/webhook',
   '/api/google/webhook',
   '/api/support/submitTicket',
+  '/.well-known/apple-developer-merchantid-domain-association.txt',
 ];
 app.use((req: any, res, next) => {
   if (webhooks.includes(req.url)) {
