@@ -13,7 +13,7 @@ export const save = async (req: Request, res: Response) => {
       }),
     ]);
     res.status(200).send({ transaction });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting linked items' });
   }

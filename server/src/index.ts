@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import path from 'path';
@@ -33,9 +34,30 @@ function getKey(header: any, callback: any) {
 
 const app = express();
 const port = process.env.PORT || 5000;
-app.use(
-  '/.well-known',
-  express.static(path.join(__dirname, 'public/.well-known'))
+// Define the path to the file
+const filePath = path.join(
+  __dirname,
+  '../public/.well-known/apple-developer-merchantid-domain-association.txt'
+);
+
+// Route to serve the file content
+app.get(
+  '/.well-known/apple-developer-merchantid-domain-association.txt',
+  (req, res) => {
+    // Read the file asynchronously
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        return res
+          .status(500)
+          .send('Server error: Unable to read the file\n' + __dirname);
+      }
+
+      // Send the file content as a response
+      res.setHeader('Content-Type', 'text/plain');
+      res.send(data);
+    });
+  }
 );
 
 // Configure CORS

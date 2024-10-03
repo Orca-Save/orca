@@ -84,7 +84,7 @@ export async function checkPlaidItemStatus(
 
     // If no specific error, return item status
     return { status: 'active', error: null };
-  } catch (error) {
+  } catch (error: any) {
     const plaidError = error as PlaidError;
     return { status: 'error', error: plaidError.error_message };
   }
@@ -1072,7 +1072,7 @@ export async function removePlaidItemsForUser(userId: string) {
           accessToken: null,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         `Error removing Plaid item with ID: ${item.itemId} for user: ${userId}`,
         error

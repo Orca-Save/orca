@@ -1,4 +1,4 @@
-const appInsights = require('applicationinsights');
+import * as appInsights from 'applicationinsights';
 if (process.env.NODE_ENV === 'production') {
   appInsights
     .setup(process.env.APP_INSIGHTS_CONNECTION_STRING)
@@ -12,7 +12,6 @@ if (process.env.NODE_ENV === 'production') {
     .setSendLiveMetrics(true)
     .setUseDiskRetryCaching(true)
     .enableWebInstrumentation(true);
-  appInsights.serviceName = process.env.INSIGHTS_NAME;
   appInsights.start();
 }
 export default appInsights;

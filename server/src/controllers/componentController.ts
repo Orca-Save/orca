@@ -34,7 +34,7 @@ export const goalCard = async (req: Request, res: Response) => {
       });
     }
     res.status(200).send({ completedCounts, userTour, goal });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
@@ -53,7 +53,7 @@ export const subscription = async (req: Request, res: Response) => {
     res
       .status(200)
       .send({ userProfile, stripeSubscription, googleSubscription });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }
@@ -80,7 +80,7 @@ export const plaidLink = async (req: Request, res: Response) => {
       // stripeSubscription,
       // googleSubscription,
     });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting onboarding profile count' });
   }

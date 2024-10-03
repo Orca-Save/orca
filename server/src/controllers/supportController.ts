@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
-import appInsights from '../utils/appInsights';
+import { appInsightsClient } from '../utils/appInsights';
 
 let transporter: nodemailer.Transporter | null = null;
 const getEmailTransporter = () => {
@@ -38,8 +38,8 @@ export const submitTicket = async (req: Request, res: Response) => {
     res
       .status(200)
       .json({ success: true, message: 'Support ticket sent successfully!' });
-  } catch (error) {
-    appInsights.trackException({ exception: error });
+  } catch (error: any) {
+    appInsightsClient.trackException({ exception: error });
     console.error('Error sending email:', error);
     res.status(500).json({ message: 'Failed to send support ticket.' });
   }

@@ -19,11 +19,11 @@ export const loggingExtension = Prisma.defineExtension({
           duration,
           resultCode: 0,
           success: true,
-          type: 'PostgreSQL',
+          dependencyTypeName: 'PostgreSQL',
         });
 
         return result;
-      } catch (error) {
+      } catch (error: any) {
         const duration = Date.now() - startTime;
         appInsightsClient.trackDependency({
           target,
@@ -32,7 +32,7 @@ export const loggingExtension = Prisma.defineExtension({
           duration,
           resultCode: 1,
           success: false,
-          type: 'PostgreSQL',
+          dependencyTypeName: 'PostgreSQL',
         });
 
         throw error;

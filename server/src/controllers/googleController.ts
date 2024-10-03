@@ -227,7 +227,7 @@ export async function webhookHandler(req: Request, res: Response) {
     }
 
     res.status(200).send();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error verifying OIDC token:', error);
     appInsightsClient.trackException({
       exception: error,
@@ -266,7 +266,7 @@ export async function verifySubscriptionStatus(req: Request, res: Response) {
 
       res.status(200).send(response);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error verifying subscription status:', error);
     appInsightsClient.trackException({
       exception: error,

@@ -75,7 +75,7 @@ export const dashboardPage = async (req: Request, res: Response) => {
       userProfile,
       completedCounts,
     });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -94,7 +94,7 @@ export const savingsPage = async (req: Request, res: Response) => {
       completedCounts,
       userTour,
     });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -112,7 +112,7 @@ export const chartPage = async (req: Request, res: Response) => {
     res
       .status(200)
       .send({ weekChartData, currentMonthDailySums, lastMonthDiscretionary });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -125,7 +125,7 @@ export const subscriptionPage = async (req: Request, res: Response) => {
     res.status(200).send({
       userProfile,
     });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -140,7 +140,7 @@ export const transactionsPage = async (req: Request, res: Response) => {
       getUserTour(userId),
     ]);
     res.status(200).send({ formattedTransactions, userTour, unreadObj });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -172,7 +172,7 @@ export const onboardingPage = async (req: Request, res: Response) => {
       stripeSubscription,
       googleSubscription,
     });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -201,7 +201,7 @@ export const userPage = async (req: Request, res: Response) => {
       stripeSubscription,
       googleSubscription,
     });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -217,7 +217,7 @@ export const reviewPage = async (req: Request, res: Response) => {
       (t) => t.amount > 0
     );
     res.status(200).send({ formattedTransactions, pinnedUserGoal });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -239,7 +239,7 @@ export const transactionPage = async (req: Request, res: Response) => {
       where: { id: transaction.accountId },
     });
     res.status(200).send({ transaction, account });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -264,7 +264,7 @@ export const goalTransferPage = async (req: Request, res: Response) => {
       }),
     ]);
     res.status(200).send({ goals, goalTransfer });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }
@@ -289,7 +289,7 @@ export const editGoalPage = async (req: Request, res: Response) => {
         })
       )?.amount.toNumber();
     res.status(200).send({ goal, initialAmount });
-  } catch (err) {
+  } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }

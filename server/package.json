@@ -9,6 +9,7 @@
     "pm2": "pm2-runtime start npm -- start",
     "stop": "pm2 stop server",
     "build": "tsc",
+    "postbuild": "cp -r public dist/server/public",
     "dev": "nodemon src/index.ts --exec ts-node"
   },
   "keywords": [],
