@@ -116,43 +116,21 @@ export default function Subscription({
     return (
       <div>
         <Title level={4}>Subscription</Title>
-        {googleSubscription ? (
-          <>
-            <div>
-              <Text>
-                Next Bill Date:{' '}
-                {appleSubscription?.expiryTimeMillis
-                  ? dayjs(appleSubscription.expiryTimeMillis).format('LL')
-                  : 'N/A'}
-              </Text>
-            </div>
-            <div>
-              <Text>
-                Rate:{' '}
-                {appleSubscription?.priceAmountMicros
-                  ? `${(appleSubscription.priceAmountMicros / 1e6).toFixed(
-                      2
-                    )} ${appleSubscription.priceCurrencyCode}/month`
-                  : 'N/A'}
-              </Text>
-            </div>
-            <div>
-              <Text>
-                Status:{' '}
-                {appleSubscription
-                  ? appleSubscription.isActive
-                    ? 'Active'
-                    : appleSubscription.subscriptionStatus.replaceAll('_', ' ')
-                  : 'Unknown'}
-              </Text>
-            </div>
-            <div>
-              <Text>Manage your subscription in the App Store below</Text>
-            </div>
-          </>
-        ) : (
-          <Text>Subscribe to link your bank</Text>
-        )}
+        <>
+          <div>
+            <Text>Rate: $4.00/month</Text>
+          </div>
+          <Link to='/privacy-policy'>
+            <Button>Privacy Policy</Button>
+          </Link>
+          <Button href='https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'>
+            Privacy Policy
+          </Button>
+          <div>
+            <Text>Manage your subscription in the App Store below</Text>
+          </div>
+        </>
+        <Text>Subscribe to link your bank</Text>
         {platform === 'ios' ? (
           <ApplePay
             alt='Apple Pay'
