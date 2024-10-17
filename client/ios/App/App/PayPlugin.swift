@@ -84,19 +84,22 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
     }
 
     private func handlePurchasedTransaction(_ transaction: SKPaymentTransaction) {
-        guard let originalTransactionId = transaction.original?.transactionIdentifier ?? transaction.transactionIdentifier else {
+        // Get the receipt data
+        guard let receiptURL = Bundle.main.appStoreReceiptURL,
+              let receiptData = try? Data(contentsOf: receiptURL) else {
             SKPaymentQueue.default().finishTransaction(transaction)
-            self.pluginCall?.reject("Unable to retrieve transaction identifier.")
+            self.pluginCall?.reject("Unable to retrieve receipt data.")
             return
         }
 
-        // Send the originalTransactionId to the backend for verification
-        self.verifySubscriptionStatus(originalTransactionId: originalTransactionId) { isActive in
+        let receiptString = receiptData.base64EncodedString(options: [])
+
+        // Send the receipt data to the backend for verification
+        self.verifySubscriptionStatus(receiptData: receiptString) { isActive in
+            SKPaymentQueue.default().finishTransaction(transaction)
             if isActive {
-                SKPaymentQueue.default().finishTransaction(transaction)
                 self.pluginCall?.resolve()
             } else {
-                SKPaymentQueue.default().finishTransaction(transaction)
                 self.pluginCall?.reject("Subscription verification failed.")
             }
         }
@@ -104,7 +107,7 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
 
     // MARK: - Verify Subscription Status
 
-    private func verifySubscriptionStatus(originalTransactionId: String, completion: @escaping (Bool) -> Void) {
+    private func verifySubscriptionStatus(receiptData: String, completion: @escaping (Bool) -> Void) {
         guard let backendURL = self.backendURL, let accessToken = self.accessToken else {
             completion(false)
             return
@@ -116,7 +119,7 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: Any] = ["originalTransactionId": originalTransactionId]
+        let body: [String: Any] = ["receiptData": receiptData]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
 
         let session = URLSession(configuration: .default)

@@ -161,7 +161,7 @@ export default function Subscription({
                   ) {
                     await Pay.subscribe({
                       // @ts-ignore
-                      productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
+                      productId: process.env.REACT_APP_APPLE_PRODUCT_ID!,
                       backendURL:
                         // @ts-ignore
                         process.env.REACT_APP_API_URL!,
