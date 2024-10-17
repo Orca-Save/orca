@@ -40,6 +40,7 @@ $processedUsers = $allUsers | ForEach-Object {
         DisplayName       = $_.displayName
         UserPrincipalName = $_.userPrincipalName
         EmailAddress      = Get-EmailAddressFromIdentities($_.identities)
+        CreatedDateTime   = $_.createdDateTime
     }
 }
 
