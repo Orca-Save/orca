@@ -22,8 +22,13 @@ export default function UserPage() {
         <Skeleton active />
       </>
     );
-  const { linkToken, userProfile, stripeSubscription, googleSubscription } =
-    data;
+  const {
+    linkToken,
+    userProfile,
+    stripeSubscription,
+    googleSubscription,
+    appleSubscription,
+  } = data;
   const handleLogout = () => {
     instance.logoutPopup();
   };
@@ -35,6 +40,7 @@ export default function UserPage() {
           userProfile={userProfile}
           stripeSubscription={stripeSubscription}
           googleSubscription={googleSubscription}
+          appleSubscription={appl}
         />
 
         <ClearUserData />

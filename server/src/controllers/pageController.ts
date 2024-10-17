@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
 import { appInsightsClient } from '../utils/appInsights';
+import { getAppleSubscriptionStatus } from '../utils/apple';
 import {
   getCurrentMonthDailySums,
   getLastMonthDiscretionaryTotal,
@@ -187,12 +188,14 @@ export const userPage = async (req: Request, res: Response) => {
       isActiveSubscription,
       stripeSubscription,
       googleSubscription,
+      appleSubscription,
     ] = await Promise.all([
       createLinkToken(userId),
       getUserProfile(userId),
       isActiveSubscriber(userId),
       getStripeSubscription(userId),
       getGoogleSubscriptionStatus(userId),
+      getAppleSubscriptionStatus(userId),
     ]);
     res.status(200).send({
       linkToken,
@@ -200,6 +203,7 @@ export const userPage = async (req: Request, res: Response) => {
       isActiveSubscription,
       stripeSubscription,
       googleSubscription,
+      appleSubscription,
     });
   } catch (err: any) {
     appInsightsClient.trackException({ exception: err });

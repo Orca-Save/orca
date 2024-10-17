@@ -26,6 +26,18 @@ model PlaidWebhook {
   createdAt   DateTime @default(now()) @db.Timestamptz()
 }
 
+model AppleWebhook {
+  id          String   @id @default(uuid())
+  userId      String?
+  type        String?
+  code        String?
+  environment String?
+  rawJson     Json?
+  json        Json?
+  error       Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+}
+
 model GoogleWebhook {
   id          String   @id @default(uuid())
   userId      String
@@ -145,6 +157,7 @@ model UserProfile {
   stripeCustomerId           String?
   stripeSubscriptionId       String?
   googlePaySubscriptionToken String?
+  appleSubscriptionId        String?
   subscriptionEnd            DateTime?
   privacyPolicyAccepted      Boolean   @default(false)
   notificationToken          String?

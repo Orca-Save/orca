@@ -81,6 +81,7 @@ const webhooks = [
   '/api/plaid/webhook',
   '/api/stripe/webhook',
   '/api/google/webhook',
+  '/api/apple/webhook',
   '/api/support/submitTicket',
   '/.well-known/apple-developer-merchantid-domain-association.txt',
 ];

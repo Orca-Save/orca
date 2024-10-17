@@ -114,32 +114,62 @@ export default function Subscription({
 
   if (platform === 'ios')
     return (
-      <div>
-        <Title level={4}>Subscription</Title>
+      <>
+        appleSubscription ? (
         <>
           <div>
-            <Text>Rate: $4.00/month</Text>
+            <Text>
+              Next Bill Date:{' '}
+              {appleSubscription.subscriptionEnd
+                ? dayjs(appleSubscription.subscriptionEnd).format('LL')
+                : 'N/A'}
+            </Text>
           </div>
-          <Link to='/privacy-policy'>
-            <Button>Privacy Policy</Button>
-          </Link>
-          <Button href='https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'>
-            Privacy Policy
-          </Button>
+          <div>
+            <Text>
+              Rate:{' '}
+              {appleSubscription?.priceAmountMicros
+                ? `${(appleSubscription.priceAmountMicros / 1e6).toFixed(2)} ${
+                    appleSubscription.priceCurrencyCode
+                  }/month`
+                : 'N/A'}
+            </Text>
+          </div>
+          <div>
+            <Text>
+              Status: {appleSubscription.isActive ? 'Active' : 'Expired'}
+            </Text>
+          </div>
           <div>
             <Text>Manage your subscription in the App Store below</Text>
           </div>
         </>
-        <Text>Subscribe to link your bank</Text>
+        ) : (
+        <>
+          <Text>Subscribe to link your bank</Text>
+          <div>
+            <Title level={4}>Subscription</Title>
+            <>
+              <div>
+                <Text>Rate: $4.00/month</Text>
+              </div>
+
+              <div>
+                <Text>Manage your subscription in the App Store below</Text>
+              </div>
+            </>
+          </div>
+        </>
+        );
         {platform === 'ios' ? (
           <ApplePay
             alt='Apple Pay'
-            style={{ height: 70 }}
+            style={{ height: 45 }}
             onClick={async () => {
               try {
                 if (
-                  !googleSubscription ||
-                  googleSubscription?.isActive === false
+                  !appleSubscription ||
+                  appleSubscription?.isActive === false
                 ) {
                   await Pay.subscribe({
                     // @ts-ignore
@@ -161,14 +191,20 @@ export default function Subscription({
         ) : (
           <Button
             onClick={async () => {
-              await apiFetch('/api/users/cancelGoogleSub', 'GET');
+              // await apiFetch('/api/users/cancelGoogleSub', 'GET');
               window.location.reload();
             }}
           >
             Cancel
           </Button>
         )}
-      </div>
+        <Link to='/privacy-policy'>
+          <Button>Privacy Policy</Button>
+        </Link>
+        <Button href='https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'>
+          Terms of Use
+        </Button>
+      </>
     );
 
   if (userProfile?.stripeSubscriptionId && stripeSubscription) {
