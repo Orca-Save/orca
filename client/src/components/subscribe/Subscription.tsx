@@ -146,21 +146,7 @@ export default function Subscription({
             </div>
           </>
         ) : (
-          <>
-            <Text>Subscribe to link your bank</Text>
-            <div>
-              <Title level={4}>Subscription</Title>
-              <>
-                <div>
-                  <Text>Rate: $4.00/month</Text>
-                </div>
-
-                <div>
-                  <Text>Manage your subscription in the App Store below</Text>
-                </div>
-              </>
-            </div>
-          </>
+          <Text>Subscribe to link your bank</Text>
         )}
         <Space>
           {platform === 'ios' ? (
