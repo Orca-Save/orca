@@ -40,7 +40,7 @@ export default function UserPage() {
           userProfile={userProfile}
           stripeSubscription={stripeSubscription}
           googleSubscription={googleSubscription}
-          appleSubscription={appl}
+          appleSubscription={appleSubscription}
         />
 
         <ClearUserData />
