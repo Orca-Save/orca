@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { Button, Typography } from 'antd';
+import { Button, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import React from 'react';
@@ -29,6 +29,7 @@ export default function Subscription({
 }) {
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
+  console.log('appleSubscription', appleSubscription);
 
   if (platform === 'android' || googleSubscription?.autoRenewing)
     return (
@@ -161,49 +162,51 @@ export default function Subscription({
             </div>
           </>
         )}
-        {platform === 'ios' ? (
-          <ApplePay
-            alt='Apple Pay'
-            style={{ height: 45 }}
-            onClick={async () => {
-              try {
-                if (
-                  !appleSubscription ||
-                  appleSubscription?.isActive === false
-                ) {
-                  await Pay.subscribe({
-                    // @ts-ignore
-                    productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
-                    backendURL:
+        <Space>
+          {platform === 'ios' ? (
+            <ApplePay
+              alt='Apple Pay'
+              style={{ height: 45, width: 90 }}
+              onClick={async () => {
+                try {
+                  if (
+                    !appleSubscription ||
+                    appleSubscription?.isActive === false
+                  ) {
+                    await Pay.subscribe({
                       // @ts-ignore
-                      process.env.REACT_APP_API_URL!,
-                    accessToken: localStorage.getItem('accessToken')!,
-                  });
-                } else {
-                  await Pay.manageSubscription();
+                      productId: process.env.REACT_APP_GOOGLE_PRODUCT_ID!,
+                      backendURL:
+                        // @ts-ignore
+                        process.env.REACT_APP_API_URL!,
+                      accessToken: localStorage.getItem('accessToken')!,
+                    });
+                  } else {
+                    await Pay.manageSubscription();
+                  }
+                  window.location.reload();
+                } catch (err) {
+                  console.error(err);
                 }
+              }}
+            />
+          ) : (
+            <Button
+              onClick={async () => {
+                // await apiFetch('/api/users/cancelGoogleSub', 'GET');
                 window.location.reload();
-              } catch (err) {
-                console.error(err);
-              }
-            }}
-          />
-        ) : (
-          <Button
-            onClick={async () => {
-              // await apiFetch('/api/users/cancelGoogleSub', 'GET');
-              window.location.reload();
-            }}
-          >
-            Cancel
+              }}
+            >
+              Cancel
+            </Button>
+          )}
+          <Link to='/privacy-policy'>
+            <Button>Privacy Policy</Button>
+          </Link>
+          <Button href='https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'>
+            Terms of Use
           </Button>
-        )}
-        <Link to='/privacy-policy'>
-          <Button>Privacy Policy</Button>
-        </Link>
-        <Button href='https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'>
-          Terms of Use
-        </Button>
+        </Space>
       </>
     );
 
