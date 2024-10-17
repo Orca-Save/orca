@@ -167,6 +167,7 @@ export default function Subscription({
                         process.env.REACT_APP_API_URL!,
                       accessToken: localStorage.getItem('accessToken')!,
                     });
+                    console.log('subscribed');
                   } else {
                     await Pay.manageSubscription();
                   }
