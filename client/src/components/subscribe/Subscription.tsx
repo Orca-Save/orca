@@ -115,52 +115,52 @@ export default function Subscription({
   if (platform === 'ios')
     return (
       <>
-        appleSubscription ? (
-        <>
-          <div>
-            <Text>
-              Next Bill Date:{' '}
-              {appleSubscription.subscriptionEnd
-                ? dayjs(appleSubscription.subscriptionEnd).format('LL')
-                : 'N/A'}
-            </Text>
-          </div>
-          <div>
-            <Text>
-              Rate:{' '}
-              {appleSubscription?.priceAmountMicros
-                ? `${(appleSubscription.priceAmountMicros / 1e6).toFixed(2)} ${
-                    appleSubscription.priceCurrencyCode
-                  }/month`
-                : 'N/A'}
-            </Text>
-          </div>
-          <div>
-            <Text>
-              Status: {appleSubscription.isActive ? 'Active' : 'Expired'}
-            </Text>
-          </div>
-          <div>
-            <Text>Manage your subscription in the App Store below</Text>
-          </div>
-        </>
+        {appleSubscription ? (
+          <>
+            <div>
+              <Text>
+                Next Bill Date:{' '}
+                {appleSubscription.subscriptionEnd
+                  ? dayjs(appleSubscription.subscriptionEnd).format('LL')
+                  : 'N/A'}
+              </Text>
+            </div>
+            <div>
+              <Text>
+                Rate:{' '}
+                {appleSubscription?.priceAmountMicros
+                  ? `${(appleSubscription.priceAmountMicros / 1e6).toFixed(
+                      2
+                    )} ${appleSubscription.priceCurrencyCode}/month`
+                  : 'N/A'}
+              </Text>
+            </div>
+            <div>
+              <Text>
+                Status: {appleSubscription.isActive ? 'Active' : 'Expired'}
+              </Text>
+            </div>
+            <div>
+              <Text>Manage your subscription in the App Store below</Text>
+            </div>
+          </>
         ) : (
-        <>
-          <Text>Subscribe to link your bank</Text>
-          <div>
-            <Title level={4}>Subscription</Title>
-            <>
-              <div>
-                <Text>Rate: $4.00/month</Text>
-              </div>
+          <>
+            <Text>Subscribe to link your bank</Text>
+            <div>
+              <Title level={4}>Subscription</Title>
+              <>
+                <div>
+                  <Text>Rate: $4.00/month</Text>
+                </div>
 
-              <div>
-                <Text>Manage your subscription in the App Store below</Text>
-              </div>
-            </>
-          </div>
-        </>
-        );
+                <div>
+                  <Text>Manage your subscription in the App Store below</Text>
+                </div>
+              </>
+            </div>
+          </>
+        )}
         {platform === 'ios' ? (
           <ApplePay
             alt='Apple Pay'
