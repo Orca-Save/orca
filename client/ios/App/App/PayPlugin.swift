@@ -84,6 +84,7 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
     }
 
     private func handlePurchasedTransaction(_ transaction: SKPaymentTransaction) {
+        // Use the originalTransactionId for validation
         guard let originalTransactionId = transaction.original?.transactionIdentifier ?? transaction.transactionIdentifier else {
             SKPaymentQueue.default().finishTransaction(transaction)
             self.pluginCall?.reject("Unable to retrieve transaction identifier.")
@@ -92,11 +93,10 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
 
         // Send the originalTransactionId to the backend for verification
         self.verifySubscriptionStatus(originalTransactionId: originalTransactionId) { isActive in
+            SKPaymentQueue.default().finishTransaction(transaction)
             if isActive {
-                SKPaymentQueue.default().finishTransaction(transaction)
                 self.pluginCall?.resolve()
             } else {
-                SKPaymentQueue.default().finishTransaction(transaction)
                 self.pluginCall?.reject("Subscription verification failed.")
             }
         }
@@ -132,6 +132,10 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
                 completion(false)
                 return
             }
+            
+            let responseString = String(data: data, encoding: .utf8)
+                print("Raw response: \(responseString ?? "No response")")
+
 
             do {
                 if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
