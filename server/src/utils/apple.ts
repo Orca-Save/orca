@@ -1,87 +1,75 @@
 import https from 'https';
-import jwt from 'jsonwebtoken';
 import db from './db';
 
-const PRIVATE_KEY = process.env.APPLE_PRIVATE_KEY?.replace(/\\n/g, '\n') || '';
-const KEY_ID = process.env.APPLE_KEY_ID || '';
-const ISSUER_ID = process.env.APPLE_ISSUER_ID || '';
-const BUNDLE_ID = process.env.APPLE_BUNDLE_ID || '';
 const SHARED_SECRET = process.env.APPLE_SHARED_SECRET || ''; // Your app's shared secret
 
-export function generateToken(): string {
-  const now = Math.floor(Date.now() / 1000);
-  const payload = {
-    iss: ISSUER_ID,
-    iat: now,
-    exp: now + 1800, // Token valid for 30 minutes
-    aud: 'appstoreconnect-v1',
-    bid: BUNDLE_ID,
-  };
-
-  const header = {
-    alg: 'ES256',
-    kid: KEY_ID,
-    typ: 'JWT',
-  };
-
-  const token = jwt.sign(payload, PRIVATE_KEY, { algorithm: 'ES256', header });
-  return token;
-}
-
 export async function verifyReceipt(receiptData: string): Promise<any> {
-  const endpoint = 'https://sandbox.itunes.apple.com/verifyReceipt'; // Sandbox endpoint
+  const productionEndpoint = 'https://buy.itunes.apple.com/verifyReceipt';
+  const sandboxEndpoint = 'https://sandbox.itunes.apple.com/verifyReceipt';
   const requestBody = JSON.stringify({
     'receipt-data': receiptData,
     password: SHARED_SECRET,
     'exclude-old-transactions': true,
   });
 
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'sandbox.itunes.apple.com',
-      port: 443,
-      path: '/verifyReceipt',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(requestBody),
-      },
-    };
+  async function sendRequest(endpoint: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const options = {
+        hostname: new URL(endpoint).hostname,
+        port: 443,
+        path: '/verifyReceipt',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(requestBody),
+        },
+      };
 
-    const req = https.request(options, (res) => {
-      let data = '';
+      const req = https.request(options, (res) => {
+        let data = '';
 
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
 
-      res.on('end', () => {
-        try {
-          const jsonData = JSON.parse(data);
-          if (jsonData.status === 0) {
-            // Receipt is valid
+        res.on('end', () => {
+          try {
+            const jsonData = JSON.parse(data);
             resolve(jsonData);
-          } else {
-            // Handle different status codes
-            reject(
-              new Error(
-                `Receipt validation failed with status: ${jsonData.status}`
-              )
-            );
+          } catch (error: any) {
+            reject(new Error(`Error parsing response: ${error.message}`));
           }
-        } catch (error: any) {
-          reject(new Error(`Error parsing response: ${error.message}`));
-        }
+        });
       });
-    });
 
-    req.on('error', (error) => {
-      reject(new Error(`Error verifying receipt: ${error.message}`));
-    });
+      req.on('error', (error) => {
+        reject(new Error(`Error verifying receipt: ${error.message}`));
+      });
 
-    req.write(requestBody);
-    req.end();
-  });
+      req.write(requestBody);
+      req.end();
+    });
+  }
+
+  // First, try the production endpoint
+  try {
+    const response = await sendRequest(productionEndpoint);
+    if (response.status === 0) {
+      return response;
+    } else if (response.status === 21007) {
+      // Receipt is from sandbox, try sandbox endpoint
+      const sandboxResponse = await sendRequest(sandboxEndpoint);
+      if (sandboxResponse.status === 0) {
+        return sandboxResponse;
+      } else {
+        throw new Error(`Receipt validation failed with status: ${sandboxResponse.status}`);
+      }
+    } else {
+      throw new Error(`Receipt validation failed with status: ${response.status}`);
+    }
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function processSubscriptionData(
@@ -96,17 +84,23 @@ export async function processSubscriptionData(
       return { isActive: false };
     }
 
-    const latestTransaction = latestReceiptInfo[latestReceiptInfo.length - 1];
+    // Find the latest subscription receipt
+    const sortedReceipts = latestReceiptInfo.sort((a: any, b: any) => {
+      return parseInt(b.expires_date_ms, 10) - parseInt(a.expires_date_ms, 10);
+    });
+
+    const latestTransaction = sortedReceipts[0];
     const expiresDateMs = parseInt(latestTransaction.expires_date_ms, 10);
     const isActive = expiresDateMs > Date.now();
     const originalTransactionId = latestTransaction.original_transaction_id; // Subscription ID
 
-    // Save the subscription ID in the user's profile
+    // Save the receipt data and subscription ID in the user's profile
     await db.userProfile.update({
       where: { userId: userId },
       data: {
         appleSubscriptionId: originalTransactionId,
         subscriptionEnd: new Date(expiresDateMs),
+        appleReceiptData: receiptData, // Store receipt data
       },
     });
 
@@ -120,58 +114,46 @@ export async function processSubscriptionData(
     throw new Error(`Error processing subscription data: ${error.message}`);
   }
 }
+
 export async function getAppleSubscriptionStatus(userId: string) {
   try {
-    // Fetch the stored transaction ID from your database
+    // Fetch the stored receipt data from your database
     const userProfile = await db.userProfile.findUnique({
       where: { userId },
       select: {
-        appleSubscriptionId: true, // Assuming you store the subscription transaction ID
+        appleReceiptData: true, // Assuming you store the receipt data
       },
     });
 
-    if (!userProfile || !userProfile.appleSubscriptionId) {
-      throw new Error('Transaction ID not found');
+    if (!userProfile || !userProfile.appleReceiptData) {
+      throw new Error('Receipt data not found');
     }
 
-    const transactionId = userProfile.appleSubscriptionId;
+    const receiptData = userProfile.appleReceiptData;
 
-    // Generate JWT for authorization
-    const jwtToken = generateToken();
+    // Verify the receipt with Apple
+    const receiptInfo = await verifyReceipt(receiptData);
 
-    // Make the API call to the new StoreKit API endpoint
-    const response = await fetch(
-      `https://api.storekit-sandbox.itunes.apple.com/inApps/v1/transactions/${transactionId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`StoreKit API returned an error: ${response.statusText}`);
+    const latestReceiptInfo = receiptInfo.latest_receipt_info;
+    if (!latestReceiptInfo || latestReceiptInfo.length === 0) {
+      return { isActive: false };
     }
 
-    const data = await response.json();
+    // Find the latest subscription receipt
+    const sortedReceipts = latestReceiptInfo.sort((a: any, b: any) => {
+      return parseInt(b.expires_date_ms, 10) - parseInt(a.expires_date_ms, 10);
+    });
 
-    // Extract the relevant subscription data from StoreKit API response
-    const latestTransaction = data.data?.[0]; // Assuming the first transaction is the most recent
-    if (!latestTransaction) {
-      throw new Error('No transactions found for this user');
-    }
-
-    const isActive = latestTransaction.expiresDate > Date.now();
+    const latestTransaction = sortedReceipts[0];
+    const expiresDateMs = parseInt(latestTransaction.expires_date_ms, 10);
+    const isActive = expiresDateMs > Date.now();
 
     // Return the subscription status
     return {
       isActive,
-      subscriptionEnd: latestTransaction.expiresDate
-        ? new Date(parseInt(latestTransaction.expiresDate, 10)).toISOString()
-        : null,
-      priceAmountMicros: latestTransaction.price * 1e6, // Convert to micros
-      priceCurrencyCode: latestTransaction.currencyCode,
+      subscriptionEnd: new Date(expiresDateMs).toISOString(),
+      productId: latestTransaction.product_id,
+      originalTransactionId: latestTransaction.original_transaction_id,
     };
   } catch (error: any) {
     console.error(

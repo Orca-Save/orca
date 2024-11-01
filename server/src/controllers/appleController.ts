@@ -1,48 +1,25 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-
 import { User } from '../types/user';
 import { appInsightsClient } from '../utils/appInsights';
-import { generateToken, processSubscriptionData } from '../utils/apple';
+import { getAppleSubscriptionStatus, processSubscriptionData } from '../utils/apple';
 import db from '../utils/db';
 import { removePlaidItemsForUser } from '../utils/plaid';
 
 export const verifySubscription = async (req: Request, res: Response) => {
   const user = (req as any).user as User;
   const userId = user.oid;
-  const { originalTransactionId } = req.body;
+  const { receiptData } = req.body;
   appInsightsClient.trackEvent({
     name: 'SubscriptionVerificationRequest',
-    properties: { originalTransactionId },
+    properties: { userId },
   });
 
-  if (!originalTransactionId) {
-    return res.status(400).json({ error: 'Missing original transaction ID.' });
+  if (!receiptData) {
+    return res.status(400).json({ error: 'Missing receipt data.' });
   }
 
   try {
-    const token = generateToken();
-    const url = `https://api.storekit.itunes.apple.com/inApps/v1/subscriptions/${originalTransactionId}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      console.error('Error fetching subscription status:', errorResponse);
-      return res.json({ isActive: false });
-    }
-
-    const data = await response.json();
-
-    appInsightsClient.trackEvent({
-      name: 'SubscriptionVerification',
-      properties: data,
-    });
-    const subscriptionInfo = await processSubscriptionData(data, userId);
+    const subscriptionInfo = await processSubscriptionData(receiptData, userId);
 
     // Return subscription info matching the expected format
     res.json(subscriptionInfo);
@@ -51,6 +28,19 @@ export const verifySubscription = async (req: Request, res: Response) => {
     res.json({ isActive: false });
   }
 };
+
+export async function getSubscriptionStatus(req: Request, res: Response) {
+  const user = (req as any).user as User;
+  const userId = user.oid;
+
+  try {
+    const status = await getAppleSubscriptionStatus(userId);
+    res.json(status);
+  } catch (error: any) {
+    console.error('Error getting subscription status:', error);
+    res.status(500).json({ error: error.message });
+  }
+}
 
 export async function appleWebhook(req: Request, res: Response) {
   try {
@@ -119,33 +109,5 @@ export async function appleWebhook(req: Request, res: Response) {
     });
 
     res.status(500).send('Internal server error');
-  }
-}
-
-/**
- * Verifies the signed transaction info from Apple.
- * @param notification The incoming webhook notification from Apple
- * @returns Boolean indicating whether the notification is valid
- */
-export function verifyAppleNotification(notification: any): boolean {
-  const signedTransactionInfo = notification.signedTransactionInfo;
-
-  if (!signedTransactionInfo) {
-    return false;
-  }
-
-  // Apple provides a public key for verifying their signed JWT tokens
-  const publicKey = process.env.APPLE_PUBLIC_KEY || ''; // Fetch from Apple API
-
-  try {
-    // Verify the JWT signature using Apple's public key
-    const decoded = jwt.verify(signedTransactionInfo, publicKey, {
-      algorithms: ['ES256'], // Apple uses ES256 algorithm
-    });
-
-    return !!decoded;
-  } catch (error) {
-    console.error('Failed to verify Apple notification:', error);
-    return false;
   }
 }

@@ -157,6 +157,8 @@ model UserProfile {
   stripeCustomerId           String?
   stripeSubscriptionId       String?
   googlePaySubscriptionToken String?
+
+  appleReceiptData           String?
   appleSubscriptionId        String?
   subscriptionEnd            DateTime?
   privacyPolicyAccepted      Boolean   @default(false)

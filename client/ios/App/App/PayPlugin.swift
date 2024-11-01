@@ -136,6 +136,9 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
                 return
             }
 
+            let responseString = String(data: data, encoding: .utf8)
+            print("Raw response: \(responseString ?? "No response")")
+
             do {
                 if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                    let isActive = jsonResponse["isActive"] as? Bool {
