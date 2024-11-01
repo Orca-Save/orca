@@ -84,15 +84,18 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
     }
 
     private func handlePurchasedTransaction(_ transaction: SKPaymentTransaction) {
-        // Use the originalTransactionId for validation
-        guard let originalTransactionId = transaction.original?.transactionIdentifier ?? transaction.transactionIdentifier else {
-            SKPaymentQueue.default().finishTransaction(ßtransaction)
+        // Get the receipt data
+        guard let receiptURL = Bundle.main.appStoreReceiptURL,
+              let receiptData = try? Data(contentsOf: receiptURL) else {
+            SKPaymentQueue.default().finishTransaction(transaction)
             self.pluginCall?.reject("Unable to retrieve receipt data.")
             return
         }
 
-        // Send the originalTransactionId to the backend for verification
-        self.verifySubscriptionStatus(originalTransactionId: originalTransactionId) { isActive in
+        let receiptString = receiptData.base64EncodedString(options: [])
+
+        // Send the receipt data to the backend for verification
+        self.verifySubscriptionStatus(receiptData: receiptString) { isActive in
             SKPaymentQueue.default().finishTransaction(transaction)
             if isActive {
                 self.pluginCall?.resolve()
@@ -132,10 +135,6 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
                 completion(false)
                 return
             }
-            
-            let responseString = String(data: data, encoding: .utf8)
-                print("Raw response: \(responseString ?? "No response")")
-
 
             let responseString = String(data: data, encoding: .utf8)
             print("Raw response: \(responseString ?? "No response")")
