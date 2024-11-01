@@ -10,6 +10,7 @@
 		1F052DE22CA508BA00C423C7 /* PayPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F052DE12CA508B200C423C7 /* PayPlugin.m */; };
 		1F6E6C6D2CA37E4400D88FA7 /* PayPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6E6C6C2CA37E3D00D88FA7 /* PayPlugin.swift */; };
 		1F9544A12CA502220006183D /* MyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9544A02CA502220006183D /* MyViewController.swift */; };
+		1FCF5BD42CA5E57700D66166 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FCF5BD32CA5E57700D66166 /* StoreKit.framework */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
@@ -23,9 +24,12 @@
 /* Begin PBXFileReference section */
 		1F052DE12CA508B200C423C7 /* PayPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PayPlugin.m; sourceTree = "<group>"; };
 		1F052DE32CA508CD00C423C7 /* App-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "App-Bridging-Header.h"; sourceTree = "<group>"; };
+		1F5D3B212CC0C3F900031F27 /* storekit.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = storekit.storekit; path = App/storekit.storekit; sourceTree = "<group>"; };
 		1F6E6C6B2CA3769B00D88FA7 /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		1F6E6C6C2CA37E3D00D88FA7 /* PayPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayPlugin.swift; sourceTree = "<group>"; };
+		1F7B69062CAC93430002C99E /* AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppRelease.entitlements; sourceTree = "<group>"; };
 		1F9544A02CA502220006183D /* MyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyViewController.swift; sourceTree = "<group>"; };
+		1FCF5BD32CA5E57700D66166 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -46,6 +50,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
+				1FCF5BD42CA5E57700D66166 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,6 +60,7 @@
 		27E2DDA53C4D2A4D1A88CE4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1FCF5BD32CA5E57700D66166 /* StoreKit.framework */,
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
 			);
 			name = Frameworks;
@@ -63,6 +69,7 @@
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
+				1F5D3B212CC0C3F900031F27 /* storekit.storekit */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
@@ -81,6 +88,7 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
+				1F7B69062CAC93430002C99E /* AppRelease.entitlements */,
 				1F052DE12CA508B200C423C7 /* PayPlugin.m */,
 				1F6E6C6C2CA37E3D00D88FA7 /* PayPlugin.swift */,
 				1F6E6C6B2CA3769B00D88FA7 /* App.entitlements */,
@@ -369,6 +377,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2MD5Y8L6M5;
 				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Orca;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
@@ -389,11 +399,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
+				CODE_SIGN_ENTITLEMENTS = App/AppRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2MD5Y8L6M5;
 				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Orca;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
