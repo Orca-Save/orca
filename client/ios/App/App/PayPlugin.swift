@@ -84,18 +84,15 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
     }
 
     private func handlePurchasedTransaction(_ transaction: SKPaymentTransaction) {
-        // Get the receipt data
-        guard let receiptURL = Bundle.main.appStoreReceiptURL,
-              let receiptData = try? Data(contentsOf: receiptURL) else {
+        // Get the transaction identifier
+        guard let transactionIdentifier = transaction.transactionIdentifier else {
             SKPaymentQueue.default().finishTransaction(transaction)
-            self.pluginCall?.reject("Unable to retrieve receipt data.")
+            self.pluginCall?.reject("Unable to retrieve transaction identifier.")
             return
         }
 
-        let receiptString = receiptData.base64EncodedString(options: [])
-
-        // Send the receipt data to the backend for verification
-        self.verifySubscriptionStatus(receiptData: receiptString) { isActive in
+        // Send the transaction identifier to the backend for verification
+        self.verifySubscriptionStatus(transactionIdentifier: transactionIdentifier) { isActive in
             SKPaymentQueue.default().finishTransaction(transaction)
             if isActive {
                 self.pluginCall?.resolve()
@@ -107,7 +104,7 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
 
     // MARK: - Verify Subscription Status
 
-    private func verifySubscriptionStatus(receiptData: String, completion: @escaping (Bool) -> Void) {
+    private func verifySubscriptionStatus(transactionIdentifier: String, completion: @escaping (Bool) -> Void) {
         guard let backendURL = self.backendURL, let accessToken = self.accessToken else {
             completion(false)
             return
@@ -119,7 +116,7 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: Any] = ["receiptData": receiptData]
+        let body: [String: Any] = ["transactionId": transactionIdentifier]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
 
         let session = URLSession(configuration: .default)
@@ -135,9 +132,6 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
                 completion(false)
                 return
             }
-
-            let responseString = String(data: data, encoding: .utf8)
-            print("Raw response: \(responseString ?? "No response")")
 
             do {
                 if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
