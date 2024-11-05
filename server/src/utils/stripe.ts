@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 
 import db from './db/db';
 import { createLinkToken, removePlaidItemsForUser } from './plaid';
+import { appInsightsClient } from './appInsights';
 
 if (!process.env.STRIPE_SECRET_KEY)
   console.error('MISSING STRIPE_SECRET_KEY!!!');
@@ -265,9 +266,9 @@ export async function createSubscription(
   email: string
 ): Promise<
   | {
-      clientSecret?: string;
-      subscriptionId?: string;
-    }
+    clientSecret?: string;
+    subscriptionId?: string;
+  }
   | { message: string }
 > {
   const userProfile = await db.userProfile.findFirst({
@@ -382,10 +383,16 @@ export async function getStripeSubscription(userId: string) {
   });
 
   if (!userProfile?.stripeSubscriptionId) return null;
-
-  const subscription = await stripe.subscriptions.retrieve(
-    userProfile.stripeSubscriptionId
-  );
+  let subscription;
+  try {
+    subscription = await stripe.subscriptions.retrieve(
+      userProfile.stripeSubscriptionId
+    );
+  } catch (error: any) {
+    console.error('Error getting subscription:', error);
+    appInsightsClient.trackException({ exception: error });
+    return null;
+  }
 
   return subscription;
 }

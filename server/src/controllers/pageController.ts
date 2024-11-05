@@ -206,6 +206,7 @@ export const userPage = async (req: Request, res: Response) => {
       appleSubscription,
     });
   } catch (err: any) {
+    console.log('Error getting data for the page:', err);
     appInsightsClient.trackException({ exception: err });
     res.status(500).send({ message: 'Error getting data for the page' });
   }

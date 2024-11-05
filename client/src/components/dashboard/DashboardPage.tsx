@@ -1,10 +1,10 @@
-import { useIsAuthenticated, useMsal } from '@azure/msal-react';
-import { Skeleton } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import { Skeleton } from "antd";
+import { useNavigate } from "react-router-dom";
 
-import useFetch from '../../hooks/useFetch';
-import { UserProfile, UserTour } from '../../types/all';
-import Dashboard from './Dashboard';
+import useFetch from "../../hooks/useFetch";
+import { UserProfile, UserTour } from "../../types/all";
+import Dashboard from "./Dashboard";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -12,10 +12,10 @@ export default function HomePage() {
 
   const { accounts } = useMsal();
   const userId = accounts[0]?.localAccountId;
-  const { data } = useFetch('api/pages/dashboardPage', 'POST', {
+  const { data } = useFetch("api/pages/dashboardPage", "POST", {
     userId,
   });
-  if (!isAuthenticated) navigate('/sign-in');
+  if (!isAuthenticated) navigate("/sign-in");
   if (!data) return <Skeleton active />;
   const {
     onboardingProfileCount,
@@ -30,9 +30,10 @@ export default function HomePage() {
     onboardingProfileCount === 0 ||
     !userProfile?.privacyPolicyAccepted ||
     (!userProfile?.stripeSubscriptionId &&
-      !userProfile?.googlePaySubscriptionToken)
+      !userProfile?.googlePaySubscriptionToken &&
+      !userProfile?.appleSubscriptionId)
   )
-    navigate('/onboarding');
+    navigate("/onboarding");
   return (
     <Dashboard
       goal={data.goal}

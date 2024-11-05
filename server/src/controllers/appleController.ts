@@ -1,30 +1,38 @@
-import { Request, Response } from 'express';
-import { User } from '../types/user';
-import { appInsightsClient } from '../utils/appInsights';
-import { getAppleSubscriptionStatus, processSubscriptionData } from '../utils/apple';
-import db from '../utils/db';
-import { removePlaidItemsForUser } from '../utils/plaid';
+import { Request, Response } from "express";
+import { User } from "../types/user";
+import { appInsightsClient } from "../utils/appInsights";
+import {
+  getAppleSubscriptionStatus,
+  getTransactionInfo,
+  processSubscriptionData,
+} from "../utils/apple";
+import db from "../utils/db";
+import { removePlaidItemsForUser } from "../utils/plaid";
 
 export const verifySubscription = async (req: Request, res: Response) => {
   const user = (req as any).user as User;
   const userId = user.oid;
-  const { receiptData } = req.body;
+  const { transactionId } = req.body;
   appInsightsClient.trackEvent({
-    name: 'SubscriptionVerificationRequest',
-    properties: { userId },
+    name: "SubscriptionVerificationRequest",
+    properties: { ...req.body },
   });
 
-  if (!receiptData) {
-    return res.status(400).json({ error: 'Missing receipt data.' });
+  if (!transactionId) {
+    return res.status(400).json({ error: "Missing transaction ID." });
   }
 
   try {
-    const subscriptionInfo = await processSubscriptionData(receiptData, userId);
+    const transactionData = await getTransactionInfo(transactionId);
+    const subscriptionInfo = await processSubscriptionData(
+      transactionData,
+      userId
+    );
 
     // Return subscription info matching the expected format
     res.json(subscriptionInfo);
   } catch (error: any) {
-    console.error('Error verifying subscription:', error);
+    console.error("Error verifying subscription:", error);
     res.json({ isActive: false });
   }
 };
@@ -37,7 +45,7 @@ export async function getSubscriptionStatus(req: Request, res: Response) {
     const status = await getAppleSubscriptionStatus(userId);
     res.json(status);
   } catch (error: any) {
-    console.error('Error getting subscription status:', error);
+    console.error("Error getting subscription status:", error);
     res.status(500).json({ error: error.message });
   }
 }
@@ -45,7 +53,7 @@ export async function getSubscriptionStatus(req: Request, res: Response) {
 export async function appleWebhook(req: Request, res: Response) {
   try {
     appInsightsClient.trackEvent({
-      name: 'AppleWebhookReceived',
+      name: "AppleWebhookReceived",
       properties: req.body,
     });
     const notification = req.body;
@@ -60,7 +68,7 @@ export async function appleWebhook(req: Request, res: Response) {
 
     const userId = user?.userId;
     if (!userId) {
-      return res.status(404).send('User not found');
+      return res.status(404).send("User not found");
     }
 
     // Record the Apple subscription event in the AppleWebhook table
@@ -75,7 +83,7 @@ export async function appleWebhook(req: Request, res: Response) {
     });
 
     // Remove Plaid items for canceled or paused subscriptions
-    if (status === 'CANCEL' || status === 'ACCOUNT_HOLD') {
+    if (status === "CANCEL" || status === "ACCOUNT_HOLD") {
       await removePlaidItemsForUser(userId);
     }
 
@@ -92,22 +100,22 @@ export async function appleWebhook(req: Request, res: Response) {
       },
     });
 
-    res.status(200).send('Webhook received and processed');
+    res.status(200).send("Webhook received and processed");
   } catch (error: any) {
-    console.error('Error processing Apple subscription webhook:', error);
+    console.error("Error processing Apple subscription webhook:", error);
     appInsightsClient.trackException({ exception: error });
 
     // Log the error in the AppleWebhook table
     await db.appleWebhook.create({
       data: {
         userId: null, // If user ID is not available, set to null
-        type: 'ERROR',
-        environment: req.body.environment || 'Unknown',
+        type: "ERROR",
+        environment: req.body.environment || "Unknown",
         rawJson: req.body,
         error: { message: error.message, stack: error.stack },
       },
     });
 
-    res.status(500).send('Internal server error');
+    res.status(500).send("Internal server error");
   }
 }

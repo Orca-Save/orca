@@ -3,6 +3,9 @@ import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import {
   appleRoutes,
   componentRoutes,

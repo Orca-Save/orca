@@ -44,6 +44,7 @@ export type UserProfile = {
   privacyPolicyAccepted: boolean;
   googlePaySubscriptionToken: string;
   stripeSubscriptionId: string;
+  appleSubscriptionId: string;
 };
 export type OnboardingProfile = {
   goalName: string;
