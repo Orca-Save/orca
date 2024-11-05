@@ -116,7 +116,7 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: Any] = ["transactionId": transactionIdentifier]
+        let body: [String: Any] = ["transactionId": transactionIdentifier,"accessToken": accessToken ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
 
         let session = URLSession(configuration: .default)
