@@ -113,7 +113,7 @@ export default function Subscription({
       </div>
     );
 
-  if (platform === 'ios')
+  if (platform === 'ios' || appleSubscription)
     return (
       <>
         {appleSubscription ? (
@@ -142,16 +142,23 @@ export default function Subscription({
               </Text>
             </div>
             <div>
-              <Text>Manage your subscription in the App Store below</Text>
+              {platform === 'ios' ? (
+                <Text>Manage your subscription in the App Store below</Text>
+              ) : (
+                <Text>
+                  Manage your subscription from your apple device, or the Apple
+                  store.
+                </Text>
+              )}
             </div>
           </>
         ) : (
           <Text>Subscribe to link your bank</Text>
         )}
         <Space>
-          {platform === 'ios' ? (
+          {platform === 'ios' && (
             <ApplePay
-              alt='Apple Pay'
+              alt="Apple Pay"
               style={{ height: 45, width: 90 }}
               onClick={async () => {
                 try {
@@ -167,7 +174,6 @@ export default function Subscription({
                         process.env.REACT_APP_API_URL!,
                       accessToken: localStorage.getItem('accessToken')!,
                     });
-                    console.log('subscribed');
                   } else {
                     await Pay.manageSubscription();
                   }
@@ -177,20 +183,11 @@ export default function Subscription({
                 }
               }}
             />
-          ) : (
-            <Button
-              onClick={async () => {
-                // await apiFetch('/api/users/cancelGoogleSub', 'GET');
-                window.location.reload();
-              }}
-            >
-              Cancel
-            </Button>
           )}
-          <Link to='/privacy-policy'>
+          <Link to="/privacy-policy">
             <Button>Privacy Policy</Button>
           </Link>
-          <Button href='https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'>
+          <Button href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">
             Terms of Use
           </Button>
         </Space>
@@ -219,7 +216,7 @@ export default function Subscription({
           </Text>
         </div>
         <Button
-          data-id='update-subscription-button'
+          data-id="update-subscription-button"
           onClick={async () => {
             await apiFetch('/api/stripe/updateSubscription', 'POST', {
               cancel: !stripeSubscription?.cancel_at_period_end,
@@ -244,8 +241,8 @@ export default function Subscription({
         </Text>
       </div>
 
-      <Link to='/subscribe'>
-        <Button data-id='subscription-nav-button' type='primary' size='large'>
+      <Link to="/subscribe">
+        <Button data-id="subscription-nav-button" type="primary" size="large">
           Begin Subscription
         </Button>
       </Link>

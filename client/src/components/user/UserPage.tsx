@@ -7,6 +7,7 @@ import Subscription from '../subscribe/Subscription';
 import ClearUserData from './ClearUserData';
 import ListItems from './ListItems';
 import PlaidLink from './PlaidLink';
+import { Link } from 'react-router-dom';
 
 const { Title } = Typography;
 
@@ -16,7 +17,7 @@ export default function UserPage() {
   if (!data)
     return (
       <>
-        <Button type='primary' onClick={() => handleLogout()} size='large'>
+        <Button type="primary" onClick={() => handleLogout()} size="large">
           Logout
         </Button>
         <Skeleton active />
@@ -35,7 +36,7 @@ export default function UserPage() {
   return (
     <>
       <Title>User Profile</Title>
-      <Space direction='vertical' size='large'>
+      <Space direction="vertical" size="large">
         <Subscription
           userProfile={userProfile}
           stripeSubscription={stripeSubscription}
@@ -49,9 +50,14 @@ export default function UserPage() {
           <PlaidLink linkToken={linkToken.link_token} />
           <ListItems />
         </div>
-        <Button type='primary' onClick={() => handleLogout()} size='large'>
+        <Button type="primary" onClick={() => handleLogout()} size="large">
           Logout
         </Button>
+        <Link to="/onboarding">
+          <Button type="primary" size="large">
+            Onboarding
+          </Button>
+        </Link>
       </Space>
     </>
   );

@@ -20,6 +20,7 @@ import {
   userRoutes,
 } from './routes';
 import './utils/appInsights';
+import appInsights, { appInsightsClient } from './utils/appInsights';
 
 const cors = require('cors');
 
@@ -92,6 +93,8 @@ app.use((req: any, res, next) => {
   if (webhooks.includes(req.url)) {
     return next();
   }
+  appInsightsClient.trackNodeHttpRequest({ request: req, response: res });
+
   if (!req.headers.authorization) return res.status(401).send('Unauthorized');
 
   const token = req.headers.authorization.split(' ')[1];
