@@ -53,11 +53,6 @@ export default function UserPage() {
         <Button type="primary" onClick={() => handleLogout()} size="large">
           Logout
         </Button>
-        <Link to="/onboarding">
-          <Button type="primary" size="large">
-            Onboarding
-          </Button>
-        </Link>
       </Space>
     </>
   );

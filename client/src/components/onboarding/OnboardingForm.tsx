@@ -279,15 +279,13 @@ export default function OnboardingForm({
 
                   {currentTab === 4 && platform === 'web' ? (
                     <CheckoutForm setSubscriptionId={setStripeSubscriptionId} />
-                  ) : null}
-
-                  {currentTab === 4 && platform === 'android' ? (
+                  ) : (
                     <Subscription
                       userProfile={userProfile}
                       stripeSubscription={stripeSubscription}
                       googleSubscription={googleSubscription}
                     />
-                  ) : null}
+                  )}
                 </div>
               </div>
             ),
