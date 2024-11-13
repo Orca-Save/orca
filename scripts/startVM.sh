@@ -1,0 +1,1 @@
+quickemu --vm macos-sonoma.conf --display spice --ssh-port 2222 
