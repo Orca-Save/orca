@@ -1,0 +1,1 @@
+quickemu --vm macos-sonoma.conf --kill
