@@ -14,6 +14,7 @@ export default function OnboardingPage() {
     stripeSubscription,
     isActiveSubscription,
     googleSubscription,
+    appleSubscription,
   } = data ?? {};
   if (!data) return <Skeleton active />;
   return (
@@ -25,6 +26,7 @@ export default function OnboardingPage() {
         itemsData={itemsData}
         stripeSubscription={stripeSubscription}
         googleSubscription={googleSubscription}
+        appleSubscription={appleSubscription}
         onboardingProfile={onboardingProfile}
       />
     </Flex>

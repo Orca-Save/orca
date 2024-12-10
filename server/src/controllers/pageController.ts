@@ -157,6 +157,7 @@ export const onboardingPage = async (req: Request, res: Response) => {
       onboardingProfile,
       stripeSubscription,
       googleSubscription,
+      appleSubscription,
     ] = await Promise.all([
       createLinkToken(userId),
       getUserProfile(userId),
@@ -164,6 +165,7 @@ export const onboardingPage = async (req: Request, res: Response) => {
       getOnboardingProfile(userId),
       getStripeSubscription(userId),
       getGoogleSubscriptionStatus(userId),
+      getAppleSubscriptionStatus(userId),
     ]);
     res.status(200).send({
       linkToken,
@@ -172,6 +174,7 @@ export const onboardingPage = async (req: Request, res: Response) => {
       onboardingProfile,
       stripeSubscription,
       googleSubscription,
+      appleSubscription,
     });
   } catch (err: any) {
     appInsightsClient.trackException({ exception: err });

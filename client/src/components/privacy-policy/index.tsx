@@ -1,18 +1,32 @@
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Capacitor } from '@capacitor/core';
+import { Button } from 'antd';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PrivacyPolicyPage() {
+  const navigate = useNavigate();
+
+  const platform = Capacitor.getPlatform();
   return (
-    <div
-      className='content'
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      }}
-      dangerouslySetInnerHTML={{
-        __html: `
+    <>
+      {platform !== 'web' && (
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate(-1)}
+        ></Button>
+      )}
+      <div
+        className='content'
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+        }}
+        dangerouslySetInnerHTML={{
+          __html: `
       <style>
   [data-custom-class='body'], [data-custom-class='body'] * {
           background: transparent !important;
@@ -69,7 +83,8 @@ word-break: break-word !important;
       </div>
       
       `,
-      }}
-    ></div>
+        }}
+      ></div>
+    </>
   );
 }

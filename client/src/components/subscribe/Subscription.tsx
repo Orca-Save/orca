@@ -115,7 +115,7 @@ export default function Subscription({
 
   if (platform === 'ios' || appleSubscription)
     return (
-      <>
+      <Space direction='vertical'>
         {appleSubscription ? (
           <>
             <div>
@@ -155,43 +155,46 @@ export default function Subscription({
         ) : (
           <Text>Subscribe to link your bank</Text>
         )}
-        <Space>
-          {platform === 'ios' && (
-            <ApplePay
-              alt="Apple Pay"
-              style={{ height: 45, width: 90 }}
-              onClick={async () => {
-                try {
-                  if (
-                    !appleSubscription ||
-                    appleSubscription?.isActive === false
-                  ) {
-                    await Pay.subscribe({
+        {platform === 'ios' && (
+          <Button
+            type='primary'
+            size='large'
+            // style={{ height: 45, width: 90 }}
+            onClick={async () => {
+              try {
+                if (
+                  !appleSubscription ||
+                  appleSubscription?.isActive === false
+                ) {
+                  await Pay.subscribe({
+                    // @ts-ignore
+                    productId: process.env.REACT_APP_APPLE_PRODUCT_ID!,
+                    backendURL:
                       // @ts-ignore
-                      productId: process.env.REACT_APP_APPLE_PRODUCT_ID!,
-                      backendURL:
-                        // @ts-ignore
-                        process.env.REACT_APP_API_URL!,
-                      accessToken: localStorage.getItem('accessToken')!,
-                    });
-                  } else {
-                    await Pay.manageSubscription();
-                  }
-                  window.location.reload();
-                } catch (err) {
-                  console.error(err);
+                      process.env.REACT_APP_API_URL!,
+                    accessToken: localStorage.getItem('accessToken')!,
+                  });
+                } else {
+                  await Pay.manageSubscription();
                 }
-              }}
-            />
-          )}
-          <Link to="/privacy-policy">
+                window.location.reload();
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+          >
+            Subscribe for $4.99/Month
+          </Button>
+        )}
+        <Space>
+          <Link to='/privacy-policy'>
             <Button>Privacy Policy</Button>
           </Link>
-          <Button href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">
+          <Button href='https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'>
             Terms of Use
           </Button>
         </Space>
-      </>
+      </Space>
     );
 
   if (userProfile?.stripeSubscriptionId && stripeSubscription) {
@@ -216,7 +219,7 @@ export default function Subscription({
           </Text>
         </div>
         <Button
-          data-id="update-subscription-button"
+          data-id='update-subscription-button'
           onClick={async () => {
             await apiFetch('/api/stripe/updateSubscription', 'POST', {
               cancel: !stripeSubscription?.cancel_at_period_end,
@@ -241,8 +244,8 @@ export default function Subscription({
         </Text>
       </div>
 
-      <Link to="/subscribe">
-        <Button data-id="subscription-nav-button" type="primary" size="large">
+      <Link to='/subscribe'>
+        <Button data-id='subscription-nav-button' type='primary' size='large'>
           Begin Subscription
         </Button>
       </Link>
