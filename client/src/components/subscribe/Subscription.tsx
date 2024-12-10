@@ -159,7 +159,6 @@ export default function Subscription({
           <Button
             type='primary'
             size='large'
-            // style={{ height: 45, width: 90 }}
             onClick={async () => {
               try {
                 if (
@@ -177,9 +176,10 @@ export default function Subscription({
                 } else {
                   await Pay.manageSubscription();
                 }
-                window.location.reload();
               } catch (err) {
                 console.error(err);
+              } finally {
+                window.location.reload();
               }
             }}
           >
