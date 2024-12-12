@@ -183,7 +183,9 @@ export default function Subscription({
               }
             }}
           >
-            Subscribe for $3.99/Month
+            {appleSubscription.isActive
+              ? 'Manage Subscription'
+              : 'Subscribe for $3.99/Month'}
           </Button>
         )}
         <Space>
