@@ -173,17 +173,17 @@ export default function Subscription({
                       process.env.REACT_APP_API_URL!,
                     accessToken: localStorage.getItem('accessToken')!,
                   });
+                  window.location.reload();
                 } else {
                   await Pay.manageSubscription();
+                  window.location.reload();
                 }
               } catch (err) {
                 console.error(err);
-              } finally {
-                window.location.reload();
               }
             }}
           >
-            Subscribe for $4.99/Month
+            Subscribe for $3.99/Month
           </Button>
         )}
         <Space>

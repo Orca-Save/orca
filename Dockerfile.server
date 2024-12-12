@@ -1,6 +1,7 @@
-FROM node:20-alpine
+FROM node:20-alpine3.20
 
 RUN apk add --no-cache postgresql-client
+# RUN apk add --no-cache openssl1.1-compat
 
 WORKDIR /usr/src/app
 
