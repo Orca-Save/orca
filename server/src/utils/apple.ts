@@ -47,6 +47,7 @@ export async function processSubscriptionData(
     }
 
     return {
+      ...transactionInfo,
       isActive,
       subscriptionEnd,
       productId: transactionInfo.productId,
