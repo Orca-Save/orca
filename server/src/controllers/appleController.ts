@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
 import { User } from '../types/user';
 import { appInsightsClient } from '../utils/appInsights';
-import { getAppleSubscriptionStatus, processSubscriptionData } from '../utils/apple';
+import {
+  getAppleSubscriptionStatus,
+  processSubscriptionData,
+} from '../utils/apple';
 import db from '../utils/db';
+import { delay } from '../utils/general';
 import { removePlaidItemsForUser } from '../utils/plaid';
 
 export const verifySubscription = async (req: Request, res: Response) => {
@@ -13,6 +17,9 @@ export const verifySubscription = async (req: Request, res: Response) => {
     name: 'SubscriptionVerificationRequest',
     properties: { userId },
   });
+
+  // small delay for apple to process the receipt
+  await delay(1000);
 
   if (!receiptData) {
     return res.status(400).json({ error: 'Missing receipt data.' });
