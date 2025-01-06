@@ -16,19 +16,24 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apple/app-store-server-library": "^1.4.0",
     "@azure/storage-blob": "^12.24.0",
     "@prisma/client": "^5.16.1",
     "applicationinsights": "^3.2.1",
+    "axios": "^1.7.7",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "firebase-admin": "^12.3.1",
     "googleapis": "^144.0.0",
+    "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
     "jwks-rsa": "^3.1.0",
     "nodemailer": "^6.9.15",
     "plaid": "^26.0.0",
+    "pm2": "^5.4.2",
     "prisma": "^5.16.1",
     "react-plaid-link": "^3.5.2",
     "stripe": "^16.6.0",
@@ -40,7 +45,7 @@
     "@types/nodemailer": "^6.4.16",
     "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.4",
-    "pm2": "^5.4.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   }
 }

@@ -36,6 +36,7 @@ type OnboardingFormProps = {
   itemsData: ItemData[];
   stripeSubscription: any;
   googleSubscription: any;
+  appleSubscription: any;
   onboardingProfile: OnboardingProfile | null;
   isActiveSubscription: boolean;
 };
@@ -47,6 +48,7 @@ export default function OnboardingForm({
   stripeSubscription,
   googleSubscription,
   isActiveSubscription,
+  appleSubscription,
 }: OnboardingFormProps) {
   const navigate = useNavigate();
   const { accounts } = useMsal();
@@ -279,15 +281,14 @@ export default function OnboardingForm({
 
                   {currentTab === 4 && platform === 'web' ? (
                     <CheckoutForm setSubscriptionId={setStripeSubscriptionId} />
-                  ) : null}
-
-                  {currentTab === 4 && platform === 'android' ? (
+                  ) : (
                     <Subscription
                       userProfile={userProfile}
+                      appleSubscription={appleSubscription}
                       stripeSubscription={stripeSubscription}
                       googleSubscription={googleSubscription}
                     />
-                  ) : null}
+                  )}
                 </div>
               </div>
             ),
