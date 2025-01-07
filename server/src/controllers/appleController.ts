@@ -1,17 +1,18 @@
-import { Request, Response } from 'express';
 import {
   AppStoreServerAPIClient,
   Environment,
   SignedDataVerifier,
 } from '@apple/app-store-server-library';
+import { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 
 import { User } from '../types/user';
 import { appInsightsClient } from '../utils/appInsights';
-import db from '../utils/db';
-import { removePlaidItemsForUser } from '../utils/plaid';
 import { processSubscriptionData } from '../utils/apple';
+import db from '../utils/db';
+import { delay } from '../utils/general';
+import { removePlaidItemsForUser } from '../utils/plaid';
 
 // Load environment variables or configuration
 const issuerId = process.env.APPLE_ISSUER_ID!;
@@ -64,6 +65,9 @@ export const verifySubscription = async (req: Request, res: Response) => {
     name: 'SubscriptionVerificationRequest',
     properties: { ...req.body },
   });
+
+  // Allow apple time to process the transaction
+  await delay(1000);
 
   if (!transactionId) {
     return res.status(400).json({ error: 'Missing transaction ID.' });

@@ -47,6 +47,7 @@ export async function processSubscriptionData(
     }
 
     return {
+      ...transactionInfo,
       isActive,
       subscriptionEnd,
       productId: transactionInfo.productId,
@@ -69,7 +70,7 @@ export async function getAppleSubscriptionStatus(userId: string) {
     });
 
     if (!userProfile || !userProfile.appleSubscriptionId) {
-      return { isActive: false };
+      return null;
     }
 
     const originalTransactionId = userProfile.appleSubscriptionId;
