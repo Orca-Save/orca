@@ -7,12 +7,10 @@ import { Link } from 'react-router-dom';
 
 import Pay from '../../plugins/payPlugin';
 import { UserProfile } from '../../types/all';
-import { apiFetch } from '../../utils/general';
+import { apiFetch, delay } from '../../utils/general';
 
 //@ts-ignore
 import { ReactComponent as GooglePay } from './googlePay.svg';
-//@ts-ignore
-import { ReactComponent as ApplePay } from './applePay.svg';
 
 const { Title, Text } = Typography;
 
@@ -29,8 +27,7 @@ export default function Subscription({
 }) {
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
-  console.log('appleSubscription', appleSubscription);
-
+  const [loading, setLoading] = React.useState(false);
   if (platform === 'android' || googleSubscription?.autoRenewing)
     return (
       <div>
@@ -159,7 +156,9 @@ export default function Subscription({
           <Button
             type='primary'
             size='large'
+            loading={loading}
             onClick={async () => {
+              setLoading(true);
               try {
                 if (
                   !appleSubscription ||
@@ -173,13 +172,17 @@ export default function Subscription({
                       process.env.REACT_APP_API_URL!,
                     accessToken: localStorage.getItem('accessToken')!,
                   });
+                  await delay(2000);
                   window.location.reload();
                 } else {
                   await Pay.manageSubscription();
+                  await delay(2000);
                   window.location.reload();
                 }
               } catch (err) {
                 console.error(err);
+              } finally {
+                setLoading(false);
               }
             }}
           >

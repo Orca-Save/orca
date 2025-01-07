@@ -66,9 +66,6 @@ export const verifySubscription = async (req: Request, res: Response) => {
     properties: { ...req.body },
   });
 
-  // Allow apple time to process the transaction
-  await delay(1000);
-
   if (!transactionId) {
     return res.status(400).json({ error: 'Missing transaction ID.' });
   }
