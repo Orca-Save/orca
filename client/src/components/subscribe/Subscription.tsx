@@ -138,7 +138,7 @@ export default function Subscription({
             </div>
             <div>
               <Text>
-                Status: {appleSubscription.isActive ? 'Active' : 'Expired'}
+                Status: {appleSubscription?.isActive ? 'Active' : 'Expired'}
               </Text>
             </div>
             <div>
@@ -183,7 +183,7 @@ export default function Subscription({
               }
             }}
           >
-            {appleSubscription.isActive
+            {appleSubscription?.isActive
               ? 'Manage Subscription'
               : 'Subscribe for $3.99/Month'}
           </Button>
