@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 import Pay from '../../plugins/payPlugin';
 import { UserProfile } from '../../types/all';
-import { apiFetch, delay } from '../../utils/general';
+import { apiFetch } from '../../utils/general';
 
 //@ts-ignore
 import { ReactComponent as GooglePay } from './googlePay.svg';
@@ -172,11 +172,9 @@ export default function Subscription({
                       process.env.REACT_APP_API_URL!,
                     accessToken: localStorage.getItem('accessToken')!,
                   });
-                  await delay(2000);
                   window.location.reload();
                 } else {
                   await Pay.manageSubscription();
-                  await delay(2000);
                   window.location.reload();
                 }
               } catch (err) {

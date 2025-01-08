@@ -458,6 +458,7 @@ function initialPageState(
     if (userProfile?.privacyPolicyAccepted) tabKey = '4';
     if (
       userProfile?.stripeSubscriptionId ||
+      userProfile?.appleSubscriptionId ||
       userProfile?.googlePaySubscriptionToken
     )
       tabKey = '5';
