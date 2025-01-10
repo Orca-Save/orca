@@ -1,4 +1,4 @@
-import { Skeleton } from 'antd';
+import { Flex, Skeleton, Space } from 'antd';
 import React from 'react';
 
 import useFetch from '../../hooks/useFetch';
@@ -11,12 +11,18 @@ export default function TransactionsPage() {
   const { unreadObj, formattedTransactions, userTour } = data;
 
   return (
-    <>
+    <Flex
+      vertical
+      style={{
+        overflow: 'hidden',
+        height: 'calc(100% - 70px)',
+      }}
+    >
       <ReviewLink unreadObj={unreadObj} />
       <TransactionList
         transactions={formattedTransactions}
         userTour={userTour}
       />
-    </>
+    </Flex>
   );
 }

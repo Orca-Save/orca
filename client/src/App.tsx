@@ -31,6 +31,7 @@ import { useTokenRefresh } from './hooks/useTokenRefresh';
 import '@fontsource/varela-round';
 import './App.css';
 import SupportPage from './components/support/SupportPage';
+import { Flex } from 'antd';
 
 const LayoutRoute = () => (
   <AppLayout>
@@ -39,10 +40,12 @@ const LayoutRoute = () => (
 );
 
 const LogLayoutRoute = () => (
-  <>
+  <Flex vertical style={{ height: '100%' }}>
     <LogNavTabs />
-    <Outlet />
-  </>
+    <div style={{ overflow: 'auto' }}>
+      <Outlet />
+    </div>
+  </Flex>
 );
 const router = createBrowserRouter(
   createRoutesFromElements(

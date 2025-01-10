@@ -87,151 +87,163 @@ export default function TransactionList({
     },
   ];
   return (
-    <>
-      <FilterOptions
-        filter={filter}
-        setSearchParams={setSearchParams}
-        setFilterHandler={setFilter}
-      />
-      <ConfigProvider
-        theme={{
-          components: {
-            Menu: {
-              activeBarBorderWidth: 0,
+    <Flex
+      justify='center'
+      vertical
+      style={{ overflow: 'hidden' }}
+      className='h-full w-full'
+    >
+      <div className='w-full'>
+        <FilterOptions
+          filter={filter}
+          setSearchParams={setSearchParams}
+          setFilterHandler={setFilter}
+        />
+      </div>
+      <div style={{ overflowY: 'auto' }}>
+        <ConfigProvider
+          theme={{
+            components: {
+              Menu: {
+                activeBarBorderWidth: 0,
+              },
             },
-          },
-        }}
-      >
-        <List
-          dataSource={groupedTransactionsArray}
-          split={false}
-          renderItem={({ formattedDate, transactions }, dayIdx) => (
-            <List.Item>
-              <Space direction='vertical' className='w-full'>
-                <Text type='secondary'>{formattedDate}</Text>
-                <Menu
-                  selectedKeys={transactions
-                    .filter((x) => x.read === false)
-                    .map((x) => x.id)}
-                >
-                  {transactions.map((transaction, idx) => (
-                    <Menu.Item
-                      onClick={() =>
-                        navigate(`/transactions/${transaction.id}`)
-                      }
-                      key={transaction.id}
-                    >
-                      <Row
-                        ref={dayIdx === 0 && idx === 0 ? firstItemRef : null}
-                        className='w-full h-full'
+          }}
+        >
+          <List
+            style={{ height: '100%' }}
+            dataSource={groupedTransactionsArray}
+            split={false}
+            renderItem={({ formattedDate, transactions }, dayIdx) => (
+              <List.Item>
+                <Space direction='vertical' className='w-full'>
+                  <Text type='secondary'>{formattedDate}</Text>
+                  <Menu
+                    selectedKeys={transactions
+                      .filter((x) => x.read === false)
+                      .map((x) => x.id)}
+                  >
+                    {transactions.map((transaction, idx) => (
+                      <Menu.Item
+                        onClick={() =>
+                          navigate(`/transactions/${transaction.id}`)
+                        }
+                        key={transaction.id}
                       >
-                        <Col span={9} className='h-full w-full'>
-                          <Flex align='center' className='h-full w-full'>
-                            <Text
-                              strong
-                              ellipsis={{
-                                tooltip: true,
-                              }}
-                            >
-                              {transaction.name ? transaction.name : 'Unknown'}
-                            </Text>
-                          </Flex>
-                        </Col>
-                        <Col span={7} className='h-full w-full'>
-                          <Flex align='center' className='h-full w-full'>
-                            <Text
-                              ellipsis={{
-                                tooltip: true,
-                              }}
-                              style={{
-                                borderRadius: '0.25rem',
-                                backgroundColor: 'rgba(251,188,5, 0.2)',
-                                padding: '0 0.25rem',
-                                color: 'rgba(251,188,5)',
-                                textAlign: 'center',
-                              }}
-                            >
-                              {transaction.category}
-                            </Text>
-                            {/* <Tag
+                        <Row
+                          ref={dayIdx === 0 && idx === 0 ? firstItemRef : null}
+                          className='w-full h-full'
+                        >
+                          <Col span={9} className='h-full w-full'>
+                            <Flex align='center' className='h-full w-full'>
+                              <Text
+                                strong
+                                ellipsis={{
+                                  tooltip: true,
+                                }}
+                              >
+                                {transaction.name
+                                  ? transaction.name
+                                  : 'Unknown'}
+                              </Text>
+                            </Flex>
+                          </Col>
+                          <Col span={7} className='h-full w-full'>
+                            <Flex align='center' className='h-full w-full'>
+                              <Text
+                                ellipsis={{
+                                  tooltip: true,
+                                }}
+                                style={{
+                                  borderRadius: '0.25rem',
+                                  backgroundColor: 'rgba(251,188,5, 0.2)',
+                                  padding: '0 0.25rem',
+                                  color: 'rgba(251,188,5)',
+                                  textAlign: 'center',
+                                }}
+                              >
+                                {transaction.category}
+                              </Text>
+                              {/* <Tag
                             // color={color} key={category}
                             color='orange'
                           >
                             {transaction.category}
                           </Tag> */}
-                          </Flex>
-                        </Col>
-                        <Col span={2} className='h-full w-full'>
-                          {transaction.impulse ? (
-                            <Flex
-                              align='center'
-                              justify='center'
-                              className='h-full w-full'
-                            >
-                              <Text
-                                style={{
-                                  // border: '1px solid rgba(154,0,207, 0.6)',
-                                  borderRadius: '50%',
-                                  backgroundColor: 'rgba(154,0,207, 0.2)',
-                                  // fontSize: 13,
-                                  color: 'rgba(154,0,207, 0.6)',
-                                  width: '20px',
-                                  height: '20px',
-                                  textAlign: 'center',
-                                }}
-                              >
-                                I
-                              </Text>
                             </Flex>
-                          ) : (
-                            <div className='h-full w-full' />
-                          )}
-                        </Col>
-                        <Col span={5} className='text-right h-full w-full'>
-                          <Flex
-                            align='center'
-                            justify='right'
-                            className='h-full w-full'
-                          >
-                            <Text
-                              strong
-                              style={{
-                                marginRight: '0.3rem',
-                              }}
-                              type={
-                                transaction.amount < 0 ? 'success' : undefined
-                              }
-                            >
-                              {currencyFormatter(
-                                transaction.amount,
-                                undefined,
-                                true
-                              )}
-                            </Text>
-                          </Flex>
-                        </Col>
-                        <Col span={1} className='h-full w-full'>
-                          {transaction.read === false ? (
+                          </Col>
+                          <Col span={2} className='h-full w-full'>
+                            {transaction.impulse ? (
+                              <Flex
+                                align='center'
+                                justify='center'
+                                className='h-full w-full'
+                              >
+                                <Text
+                                  style={{
+                                    // border: '1px solid rgba(154,0,207, 0.6)',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'rgba(154,0,207, 0.2)',
+                                    // fontSize: 13,
+                                    color: 'rgba(154,0,207, 0.6)',
+                                    width: '20px',
+                                    height: '20px',
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  I
+                                </Text>
+                              </Flex>
+                            ) : (
+                              <div className='h-full w-full' />
+                            )}
+                          </Col>
+                          <Col span={5} className='text-right h-full w-full'>
                             <Flex
                               align='center'
                               justify='right'
                               className='h-full w-full'
                             >
-                              <Badge status='processing' />
+                              <Text
+                                strong
+                                style={{
+                                  marginRight: '0.3rem',
+                                }}
+                                type={
+                                  transaction.amount < 0 ? 'success' : undefined
+                                }
+                              >
+                                {currencyFormatter(
+                                  transaction.amount,
+                                  undefined,
+                                  true
+                                )}
+                              </Text>
                             </Flex>
-                          ) : null}
-                        </Col>
-                      </Row>
-                    </Menu.Item>
-                  ))}
-                </Menu>
-              </Space>
-            </List.Item>
-          )}
-        />
-      </ConfigProvider>
+                          </Col>
+                          <Col span={1} className='h-full w-full'>
+                            {transaction.read === false ? (
+                              <Flex
+                                align='center'
+                                justify='right'
+                                className='h-full w-full'
+                              >
+                                <Badge status='processing' />
+                              </Flex>
+                            ) : null}
+                          </Col>
+                        </Row>
+                      </Menu.Item>
+                    ))}
+                  </Menu>
+                </Space>
+              </List.Item>
+            )}
+          />
+        </ConfigProvider>
+      </div>
       <Tour open={open} onClose={tourClose} steps={steps} />
-    </>
+    </Flex>
   );
 }
 
