@@ -3,16 +3,21 @@
 @tailwind utilities;
 
 .varela-round {
-    font-family: 'Varela Round';
+  font-family: 'Varela Round';
 }
 
 .ant-tour {
-    max-width: fit-content
+  max-width: fit-content;
 }
 
 body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+  min-height: 100vh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.main-layout {
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
 }

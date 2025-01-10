@@ -7,7 +7,7 @@ const { Title } = Typography;
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Layout style={{ minHeight: '100vh', height: '100%' }}>
+    <Layout className='main-layout'>
       <HeaderMenu className='hidden sm:flex' />
       <div className='sm:hidden'>
         <Title
