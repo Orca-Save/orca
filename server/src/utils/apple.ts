@@ -1,5 +1,5 @@
-import db from './db';
 import { appStoreClient, verifier } from '../controllers/appleController';
+import db from './db';
 
 // Function to get transaction info using the App Store Server API Client
 export async function getTransactionInfo(transactionId: string): Promise<any> {
@@ -90,6 +90,5 @@ export async function getAppleSubscriptionStatus(userId: string) {
       `Error getting Apple subscription status for user ${userId}:`,
       error
     );
-    throw new Error(`Failed to retrieve subscription status: ${error.message}`);
   }
 }
