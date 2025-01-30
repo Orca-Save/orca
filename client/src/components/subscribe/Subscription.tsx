@@ -25,7 +25,7 @@ export default function Subscription({
   stripeSubscription: any;
   googleSubscription: any;
   appleSubscription: any;
-  setId: (id: string) => void;
+  setId?: (id: string) => void;
 }) {
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
@@ -174,7 +174,7 @@ export default function Subscription({
                       process.env.REACT_APP_API_URL!,
                     accessToken: localStorage.getItem('accessToken')!,
                   });
-                  setId(response.originalTransactionId);
+                  setId?.(response.originalTransactionId);
                 } else {
                   await Pay.manageSubscription();
                   window.location.reload();
