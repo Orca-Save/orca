@@ -92,21 +92,23 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
         }
 
         // Send the transaction identifier to the backend for verification
-        self.verifySubscriptionStatus(transactionIdentifier: transactionIdentifier) { isActive in
+        self.verifySubscriptionStatus(transactionIdentifier: transactionIdentifier) { response in
             SKPaymentQueue.default().finishTransaction(transaction)
-            if isActive {
-                self.pluginCall?.resolve()
-            } else {
+            guard let response = response,
+                  let isActive = response["isActive"] as? Bool,
+                  isActive else {
                 self.pluginCall?.reject("Subscription verification failed.")
+                return
             }
+            self.pluginCall?.resolve(response)
         }
     }
 
     // MARK: - Verify Subscription Status
 
-    private func verifySubscriptionStatus(transactionIdentifier: String, completion: @escaping (Bool) -> Void) {
+    private func verifySubscriptionStatus(transactionIdentifier: String, completion: @escaping ([String: Any]?) -> Void) {
         guard let backendURL = self.backendURL, let accessToken = self.accessToken else {
-            completion(false)
+            completion(nil)
             return
         }
 
@@ -123,26 +125,25 @@ public class PayPlugin: CAPPlugin, SKProductsRequestDelegate, SKPaymentTransacti
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error verifying subscription: \(error)")
-                completion(false)
+                completion(nil)
                 return
             }
 
             guard let data = data else {
                 print("No data received from subscription verification.")
-                completion(false)
+                completion(nil)
                 return
             }
 
             do {
-                if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let isActive = jsonResponse["isActive"] as? Bool {
-                    completion(isActive)
+                if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    completion(jsonResponse)
                 } else {
-                    completion(false)
+                    completion(nil)
                 }
             } catch {
                 print("Error parsing subscription verification response: \(error)")
-                completion(false)
+                completion(nil)
             }
         }
         task.resume()

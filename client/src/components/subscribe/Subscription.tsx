@@ -19,11 +19,13 @@ export default function Subscription({
   stripeSubscription,
   googleSubscription,
   appleSubscription,
+  setId,
 }: {
   userProfile?: UserProfile;
   stripeSubscription: any;
   googleSubscription: any;
   appleSubscription: any;
+  setId: (id: string) => void;
 }) {
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
@@ -164,7 +166,7 @@ export default function Subscription({
                   !appleSubscription ||
                   appleSubscription?.isActive === false
                 ) {
-                  await Pay.subscribe({
+                  const response = await Pay.subscribe({
                     // @ts-ignore
                     productId: process.env.REACT_APP_APPLE_PRODUCT_ID!,
                     backendURL:
@@ -172,7 +174,7 @@ export default function Subscription({
                       process.env.REACT_APP_API_URL!,
                     accessToken: localStorage.getItem('accessToken')!,
                   });
-                  window.location.reload();
+                  setId(response.originalTransactionId);
                 } else {
                   await Pay.manageSubscription();
                   window.location.reload();

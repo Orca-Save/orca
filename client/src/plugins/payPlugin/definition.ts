@@ -5,7 +5,7 @@ export interface PayPlugin {
     productId: string;
     backendURL: string;
     accessToken: string;
-  }): Promise<string>;
+  }): Promise<{ originalTransactionId: string }>;
   manageSubscription(): Promise<void>;
 }
 

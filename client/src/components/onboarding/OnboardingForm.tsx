@@ -15,7 +15,6 @@ import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useMsal } from '@azure/msal-react';
 import { Capacitor } from '@capacitor/core';
 import { ItemData, OnboardingProfile, UserProfile } from '../../types/all';
 import { appInsights } from '../../utils/appInsights';
@@ -29,7 +28,7 @@ import CheckoutForm from '../stripe/CheckoutForm';
 import Subscription from '../subscribe/Subscription';
 import PlaidLink from '../user/PlaidLink';
 
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 type OnboardingFormProps = {
   userProfile: UserProfile | undefined;
   linkToken: string;
@@ -51,9 +50,9 @@ export default function OnboardingForm({
   appleSubscription,
 }: OnboardingFormProps) {
   const navigate = useNavigate();
-  const { accounts } = useMsal();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [appleTransactionId, setAppleTransactionId] = useState<string | null>();
   const [stripeSubscriptionId, setStripeSubscriptionId] = useState<
     string | undefined
   >(userProfile?.stripeSubscriptionId);
@@ -66,12 +65,16 @@ export default function OnboardingForm({
   const googlePaySubscriptionToken = userProfile?.googlePaySubscriptionToken;
   const platform = Capacitor.getPlatform();
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const account = accounts[0];
   const currentTab = Number(pageState.tabKey);
   const forceRender = true;
   let disableNext = false;
   if (currentTab === 3 && !privacyChecked) disableNext = true;
-  if (currentTab === 4 && !stripeSubscriptionId && !googlePaySubscriptionToken)
+  if (
+    currentTab === 4 &&
+    !stripeSubscriptionId &&
+    !googlePaySubscriptionToken &&
+    !appleTransactionId
+  )
     disableNext = true;
   if (currentTab === 5 && itemsData.length === 0) disableNext = true;
 
@@ -285,6 +288,7 @@ export default function OnboardingForm({
                     <Subscription
                       userProfile={userProfile}
                       appleSubscription={appleSubscription}
+                      setId={setAppleTransactionId}
                       stripeSubscription={stripeSubscription}
                       googleSubscription={googleSubscription}
                     />
