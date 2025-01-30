@@ -1,9 +1,9 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import path from 'path';
-import dotenv from 'dotenv';
 dotenv.config();
 
 import {
@@ -20,7 +20,7 @@ import {
   userRoutes,
 } from './routes';
 import './utils/appInsights';
-import appInsights, { appInsightsClient } from './utils/appInsights';
+import { appInsightsClient } from './utils/appInsights';
 
 const cors = require('cors');
 
@@ -93,7 +93,8 @@ app.use((req: any, res, next) => {
   if (webhooks.includes(req.url)) {
     return next();
   }
-  appInsightsClient.trackNodeHttpRequest({ request: req, response: res });
+  if (process.env.NODE_ENV === 'production')
+    appInsightsClient.trackNodeHttpRequest({ request: req, response: res });
 
   if (!req.headers.authorization) return res.status(401).send('Unauthorized');
 
