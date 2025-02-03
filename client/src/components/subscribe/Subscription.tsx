@@ -152,7 +152,10 @@ export default function Subscription({
             </div>
           </>
         ) : (
-          <Text>Subscribe to link your bank</Text>
+          <>
+            <Text>Begin your Orca Subscribe to link your bank</Text>
+            <Text>Orca Subscription:</Text>
+          </>
         )}
         {platform === 'ios' && (
           <Button
