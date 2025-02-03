@@ -25,8 +25,7 @@ import { appInsightsClient } from './utils/appInsights';
 const cors = require('cors');
 
 const client = jwksClient({
-  jwksUri:
-    'https://orcanext.b2clogin.com/orcanext.onmicrosoft.com/B2C_1_orca_signin/discovery/v2.0/keys',
+  jwksUri: process.env.JWKS_URI!,
 });
 
 function getKey(header: any, callback: any) {
