@@ -142,7 +142,7 @@ export function GoalForm({
         </Form.Item>
 
         <Form.Item name='image'>
-          <Upload>
+          <Upload beforeUpload={() => false} maxCount={1}>
             <Button data-id='goal-image-upload' icon={<UploadOutlined />}>
               Upload Image
             </Button>
