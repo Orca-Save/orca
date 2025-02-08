@@ -7,10 +7,11 @@ import SavingsPage from './SavingsPage';
 export default function SavesPage() {
   const { data } = useFetch('api/pages/savingsPage', 'GET');
   if (!data) return <Skeleton active />;
-  const { goalTransfers, completedCounts } = data;
+  const { goalTransfers, completedCounts, userTour } = data;
   return (
     <SavingsPage
       totalSaved={completedCounts.totalSaved}
+      userTour={userTour}
       goalsCompleted={completedCounts.goalsCompleted}
       bottomGoalTransfers={goalTransfers.filter(
         (transfer: any) => transfer.goalId !== null || transfer.amount < 0

@@ -1,4 +1,4 @@
-import { Button, Col, Row, Skeleton, Space } from 'antd';
+import { Button, Col, Flex, Row, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
@@ -13,23 +13,25 @@ export default function GoalsPage() {
   const { goals } = goalsResults;
   const { completedCounts, userTour } = data;
   return (
-    <Space direction='vertical' className='w-full'>
-      <Row justify='center'>
-        <Col>
-          <Link to='/goals/new'>
-            <Button data-id='new-goal-button' size='large' type='primary'>
-              New Goal
-            </Button>
-          </Link>
-        </Col>
-      </Row>
-      <div>
-        <CompletedCounts
-          goalsCompleted={completedCounts.goalsCompleted}
-          totalSaved={completedCounts.totalSaved}
-        />
-      </div>
-      <GoalList goals={goals} userTour={userTour?.pinnedGoal === false} />
-    </Space>
+    <Flex vertical style={{ height: '100%' }}>
+      <Space direction='vertical' className='w-full overflow-auto'>
+        <Row justify='center'>
+          <Col>
+            <Link to='/goals/new'>
+              <Button data-id='new-goal-button' size='large' type='primary'>
+                New Goal
+              </Button>
+            </Link>
+          </Col>
+        </Row>
+        <div>
+          <CompletedCounts
+            goalsCompleted={completedCounts.goalsCompleted}
+            totalSaved={completedCounts.totalSaved}
+          />
+        </div>
+        <GoalList goals={goals} userTour={userTour?.pinnedGoal === false} />
+      </Space>
+    </Flex>
   );
 }
