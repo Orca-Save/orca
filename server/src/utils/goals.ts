@@ -97,7 +97,6 @@ export async function addGoal(
   userId: string,
   formData: any
 ): Promise<GoalFieldErrors | Goal> {
-  console.log('addGoal', formData);
   const result = goalSchema.safeParse(formData);
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
