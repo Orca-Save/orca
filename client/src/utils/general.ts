@@ -56,15 +56,29 @@ export const currencyFormatter = (
   }
 };
 
-export function apiFetch(endpoint: string, method: string, body?: any) {
+export function newEndpoint(endpoint: string) {
+  return process.env.REACT_APP_API_URL + endpoint;
+}
+
+export function apiFetch(
+  endpoint: string,
+  method: string,
+  data?: any,
+  stringify = true
+) {
   const token = localStorage.getItem('accessToken');
+  const body = stringify && data ? JSON.stringify(data) : data;
+  const headers: any = {};
+  headers['Content-Type'] = stringify
+    ? 'application/json'
+    : 'multipart/form-data';
   return fetch(process.env.REACT_APP_API_URL + endpoint, {
     method,
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      ...headers,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body,
   }).then((res) => res.json());
 }
 export const externalAccountId = 'faed4327-3a9c-4837-a337-c54e9704d60f';

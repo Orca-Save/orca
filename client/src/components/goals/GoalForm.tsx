@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { plaidCategories } from 'shared-library/dist/plaidCategories';
 
 import { Goal } from '../../types/all';
-import { apiFetch } from '../../utils/general';
+import { apiFetch, newEndpoint } from '../../utils/general';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
 
@@ -29,9 +29,6 @@ type GoalFormValues = {
   categoryId: string;
   plaidCategory: string;
   file: {
-    file: File;
-  };
-  image: {
     file: File;
   };
 };
@@ -67,9 +64,6 @@ export function GoalForm({
       formData.initialAmount = String(values.initialAmount);
     }
     formData.imagePath = values.imagePath!;
-
-    if (values.image)
-      formData.image = form.getFieldValue('image').file.originFileObj;
 
     setLoading(true);
     const endpoint = goal ? '/api/goals/updateGoal' : '/api/goals/createGoal';
@@ -142,7 +136,20 @@ export function GoalForm({
         </Form.Item>
 
         <Form.Item name='image'>
-          <Upload beforeUpload={() => false} maxCount={1}>
+          <Upload
+            maxCount={1}
+            action={newEndpoint('/api/upload/image')}
+            headers={{
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            }}
+            onChange={(state) => {
+              if (state.file.status === 'done') {
+                form.setFieldsValue({
+                  imagePath: state.file.response.imagePath,
+                });
+              }
+            }}
+          >
             <Button data-id='goal-image-upload' icon={<UploadOutlined />}>
               Upload Image
             </Button>

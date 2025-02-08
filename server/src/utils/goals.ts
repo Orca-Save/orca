@@ -37,7 +37,6 @@ const goalSchema = z.object({
   categoryId: z.string().uuid().optional(),
   plaidCategory: z.string().optional(),
   initialAmount: z.coerce.number().min(1).optional(),
-  image: imageSchema.optional(),
   imagePath: z.string().optional(),
   file: fileSchema.optional(),
 });
@@ -98,6 +97,7 @@ export async function addGoal(
   userId: string,
   formData: any
 ): Promise<GoalFieldErrors | Goal> {
+  console.log('addGoal', formData);
   const result = goalSchema.safeParse(formData);
   if (result.success === false) {
     return { fieldErrors: result.error.formErrors.fieldErrors };
@@ -106,10 +106,6 @@ export async function addGoal(
   const data = result.data;
 
   let imagePath = data.imagePath;
-  if (data.image) {
-    const { blockBlobClient } = await uploadFile(data.image);
-    imagePath = blockBlobClient.url;
-  }
 
   let goal = await db.goal.create({
     data: {
@@ -180,11 +176,6 @@ export async function updateGoal(
   if (goal == null) throw Error('Goal not found');
 
   let imagePath = data.imagePath;
-  if (data.image) {
-    const { blockBlobClient } = await uploadFile(data.image);
-    imagePath = blockBlobClient.url;
-  }
-
   let updatedGoal = await db.goal.update({
     where: { id },
     data: {

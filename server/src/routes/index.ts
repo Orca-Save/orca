@@ -9,6 +9,7 @@ import stripeRoutes from './stripeRoutes';
 import supportRoutes from './supportRoutes';
 import transactionRoutes from './transactionRoutes';
 import userRoutes from './userRoutes';
+import fileRoutes from './fileRoutes';
 
 export {
   appleRoutes,
@@ -22,4 +23,5 @@ export {
   supportRoutes,
   transactionRoutes,
   userRoutes,
+  fileRoutes,
 };

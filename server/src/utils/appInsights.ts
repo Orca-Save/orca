@@ -15,5 +15,5 @@ if (process.env.NODE_ENV === 'production') {
   appInsights.start();
 }
 export default appInsights;
-const appInsightsClient = appInsights.defaultClient;
+const appInsightsClient = appInsights?.defaultClient;
 export { appInsightsClient };

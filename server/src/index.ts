@@ -4,11 +4,14 @@ import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import path from 'path';
+import fileUpload from 'express-fileupload';
+
 dotenv.config();
 
 import {
   appleRoutes,
   componentRoutes,
+  fileRoutes,
   goalRoutes,
   googleRoutes,
   notificationRoutes,
@@ -119,6 +122,9 @@ app.use('/api/stripe', stripeRoutes);
 app.use('/api/google', googleRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/apple', appleRoutes);
+
+app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } }));
+app.use('/api/upload', fileRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
