@@ -1,13 +1,5 @@
 import { UploadOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Collapse,
-  DatePicker,
-  Form,
-  Input,
-  Select,
-  Upload,
-} from 'antd';
+import { Button, Collapse, DatePicker, Form, Input, Select } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -88,6 +80,29 @@ export function GoalForm({
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(newEndpoint('/api/upload/image'), {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+        body: formData,
+      });
+      if (response.ok) {
+        const data = await response.json();
+        form.setFieldsValue({ imagePath: data.imagePath });
+      }
+    } catch (err) {
+      console.error('Upload failed', err);
+    }
+  };
+
   const targetAmount = goal?.targetAmount ? goal.targetAmount : undefined;
   return (
     <>
@@ -135,25 +150,8 @@ export function GoalForm({
           <CurrencyInput placeholder='Initial Balance' />
         </Form.Item>
 
-        <Form.Item name='image'>
-          <Upload
-            maxCount={1}
-            action={newEndpoint('/api/upload/image')}
-            headers={{
-              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            }}
-            onChange={(state) => {
-              if (state.file.status === 'done') {
-                form.setFieldsValue({
-                  imagePath: state.file.response.imagePath,
-                });
-              }
-            }}
-          >
-            <Button data-id='goal-image-upload' icon={<UploadOutlined />}>
-              Upload Image
-            </Button>
-          </Upload>
+        <Form.Item name='image' label='Upload Image'>
+          <input type='file' onChange={handleFileChange} />
         </Form.Item>
         <Form.Item name='imagePath'>
           <UnsplashForm
