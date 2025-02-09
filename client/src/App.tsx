@@ -35,7 +35,11 @@ import { Flex } from 'antd';
 
 const LayoutRoute = () => (
   <AppLayout>
-    <Outlet />
+    <Flex vertical style={{ height: '100%' }}>
+      <div style={{ overflow: 'auto' }}>
+        <Outlet />
+      </div>
+    </Flex>
   </AppLayout>
 );
 
