@@ -17,7 +17,7 @@ export default function UserPage() {
   if (!data)
     return (
       <>
-        <Button type="primary" onClick={() => handleLogout()} size="large">
+        <Button type='primary' onClick={() => handleLogout()} size='large'>
           Logout
         </Button>
         <Skeleton active />
@@ -36,8 +36,9 @@ export default function UserPage() {
   return (
     <>
       <Title>User Profile</Title>
-      <Space direction="vertical" size="large">
+      <Space direction='vertical' size='large'>
         <Subscription
+          refreshAfterSub
           userProfile={userProfile}
           stripeSubscription={stripeSubscription}
           googleSubscription={googleSubscription}
@@ -50,7 +51,7 @@ export default function UserPage() {
           <PlaidLink linkToken={linkToken.link_token} />
           <ListItems />
         </div>
-        <Button type="primary" onClick={() => handleLogout()} size="large">
+        <Button type='primary' onClick={() => handleLogout()} size='large'>
           Logout
         </Button>
       </Space>

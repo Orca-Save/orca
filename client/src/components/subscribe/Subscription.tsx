@@ -20,12 +20,14 @@ export default function Subscription({
   googleSubscription,
   appleSubscription,
   setId,
+  refreshAfterSub,
 }: {
   userProfile?: UserProfile;
   stripeSubscription: any;
   googleSubscription: any;
   appleSubscription: any;
   setId?: (id: string) => void;
+  refreshAfterSub: boolean;
 }) {
   dayjs.extend(localizedFormat);
   const platform = Capacitor.getPlatform();
@@ -128,10 +130,10 @@ export default function Subscription({
             <div>
               <Text>
                 Rate:{' '}
-                {appleSubscription?.priceAmountMicros
-                  ? `${(appleSubscription.priceAmountMicros / 1e6).toFixed(
-                      2
-                    )} ${appleSubscription.priceCurrencyCode}/month`
+                {appleSubscription?.price
+                  ? `$${(appleSubscription.price / 1e3).toFixed(2)} ${
+                      appleSubscription.currency
+                    }/month`
                   : 'N/A'}
               </Text>
             </div>
@@ -186,6 +188,7 @@ export default function Subscription({
                 console.error(err);
               } finally {
                 setLoading(false);
+                if (refreshAfterSub) window.location.reload();
               }
             }}
           >
