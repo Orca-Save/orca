@@ -1,4 +1,3 @@
-import { UploadOutlined } from '@ant-design/icons';
 import { Button, Collapse, DatePicker, Form, Input, Select } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useState } from 'react';
@@ -9,6 +8,7 @@ import { Goal } from '../../types/all';
 import { apiFetch, newEndpoint } from '../../utils/general';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
+import { Capacitor } from '@capacitor/core';
 
 type GoalFormValues = {
   name: string;
@@ -36,6 +36,7 @@ export function GoalForm({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
+  const platform = Capacitor.getPlatform();
   const onFinish = async (values: GoalFormValues) => {
     const formData: any = { id: goal?.id };
     formData.name = values.name;
@@ -150,9 +151,11 @@ export function GoalForm({
           <CurrencyInput placeholder='Initial Balance' />
         </Form.Item>
 
-        <Form.Item name='image' label='Upload Image'>
-          <input type='file' onChange={handleFileChange} />
-        </Form.Item>
+        {platform !== 'ios' && (
+          <Form.Item name='image' label='Upload Image'>
+            <input type='file' onChange={handleFileChange} />
+          </Form.Item>
+        )}
         <Form.Item name='imagePath'>
           <UnsplashForm
             defaultValue={goal?.imagePath ?? undefined}
