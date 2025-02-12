@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { plaidCategories } from 'shared-library/dist/plaidCategories';
 
+import { Capacitor } from '@capacitor/core';
 import { Goal } from '../../types/all';
 import { apiFetch, newEndpoint } from '../../utils/general';
 import CurrencyInput from '../shared/CurrencyInput';
 import UnsplashForm from '../shared/UnsplashForm';
-import { Capacitor } from '@capacitor/core';
 
 type GoalFormValues = {
   name: string;
@@ -152,10 +152,14 @@ export function GoalForm({
         </Form.Item>
 
         {platform !== 'ios' && (
-          <Form.Item name='image' label='Upload Image'>
-            <input type='file' onChange={handleFileChange} />
-          </Form.Item>
+          <>
+            <div>Upload an image for your goal</div>
+            <Form.Item name='image' label='Upload Image'>
+              <input type='file' onChange={handleFileChange} />
+            </Form.Item>
+          </>
         )}
+        <div>Find an image for your goal</div>
         <Form.Item name='imagePath'>
           <UnsplashForm
             defaultValue={goal?.imagePath ?? undefined}
