@@ -1,4 +1,13 @@
-import { Button, Collapse, DatePicker, Form, Input, Select } from 'antd';
+import {
+  Button,
+  Collapse,
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  Tooltip,
+  Typography,
+} from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -34,7 +43,9 @@ export function GoalForm({
   initialAmount?: number;
 }) {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [imagePath, setImagePath] = useState(goal?.imagePath ?? '');
+
   const navigate = useNavigate();
   const platform = Capacitor.getPlatform();
   const onFinish = async (values: GoalFormValues) => {
@@ -98,6 +109,7 @@ export function GoalForm({
       if (response.ok) {
         const data = await response.json();
         form.setFieldsValue({ imagePath: data.imagePath });
+        setImagePath(data.imagePath);
       }
     } catch (err) {
       console.error('Upload failed', err);
@@ -152,18 +164,32 @@ export function GoalForm({
         </Form.Item>
 
         {platform !== 'ios' && (
-          <>
-            <div>Upload an image for your goal</div>
-            <Form.Item name='image' label='Upload Image'>
-              <input type='file' onChange={handleFileChange} />
-            </Form.Item>
-          </>
+          <Form.Item name='image' label='Upload an image for your goal'>
+            <input type='file' onChange={handleFileChange} />
+          </Form.Item>
         )}
-        <div>Find an image for your goal</div>
+        <div></div>
         <Form.Item name='imagePath'>
+          <label title='Upload an image for your goal'>
+            Upload an image for your goal
+          </label>
+          <br />
+          <Tooltip
+            style={{
+              marginTop: 0,
+            }}
+            title='Click "Search Image", then enter a keyword of your goal and select an image'
+          >
+            <Typography.Link href='#API'>Need Help?</Typography.Link>
+          </Tooltip>
+          <br />
           <UnsplashForm
-            defaultValue={goal?.imagePath ?? undefined}
-            onSelect={(url) => form.setFieldsValue({ imagePath: url })}
+            key={imagePath}
+            defaultValue={imagePath}
+            onSelect={(url) => {
+              form.setFieldsValue({ imagePath: url });
+              setImagePath(url);
+            }}
           />
         </Form.Item>
         <Collapse>
