@@ -66,20 +66,40 @@ export function apiFetch(
   data?: any,
   stringify = true
 ) {
+  const maxRetries = 3;
+  const retryDelay = 500; // milliseconds
+  let attempt = 0;
   const token = localStorage.getItem('accessToken');
   const body = stringify && data ? JSON.stringify(data) : data;
-  const headers: any = {};
-  headers['Content-Type'] = stringify
-    ? 'application/json'
-    : 'multipart/form-data';
-  return fetch(process.env.REACT_APP_API_URL + endpoint, {
-    method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...headers,
-    },
-    body,
-  }).then((res) => res.json());
+  const headers: any = {
+    'Content-Type': stringify ? 'application/json' : 'multipart/form-data',
+  };
+
+  const doFetch = () =>
+    fetch(process.env.REACT_APP_API_URL + endpoint, {
+      method,
+      headers: { Authorization: `Bearer ${token}`, ...headers },
+      body,
+    });
+
+  const tryFetch = async (): Promise<any> => {
+    let lastError;
+    while (attempt < maxRetries) {
+      try {
+        const res = await doFetch();
+        return res.json();
+      } catch (error) {
+        lastError = error;
+        attempt++;
+        if (attempt < maxRetries) {
+          await delay(retryDelay);
+        }
+      }
+    }
+    throw lastError;
+  };
+
+  return tryFetch();
 }
 export const externalAccountId = 'faed4327-3a9c-4837-a337-c54e9704d60f';
 
