@@ -22,7 +22,7 @@ dockerTag="latest"
 startTime=$(date +%s)
 
 echo "Building Docker image using $dockerfile... $dockerHubRepository : $dockerTag"
-docker build -f "$dockerfile" -t "${dockerHubRepository}:${dockerTag}" .
+docker build --platform linux/amd64  -f "$dockerfile" -t "${dockerHubRepository}:${dockerTag}" .
 if [ $? -ne 0 ]; then
     echo "Docker image build failed."
     exit 1
