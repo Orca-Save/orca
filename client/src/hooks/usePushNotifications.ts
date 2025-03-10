@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { PushNotification } from '@capacitor/push-notifications';
 import { useEffect, useState } from 'react';
 import { apiFetch } from '../utils/general';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 
 interface UsePushNotificationsResult {
   token: string | null;
@@ -10,6 +11,9 @@ interface UsePushNotificationsResult {
 }
 
 export const usePushNotifications = (): UsePushNotificationsResult => {
+  const isAuthenticated = useIsAuthenticated();
+  const { accounts } = useMsal();
+  const userId = accounts[0]?.localAccountId;
   const [token, setToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<PushNotification | null>(
     null
@@ -21,6 +25,10 @@ export const usePushNotifications = (): UsePushNotificationsResult => {
 
     if (platform === 'web') {
       console.log('Push notifications are not supported on the web.');
+      return;
+    }
+    if (!isAuthenticated || !userId) {
+      console.log('User is not authenticated.');
       return;
     }
 
@@ -72,7 +80,7 @@ export const usePushNotifications = (): UsePushNotificationsResult => {
         console.error('Failed to load PushNotifications plugin', error);
         setError('Failed to load PushNotifications plugin');
       });
-  }, []);
+  }, [isAuthenticated, userId]);
 
   return { token, notification, error };
 };
