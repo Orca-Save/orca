@@ -286,6 +286,7 @@ export default function OnboardingForm({
                     <CheckoutForm setSubscriptionId={setStripeSubscriptionId} />
                   ) : (
                     <Subscription
+                      refreshAfterSub={false}
                       userProfile={userProfile}
                       appleSubscription={appleSubscription}
                       setId={setAppleTransactionId}
@@ -390,14 +391,6 @@ export default function OnboardingForm({
                 loading={loading}
                 onClick={async () => {
                   if (currentTab === 3 && !privacyChecked) return;
-                  console.log(
-                    'currentTab',
-                    currentTab,
-                    'stripeSubscriptionId',
-                    stripeSubscriptionId,
-                    'googlePaySubscriptionToken',
-                    googlePaySubscriptionToken
-                  );
                   if (
                     currentTab === 4 &&
                     !stripeSubscriptionId &&
