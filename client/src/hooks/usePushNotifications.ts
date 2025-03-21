@@ -57,7 +57,6 @@ export const usePushNotifications = (): UsePushNotificationsResult => {
         PushNotifications.addListener(
           'pushNotificationReceived',
           (notification: any) => {
-            console.log('Push received: ' + JSON.stringify(notification));
             setNotification(notification);
           }
         );
@@ -65,9 +64,6 @@ export const usePushNotifications = (): UsePushNotificationsResult => {
         PushNotifications.addListener(
           'pushNotificationActionPerformed',
           (notification: any) => {
-            console.log(
-              'Push action performed: ' + JSON.stringify(notification)
-            );
             setNotification(notification.notification);
           }
         );

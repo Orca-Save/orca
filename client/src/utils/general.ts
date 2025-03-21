@@ -1,3 +1,6 @@
+import { jwtDecode } from 'jwt-decode';
+import { loginRequest } from './authConfig';
+
 const formatters: { [currency: string]: Intl.NumberFormat } = {
   USD: new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -56,6 +59,33 @@ export const currencyFormatter = (
   }
 };
 
+export function checkTokenExpiry() {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    const decoded: any = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp > currentTime) {
+      return true;
+    }
+  }
+  localStorage.removeItem('accessToken');
+  return false;
+}
+
+export async function refreshMsalAccessToken(instance: any, account: any) {
+  try {
+    const response = await instance.acquireTokenSilent({
+      ...loginRequest,
+      account,
+    });
+    localStorage.setItem('accessToken', response.accessToken);
+    return response.accessToken;
+  } catch (error) {
+    localStorage.removeItem('accessToken');
+    throw error;
+  }
+}
+
 export function newEndpoint(endpoint: string) {
   return process.env.REACT_APP_API_URL + endpoint;
 }
@@ -66,40 +96,20 @@ export function apiFetch(
   data?: any,
   stringify = true
 ) {
-  const maxRetries = 3;
-  const retryDelay = 500; // milliseconds
-  let attempt = 0;
   const token = localStorage.getItem('accessToken');
   const body = stringify && data ? JSON.stringify(data) : data;
-  const headers: any = {
-    'Content-Type': stringify ? 'application/json' : 'multipart/form-data',
-  };
-
-  const doFetch = () =>
-    fetch(process.env.REACT_APP_API_URL + endpoint, {
-      method,
-      headers: { Authorization: `Bearer ${token}`, ...headers },
-      body,
-    });
-
-  const tryFetch = async (): Promise<any> => {
-    let lastError;
-    while (attempt < maxRetries) {
-      try {
-        const res = await doFetch();
-        return res.json();
-      } catch (error) {
-        lastError = error;
-        attempt++;
-        if (attempt < maxRetries) {
-          await delay(retryDelay);
-        }
-      }
-    }
-    throw lastError;
-  };
-
-  return tryFetch();
+  const headers: any = {};
+  headers['Content-Type'] = stringify
+    ? 'application/json'
+    : 'multipart/form-data';
+  return fetch(process.env.REACT_APP_API_URL + endpoint, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...headers,
+    },
+    body,
+  }).then((res) => res.json());
 }
 export const externalAccountId = 'faed4327-3a9c-4837-a337-c54e9704d60f';
 
