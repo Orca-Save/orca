@@ -5,6 +5,7 @@ import {
   Flex,
   Menu,
   Row,
+  Spin, // <-- added Spin here
   Switch,
   Tour,
   TourProps,
@@ -248,7 +249,11 @@ export default function TransactionList({
               </div>
             )
           )}
-          {loading && <div className='text-center py-2'>Loading...</div>}
+          {loading && (
+            <div className='text-center py-2'>
+              <Spin tip='Loading...' />
+            </div>
+          )}
         </ConfigProvider>
       </div>
       <Tour open={open} onClose={tourClose} steps={steps} />
