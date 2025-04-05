@@ -1,4 +1,4 @@
-import { Flex, Skeleton, Space } from 'antd';
+import { Skeleton } from 'antd';
 import React from 'react';
 
 import useFetch from '../../hooks/useFetch';
@@ -11,18 +11,12 @@ export default function TransactionsPage() {
   const { unreadObj, formattedTransactions, userTour } = data;
 
   return (
-    <Flex
-      vertical
-      style={{
-        overflow: 'hidden',
-        height: 'calc(100% - 70px)',
-      }}
-    >
+    <div className='flex flex-col flex-grow overflow-hidden max-h-[calc(100vh-180px)]'>
       <ReviewLink unreadObj={unreadObj} />
       <TransactionList
         transactions={formattedTransactions}
         userTour={userTour}
       />
-    </Flex>
+    </div>
   );
 }
