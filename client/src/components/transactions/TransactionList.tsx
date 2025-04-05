@@ -112,7 +112,7 @@ export default function TransactionList({
 
   return (
     <>
-      <div className='w-full'>
+      <div className='w-full mb-2'>
         <FilterOptions
           filter={filter}
           setSearchParams={setSearchParams}
