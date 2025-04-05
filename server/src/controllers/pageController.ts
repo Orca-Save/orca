@@ -218,12 +218,10 @@ export const userPage = async (req: Request, res: Response) => {
 export const reviewPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
-    const [formattedTransactionsUnfiltered, pinnedUserGoal] = await Promise.all(
-      [getFormattedTransactions(userId, false), getPinnedUserGoal(userId)]
-    );
-    const formattedTransactions = formattedTransactionsUnfiltered.filter(
-      (t) => t.amount > 0
-    );
+    const [formattedTransactions, pinnedUserGoal] = await Promise.all([
+      getFormattedTransactions(userId, false),
+      getPinnedUserGoal(userId),
+    ]);
     res.status(200).send({ formattedTransactions, pinnedUserGoal });
   } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
