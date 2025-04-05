@@ -58,7 +58,7 @@ export default function SignUpPage() {
           Join the pod saving $35 a week.
         </p>
 
-        <div className='w-100 flex flex-col space-y-4 px-12'>
+        <div className='w-100 space-y-4 px-12'>
           <Button
             data-id='sign-up-button'
             type='primary'

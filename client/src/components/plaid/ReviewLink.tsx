@@ -2,6 +2,7 @@ import { HappyProvider } from '@ant-design/happy-work-theme';
 import { Badge, Button, ConfigProvider, Flex } from 'antd';
 import { Link } from 'react-router-dom';
 
+import { antdDefaultButton } from '../../utils/themeConfig';
 import ConnectPlaid from './ConnectPlaid';
 import ItemsLoginRequired from './ItemsLoginRequired';
 import RefreshPlaidItems from './RefreshPlaidItems';
@@ -32,39 +33,40 @@ export default function ReviewLink({
       <RefreshPlaidItems height={90} />
       <Link to='/review' className='w-full'>
         <HappyProvider>
-          <Button
-            size='large'
-            type='primary'
-            disabled={unreadObj.unreadCount === 0}
-            style={{ width: '100%', height: 90 }}
+          <ConfigProvider
+            theme={{
+              components: {
+                Badge: {
+                  lineWidth: 0,
+                },
+                Button: antdDefaultButton,
+              },
+            }}
           >
-            {unreadObj.unreadCount ? (
-              <Flex align='center' justify='center'>
-                <strong>
-                  <span className='pr-2'>Review Transactions</span>
-                </strong>
+            <Button
+              size='large'
+              type='primary'
+              disabled={unreadObj.unreadCount === 0}
+              style={{ width: '100%', height: 90 }}
+            >
+              {unreadObj.unreadCount ? (
+                <Flex align='center' justify='center'>
+                  <strong>
+                    <span className='pr-2'>Review Transactions</span>
+                  </strong>
 
-                <ConfigProvider
-                  theme={{
-                    components: {
-                      Badge: {
-                        lineWidth: 0,
-                      },
-                    },
-                  }}
-                >
                   <Badge count={unreadObj.unreadCount} overflowCount={99} />
-                </ConfigProvider>
-              </Flex>
-            ) : (
-              <>
-                <strong>
-                  <span className='pr-2'>All Transactions Reviewed</span>
-                </strong>
-                🎉
-              </>
-            )}
-          </Button>
+                </Flex>
+              ) : (
+                <>
+                  <strong>
+                    <span className='pr-2'>All Transactions Reviewed</span>
+                  </strong>
+                  🎉
+                </>
+              )}
+            </Button>
+          </ConfigProvider>
         </HappyProvider>
       </Link>
     </Flex>

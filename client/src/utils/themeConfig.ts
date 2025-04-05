@@ -2,10 +2,10 @@ import { ThemeConfig } from 'antd';
 
 const shadow = '0 4px 5px rgba(0, 0, 0, 0.25)';
 
-const defaultButton = {
+export const defaultButton = {
   defaultBg: '#cfcfcf',
   defaultHoverColor: 'black',
-  defaultShadow: '0 4px 5px rgba(0, 0, 0, 0.25)',
+  defaultShadow: shadow,
   defaultBorderColor: 'rgb(207, 207, 207)',
   defaultHoverBorderColor: 'rgb(207, 207, 207)',
   primaryShadow: shadow,
@@ -14,10 +14,10 @@ const defaultButton = {
 export const antdDefaultButton = {
   defaultBg: '#FFFFFF',
   defaultHoverColor: '#4096FF',
-  defaultShadow: '0 2px 0 rgba(0, 0, 0, 0.02)',
+  defaultShadow: shadow,
   defaultBorderColor: '#D9D9D9',
   defaultHoverBorderColor: '#4096FF',
-  primaryShadow: '0 2px 0 rgba(5, 145, 255, 0.1)',
+  primaryShadow: shadow,
 };
 
 export const impulseButtonTheme = {
@@ -72,6 +72,7 @@ export const mainThemeConfig: ThemeConfig = {
   token: {
     colorSuccess: greenThemeColor,
   },
+
   components: {
     Button: {
       ...defaultButton,
@@ -79,6 +80,10 @@ export const mainThemeConfig: ThemeConfig = {
     Card: defaultCardThemeConfig,
     Layout: {
       bodyBg: 'rgb(255, 255, 255)',
+      colorBgBase: 'rgb(255, 255, 255)',
+      colorBgContainer: 'rgb(255, 255, 255)',
+      colorBgLayout: 'rgb(255, 255, 255)',
+
       footerPadding: 0,
     },
     Form: {

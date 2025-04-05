@@ -27,7 +27,7 @@ export default function DashboardSaveButtons({
         },
       }}
     >
-      <Space wrap>
+      <Space wrap className='mb-2'>
         {quickTransfers.map((transfer) => (
           <HappyProvider key={transfer.id}>
             <QuickSaveButton

@@ -1,4 +1,5 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { Capacitor } from '@capacitor/core';
 import {
   Button,
   Card,
@@ -12,10 +13,9 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import React from 'react';
 import { FormattedTransaction } from '../../types/all';
 import { apiFetch, currencyFormatter } from '../../utils/general';
 import {
@@ -44,39 +44,6 @@ const twoColors: ProgressProps['strokeColor'] = {
 type UnreadTransactionsSwiperProps = {
   formattedTransactions: FormattedTransaction[];
   focusGoalImgURL: string;
-};
-
-const customIcons: Record<number, React.ReactNode> = {
-  1: (
-    <Flex vertical justify='center'>
-      <span>😞</span>
-      <Text className='m-auto'>1</Text>
-    </Flex>
-  ),
-  2: (
-    <Flex vertical justify='center'>
-      <span>😐</span>
-      <Text className='m-auto'>2</Text>
-    </Flex>
-  ),
-  3: (
-    <Flex vertical justify='center'>
-      <span>😊</span>
-      <Text className='m-auto'>3</Text>
-    </Flex>
-  ),
-  4: (
-    <Flex vertical justify='center'>
-      <span>😃</span>
-      <Text className='m-auto'>4</Text>
-    </Flex>
-  ),
-  5: (
-    <Flex vertical justify='center'>
-      <span>😍</span>
-      <Text className='m-auto'>5</Text>
-    </Flex>
-  ),
 };
 
 type SwipeState = {
@@ -139,6 +106,39 @@ export default function UnreadTransactionsSwiper({
     if (!swipeState.isModalOpen) return;
     rateImpulseBuy(rating);
   });
+  const isMobile = Capacitor.getPlatform() !== 'web';
+  const customIcons: Record<number, React.ReactNode> = {
+    1: (
+      <Flex vertical justify='center'>
+        <span>😞</span>
+        {isMobile && <Text className='m-auto'>1</Text>}
+      </Flex>
+    ),
+    2: (
+      <Flex vertical justify='center'>
+        <span>😐</span>
+        {isMobile && <Text className='m-auto'>2</Text>}
+      </Flex>
+    ),
+    3: (
+      <Flex vertical justify='center'>
+        <span>😊</span>
+        {isMobile && <Text className='m-auto'>3</Text>}
+      </Flex>
+    ),
+    4: (
+      <Flex vertical justify='center'>
+        <span>😃</span>
+        {isMobile && <Text className='m-auto'>4</Text>}
+      </Flex>
+    ),
+    5: (
+      <Flex vertical justify='center'>
+        <span>😍</span>
+        {isMobile && <Text className='m-auto'>5</Text>}
+      </Flex>
+    ),
+  };
 
   const handleDismiss = async (
     element: HTMLDivElement,
@@ -278,7 +278,7 @@ export default function UnreadTransactionsSwiper({
             </Text>
           </Flex>
           <Flex justify='center'>
-            <Text className='ml-4'>
+            <Text>
               {transaction?.amount && currencyFormatter(transaction?.amount)}
             </Text>
           </Flex>

@@ -2,7 +2,10 @@ import '../main.css';
 
 import { ConfigProvider, Space, Typography } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { impulseDefaultButtonTheme } from '../../../../utils/themeConfig';
+import {
+  defaultButton,
+  impulseDefaultButtonTheme,
+} from '../../../../utils/themeConfig';
 import { useCardSwiper } from '../hooks/useCardSwiper';
 import { CardSwiperProps, SwipeAction, SwipeDirection } from '../types/types';
 import { Swiper } from '../utils/swiper';
@@ -140,13 +143,21 @@ export const CardSwiper = (props: CardSwiperProps) => {
                     buttonContent={dislikeButton}
                   />
                 </ConfigProvider>
-                <CardSwiperActionButton
-                  isCustom
-                  direction={SwipeDirection.RIGHT}
-                  action={SwipeAction.LIKE}
-                  onClick={handleClickEvents}
-                  buttonContent={likeButton}
-                />
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      Button: defaultButton,
+                    },
+                  }}
+                >
+                  <CardSwiperActionButton
+                    isCustom
+                    direction={SwipeDirection.RIGHT}
+                    action={SwipeAction.LIKE}
+                    onClick={handleClickEvents}
+                    buttonContent={likeButton}
+                  />
+                </ConfigProvider>
               </Space>
             </div>
           ) : (
