@@ -47,7 +47,7 @@ function useFilterParams(searchParams: URLSearchParams): Filter {
   };
 }
 export default function TransactionList({
-  transactions,
+  transactions: initialTransactions,
   userTour,
 }: TransactionListProps) {
   const firstItemRef = useRef(null);
@@ -55,6 +55,10 @@ export default function TransactionList({
   const filterParams = useFilterParams(searchParams);
   const navigate = useNavigate();
   const [filter, setFilter] = useState(filterParams);
+  const [transactions, setTransactions] = useState(initialTransactions);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const groupedTransactionsArray = groupedTransactions(transactions, filter);
   const [open, setOpen] = useState<boolean>(
     !!userTour?.transactionListItem == false
@@ -84,6 +88,26 @@ export default function TransactionList({
       },
     },
   ];
+
+  const loadMore = async () => {
+    if (loading) return;
+    setLoading(true);
+    const newPage = page + 1;
+    const response = await apiFetch(`/api/transactions?page=${newPage}`, 'get');
+    if (response?.transactions?.length) {
+      setTransactions((prev) => [...prev, ...response.transactions]);
+      setPage(newPage);
+    }
+    setLoading(false);
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - 50) {
+      loadMore();
+    }
+  };
+
   return (
     <>
       <div className='w-full'>
@@ -93,7 +117,11 @@ export default function TransactionList({
           setFilterHandler={setFilter}
         />
       </div>
-      <div className='h-full overflow-auto'>
+      <div
+        className='h-full overflow-auto'
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+      >
         <ConfigProvider
           theme={{
             components: {
@@ -220,6 +248,7 @@ export default function TransactionList({
               </div>
             )
           )}
+          {loading && <div className='text-center py-2'>Loading...</div>}
         </ConfigProvider>
       </div>
       <Tour open={open} onClose={tourClose} steps={steps} />

@@ -401,19 +401,12 @@ export type PersonalFinanceCategory = {
   detailed: string;
   primary: string;
 };
-export async function getFormattedTransactions(userId: string, read?: boolean) {
-  const plaidItems = await db.plaidItem.findMany({
-    where: {
-      userId,
-      loginRequired: false,
-      deletedAt: null,
-    },
-  });
-
-  if (!plaidItems) {
-    throw new Error('Plaid item not found');
-  }
-
+export async function getFormattedTransactions(
+  userId: string,
+  page: number = 1,
+  read?: boolean
+) {
+  const PAGE_SIZE = 50;
   const transactions = await db.transaction.findMany({
     where: {
       userId,
@@ -422,9 +415,9 @@ export async function getFormattedTransactions(userId: string, read?: boolean) {
     orderBy: {
       date: 'desc',
     },
-    take: 50,
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
   });
-
   const accounts = await db.account.findMany({
     where: {
       userId,

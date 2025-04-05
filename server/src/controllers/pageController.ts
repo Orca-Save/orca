@@ -135,8 +135,9 @@ export const subscriptionPage = async (req: Request, res: Response) => {
 export const transactionsPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
+    const page = Number(req.query.page) || 1;
     const [formattedTransactions, unreadObj, userTour] = await Promise.all([
-      getFormattedTransactions(userId),
+      getFormattedTransactions(userId, page),
       getUnreadTransactionCount(userId),
       getUserTour(userId),
     ]);
@@ -219,7 +220,7 @@ export const reviewPage = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.oid;
     const [formattedTransactions, pinnedUserGoal] = await Promise.all([
-      getFormattedTransactions(userId, false),
+      getFormattedTransactions(userId, 1, false),
       getPinnedUserGoal(userId),
     ]);
     res.status(200).send({ formattedTransactions, pinnedUserGoal });
