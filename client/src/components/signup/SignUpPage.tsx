@@ -41,12 +41,12 @@ export default function SignUpPage() {
     }
   };
   return (
-    <div className='bg-color-black mg-5 flex justify-center items-center h-screen'>
-      <Space direction='vertical' size={50}>
-        <h1 className='varela-round text-center text-4xl mb-2'>Orca</h1>
+    <div className='main-layout bg-color-black flex justify-center items-center'>
+      <Space direction='vertical' size={20}>
+        <h1 className='varela-round text-center text-4xl '>Orca</h1>
 
         <h1
-          className={`font-sans text-center decoration-clone pb-3 text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+          className={`font-sans text-center decoration-clone text-6xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
         >
           Impulse saving.
         </h1>
@@ -58,7 +58,7 @@ export default function SignUpPage() {
           Join the pod saving $35 a week.
         </p>
 
-        <div className='w-100 space-y-4 px-12'>
+        <div className='w-100 px-12'>
           <Button
             data-id='sign-up-button'
             type='primary'
