@@ -5,7 +5,7 @@ import {
   Flex,
   Menu,
   Row,
-  Spin, // <-- added Spin here
+  Spin,
   Switch,
   Tour,
   TourProps,
@@ -77,7 +77,8 @@ export default function TransactionList({
   const steps: TourProps['steps'] = [
     {
       title: 'Transaction History',
-      description: 'Tap on transaction to see more detail, and make any edits.',
+      description:
+        'Tap on a transaction to see more detail, and make any edits.',
       target: () => firstItemRef.current,
       nextButtonProps: {
         onClick: async () => {
