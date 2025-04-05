@@ -13,6 +13,7 @@ import {
   addGoalTransfer,
   addQuickGoalTransfer,
   addQuickSave,
+  getGoalTransfersSum,
   updateGoalTransfer,
 } from '../utils/goalTransfers';
 
@@ -31,7 +32,22 @@ export const deleteGoal = async (req: Request, res: Response) => {
 export const listGoal = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user as User;
-    const goals = await listGoals(user.oid);
+    const [goals, sums] = await Promise.all([
+      listGoals(user.oid),
+      getGoalTransfersSum(user.oid),
+    ]);
+    const goalSumMap = new Map(
+      sums.map((item) => [
+        item.goalId,
+        { amount: item._sum.amount, count: item._count.goalId },
+      ])
+    );
+    goals.forEach((goal) => {
+      Object.assign(goal, {
+        currentBalance: goalSumMap.get(goal.id)?.amount?.toNumber() || 0,
+        savedItemCount: goalSumMap.get(goal.id)?.count || 0,
+      });
+    });
     res.status(200).send({ goals });
   } catch (err: any) {
     appInsightsClient.trackException({ exception: err });
