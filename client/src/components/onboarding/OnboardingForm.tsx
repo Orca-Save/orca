@@ -270,6 +270,11 @@ export default function OnboardingForm({
                   >
                     Transform Your Finances with Orca!
                   </h3>
+                  <h4
+                    className={`font-sans text-center decoration-clone pb-3 text-2xl bg-clip-text text-transparent bg-gradient-to-r from-orca-blue to-orca-pink font-bold`}
+                  >
+                    Start your free trial!
+                  </h4>
                   <Paragraph>
                     Join Orca&apos;s subscription service to effortlessly save
                     money and manage your spending. Enjoy personalized insights,
