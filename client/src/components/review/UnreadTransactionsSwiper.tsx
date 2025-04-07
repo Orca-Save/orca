@@ -106,36 +106,36 @@ export default function UnreadTransactionsSwiper({
     if (!swipeState.isModalOpen) return;
     rateImpulseBuy(rating);
   });
-  const isMobile = Capacitor.getPlatform() !== 'web';
+  const isWeb = Capacitor.getPlatform() !== 'web';
   const customIcons: Record<number, React.ReactNode> = {
     1: (
       <Flex vertical justify='center'>
         <span>😞</span>
-        {isMobile && <Text className='m-auto'>1</Text>}
+        {isWeb && <Text className='m-auto'>1</Text>}
       </Flex>
     ),
     2: (
       <Flex vertical justify='center'>
         <span>😐</span>
-        {isMobile && <Text className='m-auto'>2</Text>}
+        {isWeb && <Text className='m-auto'>2</Text>}
       </Flex>
     ),
     3: (
       <Flex vertical justify='center'>
         <span>😊</span>
-        {isMobile && <Text className='m-auto'>3</Text>}
+        {isWeb && <Text className='m-auto'>3</Text>}
       </Flex>
     ),
     4: (
       <Flex vertical justify='center'>
         <span>😃</span>
-        {isMobile && <Text className='m-auto'>4</Text>}
+        {isWeb && <Text className='m-auto'>4</Text>}
       </Flex>
     ),
     5: (
       <Flex vertical justify='center'>
         <span>😍</span>
-        {isMobile && <Text className='m-auto'>5</Text>}
+        {isWeb && <Text className='m-auto'>5</Text>}
       </Flex>
     ),
   };
