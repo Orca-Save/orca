@@ -399,7 +399,7 @@ export default function UnreadTransactionsSwiper({
           }
         />
       </div>
-      <Flex justify='center' className='mt-4 w-full'>
+      <Flex justify='center' className='mt-4 mb-2 w-full'>
         <Button
           data-id='sync-transactions-button'
           size='large'
