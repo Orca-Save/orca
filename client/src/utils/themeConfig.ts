@@ -74,12 +74,10 @@ export const mainThemeConfig: ThemeConfig = {
   },
 
   components: {
-    Button: {
-      ...defaultButton,
-    },
+    Button: defaultButton,
     Card: defaultCardThemeConfig,
     Layout: {
-      footerPadding: 0,
+      colorBgLayout: 'white',
     },
     Form: {
       fontSize: 16,
