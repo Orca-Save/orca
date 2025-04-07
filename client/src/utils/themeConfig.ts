@@ -79,11 +79,6 @@ export const mainThemeConfig: ThemeConfig = {
     },
     Card: defaultCardThemeConfig,
     Layout: {
-      bodyBg: 'rgb(255, 255, 255)',
-      colorBgBase: 'rgb(255, 255, 255)',
-      colorBgContainer: 'rgb(255, 255, 255)',
-      colorBgLayout: 'rgb(255, 255, 255)',
-
       footerPadding: 0,
     },
     Form: {
