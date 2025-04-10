@@ -106,7 +106,7 @@ export default function UnreadTransactionsSwiper({
     if (!swipeState.isModalOpen) return;
     rateImpulseBuy(rating);
   });
-  const isWeb = Capacitor.getPlatform() !== 'web';
+  const isWeb = Capacitor.getPlatform() === 'web';
   const customIcons: Record<number, React.ReactNode> = {
     1: (
       <Flex vertical justify='center'>
@@ -367,8 +367,8 @@ export default function UnreadTransactionsSwiper({
           disableSwipe={!!swipeState.selectedTransactionId}
           data={transactionCards}
           onDismiss={handleDismiss}
-          dislikeButton={<div>Impulse Buy (A)</div>}
-          likeButton={<div>Non-Impulse Buy (D)</div>}
+          dislikeButton={<div>Impulse Buy {isWeb ? '(A)' : ''}</div>}
+          likeButton={<div>Non-Impulse Buy {isWeb ? '(D)' : ''}</div>}
           withRibbons
           withActionButtons
           likeRibbonText='Reviewed'
