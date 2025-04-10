@@ -34,12 +34,12 @@
 }
 
 .swipe-card__container:first-of-type {
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.2));
 }
 
 .swipe-card__container:last-of-type {
   pointer-events: auto;
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.2));
   transform: scale(1) translateY(0px) translateZ(0);
 }
 
