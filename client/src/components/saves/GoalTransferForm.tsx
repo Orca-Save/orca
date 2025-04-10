@@ -231,7 +231,7 @@ export function GoalTransferForm({
         </Collapse.Panel>
       </Collapse>
 
-      <div className='flex justify-end mt-5 space-x-4'>
+      <div className='flex justify-end space-x-4 my-4'>
         <Button
           data-id='goal-transfer-form-cancel'
           size='large'

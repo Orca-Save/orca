@@ -11,8 +11,7 @@ import {
   Typography,
 } from 'antd';
 import { format } from 'date-fns';
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { plaidCategories } from 'shared-library/dist/plaidCategories';
 
@@ -152,7 +151,7 @@ export default function TransactionForm({
             <TextArea />
           </Form.Item>
         </Space>
-        <Flex justify='end'>
+        <Flex justify='end' className='mb-4'>
           <Space>
             <Button onClick={() => navigate(-1)}>Cancel</Button>
             <Button type='primary' htmlType='submit'>
